@@ -7,16 +7,22 @@ final class Gt {
          "Security"  => new Security_Config()
       );
 
-      $elements = array(
-         "DAL"    = new Dal(),
-         "DOM"    = new Dom(),
-         "Module" = new Module(),
-         "Error"  = new Error()
+      $components = array(
+         "DAL"       => new Dal(),
+         "DOM"       => new Dom(),
+         "Module"    => new Module(),
+         "Error"     => new Error()
       );
 
-      $pageCode = new PageCode();
-      $request  = new Request($pageCode, $settings, $elements);
-      $response = new Response($request);
+      $pageCode = null;
+      $pageCodeFile  = APPROOT . DS . "PageCode" . DS . FILEPATH . ".php";
+      $pageCodeClass = FILECLASS . "_PageCode";
+      if(class_exists($pageCodeClass)) {
+         $pageCode   = new $pageCodeClass();
+      }
+      $request       = new Request($pageCode, $settings, $components);
+      $response      = new Response($request);
+      $injector      = new Injector($response);
    }
 }
 ?>

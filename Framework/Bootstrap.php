@@ -33,6 +33,9 @@ else {
       $dirName = $pathInfo["filename"];
    }
 }
+if(empty($pathInfo["extension"])) {
+   $dirName .= "/" . $pathInfo["filename"];
+}
 
 $fileName = "Index";
 if(!empty($pathInfo["filename"])) {
@@ -40,6 +43,7 @@ if(!empty($pathInfo["filename"])) {
       $fileName = trim($pathInfo["filename"]);
    }
 }
+
 
 $extension = (isset($pathInfo["extension"]) )
    ? trim($pathInfo["extension"])
@@ -63,14 +67,26 @@ $baseDir = ($slashPos === false)
       : $dirName)
    : substr($dirName, 0, $slashPos);
 
-define("VER", "2.0");
-define("APPNAME", substr($cwd, 0, strrpos($cwd, ".")) );
-define("GTROOT", dirname(dirname(__FILE__)));
-define("APPROOT", getcwd());
-define("DIR", $dirName);
-define("BASEDIR", $baseDir);
-define("FILE", $fileName);
-define("EXT", $extension);
+// For finding the correct PageCode and PageView, on different systems.
+$dirPath = str_replace("/", DS, $dirName);
+$filePath = $dirName . DS . $fileName;
+while($filePath[0] == DS) { 
+   $filePath = substr($filePath, 1);
+}
+
+$fileClass = str_replace(DS, "_", $filePath);
+
+define("VER",        "2.0");
+define("APPNAME",    substr($cwd, 0, strrpos($cwd, ".")) );
+define("GTROOT",     dirname(dirname(__FILE__)));
+define("APPROOT",    getcwd());
+define("DIR",        $dirName);
+define("BASEDIR",    $baseDir);
+define("FILE",       $fileName);
+define("EXT",        $extension);
+define("DIRPATH",    $dirPath);
+define("FILEPATH",   $filePath);
+define("FILECLASS",  $fileClass);
 
 // Define the minimum required files to run the framework. The path of each
 // requirement can be an array of paths, in order of priority (for version 
@@ -89,6 +105,24 @@ $required = array(
       APPROOT . DS . "Config" . DS . "Database.cfg.php",
    "Application-specific security config" => 
       APPROOT . DS . "Config" . DS . "Security.cfg.php",
+   
+   "DAL component" =>
+      GTROOT . DS . "Framework" . DS . "Component" . DS . "Dal.cmp.php",
+   "DOM component" =>
+      GTROOT . DS . "Framework" . DS . "Component" . DS . "Dom.cmp.php",
+   "Module component" =>
+      GTROOT . DS . "Framework" . DS . "Component" . DS . "Module.cmp.php",
+   "Error component" => 
+      GTROOT . DS . "Framework" . DS . "Component" . DS . "Error.cmp.php",
+
+   "Request class" =>
+      GTROOT . DS . "Framework" . DS . "Request.php",
+   "Response class" =>
+      GTROOT . DS . "Framework" . DS . "Response.php",
+   "Injector class" =>
+      GTROOT . DS . "Framework" . DS . "Injector.php",
+   "PageCode class" =>
+      GTROOT . DS . "Framework" . DS . "PageCode.php",
 
    "Main PHP.Gt object" =>
       GTROOT . DS . "Framework" . DS . "Gt.php"
@@ -111,6 +145,10 @@ foreach($required as $title => $path) {
 // If you don't trust your webserver has been set up correctly, have a look 
 // through the output of this code block:
 
+var_dump($pathInfo);
+
+echo "<pre>";
+
 echo "CWD: "      . $cwd      . PHP_EOL 
    . "VER: "      . VER       . PHP_EOL
    . "APPNAME: "  . APPNAME   . PHP_EOL
@@ -122,9 +160,14 @@ echo "CWD: "      . $cwd      . PHP_EOL
    . "BASEDIR: "  . BASEDIR   . PHP_EOL
    . "FILE: "     . FILE      . PHP_EOL
    . "EXT: "      . EXT       . PHP_EOL
+   . "DIRPATH: "  . DIRPATH   . PHP_EOL
+   . "FILEPATH: " . FILEPATH  . PHP_EOL
+   . "FILECLASS: ". FILECLASS . PHP_EOL
    . PHP_EOL;
+echo "</pre>";
 
 var_dump($_GET);
+exit;
 */
 $gt = new Gt();
 ?>
