@@ -110,8 +110,11 @@ $required = array(
       GTROOT . DS . "Framework" . DS . "Component" . DS . "Dal.cmp.php",
    "DOM component" =>
       GTROOT . DS . "Framework" . DS . "Component" . DS . "Dom.cmp.php",
-   "Module component" =>
-      GTROOT . DS . "Framework" . DS . "Component" . DS . "Module.cmp.php",
+   "DOM Element component" =>
+      GTROOT . DS . "Framework" . DS . "Component" . DS . "DomEl.cmp.php",
+   "DOM Element Collection component" =>
+      GTROOT . DS . "Framework" . DS . "Component" . DS . "DomElCollection.php",
+   
    "Error component" => 
       GTROOT . DS . "Framework" . DS . "Component" . DS . "Error.cmp.php",
 
@@ -119,8 +122,8 @@ $required = array(
       GTROOT . DS . "Framework" . DS . "Request.php",
    "Response class" =>
       GTROOT . DS . "Framework" . DS . "Response.php",
-   "Injector class" =>
-      GTROOT . DS . "Framework" . DS . "Injector.php",
+   "Dispatcher class" =>
+      GTROOT . DS . "Framework" . DS . "Dispatcher.php",
    "PageCode class" =>
       GTROOT . DS . "Framework" . DS . "PageCode.php",
 
