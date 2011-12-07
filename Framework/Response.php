@@ -82,8 +82,9 @@ final class Response {
          // Request path is absolute, only one array element needed, with
          // direct reference to DIR and FILE.
          $fileArray = array(
-            APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html"
-         );
+            APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html",
+            APPROOT . DS . "PageView" . DS . BASEDIR . DS . FILE . ".html"
+            );
 
          // TODO: Test directory-less path if no directory is supplied.
       }

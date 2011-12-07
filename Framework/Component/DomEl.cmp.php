@@ -1,7 +1,7 @@
 <?php
 class DomEl {
+   public $node;
    private $_dom;
-   private $_node;
 
    /**
     * A wrapper to PHP's native DOMElement, adding more object oriented
@@ -16,17 +16,18 @@ class DomEl {
       $this->_dom = $dom;
 
       if($element instanceof DOMElement) {
-         $this->_node = $element;
+         $this->node = $element;
       }
       else if(is_string($element)) {
          // TODO: New feature: Allow passing in CSS selector to create the el.
-         // i.e. createElement("div.product.selected");
-         $this->_node = $dom->createElement($element, $value);
+         // i.e. create("div.product.selected");
+         $this->node = $this->_dom->getDomDoc()->createElement(
+            $element, $value);
       }
 
       if(is_array($attrArray)) {
          foreach($attrArray as $key => $value) {
-            $this->_node->setAttribute($key, $value);
+            $this->node->setAttribute($key, $value);
          }
       }
    }
@@ -34,9 +35,39 @@ class DomEl {
    /**
     * TODO: Docs.
     */
+   public function append($toAppend) {
+      $elementArray = array();
+
+      if(is_array($toAppend) || $toAppend instanceof DomElCollection) {
+         $elementArray = $toAppend;
+      }
+      else {
+         $elementArray[] = $toAppend;
+      }
+
+      foreach($elementArray as $element) {
+         $elNode = $element;
+         if($element instanceof DomEl) {
+            $elNode = $element->node;
+         }
+
+         $this->node->appendChild($elNode);
+      }
+   }
+
+   /**
+    * TODO: Docs.
+    */
+   public function remove() {
+      $this->node->parentNode->removeChild($this->node);
+   }
+
+   /**
+    * TODO: Docs.
+    */
    public function __call($name, $args = array()) {
-      if(method_exists($this->_node, $name)) {
-         return call_user_func_array(array($this->_node, $name), $args);
+      if(method_exists($this->node, $name)) {
+         return call_user_func_array(array($this->node, $name), $args);
       }
       else {
          return false;
@@ -51,16 +82,16 @@ class DomEl {
       case "innerHTML":
       case "innerHtml":
       case "innerText":
-         return $this->_node->nodeValue;
+         return $this->node->nodeValue;
          break;
       default: 
-         if(property_exists($this->_node, $key)) {
+         if(property_exists($this->node, $key)) {
             // Attempt to never pass a native DOMElement without converting to
             // DomEl wrapper class.
-            if($this->_node->$key instanceof DOMELement) {
-               return $this->_dom->createElement($this->_node->$key);
+            if($this->node->$key instanceof DOMELement) {
+               return $this->_dom->create($this->node->$key);
             }
-            return $this->_node->$key;
+            return $this->node->$key;
          }
          break;
       }
@@ -74,10 +105,10 @@ class DomEl {
       case "innerHTML":
       case "innerHtml":
       case "innerText":
-         $this->_node->nodeValue = $value;
+         $this->node->nodeValue = $value;
          break;
       default:
-         $this->_node->setAttribute($key, $value);
+         $this->node->setAttribute($key, $value);
          break;
       }
 

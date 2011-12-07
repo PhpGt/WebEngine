@@ -17,10 +17,13 @@ final class Dispatcher {
       $dom = new Dom($response->getBuffer());
       $response->dispatch("preRender", $dom);
 
+      $injector = new Injector($dom);
+
       // TODO: Obtain extracted elements, pass to response.
       $domElements = $dom->scrape();
-      $response->dispatch("render", $dom, $domElements);
-      $response->dispatch("flush", $dom);
+      $response->dispatch("render", $dom, $domElements, $injector);
+
+      $dom->flush();
    }
 }
 ?>

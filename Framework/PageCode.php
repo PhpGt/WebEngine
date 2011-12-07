@@ -7,10 +7,6 @@ abstract class PageCode {
       // TODO: Set all member variables here for use within PageCode.
    }
 
-   public function flush($dom) {
-      $dom->outputHtml();
-   }
-
    private function injectApi($name) {
       
    }
@@ -59,7 +55,9 @@ abstract class PageCode {
     * content within the HTML, any nodes with data-phpgt attributes will be
     * collected for manipulation, and the values of the data-phpgt attributes
     * will be used for the array keys.
+    * @param Injector $injector Object that holds the "injected" items such as
+    * compiled <script> and <link> elements.
     */
-   abstract protected function render($dom, $domElements );
+   abstract protected function render($dom, $domElements, $injector);
 }
 ?>

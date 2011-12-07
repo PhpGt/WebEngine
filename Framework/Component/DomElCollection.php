@@ -1,10 +1,9 @@
 <?php
-/**
- * TODO: Docs.
- */
-class DomElCollection {
+class DomElCollection implements Iterator {
    private $_dom;
    private $_elArray;
+   private $_index;
+
    /**
     * Stores a collection of DomEl objects, accessible as an inexed array.
     * @param array $elArray An array containing either DomEl objects or PHP's
@@ -17,7 +16,7 @@ class DomElCollection {
       if(!is_array($elArray)) {
          // Possible to only pass a single DOMElement or DomEl object as param.
          if($elArray instanceof DOMElement) {
-            $elArray = array($dom->createElement($elArray));
+            $elArray = array($dom->create($elArray));
          }
          else if($elArray instanceof DomEl) {
             $elArray = array($elArray);
@@ -28,7 +27,7 @@ class DomElCollection {
 
             $elArray = array();
             for($i = 0; $i < $listLength; $i++) {
-               $elArray[] = $dom->createElement($list->item($i));
+               $elArray[] = $dom->create($list->item($i));
             }
          }
          else {
@@ -38,6 +37,27 @@ class DomElCollection {
          }
       }
       $this->_elArray= $elArray;
+      $this->_index = 0;
+   }
+
+   public function rewind() {
+      $this->_index = 0;
+   }
+
+   public function valid() {
+      return isset($this->_elArray[$this->_index]);
+   }
+
+   public function current() {
+      return $this->_elArray[$this->_index];
+   }
+
+   public function key() {
+      return $this->_index;
+   }
+
+   public function next() {
+      ++$this->_index;
    }
 
    /**

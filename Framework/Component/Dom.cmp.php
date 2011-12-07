@@ -12,10 +12,15 @@ class Dom implements ArrayAccess {
     */
    public function __construct($html) {
       $this->_domDoc = new DomDocument("1.0", "utf-8");
+      libxml_use_internal_errors(true);
       if(!$this->_domDoc->loadHTML($html) ) {
          // TODO: Throw and log a proper error.
          die("Error loading HTML into Dom");
       }
+   }
+
+   public function getDomDoc() {
+      return $this->_domDoc;
    }
 
    /**
@@ -26,7 +31,7 @@ class Dom implements ArrayAccess {
     * @param string $value Optional. The initial text value of the element.
     * @return DomEl The newly created DomEl object.
     */
-   public function createElement(
+   public function create(
       $el,
       $attrArray  = null,
       $value      = null) {
@@ -38,7 +43,7 @@ class Dom implements ArrayAccess {
     * Outputs the HTML contained within the DOM to the output buffer and
     * instantly flushes the buffer to the browser.
     */
-   public function outputHtml() {
+   public function flush() {
       ob_clean();
       $this->_domDoc->formatOutput = true;
       echo $this->_domDoc->saveHTML();

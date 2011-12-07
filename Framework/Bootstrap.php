@@ -114,10 +114,11 @@ $required = array(
       GTROOT . DS . "Framework" . DS . "Component" . DS . "DomEl.cmp.php",
    "DOM Element Collection component" =>
       GTROOT . DS . "Framework" . DS . "Component" . DS . "DomElCollection.php",
-   
    "Error component" => 
       GTROOT . DS . "Framework" . DS . "Component" . DS . "Error.cmp.php",
 
+   "Injector class" =>
+      GTROOT . DS . "Framework" . DS . "Injector.php",
    "Request class" =>
       GTROOT . DS . "Framework" . DS . "Request.php",
    "Response class" =>

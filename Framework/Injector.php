@@ -14,8 +14,9 @@ class Injector {
     * TODO: Docs.
     */
    public function injectStyleSheets($dom) {
-      // Find all stylesheets.
-      $styleLinkArray = $dom["link[rel='stylesheet']"];
+      // Find all stylesheets except those
+      // that are required to be loaded separately.
+      $styleLinkArray = $dom["link[rel='stylesheet'][not(@media)]"];
       $styleString = "";
       $styleCompileFile = APPROOT . DS . "WebRoot" . DS . "Style.css";
       $styleCompileFileModified = 0;
@@ -43,9 +44,6 @@ class Injector {
             APPROOT . DS . "Style" . $filePath,
             GTROOT . DS . "Style" . $filePath
          );
-
-         //var_dump($pathArray);
-         //die();
 
          $foundStyle = false;
          foreach ($pathArray as $path) {
@@ -81,12 +79,22 @@ class Injector {
 
       // Remove the link elements from the page, replace them with the cache.
       $styleLinkArray->remove();
+
+      // TODO: This is a hack until the DOM's prepend, before, after functions
+      // have been written and tested.
+      // Simply moves any <link> elements with a "media" attribute to the end
+      // of the head, after the compiled file is appended.
+      $existingLinks = $dom["head link"];
+
       $dom["head"]->append(
          $dom->create("link", array(
             "rel"    => "stylesheet",
             "href"   => $styleCompileFileUrl
          ))
       );
+
+      $existingLinks->remove();
+      $dom["head"]->append($existingLinks);
    }
 
    /**
