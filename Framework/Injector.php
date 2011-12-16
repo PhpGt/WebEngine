@@ -18,7 +18,7 @@ class Injector {
       // that are required to be loaded separately.
       $styleLinkArray = $dom["link[rel='stylesheet'][not(@media)]"];
       $styleString = "";
-      $styleCompileFile = APPROOT . DS . "WebRoot" . DS . "Style.css";
+      $styleCompileFile = APPROOT . DS . "Web" . DS . "Style.css";
       $styleCompileFileModified = 0;
       if(file_exists($styleCompileFile)) {
          $styleCompileFileModified = filemtime($styleCompileFile);
@@ -75,7 +75,7 @@ class Injector {
       }
 
       $styleCompileFileUrl = str_replace(
-         APPROOT . DS . "WebRoot", "", $styleCompileFile);
+         APPROOT . DS . "Web", "", $styleCompileFile);
 
       // Remove the link elements from the page, replace them with the cache.
       $styleLinkArray->remove();
@@ -165,7 +165,7 @@ class Injector {
       }
 
       $scriptCompileFileUrl = str_replace(
-         APPROOT . DS . "WebRoot", "", $scriptCompileFile);
+         APPROOT . DS . "Web", "", $scriptCompileFile);
 
       // Remove the link elements from the page, replace them with the cache.
       $scriptArray->remove();

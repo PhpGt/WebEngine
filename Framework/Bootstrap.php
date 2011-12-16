@@ -8,7 +8,7 @@
  * This is the only procedural-style code in the whole framework. The last line
  * of the bootstrapper creates a new instance of Gt, the core object.
  */
-// Directory is in WebRoot of current application.
+// Directory is in Web root of current application.
 // Move one directory up to get the "app root".
 chdir("..");
 $cwd = substr(getcwd(), strrpos(getcwd(), "/") + 1);
