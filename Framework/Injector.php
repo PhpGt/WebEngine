@@ -16,7 +16,8 @@ class Injector {
    public function injectStyleSheets($dom) {
       // Find all stylesheets except those
       // that are required to be loaded separately.
-      $styleLinkArray = $dom["link[rel='stylesheet'][not(@media)]"];
+      $styleLinkArray = 
+         $dom["link[rel='stylesheet'][not(@media)][not(@nocompile)]"];
       $styleString = "";
       $styleCompileFile = APPROOT . DS . "Web" . DS . "Style.css";
       $styleCompileFileModified = 0;
@@ -102,7 +103,7 @@ class Injector {
     */
    public function injectJavaScript($dom, $compile) {
       // Find all scripts.
-      $scriptArray = $dom["script[@src]"];
+      $scriptArray = $dom["script[@src][not(@nocompile)]"];
       $scriptString = "";
       $scriptCompileFile = APPROOT . DS . "WebRoot" . DS . "Script.js";
       $scriptCompileFileModified = 0;
