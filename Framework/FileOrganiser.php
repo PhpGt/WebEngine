@@ -7,11 +7,14 @@
  */
 final class FileOrganiser {
 	public function __construct() {
+		/**
+		TODO: BUG - Fix this. Directories are not coppied as needed.
+		TODO: rsync needs to retain permissions (there's a flag for that).
 		$dirArray = array(
-			GTROOT  . DS . "Style",
-			GTROOT  . DS . "Script",
-			APPROOT . DS . "Style",
-			APPROOT . DS . "Script"
+			GTROOT  . DS . "Style" . DS . "Img",
+			GTROOT  . DS . "Style" . DS . "Font",
+			APPROOT . DS . "Style" . DS . "Img",
+			APPROOT . DS . "Style" . DS . "Font"			
 		);
 		$rsyncCommand = "rsync --recursive --update --delete ";
 		foreach($dirArray as $dir) {
@@ -20,6 +23,7 @@ final class FileOrganiser {
 		$rsyncCommand .= " " . APPROOT . DS . "Web";
 
 		exec($rsyncCommand);
+		**/
 	}
 }
 ?>

@@ -12,7 +12,6 @@
 // Move one directory up to get the "app root".
 chdir("..");
 $cwd = substr(getcwd(), strrpos(getcwd(), "/") + 1);
-
 // Get the requested path, remove initial slash and any query strings.
 $path = substr($_SERVER["REQUEST_URI"], 1);
 if(strpos($path, "?") !== false) {
