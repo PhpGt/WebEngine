@@ -12,7 +12,11 @@ final class Dispatcher {
 			$response->dispatch("onPost", $_POST);
 		}
 
-		$response->dispatch("main");
+		// TODO: Implement API and DAL objects.
+		$api = null;
+		$dal = null;
+
+		$response->dispatch("main", $api, $dal);
 
 		$dom = new Dom($response->getBuffer());
 		$response->dispatch("preRender", $dom);

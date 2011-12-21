@@ -49,10 +49,6 @@ final class Request {
 			}
 			die("Reserved");
 		}
-
-		if(!is_null($this->_pageCode) ){
-			$this->_pageCode->init();
-		}
 		session_start();
 	}
 
