@@ -2,6 +2,7 @@
 final class Request {
 	private $_api = null;
 	private $_pageCode = null;
+	private $_pageCodeCommon = null;
 
 	public function __construct($settings) {
 		$contentType = "text/html";
@@ -11,12 +12,25 @@ final class Request {
 			echo("TODO: API Creation, computation.");
 		}
 		else {
+			// Look for PageCode that's relative to the requested path.
 			$pageCodeFile  = APPROOT . DS . "PageCode" . DS . FILEPATH . ".php";
 			$pageCodeClass = FILECLASS . "_PageCode";
 			if(file_exists($pageCodeFile)) {
 				require($pageCodeFile);
 				if(class_exists($pageCodeClass)) {
 					$this->_pageCode = new $pageCodeClass();
+				}
+			}
+
+			// Look for common PageCode for current directory.
+			$pageCodeComFile = APPROOT . DS . "PageCode" 
+				. DS . DIR . DS . "_Common.php"; 
+			$pageCodeComClass = str_replace("/", "_", DIR) 
+				. "__Common_PageCode";
+			if(file_exists($pageCodeComFile)) {
+				require($pageCodeComFile);
+				if(class_exists($pageCodeComClass)) {
+					$this->_pageCodeCommon = new $pageCodeComClass();
 				}
 			}
 		}
@@ -54,6 +68,10 @@ final class Request {
 
 	public function getPageCode() {
 		return $this->_pageCode;
+	}
+
+	public function getPageCodeCommon() {
+		return $this->_pageCodeCommon;
 	}
 }
 ?>

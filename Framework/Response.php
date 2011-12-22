@@ -2,6 +2,7 @@
 final class Response {
 	private $_buffer = "";
 	private $_pageCode = null;
+	private $_pageCodeCommon = null;
 
 	public function __construct($request) {
 		if(EXT === "json") {
@@ -10,6 +11,7 @@ final class Response {
 		}
 
 		$this->_pageCode = $request->getPageCode();
+		$this->_pageCodeCommon = $request->getPageCodeCommon();
 
 		ob_start();
 
@@ -33,17 +35,24 @@ final class Response {
 	* @param mixed $args Zero or more parameters to pass to the named function.
 	*/
 	public function dispatch($name, $parameter = null) {
-		// There may not be a PageCode for every page.
-		if(is_null($this->_pageCode)) {
-			return;
+		// There may or may not be a PageCode or Common PageCode.
+		// Build array of objects to dispatch to.
+		$dispatchArray = array();
+		if(!is_null($this->_pageCode)) {
+			$dispatchArray[] = $this->_pageCode;
+		}
+		if(!is_null($this->_pageCodeCommon)) {
+			$dispatchArray[] = $this->_pageCodeCommon;
 		}
 
 		$args = func_get_args();
 		array_shift($args);
 
-		// Only call if the method exists.
-		if(method_exists($this->_pageCode, $name)) {
-			call_user_func_array(array($this->_pageCode, $name), $args);
+		// Call method, if it exists, on each existant PageCode.
+		foreach($dispatchArray as $dispatchTo) {
+			if(method_exists($dispatchTo, $name)) {
+					call_user_func_array(array($dispatchTo, $name),	$args);
+			}
 		}
 	}
 
