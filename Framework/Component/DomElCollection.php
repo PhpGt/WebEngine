@@ -1,5 +1,5 @@
 <?php
-class DomElCollection implements Iterator {
+class DomElCollection implements Iterator, ArrayAccess {
 	private $_dom;
 	private $_elArray;
 	private $_index;
@@ -103,6 +103,39 @@ class DomElCollection implements Iterator {
 		foreach($this->_elArray as $el) {
 			$el->$key = $value;
 		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function offsetGet($index) {
+		return $this->_elArray[$index];
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function offsetSet($index, $value) {
+		die("TODO: OffsetSet not yet implemented");
+		// TODO: Implement offsetSet:
+		// Replace element[0] with given element, remove others.
+		// OR, if a collection is given, replace it with that instead.
+		return 0;
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function offsetExists($index) {
+		return in_array($index, $this->_elArray);
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function offsetUnset($index) {
+		// TODO: Implement offsetUnset... see above TODOs.
+		return 0;
 	}
 }
 ?>

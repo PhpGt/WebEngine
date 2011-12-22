@@ -57,7 +57,12 @@ class Dom implements ArrayAccess {
 	* values as the array keys.
 	*/
 	public function scrape() {
-		return array();
+		$xpath = new DOMXPath($this->_domDoc);
+		$domNodeList = $xpath->query("//*[@data-phpgt-scrape]");
+		
+		$domNodeCollection = new DomElCollection($this, $domNodeList);
+		$domNodeCollection->remove();
+		return $domNodeCollection;
 	}
 
 	/**
