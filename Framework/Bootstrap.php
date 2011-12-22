@@ -21,6 +21,7 @@ $pathInfo = pathinfo($path);
 if(!isset($pathInfo["dirname"])) { $pathInfo["dirname"] = ""; }
 if(!isset($pathInfo["extension"])) { $pathInfo["extension"] = ""; }
 if($pathInfo["dirname"] === ".") { $pathInfo["dirname"] = ""; }
+$pathInfo["filename"] = preg_replace("/(\?|&).*/", "", $pathInfo["filename"]);
 
 // Obtain information about the requested file and directory from path info.
 $dirName = "";
@@ -28,12 +29,14 @@ if(!empty($pathInfo["dirname"])) {
 	$dirName = $pathInfo["dirname"];
 }
 else {
-if(empty($pathInfo["extension"])) {
-	$dirName = $pathInfo["filename"];
+	if(empty($pathInfo["extension"])) {
+		$dirName = $pathInfo["filename"];
+	}
 }
-}
-if(empty($pathInfo["extension"])) {
-	$dirName .= "/" . $pathInfo["filename"];
+if(empty($pathInfo["extension"]) ) {
+	if(!empty($pathInfo["dirname"])) {
+		$dirName .= "/" . $pathInfo["filename"];
+	}
 }
 
 $fileName = "Index";
@@ -72,10 +75,9 @@ $filePath = $dirName . DS . $fileName;
 while($filePath[0] == DS) { 
 	$filePath = substr($filePath, 1);
 }
-
 $fileClass = str_replace(DS, "_", $filePath);
 
-define("VER",        "2.0");
+define("VER",        "1.0");
 define("APPNAME",    substr($cwd, 0, strrpos($cwd, ".")) );
 define("GTROOT",     dirname(dirname(__FILE__)));
 define("APPROOT",    getcwd());
@@ -146,33 +148,37 @@ foreach($required as $title => $path) {
 		}
 	}
 }
-/*
-// If you don't trust your webserver has been set up correctly, have a look 
-// through the output of this code block:
 
-var_dump($pathInfo);
+if(isset($_GET["DebugBootstrap"])) {
+	// If you don't trust your webserver has been set up correctly, have a look 
+	// through the output of this code block:
 
-echo "<pre>";
+	echo "PathInfo: " . PHP_EOL;
+	var_dump($pathInfo);
 
-echo "CWD: "      . $cwd      . PHP_EOL 
-. "VER: "      . VER       . PHP_EOL
-. "APPNAME: "  . APPNAME   . PHP_EOL
-. "GTROOT: "   . GTROOT    . PHP_EOL
-. "APPROOT: "  . APPROOT   . PHP_EOL
-. "DS: "       . DS        . PHP_EOL 
-. PHP_EOL
-. "DIR: "      . DIR       . PHP_EOL
-. "BASEDIR: "  . BASEDIR   . PHP_EOL
-. "FILE: "     . FILE      . PHP_EOL
-. "EXT: "      . EXT       . PHP_EOL
-. "DIRPATH: "  . DIRPATH   . PHP_EOL
-. "FILEPATH: " . FILEPATH  . PHP_EOL
-. "FILECLASS: ". FILECLASS . PHP_EOL
-. PHP_EOL;
-echo "</pre>";
+	echo "Constants: " . PHP_EOL;
+	echo "<pre>";
+	echo "CWD: "      . $cwd      . PHP_EOL 
+	. "VER: "      . VER       . PHP_EOL
+	. "APPNAME: "  . APPNAME   . PHP_EOL
+	. "GTROOT: "   . GTROOT    . PHP_EOL
+	. "APPROOT: "  . APPROOT   . PHP_EOL
+	. "DS: "       . DS        . PHP_EOL 
+	. PHP_EOL
+	. "DIR: "      . DIR       . PHP_EOL
+	. "BASEDIR: "  . BASEDIR   . PHP_EOL
+	. "FILE: "     . FILE      . PHP_EOL
+	. "EXT: "      . EXT       . PHP_EOL
+	. "DIRPATH: "  . DIRPATH   . PHP_EOL
+	. "FILEPATH: " . FILEPATH  . PHP_EOL
+	. "FILECLASS: ". FILECLASS . PHP_EOL
+	. PHP_EOL;
+	echo "</pre>";
 
-var_dump($_GET);
-exit;
-*/
+	echo "GET: " . PHP_EOL;
+	var_dump($_GET);
+	exit;
+}
+
 $gt = new Gt();
 ?>
