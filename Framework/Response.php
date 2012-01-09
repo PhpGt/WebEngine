@@ -12,7 +12,6 @@ final class Response {
 
 		$this->_pageCode = $request->getPageCode();
 		$this->_pageCodeCommon = $request->getPageCodeCommon();
-
 		ob_start();
 
 		// Buffer current PageView and optional header/footer.
