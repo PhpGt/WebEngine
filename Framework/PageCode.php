@@ -15,8 +15,10 @@ abstract class PageCode {
 	* Where the majority of all calculations are made and logic is executed
 	* for this page. Access to the APIs and manipulation/storage of data should
 	* be done at this stage.
+	* @param Api $api The Api object that is used as a wrapper to the database
+	* access layer, adding functionality and/or data manipulation.
 	*/
-	abstract protected function main($api, $dal);
+	abstract protected function main($api);
 
 	/**
 	* Called before any DOM elements are scraped, so DOM at this stage
