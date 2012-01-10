@@ -107,8 +107,16 @@ $required = array(
 	"Application-specific security config" => 
 	APPROOT . DS . "Config" . DS . "Security.cfg.php",
 
+	"API component" =>
+	GTROOT . DS . "Framework" . DS . "Component" . DS . "Api.cmp.php",
+	"API wrapper componenet" =>
+	GTROOT . DS . "Framework" . DS . "Component" . DS . "ApiWrapper.cmp.php",
+	"API element component" =>
+	GTROOT . DS . "Framework" . DS . "Component" . DS . "ApiEl.cmp.php",
 	"DAL component" =>
 	GTROOT . DS . "Framework" . DS . "Component" . DS . "Dal.cmp.php",
+	"DAL element component" =>
+	GTROOT . DS . "Framework" . DS . "Component" . DS . "DalEl.cmp.php", 
 	"DOM component" =>
 	GTROOT . DS . "Framework" . DS . "Component" . DS . "Dom.cmp.php",
 	"DOM Element component" =>

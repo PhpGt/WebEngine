@@ -4,7 +4,7 @@ final class Request {
 	private $_pageCode = null;
 	private $_pageCodeCommon = null;
 
-	public function __construct($settings) {
+	public function __construct($config) {
 		$contentType = "text/html";
 		if(EXT == "json") { 
 			$contentType = "application/json";
@@ -36,7 +36,7 @@ final class Request {
 		}
 
 		// Check whether whole request is cached.
-		if($settings["App"]->isCached()) {
+		if($config["App"]->isCached()) {
 			// TODO: Cache output.
 		}
 
@@ -44,8 +44,8 @@ final class Request {
 		header("X-Powered-By: PHP.Gt Version " . VER);
 
 		// Check for framework-reserved requests.
-		if(in_array(strtolower(FILE), $settings["App"]->getReserved())
-		|| in_array(strtolower(BASEDIR), $settings["App"]->getReserved() )) {
+		if(in_array(strtolower(FILE), $config["App"]->getReserved())
+		|| in_array(strtolower(BASEDIR), $config["App"]->getReserved() )) {
 
 			// Request is reserved, pass request on to the desired function.
 			$reservedName = BASEDIR == ""

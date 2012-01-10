@@ -4,18 +4,18 @@
 */
 final class Gt {
 	public function __construct() {
-		$settings = array(
+		$config = array(
 			"App"       => new App_Config(),
 			"Database"  => new Database_Config(),
 			"Security"  => new Security_Config()
 		);
 
 		// Compute the request, instantiating the relavent PageCode/Api.
-		$request       = new Request($settings);
+		$request       = new Request($config);
 		$response      = new Response($request);
 
 		// Execute the page lifecycle from the Dispatcher.
-		new Dispatcher($response);
+		new Dispatcher($response, $config);
 	}
 }
 

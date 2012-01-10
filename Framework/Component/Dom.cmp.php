@@ -56,9 +56,9 @@ class Dom implements ArrayAccess {
 	* @return array An array of DomEl objects that have their phpgt attribute
 	* values as the array keys.
 	*/
-	public function scrape() {
+	public function scrape($attribute = "data-phpgt-scrape") {
 		$xpath = new DOMXPath($this->_domDoc);
-		$domNodeList = $xpath->query("//*[@data-phpgt-scrape]");
+		$domNodeList = $xpath->query("//*[@{$attribute}]");
 		
 		$domNodeCollection = new DomElCollection($this, $domNodeList);
 		$domNodeCollection->remove();

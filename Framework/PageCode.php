@@ -12,6 +12,13 @@ abstract class PageCode {
 	abstract protected function onPost($data);
 
 	/**
+	* When an HTTP GET request is made, this function is called before any
+	* others in the PageCode class.
+	* @param array $data The requested data, in an associative array.
+	*/
+	abstract protected function onGet($data);
+
+	/**
 	* Where the majority of all calculations are made and logic is executed
 	* for this page. Access to the APIs and manipulation/storage of data should
 	* be done at this stage.

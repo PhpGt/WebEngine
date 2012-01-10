@@ -5,18 +5,29 @@
 * to this constructor... :S
 */
 final class Dispatcher {
-	public function __construct($response) {
+	public function __construct($response, $config) {
 		$response->dispatch("init");
 
 		if(count($_POST) > 0) {
 			$response->dispatch("onPost", $_POST);
 		}
 
-		// TODO: Implement API and DAL objects.
-		$api = null;
-		$dal = null;
+		$getData = $_GET;
+		if(array_key_exists("url", $getData)) {
+			unset($getData["url"]);
+		}
+		if(array_key_exists("ext", $getData)) {
+			unset($getData["ext"]);
+		}
 
-		$response->dispatch("main", $api, $dal);
+		if(count($getData) > 0) {
+			$response->dispatch("onGet", $getData);
+		}
+
+		$dal = new Dal($config["Database"]->getSettings());
+		$api = new ApiWrapper($dal);
+
+		$response->dispatch("main", $api);
 
 		$dom = new Dom($response->getBuffer());
 		$response->dispatch("preRender", $dom);
