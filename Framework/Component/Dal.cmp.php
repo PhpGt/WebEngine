@@ -1,19 +1,23 @@
 <?php
 class Dal implements ArrayAccess {
-	
+	private $_dbh = null;
 	private $_dalElArray = array();
+	private $_paramChar = null;
 
 	public function __construct($config) {
-		var_dump($config);die();
 		try {
 			$this->_dbh = new PDO(
 				$config["ConnectionString"],
 				$config["Username"],
 				$config["Password"]
 			);
+
+			$this->_paramChar = $config["ParamChar"];
 		}
 		catch (PDOException $e) {
 			// TODO: Proper error handling.
+			// In development mode, show help message to how to create database.
+			// Output SQL to create database and all users.
 			die("ERROR: Connection failed. " . $e->getMessage());
 		}
 	}
@@ -28,7 +32,12 @@ class Dal implements ArrayAccess {
 			return true;
 		}
 
-		$this->_dalElArray[$offset] = new DalElement($this, $offset);
+		$this->_dalElArray[$offset] = new DalElement(
+			$this,
+			$offset,
+			$this->_paramChar
+		);
+		
 		return true;
 	}
 	
@@ -46,6 +55,10 @@ class Dal implements ArrayAccess {
 	}
 
 	public function offsetUnset($offset) {
+	}
+
+	public function prepare($sql, $paramArray) {
+		return $this->_dbh->prepare($sql);
 	}
 }
 ?>
