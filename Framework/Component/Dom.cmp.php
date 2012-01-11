@@ -19,6 +19,68 @@ class Dom implements ArrayAccess {
 		}
 	}
 
+	/**
+	* Checks to see if a given CSS selector exists matches any DOM Elements.
+	* @param string $selector CSS selector to check.
+	* @return bool Whether the CSS selector matches any DOM Elements.
+	*/
+	public function offsetExists($selector) {
+		// TODO: Implement offsetExists.
+		return null;
+	}
+
+	/**
+	* Returns an array of Dom elements (type DomEl) that match the 
+	* provided CSS selector.
+	* @param string $selector CSS selector to match.
+	* @param DOMNode|DomEl $contextNode Optional. The sub-node to query.
+	* @return array An array of matching DomEl objects.
+	*/
+	public function offsetGet($selector, $contextNode = null) {
+		if(!is_null($contextNode)) {
+			if($contextNode instanceof DomEl) {
+				$contextNode = $contextNode->node;
+			}
+		}
+
+		$xQuery = new CssXpath_Utility($selector);
+		$xpath = new DOMXPath($this->_domDoc);
+
+		// Remove double slash if a context is given.
+		if(!is_null($contextNode)) {
+			if(strpos($xQuery, "//") === 0) {
+				$xQuery = substr($xQuery, 2);
+			}
+		}
+
+		$domNodeList = $xpath->query($xQuery, $contextNode);
+
+		return new DomElCollection($this, $domNodeList);
+	}
+
+	/**
+	* Replaces zero or more DOM Elements that match the given CSS selector with
+	* another DOM Element.
+	* @param string $selector CSS selector describing element(s) to replace.
+	* @param DomEl|DomElCollection $value The element to replace with.
+	* @return int The number of elements that were replaced.
+	*/
+	public function offsetSet($selector, $value) {
+		// TODO: Implement offsetSet.
+		return 0;
+	}
+
+	/**
+	* Removes a given CSS selector from the DOM. If more than one element
+	* matches the given selector, all matches will be removed.
+	* @param string $selector CSS selector describing element(s) to remove.
+	* @return int The number of elements that were removed.
+	*/
+	public function offsetUnset($selector) {
+		// TODO: Implement offsetUnset.
+		return 0;
+	}
+
 	public function getDomDoc() {
 		return $this->_domDoc;
 	}
@@ -81,54 +143,6 @@ class Dom implements ArrayAccess {
 	public function update() {
 		ob_clean();
 		echo $this->_domDoc->saveHTML();
-	}
-
-	/**
-	* Returns an array of Dom elements (type DomEl) that match the 
-	* provided CSS selector.
-	* @param string $selector CSS selector to match.
-	* @return array An array of matching DomEl objects.
-	*/
-	public function offsetGet($selector) {
-		$xQuery = new CssXpath_Utility($selector);
-		$xpath = new DOMXPath($this->_domDoc);
-
-		$domNodeList = $xpath->query($xQuery);
-
-		return new DomElCollection($this, $domNodeList);
-	}
-
-	/**
-	* Replaces zero or more DOM Elements that match the given CSS selector with
-	* another DOM Element.
-	* @param string $selector CSS selector describing element(s) to replace.
-	* @param DomEl|DomElCollection $value The element to replace with.
-	* @return int The number of elements that were replaced.
-	*/
-	public function offsetSet($selector, $value) {
-		// TODO: Implement offsetSet.
-		return 0;
-	}
-
-	/**
-	* Checks to see if a given CSS selector exists matches any DOM Elements.
-	* @param string $selector CSS selector to check.
-	* @return bool Whether the CSS selector matches any DOM Elements.
-	*/
-	public function offsetExists($selector) {
-		// TODO: Implement offsetExists.
-		return null;
-	}
-
-	/**
-	* Removes a given CSS selector from the DOM. If more than one element
-	* matches the given selector, all matches will be removed.
-	* @param string $selector CSS selector describing element(s) to remove.
-	* @return int The number of elements that were removed.
-	*/
-	public function offsetUnset($selector) {
-		// TODO: Implement offsetUnset.
-		return 0;
 	}
 }
 ?>

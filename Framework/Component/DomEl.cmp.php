@@ -1,5 +1,5 @@
 <?php
-class DomEl {
+class DomEl implements ArrayAccess {
 	public $node;
 	private $_dom;
 
@@ -22,7 +22,7 @@ class DomEl {
 			// TODO: New feature: Allow passing in CSS selector to create
 			// the element, i.e. create("div.product.selected");
 			$this->node = $this->_dom->getDomDoc()->createElement(
-			$element, $value);
+				$element, $value);
 		}
 
 		if(is_array($attrArray)) {
@@ -30,6 +30,22 @@ class DomEl {
 				$this->node->setAttribute($key, $value);
 			}
 		}
+	}
+
+	public function offsetExists($selector) {
+		
+	}
+
+	public function offsetGet($selector) {
+		return $this->_dom->offsetGet($selector, $this->node);
+	}
+
+	public function offsetSet($selector, $value) {
+		// TODO: Does this need to be implemented?
+	}
+
+	public function offsetUnset($selector) {
+		// TODO: Remove item's children matching the selector.
 	}
 
 	/**
