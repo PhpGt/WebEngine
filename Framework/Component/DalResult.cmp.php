@@ -2,7 +2,7 @@
 /**
  * TODO: Docs.
  */
-final class DalResult implements Traversable, ArrayAccess {
+final class DalResult implements Iterator, ArrayAccess {
 	private $_stmt;
 	private $_insertId;
 	private $_originalSql;
@@ -90,7 +90,6 @@ final class DalResult implements Traversable, ArrayAccess {
 		return $this->_resultArray[$offset];
 	}
 
-	public function offsetSet($offset, $value) {}
 	public function offsetSet($offset, $value) {}
 	public function offsetUnset($offset) {}
 
