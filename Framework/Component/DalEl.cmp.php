@@ -7,6 +7,7 @@ class DalElement {
 	public function __construct($dal, $tableName, $paramChar) {
 		$this->_dal = $dal;
 		$this->_tableName = $tableName;
+		$this->_paramChar = $paramChar;
 	}
 
 	public function __call($name, $args) {
@@ -20,7 +21,7 @@ class DalElement {
 		$sql = null;
 		foreach($pathArray as $path) {
 			if(file_exists($path . $fileName)) {
-				return $this->query($path . $fileName, $args);
+				return $this->query($path . $fileName, $args[0]);
 				break;
 			}
 		}
@@ -36,9 +37,6 @@ class DalElement {
 		}
 		$sql = file_get_contents($sqlFile);
 
-		var_dump($paramArray);
-
-		$stmt = $this->_dal->prepare($sql, $paramArray);
 		foreach ($paramArray as $key => $value) {
 			unset($paramArray[$key]);
 			$key = $this->_paramChar . $key;
@@ -53,19 +51,18 @@ class DalElement {
 			}
 		}
 
-		var_dump($paramArray);
-
-		die("Got here");
-
-		$this->_dal->execute($paramArray);
-		/** 
-		MEGATODO: Execute the prepared statement, do something with the result!
-		Are we going to use PDO objects? I hope so!
-
-		I'm seeing an unintended error: In the Todo part of TestApp, exactly as
-		it stands now, all paramArray keys are being removed. Is there something
-		wrong with the regular expression?
-		**/
+		$stmt = $this->_dal->prepare($sql);
+		if($stmt->execute($paramArray)) {
+			return new DalResult(
+				$stmt,
+				$this->_dal->lastInsertId(), 
+				$sql, 
+				$this->_tableName);
+		}
+		else {
+			// TODO: Proper error handling.
+			die("Error executing SQL!");
+		}
 	}
 }
 ?>

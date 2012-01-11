@@ -117,6 +117,8 @@ $required = array(
 	GTROOT . DS . "Framework" . DS . "Component" . DS . "Dal.cmp.php",
 	"DAL element component" =>
 	GTROOT . DS . "Framework" . DS . "Component" . DS . "DalEl.cmp.php", 
+	"DAL result component" =>
+	GTROOT . DS . "Framework" . DS . "Component" . DS . "DalResult.cmp.php",
 	"DOM component" =>
 	GTROOT . DS . "Framework" . DS . "Component" . DS . "Dom.cmp.php",
 	"DOM Element component" =>

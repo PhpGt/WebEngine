@@ -37,7 +37,7 @@ class Dal implements ArrayAccess {
 			$offset,
 			$this->_paramChar
 		);
-		
+
 		return true;
 	}
 	
@@ -57,7 +57,7 @@ class Dal implements ArrayAccess {
 	public function offsetUnset($offset) {
 	}
 
-	public function prepare($sql, $paramArray) {
+	public function prepare($sql) {
 		return $this->_dbh->prepare($sql);
 	}
 }
