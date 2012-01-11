@@ -86,6 +86,56 @@ class DomEl implements ArrayAccess {
 	}
 
 	/**
+	 * TODO: Docs.
+	 */
+	public function addClass($className) {
+		$stringArray = array();
+
+		if(is_array($className)) {
+			$stringArray = $className;
+		}
+		else {
+			$stringArray = array($className);
+		}
+
+		$currentClass = $this->node->getAttribute("class");
+
+		foreach($stringArray as $string) {
+			$currentClass .= " " . $string;
+		}
+
+		$this->node->setAttribute("class", $currentClass);
+		$this->updateDom();
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function removeClass($className) {
+		$stringArray = array();
+
+		if(is_array($className)) {
+			$stringArray = $className;
+		}
+		else {
+			$stringArray = array($className);
+		}
+
+		$currentClass = $this->node->getAttribute("class");
+
+		foreach($stringArray as $string) {
+			// Remove any occurence of the string, with optional spaces.
+			$currentClass = preg_replace(
+				"/\s?" . $string . "\s?/",
+				"",
+				$currentClass);
+		}
+
+		$this->node->setAttribute("class", $currentClass);
+		$this->updateDom();
+	}
+
+	/**
 	* TODO: Docs.
 	*/
 	public function __call($name, $args = array()) {
