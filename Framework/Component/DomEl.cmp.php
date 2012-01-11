@@ -63,6 +63,13 @@ class DomEl {
 	}
 
 	/**
+	 * TODO: Docs.
+	 */
+	public function cloneNode($deep = true) {
+		return new DomEl($this->_dom, $this->node->cloneNode($deep));
+	}
+
+	/**
 	* TODO: Docs.
 	*/
 	public function __call($name, $args = array()) {

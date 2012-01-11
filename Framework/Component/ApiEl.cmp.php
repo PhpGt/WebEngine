@@ -33,7 +33,7 @@ final class ApiElement {
 		$paramArray = array($this->_dal);
 		$paramArray = array_merge($paramArray, $args);
 
-		call_user_func_array(
+		return call_user_func_array(
 			array($this->_apiObject, $name),
 			$paramArray
 		);

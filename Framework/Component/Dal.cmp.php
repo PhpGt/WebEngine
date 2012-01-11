@@ -57,6 +57,10 @@ class Dal implements ArrayAccess {
 	public function offsetUnset($offset) {
 	}
 
+	public function lastInsertId() {
+		return $this->_dbh->lastInsertId();
+	}
+
 	public function prepare($sql) {
 		return $this->_dbh->prepare($sql);
 	}

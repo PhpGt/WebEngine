@@ -27,6 +27,7 @@ class DalElement {
 		}
 
 		// TODO: Throw proper error.
+		die("Error: No SQL found for $this->_tableName called $name.");
 		return false;
 	}
 
