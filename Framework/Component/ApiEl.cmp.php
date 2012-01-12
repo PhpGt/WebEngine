@@ -1,8 +1,14 @@
 <?php
+/**
+ * TODO: Docs.
+ */
 final class ApiElement {
 	private $_apiObject = null;
 	private $_dal = null;
 
+	/**
+	 * TODO: Docs.
+	 */
 	public function __construct($name, $dal) {
 		$className = $name . "_Api";
 		
@@ -24,6 +30,9 @@ final class ApiElement {
 		$this->_dal = $dal;
 	}
 
+	/**
+	 * TODO: Docs.
+	 */
 	public function __call($name, $args) {
 		if(!method_exists($this->_apiObject, $name)) {
 			// TODO: Throw error when method doesn't exist.

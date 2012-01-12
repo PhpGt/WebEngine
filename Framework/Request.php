@@ -19,8 +19,9 @@ final class Request {
 			// Look for requested API. Note that API requests have to always
 			// be in the root directory i.e. /Blog.json, and can never be nested
 			// i.e. /Blog/2010/01/Blog.json
-			$className = ucfirst(FILE) . "_Api";
-			$fileName = ucfirst(FILE) . ".api.php";
+			$apiName   = ucfirst(FILE);
+			$className = $apiName . "_Api";
+			$fileName  = $apiName . ".api.php";
 			$apiPathArray = array(
 				APPROOT . DS . "Api" . DS,
 				GTROOT  . DS . "Api" . DS
@@ -48,6 +49,7 @@ final class Request {
 				$methodName = $data["Method"];
 				unset($data["Method"]);
 				$this->api->setMethodName($methodName);
+				$this->api->setApiName($apiName);
 
 				$paramArray = array();
 				foreach ($data as $key => $value) {
@@ -55,7 +57,8 @@ final class Request {
 				}
 				$this->api->setMethodParams($paramArray);
 
-				if(!method_exists($this->api, lcfirst($methodName)) ) {
+				if(!method_exists($this->api, lcfirst($methodName)) &&
+				!in_array(ucfirst($methodName), $this->api->externalMethods)) {
 					$this->api->setError("API method does not exist.");
 					return;
 				}

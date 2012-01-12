@@ -3,10 +3,11 @@
  * Api is a dependency injector for each module of the application.
  */
 class Api {
-	private $_errorMessage = null;
-	private $_methodName = null;
-	private $_methodParams = null;
-	private $_result = null;
+	private $_errorMessage 	= null;
+	private $_apiName 		= null;
+	private $_methodName 	= null;
+	private $_methodParams 	= null;
+	private $_result 		= null;
 
 	/**
 	 * Called by the dispatcher when a JSON request is made to an API. This
@@ -16,25 +17,14 @@ class Api {
 	 * @return bool True on success, false on failure.
 	 */
 	public function apiCall($dal) {
+		// Check to see if there is a defined method of this API's method name.
 		if(method_exists($this, $this->_methodName)) {
 			$params = array_merge(
 				array($dal),
 				array($this->_methodParams)
 			);
 
-			/**
-				MEGATODO:
-				Remove the need for individual Api objects???
-				All they seem to do at the moment is map the parameters to
-				the parameters to get executed by the DAL.
-
-				Is there any more need for this, i.e. where special on-the-fly
-				data needs to be injected?
-
-				Things such as the current time can be done in actual SQL rather
-				than passed via PHP.
-			 */
-			// TODO: Where is this result coming from?
+			// The DalResult object comes from the DalElement's query function.
 			$dalResult = call_user_func_array(
 				array($this, $this->_methodName),
 				$params
@@ -47,13 +37,43 @@ class Api {
 
 			return true;
 		}
+		// If there is no defined method, execute the SQL and pass in the
+		// parameters directly.
+		// Only allow json calls to execute SQL if the script's name is
+		// contained within the externalMethods array (if not json, allow
+		// anyway).
+
+		
+		//header("Content-Type: text/html; charset=utf-8");
+
+
+		if(in_array(ucfirst($this->_methodName), $this->externalMethods)
+		|| strtolower(EXT) !== "json") {
+			$apiObject = $dal[$this->_apiName];
+
+			//var_dump($this->_methodParams);die();
+			
+			$dalResult = call_user_func_array(
+				array($apiObject, $this->_methodName),
+				$this->_methodParams
+			);
+
+			$this->_result = array();
+			foreach ($dalResult as $key => $value) {
+				$this->_result[$key] = $value;
+			}
+
+			return true;
+		}
 		return false;
 	}
 
 	public function apiOutput() {
 		$json = new StdClass();
 
-		$json->error = $this->_errorMessage;
+		if(!empty($this->_errorMessage)) {
+			$json->error = $this->_errorMessage;
+		}
 		$json->method = new StdClass();
 		$json->method->name = $this->_methodName;
 		$json->method->params = $this->_methodParams;
@@ -77,6 +97,10 @@ class Api {
 
 	public function setError($message) {
 		$this->_errorMessage = $message;
+	}
+
+	public function setApiName($name) {
+		$this->_apiName = $name;
 	}
 
 	public function setMethodName($name) {
