@@ -1,17 +1,69 @@
 <?php
 final class Request {
-	private $_api = null;
-	private $_pageCode = null;
-	private $_pageCodeCommon = null;
+	public $api = null;
+	public $pageCode = null;
+	public $pageCodeCommon = null;
+	public $contentType;
 
 	public function __construct($config) {
-		$contentType = "text/html";
+		$this->contentType = "text/html";
+		session_start();
+
 		if(EXT == "json") { 
-			$contentType = "application/json";
-			// TODO: Output json from requested API, or fail if invalid request.
-			$test = new StdClass();
-			$test->output = "TODO: API Creation, computation.";
-			echo json_encode($test);
+			$this->contentType = "application/json";
+			
+			// Output json from requested API, or fail if invalid request.
+			$errorObject = new StdClass();
+			$errorObject->error = "API module not found.";
+
+			// Look for requested API. Note that API requests have to always
+			// be in the root directory i.e. /Blog.json, and can never be nested
+			// i.e. /Blog/2010/01/Blog.json
+			$className = ucfirst(FILE) . "_Api";
+			$fileName = ucfirst(FILE) . ".api.php";
+			$apiPathArray = array(
+				APPROOT . DS . "Api" . DS,
+				GTROOT  . DS . "Api" . DS
+			);
+			foreach ($apiPathArray as $path) {
+				if(file_exists($path . $fileName)) {
+					require_once($path . $fileName);
+					break;
+				}
+			}
+			if(class_exists($className)) {
+				$this->api = new $className();
+				$data = $_GET;
+				if(isset($data["url"])) {
+					unset($data["url"]);
+				}
+				if(isset($data["ext"])) {
+					unset($data["ext"]);
+				}
+				if(!isset($data["Method"])) {
+					$this->api->setError("API method not specified.");
+					return;
+				}
+
+				$methodName = $data["Method"];
+				unset($data["Method"]);
+				$this->api->setMethodName($methodName);
+
+				$paramArray = array();
+				foreach ($data as $key => $value) {
+					$paramArray[$key] = $value;
+				}
+				$this->api->setMethodParams($paramArray);
+
+				if(!method_exists($this->api, lcfirst($methodName)) ) {
+					$this->api->setError("API method does not exist.");
+					return;
+				}
+			}
+			else {
+				$this->api = $errorObject;
+				return;
+			}
 		}
 		else {
 			// Look for PageCode that's relative to the requested path.
@@ -20,7 +72,7 @@ final class Request {
 			if(file_exists($pageCodeFile)) {
 				require($pageCodeFile);
 				if(class_exists($pageCodeClass)) {
-					$this->_pageCode = new $pageCodeClass();
+					$this->pageCode = new $pageCodeClass();
 				}
 			}
 
@@ -32,7 +84,7 @@ final class Request {
 			if(file_exists($pageCodeComFile)) {
 				require($pageCodeComFile);
 				if(class_exists($pageCodeComClass)) {
-					$this->_pageCodeCommon = new $pageCodeComClass();
+					$this->pageCodeCommon = new $pageCodeComClass();
 				}
 			}
 		}
@@ -41,9 +93,6 @@ final class Request {
 		if($config["App"]->isCached()) {
 			// TODO: Cache output.
 		}
-
-		header("Content-Type: $contentType; charset=utf-8");
-		header("X-Powered-By: PHP.Gt Version " . VER);
 
 		// Check for framework-reserved requests.
 		if(in_array(strtolower(FILE), $config["App"]->getReserved())
@@ -65,15 +114,8 @@ final class Request {
 			}
 			die("Reserved");
 		}
-		session_start();
-	}
 
-	public function getPageCode() {
-		return $this->_pageCode;
-	}
-
-	public function getPageCodeCommon() {
-		return $this->_pageCodeCommon;
+		return;
 	}
 }
 ?>

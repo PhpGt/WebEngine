@@ -8,6 +8,15 @@ final class Dispatcher {
 	public function __construct($response, $config) {
 		$response->dispatch("init");
 
+		$dal = new Dal($config["Database"]->getSettings());
+		if($response->dispatch("apiCall", $dal)) {
+			// Quit early if request is api call.
+			$response->dispatch("apiOutput");
+			return;
+		}
+
+		$apiWrapper = new ApiWrapper($dal);
+
 		if(count($_POST) > 0) {
 			$response->dispatch("onPost", $_POST);
 		}
@@ -24,10 +33,7 @@ final class Dispatcher {
 			$response->dispatch("onGet", $getData);
 		}
 
-		$dal = new Dal($config["Database"]->getSettings());
-		$api = new ApiWrapper($dal);
-
-		$response->dispatch("main", $api);
+		$response->dispatch("main", $apiWrapper);
 
 		$dom = new Dom($response->getBuffer());
 		$response->dispatch("preRender", $dom);

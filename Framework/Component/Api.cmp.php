@@ -3,6 +3,88 @@
  * Api is a dependency injector for each module of the application.
  */
 class Api {
-	
+	private $_errorMessage = null;
+	private $_methodName = null;
+	private $_methodParams = null;
+	private $_result = null;
+
+	/**
+	 * Called by the dispatcher when a JSON request is made to an API. This
+	 * function calls the API's correct method and passes in the given DAL and
+	 * the stored method parameters.
+	 * @param Dal $dal The current response DAL.
+	 * @return bool True on success, false on failure.
+	 */
+	public function apiCall($dal) {
+		if(method_exists($this, $this->_methodName)) {
+			$params = array_merge(
+				array($dal),
+				array($this->_methodParams)
+			);
+
+			/**
+				MEGATODO:
+				Remove the need for individual Api objects???
+				All they seem to do at the moment is map the parameters to
+				the parameters to get executed by the DAL.
+
+				Is there any more need for this, i.e. where special on-the-fly
+				data needs to be injected?
+
+				Things such as the current time can be done in actual SQL rather
+				than passed via PHP.
+			 */
+			// TODO: Where is this result coming from?
+			$dalResult = call_user_func_array(
+				array($this, $this->_methodName),
+				$params
+			);
+
+			$this->_result = array();
+			foreach($dalResult as $key => $value) {
+				$this->_result[$key] = $value;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	public function apiOutput() {
+		$json = new StdClass();
+
+		$json->error = $this->_errorMessage;
+		$json->method = new StdClass();
+		$json->method->name = $this->_methodName;
+		$json->method->params = $this->_methodParams;
+		$json->result = $this->_result;
+
+		echo json_encode($json);
+	}
+
+	/**
+	 * Executes the API's given method name with the given parameters, and
+	 * saves the resulting object.
+	 * @return bool True on success, false on failure.
+	 */
+	public function execute() {
+		$this->_result = call_user_func_array(
+			array($this, $this->_methodName),
+			$this->_methodParams);
+		
+		return !is_null($this->_result);
+	}
+
+	public function setError($message) {
+		$this->_errorMessage = $message;
+	}
+
+	public function setMethodName($name) {
+		$this->_methodName = $name;
+	}
+
+	public function setMethodParams($array) {
+		$this->_methodParams = $array;
+	}
 }
 ?>

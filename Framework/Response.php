@@ -1,18 +1,26 @@
 <?php
 final class Response {
 	private $_buffer = "";
+	private $_api = null;
 	private $_pageCode = null;
 	private $_pageCodeCommon = null;
 
 	public function __construct($request) {
+		header("Content-Type: {$request->contentType}; charset=utf-8");
+		header("X-Powered-By: PHP.Gt Version " . VER);
+
 		if(EXT === "json") {
-			// TODO: Output requested API content.
-			die();
+			$this->_api = $request->api;
+			return;
+
+			// Move this code to be dispatched.
+			$request->api->execute();
+			echo $request->api->outputJson();
 			exit;
 		}
 
-		$this->_pageCode = $request->getPageCode();
-		$this->_pageCodeCommon = $request->getPageCodeCommon();
+		$this->_pageCode = $request->pageCode;
+		$this->_pageCodeCommon = $request->pageCodeCommon;
 		ob_start();
 
 		// Buffer current PageView and optional header/footer.
@@ -26,6 +34,8 @@ final class Response {
 		$this->bufferPageView("Footer");
 
 		$this->storeBuffer();
+
+		return;
 	}
 
 	/**
@@ -44,6 +54,9 @@ final class Response {
 		if(!is_null($this->_pageCodeCommon)) {
 			$dispatchArray[] = $this->_pageCodeCommon;
 		}
+		if(!is_null($this->_api)) {
+			$dispatchArray[] = $this->_api;
+		}
 
 		$args = func_get_args();
 		array_shift($args);
@@ -51,7 +64,10 @@ final class Response {
 		// Call method, if it exists, on each existant PageCode.
 		foreach($dispatchArray as $dispatchTo) {
 			if(method_exists($dispatchTo, $name)) {
-					call_user_func_array(array($dispatchTo, $name),	$args);
+					return call_user_func_array(
+						array($dispatchTo, $name),
+						$args
+					);
 			}
 		}
 	}
