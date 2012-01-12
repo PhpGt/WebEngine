@@ -6,7 +6,8 @@ final class Response {
 
 	public function __construct($request) {
 		if(EXT === "json") {
-			die("Output requested API content.");
+			// TODO: Output requested API content.
+			die();
 			exit;
 		}
 

@@ -7,7 +7,7 @@ class Injector {
 		$this->injectStyleSheets($dom);
 		// TODO: Second param indicates whether to compile - add ability to
 		// change to false for debugging purposes.
-		$this->injectJavaScript($dom, true);
+		$this->injectJavaScript($dom, false);
 	}
 
 	/**
@@ -115,8 +115,6 @@ class Injector {
 		}
 		$scriptCacheInvalid = false;
 
-		//var_dump($scriptCompileFileModified);die();
-
 		// Compile them into a single string.
 		foreach($scriptArray as $script) {
 			$filePath = $script->getAttribute("src");
@@ -165,7 +163,10 @@ class Injector {
 		if($scriptCacheInvalid) {
 			if($compile) {
 				$compiler = new JavaScriptCompiler_Utility($scriptString);
-				$scriptString = $compiler->output();
+				$compiledString = trim($compiler->output());
+				if(!empty($compiledString) ) {
+					$scriptString = $compiledString;
+				}
 			}
 			file_put_contents($scriptCompileFile, $scriptString);
 		}

@@ -9,7 +9,9 @@ final class Request {
 		if(EXT == "json") { 
 			$contentType = "application/json";
 			// TODO: Output json from requested API, or fail if invalid request.
-			echo("TODO: API Creation, computation.");
+			$test = new StdClass();
+			$test->output = "TODO: API Creation, computation.";
+			echo json_encode($test);
 		}
 		else {
 			// Look for PageCode that's relative to the requested path.
