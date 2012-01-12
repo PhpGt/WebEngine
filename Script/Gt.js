@@ -17,7 +17,7 @@
 	var GT = function() { 
 		if(typeof arguments[0] === "function") {
 			// Execute it on DomContentLoaded event.
-			return GT.ready(arguments[0]);
+			return GT.ready(arguments[0], arguments[1]);
 		}
 		if(typeof arguments[0] === "string") {
 			// Return matching DomNodes from CSS selector.
@@ -27,8 +27,16 @@
 	
 	/**
 	 * TODO: Docs.
+	 * [Will only trigger callback when no page is given, or current url
+	 * matches given page]
 	 */
-	GT.ready = function(callback) {
+	GT.ready = function(callback, page) {
+		var pathname = window.location.pathname;
+		if(page) {
+			if(page !== pathname) {
+				return;
+			}
+		}
 		// Attack the event listener in real browsers.
 		if(document.addEventListener) {
 			document.addEventListener("DOMContentLoaded", function() {
@@ -153,10 +161,12 @@
 				if(/POST/i.test(ajaxObj.method)) {
 					ajaxObj.headers["Content-type"] =
 						"application/x-www-form-urlencoded";
+					/*
 					ajaxObj.headers["Content-length"] =
 						ajaxObj.params 
 							? ajaxObj.params.length
 							: 0;
+					*/
 				}
 
 				ajaxObj.headers["X-Requested-With"] =
@@ -166,7 +176,9 @@
 
 				for(header in ajaxObj.headers) {
 					if(ajaxObj.headers.hasOwnProperty(header)) {
-						xhr.setRequestHeader(header, ajaxObj.headers[header]);
+						xhr.setRequestHeader(
+							header,
+							ajaxObj.headers[header]);
 					}
 				}
 
