@@ -13,11 +13,6 @@ final class Response {
 		if(EXT === "json") {
 			$this->_api = $request->api;
 			return;
-
-			// Move this code to be dispatched.
-			$request->api->execute();
-			echo $request->api->outputJson();
-			exit;
 		}
 
 		$this->_pageCode = $request->pageCode;

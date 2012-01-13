@@ -6,14 +6,14 @@ abstract class PageCode {
 
 	/**
 	* When an HTTP POST request is made, this function is called before any
-	* others in the PageCode class.
+	* others in the PageCode class. POSTed data can be manipulated here.
 	* @param array $data The posted data, in an associative array.
 	*/
 	abstract protected function onPost($data);
 
 	/**
 	* When an HTTP GET request is made, this function is called before any
-	* others in the PageCode class.
+	* others in the PageCode class. GET data can be manipulated here.
 	* @param array $data The requested data, in an associative array.
 	*/
 	abstract protected function onGet($data);

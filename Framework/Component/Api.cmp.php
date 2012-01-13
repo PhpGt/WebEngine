@@ -8,6 +8,7 @@ class Api {
 	private $_methodName 	= null;
 	private $_methodParams 	= null;
 	private $_result 		= null;
+	private $_dalResult		= null;
 
 	/**
 	 * Called by the dispatcher when a JSON request is made to an API. This
@@ -25,39 +26,35 @@ class Api {
 			);
 
 			// The DalResult object comes from the DalElement's query function.
-			$dalResult = call_user_func_array(
+			$this->_dalResult = call_user_func_array(
 				array($this, $this->_methodName),
 				$params
 			);
 
 			$this->_result = array();
-			foreach($dalResult as $key => $value) {
+			foreach($this->_dalResult as $key => $value) {
 				$this->_result[$key] = $value;
 			}
 
 			return true;
 		}
+
 		// If there is no defined method, execute the SQL and pass in the
 		// parameters directly.
 		// Only allow json calls to execute SQL if the script's name is
 		// contained within the externalMethods array (if not json, allow
 		// anyway).
-
-		
-		//header("Content-Type: text/html; charset=utf-8");
-
-
 		if(in_array(ucfirst($this->_methodName), $this->externalMethods)
 		|| strtolower(EXT) !== "json") {
 			$apiObject = $dal[$this->_apiName];
 			
-			$dalResult = call_user_func_array(
+			$this->_dalResult = call_user_func_array(
 				array($apiObject, $this->_methodName),
 				array($this->_methodParams)
 			);
 
 			$this->_result = array();
-			foreach ($dalResult as $key => $value) {
+			foreach ($this->_dalResult as $key => $value) {
 				$this->_result[$key] = $value;
 			}
 
@@ -91,6 +88,10 @@ class Api {
 			$this->_methodParams);
 		
 		return !is_null($this->_result);
+	}
+
+	public function getDalResult() {
+		return $this->_dalResult;
 	}
 
 	public function setError($message) {

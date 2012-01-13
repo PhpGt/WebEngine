@@ -3,6 +3,7 @@
  * TODO: Docs.
  */
 final class ApiElement {
+	private $_apiName;
 	private $_apiObject = null;
 	private $_dal = null;
 
@@ -10,6 +11,7 @@ final class ApiElement {
 	 * TODO: Docs.
 	 */
 	public function __construct($name, $dal) {
+		$this->_apiName = $name;
 		$className = $name . "_Api";
 		
 		$apiFileArray = array(
@@ -33,19 +35,17 @@ final class ApiElement {
 	/**
 	 * TODO: Docs.
 	 */
-	public function __call($name, $args) {
-		if(!method_exists($this->_apiObject, $name)) {
-			// TODO: Throw error when method doesn't exist.
-			return false;
+	public function __call($methodName, $params) {
+		$this->_apiObject->setApiName($this->_apiName);
+		$this->_apiObject->setMethodName($methodName);
+		$this->_apiObject->setMethodParams($params);
+		
+		if(call_user_func_array(
+			array($this->_apiObject, "apiCall"),
+			array($this->_dal)
+		)) {
+			return $this->_apiObject->getDalResult();
 		}
-
-		$paramArray = array($this->_dal);
-		$paramArray = array_merge($paramArray, $args);
-
-		return call_user_func_array(
-			array($this->_apiObject, $name),
-			$paramArray
-		);
 	}
 }
 ?>
