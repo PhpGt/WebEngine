@@ -46,10 +46,10 @@ class Api {
 		// anyway).
 		if(in_array(ucfirst($this->_methodName), $this->externalMethods)
 		|| strtolower(EXT) !== "json") {
-			$apiObject = $dal[$this->_apiName];
+			$dalElement = $dal[$this->_apiName];
 			
 			$this->_dalResult = call_user_func_array(
-				array($apiObject, $this->_methodName),
+				array($dalElement, $this->_methodName),
 				array($this->_methodParams)
 			);
 
@@ -57,6 +57,9 @@ class Api {
 			foreach ($this->_dalResult as $key => $value) {
 				$this->_result[$key] = $value;
 			}
+
+			$this->_affectedRows = $this->_dalResult->affectedRows;
+			$this->_lastInsertId = $this->_dalResult->lastInsertId;
 
 			return true;
 		}
@@ -73,6 +76,8 @@ class Api {
 		$json->method->name = $this->_methodName;
 		$json->method->params = $this->_methodParams;
 		$json->result = $this->_result;
+		$json->affectedRows = $this->_affectedRows;
+		$json->lastInsertId = $this->_lastInsertId;
 
 		echo json_encode($json);
 	}

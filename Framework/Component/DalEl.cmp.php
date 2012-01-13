@@ -11,7 +11,12 @@ class DalElement {
 	}
 
 	public function __call($name, $args) {
-		$args = $args[0];
+		while(isset($args[0])) {
+			if(!is_array($args[0])) {
+				break;
+			}
+			$args = $args[0];
+		}
 		// Find the appropriate SQL file, perform SQL using $this->_dal;
 		$pathArray = array(
 			APPROOT . DS . "Database" . DS . $this->_tableName . DS,

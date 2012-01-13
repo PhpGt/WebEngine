@@ -11,6 +11,9 @@
  */
 
 (function() {
+	var _$ = window.$ || null,
+		_$$ = window.$$ || null;
+	
 	/**
 	 * TODO: Docs.
 	 */
@@ -23,6 +26,10 @@
 			// Return matching DomNodes from CSS selector.
 			return GT.querySelector(arguments[0], arguments[1]);
 		}
+		// Must be an element reference - attempt to pass it to the $ function.
+		if(_$) {
+			return _$(arguments[0]);
+		}
 	};
 
 	GT.scrapeNodes = [];
@@ -33,12 +40,20 @@
 	 * matches given page]
 	 */
 	GT.ready = function(callback, page) {
-		var pathname = window.location.pathname;
+		var dollar, doubleDollar,
+			pathname = window.location.pathname;
+		
 		if(page) {
 			if(page !== pathname) {
 				return;
 			}
 		}
+
+		// Pass what was stored in the dollar and double dollar signs before 
+		// harmonization into the callback function.
+		dollar = _$;
+		doubleDollar = _$$;
+
 		// Attack the event listener in real browsers.
 		if(document.addEventListener) {
 			document.addEventListener("DOMContentLoaded", function() {
@@ -47,7 +62,7 @@
 					arguments.callee,
 					false
 				);
-				return callback();
+				return callback(dollar, doubleDollar);
 			}, false);
 		}
 		// Hack the event listener in IE.
@@ -58,12 +73,12 @@
 						"onreadystatechange",
 						arguments.callee
 					);
-					return callback();
+					return callback(dollar, doubleDollar);
 				}
 			});
 
 			if(document.documentElement.doScroll && window == window.top) {
-				(function(c_callback) {
+				(function(c_callback, c_dollar, c_doubleDollar) {
 					try {
 						document.documentElement.doScroll("left");
 					}
@@ -72,8 +87,8 @@
 						return;
 					}
 
-					c_callback();
-				})(callback);
+					c_callback(c_dollar, c_doubleDollar);
+				})(callback, dollar, doubleDollar);
 			}
 		}
 	};
@@ -241,12 +256,35 @@
 	}();
 
 	/**
-	 * Ensures all imported JavaScript libraries can co-exist with eachother.
+	 * Ensures all imported JavaScript libraries can co-exist with eachother by
+	 * replacing global dollar sign usage to what it was before DOMAssistant
+	 * loaded.
 	 */
 	GT.harmonize = function() {
 		// Avoid global namespace collision of $ and $$ from other libraries.
 		if(window.DOMAssistant) { 
 			window.DOMAssistant.harmonize();
+		}
+	};
+
+	GT.unharmonize = function() {
+		if(window.DOMAssistant) {
+			window.$ = window.DOMAssistant.$;
+			window.$$ = window.DOMAssistant.$$;
+		}
+	}
+
+	/**
+	 * Toggles the harmonization of DOMAssistant.
+	 */
+	GT.$ = function() {
+		if(window.DOMAssistant && window.$) {
+			if(window.$ === window.DOMAssistant.$) {
+				GT.harmonize();
+			}
+			else {
+				GT.unharmonize();
+			}
 		}
 	};
 
@@ -268,6 +306,24 @@
 			}
 		}
 		scrapeDiv.parentNode.removeChild(scrapeDiv);
+	};
+
+	/**
+	 * TODO: Docs.
+	 */
+	GT.getScrape= function(scrapeName){
+		var i, scrapeNodesCount, el, clone;
+
+		scrapeNodesCount = GT.scrapeNodes.length;
+		for(i = 0; i < scrapeNodesCount; i++) {
+			el = GT.scrapeNodes[i];
+			if(el.getAttribute("data-phpgt-scrape") === scrapeName) {
+				clone = el.cloneNode(true);
+				clone.removeAttribute("data-phpgt-scrape");
+				return clone;
+			}
+		}
+		return false;
 	};
 
 	GT.harmonize();
