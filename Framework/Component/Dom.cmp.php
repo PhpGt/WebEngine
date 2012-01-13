@@ -130,8 +130,28 @@ class Dom implements ArrayAccess {
 			$domNodeArray[$item->getAttribute($attribute)] = 
 				new DomEl($this, $item);
 		}
-		
+
 		$domNodeCollection = new DomElCollection($this, $domNodeArray);
+
+		// Remove the collection from the DOM (wherever it may be) and place it
+		// into a DIV with id of PHPGt_Scraped_Elements for picking up in Gt.js.		
+		$body = $this->_domDoc->getElementsByTagName("body");
+		if($body->length > 0) {
+			$body = new DomEl($this, $body->item(0));
+
+			$scrapeDiv = new DomEl(
+				$this,
+				"div",
+				array("id" => "PHPGt_Scraped_Elements")
+			);
+			$scrapeDiv->append($domNodeCollection->cloneNodes());
+			$body->append($scrapeDiv);
+		}
+		
+		$domNodeCollection->map(function(&$element, $key, $c_attribute) {
+			$element->removeAttribute($c_attribute);
+		}, $attribute);
+
 		$domNodeCollection->remove();
 		return $domNodeCollection;
 	}

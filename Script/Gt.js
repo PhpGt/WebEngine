@@ -11,6 +11,8 @@
  */
 
 (function() {
+	var _scrapeAttribute = "data-phpgt-scrape",
+		_scrapeNodes;
 	/**
 	 * TODO: Docs.
 	 */
@@ -193,7 +195,14 @@
 							// JSON files.
 							if(ajaxObj.url.match(/\.json(\?.*)?/i)) {
 								if(window.JSON) {
-									response = window.JSON.parse(response);
+									try {
+										response = window.JSON.parse(response);
+									}
+									catch(e) {
+										console.log(
+											"Json request, non-json response.");
+										console.log(ajaxObj);
+									}
 								}
 							}
 
@@ -241,8 +250,45 @@
 		}
 	};
 
+	/**
+	 * Returns a DomNodeList of all elements that have the scrape attribute,
+	 * and removes them from the DOM. Attempts to do this using DOMAssistant if
+	 * available (for speed), or falls back to a simple loop system.
+	 * Note that looping over many elements is slow without DOMAssistant.
+	 */
+	GT.scrape = function() {
+		var i, testElement, allElements, allElementLength, el,
+			selector = "[" + _scrapeAttribute + "]";
+
+		if(window.DOMAssistant) {
+			_scrapeNodes = window.DomAssistant.$(selector);
+		}
+		else if(document.querySelector) {
+			// Test that query selector matches attributes.
+			testElement = document.createElement("section");
+			testElement.setAttribute("data-test", "testValue");
+			document.body.appendChild(testElement);
+			if(document.querySelector("[data-test]")) {
+				_scrapeNodes = document.querySelectorAll("selector");
+			}
+			else {
+				allElements = document.getElementsByTagName("*");
+				allElementLength = allEl.length;
+				for(i = 0; i < allElementLength; i++ ) {
+					el = allElements[i];
+					if(el.getAttribute("data-test")) {
+						_scrapeNodes.push(el);
+						el.parentElement.removeChild(el);
+					}
+				}
+			}
+			document.body.removeChild(testElement);
+		}
+	};
+
 	GT.harmonize();
 	GT.ready(GT.harmonize);
+	GT.ready(GT.scrape);
 
 	window.GT = GT;
 }());

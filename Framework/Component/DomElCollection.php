@@ -107,6 +107,28 @@ class DomElCollection implements Iterator, ArrayAccess {
 
 	/**
 	 * TODO: Docs.
+	 * Arbitary number of params to send into scope of callback.
+	 */
+	public function map($callback, $callbackArg = null) {
+		array_walk($this->_elArray, $callback, $callbackArg);
+	}
+
+	/**
+	 * Cloning a DomElCollection returns a brand new instance with clones of the
+	 * DomEl objects.
+	 * TODO: Docs.
+	 */
+	public function cloneNodes($deep = true) {
+		$elArray = array();
+		foreach($this->_elArray as $el) {
+			$elArray[] = $el->cloneNode($deep);
+		}
+
+		return new DomElCollection($this->_dom, $elArray);
+	}
+
+	/**
+	 * TODO: Docs.
 	 */
 	public function offsetGet($index) {
 		return $this->_elArray[$index];
