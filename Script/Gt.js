@@ -11,8 +11,6 @@
  */
 
 (function() {
-	var _scrapeAttribute = "data-phpgt-scrape",
-		_scrapeNodes;
 	/**
 	 * TODO: Docs.
 	 */
@@ -26,6 +24,8 @@
 			return GT.querySelector(arguments[0], arguments[1]);
 		}
 	};
+
+	GT.scrapeNodes = [];
 	
 	/**
 	 * TODO: Docs.
@@ -257,33 +257,17 @@
 	 * Note that looping over many elements is slow without DOMAssistant.
 	 */
 	GT.scrape = function() {
-		var i, testElement, allElements, allElementLength, el,
-			selector = "[" + _scrapeAttribute + "]";
+		var scrapeDiv = document.getElementById("PHPGt_Scraped_Elements"),
+			scrapeDivNodeCount,
+			i;
 
-		if(window.DOMAssistant) {
-			_scrapeNodes = window.DomAssistant.$(selector);
-		}
-		else if(document.querySelector) {
-			// Test that query selector matches attributes.
-			testElement = document.createElement("section");
-			testElement.setAttribute("data-test", "testValue");
-			document.body.appendChild(testElement);
-			if(document.querySelector("[data-test]")) {
-				_scrapeNodes = document.querySelectorAll("selector");
+		if(scrapeDiv) {
+			scrapeDivNodeCount = scrapeDiv.children.length;
+			for(i = 0; i < scrapeDivNodeCount; i++) {
+				GT.scrapeNodes.push(scrapeDiv.children[i]);
 			}
-			else {
-				allElements = document.getElementsByTagName("*");
-				allElementLength = allEl.length;
-				for(i = 0; i < allElementLength; i++ ) {
-					el = allElements[i];
-					if(el.getAttribute("data-test")) {
-						_scrapeNodes.push(el);
-						el.parentElement.removeChild(el);
-					}
-				}
-			}
-			document.body.removeChild(testElement);
 		}
+		scrapeDiv.parentNode.removeChild(scrapeDiv);
 	};
 
 	GT.harmonize();

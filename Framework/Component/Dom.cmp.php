@@ -142,7 +142,10 @@ class Dom implements ArrayAccess {
 			$scrapeDiv = new DomEl(
 				$this,
 				"div",
-				array("id" => "PHPGt_Scraped_Elements")
+				array(
+					"id"	=> "PHPGt_Scraped_Elements",
+					"style"	=> "display: none;"
+				)
 			);
 			$scrapeDiv->append($domNodeCollection->cloneNodes());
 			$body->append($scrapeDiv);
