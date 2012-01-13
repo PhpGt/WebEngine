@@ -11,11 +11,7 @@ class DalElement {
 	}
 
 	public function __call($name, $args) {
-		if(!empty($args[0])) {
-			if(is_array($args[0])) {
-				$args = $args[0];
-			}
-		}
+		$args = $args[0];
 		// Find the appropriate SQL file, perform SQL using $this->_dal;
 		$pathArray = array(
 			APPROOT . DS . "Database" . DS . $this->_tableName . DS,
@@ -36,16 +32,7 @@ class DalElement {
 		return false;
 	}
 
-	private function query($sqlFile, $paramArray = array()) {
-		/**
-		MEGATODO:
-		Fix this bug!!!
-		Since the API has been changed to allow JSON calls and the method
-		declarations have been made non-necessary, the paramArray is indexed
-		rather than associative... FIX IT!
-		*/
-		var_dump($paramArray);die();
-		
+	private function query($sqlFile, $paramArray = array()) {		
 		if(!is_array($paramArray)) {
 			// TODO: Throw proper error.
 			die("Error: Type of query params is not an array");

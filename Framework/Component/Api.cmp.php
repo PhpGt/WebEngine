@@ -50,12 +50,10 @@ class Api {
 		if(in_array(ucfirst($this->_methodName), $this->externalMethods)
 		|| strtolower(EXT) !== "json") {
 			$apiObject = $dal[$this->_apiName];
-
-			//var_dump($this->_methodParams);die();
 			
 			$dalResult = call_user_func_array(
 				array($apiObject, $this->_methodName),
-				$this->_methodParams
+				array($this->_methodParams)
 			);
 
 			$this->_result = array();
