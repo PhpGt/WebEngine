@@ -158,14 +158,5 @@ class Dom implements ArrayAccess {
 		$domNodeCollection->remove();
 		return $domNodeCollection;
 	}
-
-	/**
-	* Cleans the output buffer and refills it with the updated HTML when
-	* changes have been made to the DOM structure.
-	*/
-	public function update() {
-		ob_clean();
-		echo $this->_domDoc->saveHTML();
-	}
 }
 ?>

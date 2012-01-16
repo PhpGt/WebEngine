@@ -105,7 +105,6 @@ class DomEl implements ArrayAccess {
 		}
 
 		$this->node->setAttribute("class", $currentClass);
-		$this->updateDom();
 	}
 
 	/**
@@ -132,7 +131,6 @@ class DomEl implements ArrayAccess {
 		}
 
 		$this->node->setAttribute("class", $currentClass);
-		$this->updateDom();
 	}
 
 	/**
@@ -184,15 +182,6 @@ class DomEl implements ArrayAccess {
 			$this->node->setAttribute($key, $value);
 			break;
 		}
-
-		$this->updateDom();
-	}
-
-	/**
-	* TODO: Docs.
-	*/
-	private function updateDom() {
-		$this->_dom->update();
 	}
 }
 ?>

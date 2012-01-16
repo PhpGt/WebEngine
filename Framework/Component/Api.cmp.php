@@ -77,7 +77,9 @@ class Api {
 		$json->method->params = $this->_methodParams;
 		$json->result = $this->_result;
 		$json->affectedRows = $this->_affectedRows;
-		$json->lastInsertId = $this->_lastInsertId;
+		$json->lastInsertId = $this->_lastInsertId != 0
+			? $this->_lastInsertId
+			: null;
 
 		echo json_encode($json);
 	}
