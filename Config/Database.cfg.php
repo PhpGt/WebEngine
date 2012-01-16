@@ -14,7 +14,7 @@ class Database_Config_Framework {
 			: "Gt_" . APPNAME;
 		$this->_user = isset($this->_user)
 			? $this->_user
-			: "Gt_" . APPNAME . "_User";
+			: "Gt_" . APPNAME;
 		$this->_pass = isset($this->_pass)
 			? $this->_pass
 			: "Gt_" . APPNAME . "_Pass";
