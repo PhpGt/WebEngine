@@ -57,6 +57,24 @@ class DomEl implements ArrayAccess {
 		if(is_array($toAppend) || $toAppend instanceof DomElCollection) {
 			$elementArray = $toAppend;
 		}
+		else if(is_string($toAppend)) {
+			$attrArray = null;
+			$value = null;
+			$args = func_get_args();
+			if(isset($args[1])) {
+				$attrArray = $args[1];
+			}
+			if(isset($args[2])) {
+				$value = $args[2];
+			}
+
+			$elementArray[] = new DomEl(
+				$this->_dom,
+				$toAppend,
+				$attrArray,
+				$value
+			);
+		}
 		else {
 			$elementArray[] = $toAppend;
 		}

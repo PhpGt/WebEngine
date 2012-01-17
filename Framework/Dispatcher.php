@@ -23,6 +23,18 @@ final class Dispatcher {
 
 		$getData = $_GET;
 		if(array_key_exists("url", $getData)) {
+			// On root URLs, the query string may be used as the "url" key.
+			if(strstr($getData["url"], "?")) {
+				$keyValuePair = substr($getData["url"],
+					strpos($getData["url"], "?") + 1);
+				if(is_string($keyValuePair)) {
+					$getData[$keyValuePair] = "";
+				}
+				else {
+					$keyValuePair = explode("=", $keyValuePair);
+					$getData[$keyValuePair[0]] = $keyValuePair[1];
+				}
+			}
 			unset($getData["url"]);
 		}
 		if(array_key_exists("ext", $getData)) {

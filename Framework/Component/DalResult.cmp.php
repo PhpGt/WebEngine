@@ -47,6 +47,8 @@ final class DalResult implements Iterator, ArrayAccess {
 			return $this->_insertId;
 			break;
 		case "hasRows":
+		case "hasResult":
+		case "hasResults":
 			return !empty($this->result);
 			break;
 		case "length":
@@ -59,6 +61,7 @@ final class DalResult implements Iterator, ArrayAccess {
 		}
 	}
 
+	// Iterator ----------------------------------------------------------------
 	public function current() {
 		return $this->result[$this->_position];
 	}
@@ -79,24 +82,45 @@ final class DalResult implements Iterator, ArrayAccess {
 	public function valid() {
 		return isset($this->result[$this->_position]);
 	}
+	// End: Iterator -----------------------------------------------------------
 
+	// ArrayAccess -------------------------------------------------------------
 	public function offsetExists($offset) {
 		$this->storeResult(true);
+
+		if(!is_numeric($offset)) {
+			// Looking for the first result's column.
+			if(isset($this->result[0])) {
+				return array_key_exists($offset, $this->result[0]);
+			}
+		}
+				
 		return array_key_exists($offset, $this->result);
 	}
 
 	public function offsetGet($offset) {
 		$this->storeResult(true);
+		
+		if(!is_numeric($offset)) {
+			if(isset($this->result[0])) {
+				return $this->result[0][$offset];
+			}
+		}
+
 		return $this->result[$offset];
 	}
 
 	public function offsetSet($offset, $value) {}
 	public function offsetUnset($offset) {}
+	// End: ArrayAccess --------------------------------------------------------
 
 	private function storeResult($all = false) {
 		if($all) {
-			if(false !== ($result = $this->_stmt->fetchAll(PDO::FETCH_ASSOC))) {
-				$this->result = $result;
+			if(empty($this->result)) {
+				if(false !== (
+				$result = $this->_stmt->fetchAll(PDO::FETCH_ASSOC)) ) {
+					$this->result = $result;
+				}
 			}
 		}
 		else {

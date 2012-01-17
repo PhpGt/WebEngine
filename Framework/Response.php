@@ -57,15 +57,20 @@ final class Response {
 		$args = func_get_args();
 		array_shift($args);
 
+		//var_dump($dispatchArray, $name, $args);die();
+
+		$result = null;
 		// Call method, if it exists, on each existant PageCode.
 		foreach($dispatchArray as $dispatchTo) {
 			if(method_exists($dispatchTo, $name)) {
-					return call_user_func_array(
+					$result = call_user_func_array(
 						array($dispatchTo, $name),
 						$args
 					);
 			}
 		}
+
+		return $result;
 	}
 
 	public function getBuffer() {
