@@ -1,0 +1,96 @@
+input:not([type="submit"]),
+input:not([type="checkbox"]),
+input:not([type="radio"]) {
+	display: inline-block;
+	padding: 8px;
+	padding-bottom: 7px;
+	border: 1px solid rgba(0,0,0,0.5);
+	border-radius: 2px;
+	line-height: 14px;
+	font-size: 14px;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+	opacity: 0.6;
+	-webkit-transition: opacity 0.2s ease-in-out;
+}
+input:not([type="submit"]):hover,
+input:not([type="checkbox"]):hover,
+input:not([type="radio"]):hover {
+	opacity: 1;
+}
+input:not([type="submit"]):focus,
+input:not([type="checkbox"]):focus,
+input:not([type="radio"]):focus {
+	opacity: 1;
+	box-shadow: 0px 0px 5px rgba(77,144,254,1);
+}
+
+select {
+	display: inline-block;
+	padding: 7px;
+	padding-bottom: 6px;
+	border: 1px solid rgba(0,0,0,0.5);
+	border-radius: 2px;
+	line-height: 14px;
+	font-size: 14px;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+	background: #fff;
+	color: #aaa;
+	opacity: 0.6;
+	-webkit-transition: all 0.2s ease-in-out;
+}
+select:hover {
+	opacity: 1;
+	color: #aaa;
+}
+select:focus,
+select:active {
+	opacity: 1;
+	box-shadow: 0px 0px 5px rgba(77,144,254,1);
+}
+
+a.button,
+button {
+	display: inline-block;
+	width: auto;
+	overflow: hidden;
+	color: #000;
+	background: #d5d5d5;
+	border: 1px solid rgba(0,0,0,0.2);
+	border-radius: 2px;
+	padding: 8px 16px;
+	margin: 0;
+	font-size: 14px;
+	line-height: 14px;
+	text-align: center;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+	opacity: 0.85;
+	-webkit-transition: opacity 0.2s ease-in-out;
+}
+a.button:hover,
+button:hover {
+	opacity: 1;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.2),
+		inset 0px -2px 5px rgba(0,0,0,0.15),
+		inset 0px 2px 5px rgba(255,255,255,0.2);
+}
+a.button:active,
+button:active {
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.2),
+		inset 0px 2px 15px rgba(0,0,0,0.35),
+		inset 0px -2px 5px rgba(255,255,255,0.2);
+}
+a.button:focus,
+button:focus {
+	opacity: 1;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.2),
+		0px 0px 5px rgba(77,144,254,1)
+}
+
+.positive {
+	background-color: #4d90fe !important;
+	color: #fff !important;
+}
+.negative {
+	background-color: #d14836 !important;
+	color: #fff !important;
+}
