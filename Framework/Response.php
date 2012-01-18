@@ -73,6 +73,50 @@ final class Response {
 		return $result;
 	}
 
+	/**
+	 * TODO: Docs.
+	 * Looks for <include> tags, puts them in place in the DOM.
+	 */
+	public function includeDom($dom) {
+		$success = 0;
+		$includes = $dom->getElementsByTagName("include");
+		if($includes->length == 0) {
+			return false;
+		}
+
+		$includesLength = $includes->length;
+		for($i = 0; $i < $includesLength; $i++) {
+			$inc = $includes->item(0);
+			$frag = null;
+
+			if($inc->hasAttribute("href")) {
+				$href = $inc->getAttribute("href");
+
+				$fileArray = array(
+					APPROOT . DS . "PageView" . DS . DIR . DS . $href,
+					APPROOT . DS . "PageView" . DS . BASEDIR . DS . $href
+				);
+				foreach($fileArray as $file) {
+					if(file_exists($file)) {
+						$html = file_get_contents($file);
+						$frag = $dom->createDocumentFragment();
+						$frag->appendXML($html);
+						break;
+					}
+				}
+			}
+
+			if(is_null($frag)) {
+				continue;
+			}
+
+			$inc->parentNode->replaceChild($frag, $inc);
+			$success ++;
+		}
+
+		return $success;
+	}
+
 	public function getBuffer() {
 		return $this->_buffer;
 	}

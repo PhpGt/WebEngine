@@ -50,6 +50,7 @@ final class Dispatcher {
 		$response->dispatch("main", $apiWrapper);
 
 		$dom = new Dom($response->getBuffer());
+		$response->includeDom($dom);
 		$response->dispatch("preRender", $dom);
 
 		$organiser = new FileOrganiser();

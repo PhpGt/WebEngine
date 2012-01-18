@@ -20,6 +20,17 @@ class Dom implements ArrayAccess {
 	}
 
 	/**
+	 * TODO: Docs.
+	 */
+	public function __call($name, $args) {
+		if(method_exists($this->_domDoc, $name)) {
+			return call_user_func_array(
+				array($this->_domDoc, $name),
+				$args);
+		}
+	} 
+
+	/**
 	* Checks to see if a given CSS selector exists matches any DOM Elements.
 	* @param string $selector CSS selector to check.
 	* @return bool Whether the CSS selector matches any DOM Elements.
