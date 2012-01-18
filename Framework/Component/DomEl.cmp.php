@@ -264,8 +264,12 @@ class DomEl implements ArrayAccess {
 						$option->setAttribute("selected", "selected");
 					}
 				}
+				break;
 			}
-			if($tag == "textarea") {
+
+			$nodeValueTags = array("h1", "h2", "h3", "h4", "h5", "h6",
+				"p", "span", "a", "label", "textarea", "pre");
+			if(in_array($tag, $nodeValueTags)) {
 				$this->node->nodeValue = $value;
 				break;
 			}
