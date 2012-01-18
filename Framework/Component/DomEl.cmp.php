@@ -225,12 +225,15 @@ class DomEl implements ArrayAccess {
 			break;
 		default: 
 			if(property_exists($this->node, $key)) {
-			// Attempt to never pass a native DOMElement without converting to
-			// DomEl wrapper class.
-			if($this->node->$key instanceof DOMELement) {
-			return $this->_dom->create($this->node->$key);
+				// Attempt to never pass a native DOMElement without converting
+				// to DomEl wrapper class.
+				if($this->node->$key instanceof DOMELement) {
+					return $this->_dom->create($this->node->$key);
+				}
+				return $this->node->$key;
 			}
-			return $this->node->$key;
+			else if($this->node->hasAttribute($key)) {
+				return $this->node->getAttribute($key);
 			}
 			break;
 		}
