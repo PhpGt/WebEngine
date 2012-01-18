@@ -18,7 +18,7 @@ final class Dispatcher {
 		$apiWrapper = new ApiWrapper($dal);
 
 		if(count($_POST) > 0) {
-			$response->dispatch("onPost", $_POST);
+			$response->dispatch("onPost");
 		}
 
 		$getData = $_GET;
@@ -41,8 +41,10 @@ final class Dispatcher {
 			unset($getData["ext"]);
 		}
 
+		$_GET = $getData;
+
 		if(count($getData) > 0) {
-			$response->dispatch("onGet", $getData);
+			$response->dispatch("onGet");
 		}
 
 		$response->dispatch("main", $apiWrapper);

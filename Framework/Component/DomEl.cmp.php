@@ -90,6 +90,56 @@ class DomEl implements ArrayAccess {
 	}
 
 	/**
+	 * Appends multiple elements to this element, taking values from the
+	 * array passed in. This element will have however many indeces are in the
+	 * array appended elements.
+	 * @param mixed $array The array of data to compute, or an enumerable 
+	 * object.
+	 * @param mixed $element The element to create and append for each item in
+	 * the array.
+	 * @param array $attrArray A key-value-pair of attribute names and array 
+	 * keys. Each key will be created as an attribute on the new element,
+	 * the attribute's value will be the value stored in $array's index that
+	 * matches the value of the $attrArray key.
+	 * @param string $textKey The index of each $array element to use as the
+	 * node to append's text value.
+	 */
+	public function appendArray($data, $element,
+	$attrArray = array(), $textKey = null) {
+		$elementToCreate = null;
+
+		if($element instanceof DOMNode) {
+			$elementToCreate = new DomEl(
+				$this->_dom, 
+				$element->cloneNode(true));
+		}
+		else if($element instanceof DOMEl) {
+			$elementToCreate = $element->cloneNode();
+		}
+		else if(is_string($element)) {
+			$elementToCreate = new DomEl($this->_dom, $element);
+		}
+
+		foreach ($data as $item) {
+			$clonedElement = $elementToCreate->cloneNode();
+
+			foreach ($attrArray as $key => $value) {
+				if(isset($item[$value])) {
+					$clonedElement->setAttribute($key, $item[$value]);
+				}
+			}
+
+			if(!is_null($textKey)) {
+				if(isset($item[$textKey])) {
+					$clonedElement->innerText = $item[$textKey];
+				}
+			}
+
+			$this->append($clonedElement);
+		}
+	}
+
+	/**
 	* TODO: Docs.
 	*/
 	public function remove() {
