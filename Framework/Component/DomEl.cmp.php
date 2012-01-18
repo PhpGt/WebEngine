@@ -249,8 +249,29 @@ class DomEl implements ArrayAccess {
 		case "innerText":
 			$this->node->nodeValue = $value;
 			break;
-		default:
+		case "value":
+			// TODO: Document this heavily - major feature.
+			// Allows to set the 'value' of a <select> or <textarea>, and it 
+			// will automatically select the correct <option> or output the
+			// correct innerText.
+			$tag = strtolower($this->node->tagName);
+			if($tag == "select") {
+				$optionList = $this->node->getElementsByTagName("option");
+				$optionListLength = $optionList->length;
+				for($i = 0; $i < $optionListLength; $i++) {
+					$option = $optionList->item($i);
+					if($option->getAttribute("value") == $value) {
+						$option->setAttribute("selected", "selected");
+					}
+				}
+			}
+			if($tag == "textarea") {
+				$this->node->nodeValue = $value;
+				break;
+			}
 			$this->node->setAttribute($key, $value);
+			break;
+		default:
 			break;
 		}
 	}
