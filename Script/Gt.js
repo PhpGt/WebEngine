@@ -44,7 +44,12 @@
 			pathname = window.location.pathname;
 		
 		if(page) {
-			if(page !== pathname) {
+			if(page instanceof RegExp) {
+				if(!page.test(pathname)) {
+					return;
+				}
+			}
+			else if(page !== pathname) {
 				return;
 			}
 		}
