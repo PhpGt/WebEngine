@@ -56,7 +56,7 @@ final class DalResult implements Iterator, ArrayAccess {
 			return count($this->result);
 		default:
 			// TODO: Throw proper error.
-			die("Error: Invalud key requested from DalResult $tableName.");
+			die("Error: Invalid key requested from DalResult $tableName.");
 			break;
 		}
 	}
