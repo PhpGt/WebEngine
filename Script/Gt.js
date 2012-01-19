@@ -312,8 +312,8 @@
 			for(i = 0; i < templateDivNodeCount; i++) {
 				GT.templates.push(templateDiv.children[i]);
 			}
+			templateDiv.parentNode.removeChild(templateDiv);
 		}
-		templateDiv.parentNode.removeChild(templateDiv);
 	};
 
 	/**
