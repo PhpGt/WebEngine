@@ -26,10 +26,10 @@ abstract class PageCode {
 	abstract protected function main($api);
 
 	/**
-	* Called before any DOM elements are scraped, so DOM at this stage
+	* Called before any DOM elements are templated, so DOM at this stage
 	* represents the original HTML perfectly. Any API usage should have been
 	* done in main(), where preRender() and render() can access the result from
-	* $this->_data.
+	* $this->_data. ??? TODO: Confirm this functionality.
 	* @param Dom $dom The Dom object inherits from PHP's DOMDocument, giving it
 	* added functionality. Manipulations are updated before being sent to the
 	* browser.
@@ -44,7 +44,7 @@ abstract class PageCode {
 	* @param Dom $dom The Dom object inherits from PHP's DOMDocument, giving it
 	* added functionality. Manipulations are updated before being sent to the
 	* browser.
-	* @param array $domElements An associative array of DomElements, which have
+	* @param array $templates An associative array of DomElements, which have
 	* already been scraped from the DOM. To allow for structuring dynamic 
 	* content within the HTML, any nodes with data-phpgt attributes will be
 	* collected for manipulation, and the values of the data-phpgt attributes
@@ -52,6 +52,6 @@ abstract class PageCode {
 	* @param Injector $injector Object that holds the "injected" items such as
 	* compiled <script> and <link> elements.
 	*/
-	abstract protected function render($dom, $domElements, $injector);
+	abstract protected function render($dom, $templates, $injector);
 }
 ?>

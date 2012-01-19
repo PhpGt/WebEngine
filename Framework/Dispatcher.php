@@ -56,9 +56,8 @@ final class Dispatcher {
 		$organiser = new FileOrganiser();
 		$injector  = new Injector($dom);
 
-		// TODO: Obtain extracted elements, pass to response.
-		$domElements = $dom->scrape();
-		$response->dispatch("render", $dom, $domElements, $injector);
+		$templates = $dom->template();
+		$response->dispatch("render", $dom, $templates, $injector);
 
 		$dom->flush();
 	}

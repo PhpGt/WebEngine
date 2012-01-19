@@ -124,12 +124,12 @@ class Dom implements ArrayAccess {
 	}
 
 	/**
-	* Searches the DOM for elements with the phpgt attribute. All elements get
-	* removed from the DOM and stored in an associative array.
-	* @return array An array of DomEl objects that have their phpgt attribute
+	* Searches the DOM for elements with the template attribute. All elements
+	* get removed from the DOM and stored in an associative array.
+	* @return array An array of DomEl objects that have their template attribute
 	* values as the array keys.
 	*/
-	public function scrape($attribute = "data-phpgt-scrape") {
+	public function template($attribute = "data-template") {
 		$xpath = new DOMXPath($this->_domDoc);
 		$domNodeList = $xpath->query("//*[@{$attribute}]");
 		$domNodeListLength = $domNodeList->length;
@@ -145,21 +145,22 @@ class Dom implements ArrayAccess {
 		$domNodeCollection = new DomElCollection($this, $domNodeArray);
 
 		// Remove the collection from the DOM (wherever it may be) and place it
-		// into a DIV with id of PHPGt_Scraped_Elements for picking up in Gt.js.		
+		// into a DIV with id of PHPGt_Template_Elements for picking up in
+		// Gt.js.
 		$body = $this->_domDoc->getElementsByTagName("body");
 		if($body->length > 0) {
 			$body = new DomEl($this, $body->item(0));
 
-			$scrapeDiv = new DomEl(
+			$templateDiv = new DomEl(
 				$this,
 				"div",
 				array(
-					"id"	=> "PHPGt_Scraped_Elements",
+					"id"	=> "PHPGt_Template_Elements",
 					"style"	=> "display: none;"
 				)
 			);
-			$scrapeDiv->append($domNodeCollection->cloneNodes());
-			$body->append($scrapeDiv);
+			$templateDiv->append($domNodeCollection->cloneNodes());
+			$body->append($templateDiv);
 		}
 		
 		$domNodeCollection->map(function(&$element, $key, $c_attribute) {

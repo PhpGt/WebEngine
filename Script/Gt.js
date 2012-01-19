@@ -35,7 +35,7 @@
 		}
 	};
 
-	GT.scrapeNodes = [];
+	GT.templates = [];
 	
 	/**
 	 * TODO: Docs.
@@ -297,37 +297,41 @@
 	};
 
 	/**
-	 * Returns a DomNodeList of all elements that have the scrape attribute,
+	 * Returns a DomNodeList of all elements that have the template attribute,
 	 * and removes them from the DOM. Attempts to do this using DOMAssistant if
 	 * available (for speed), or falls back to a simple loop system.
 	 * Note that looping over many elements is slow without DOMAssistant.
 	 */
-	GT.scrape = function() {
-		var scrapeDiv = document.getElementById("PHPGt_Scraped_Elements"),
-			scrapeDivNodeCount,
+	GT.template = function() {
+		var templateDiv = document.getElementById("PHPGt_Template_Elements"),
+			templateDivNodeCount,
 			i;
 
-		if(scrapeDiv) {
-			scrapeDivNodeCount = scrapeDiv.children.length;
-			for(i = 0; i < scrapeDivNodeCount; i++) {
-				GT.scrapeNodes.push(scrapeDiv.children[i]);
+		if(templateDiv) {
+			templateDivNodeCount = templateDiv.children.length;
+			for(i = 0; i < templateDivNodeCount; i++) {
+				GT.templates.push(templateDiv.children[i]);
 			}
 		}
-		scrapeDiv.parentNode.removeChild(scrapeDiv);
+		templateDiv.parentNode.removeChild(templateDiv);
 	};
 
 	/**
 	 * TODO: Docs.
 	 */
-	GT.getScrape= function(scrapeName){
-		var i, scrapeNodesCount, el, clone;
+	GT.getTemplate = function(name, templateAttribute){
+		var i, templateNodesCount, el, clone;
 
-		scrapeNodesCount = GT.scrapeNodes.length;
-		for(i = 0; i < scrapeNodesCount; i++) {
-			el = GT.scrapeNodes[i];
-			if(el.getAttribute("data-phpgt-scrape") === scrapeName) {
+		if(!templateAttribute) {
+			templateAttribute = "data-template";
+		}
+
+		templateNodesCount = GT.templates.length;
+		for(i = 0; i < templateNodesCount; i++) {
+			el = GT.templates[i];
+			if(el.getAttribute(templateAttribute) === name) {
 				clone = el.cloneNode(true);
-				clone.removeAttribute("data-phpgt-scrape");
+				clone.removeAttribute(templateAttribute);
 				if(window.DOMAssistant) {
 					return GT(clone);
 				}
@@ -339,7 +343,7 @@
 
 	GT.harmonize();
 	GT.ready(GT.harmonize);
-	GT.ready(GT.scrape);
+	GT.ready(GT.template);
 
 	window.GT = GT;
 }());
