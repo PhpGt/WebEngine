@@ -276,6 +276,9 @@ class DomEl implements ArrayAccess {
 			$this->node->setAttribute($key, $value);
 			break;
 		default:
+			if($this->node->hasAttribute($key)) {
+				$this->node->setAttribute($key, $value);
+			}
 			break;
 		}
 	}
