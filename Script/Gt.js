@@ -30,6 +30,9 @@
 		if(_$) {
 			return _$(arguments[0]);
 		}
+		else {
+			return arguments[0];
+		}
 	};
 
 	GT.scrapeNodes = [];
@@ -325,6 +328,9 @@
 			if(el.getAttribute("data-phpgt-scrape") === scrapeName) {
 				clone = el.cloneNode(true);
 				clone.removeAttribute("data-phpgt-scrape");
+				if(window.DOMAssistant) {
+					return GT(clone);
+				}
 				return clone;
 			}
 		}
