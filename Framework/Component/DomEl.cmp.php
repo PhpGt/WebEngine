@@ -189,6 +189,76 @@ class DomEl implements ArrayAccess {
 	/**
 	 * TODO: Docs.
 	 */
+	public function insertBefore($toInsert) {
+		return $this->insert($toInsert, "before");
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function insertAfter($toInsert) {
+		return $this->insert($toInsert, "after");
+	}
+
+	/**
+	 * TODO: Docs.
+	 * TODO: Test case - this is an advanced function and has not yet been fully
+	 * tested. insertBefore seems to work in BbCrm.
+	 */
+	private function insert($toInsert, $direction) {
+		$elementArray = array();
+
+		if(is_array($toInsert) || $toInsert instanceof DomElCollection) {
+			$elementArray = $toInsert;
+		}
+		else if(is_string($toInsert)) {
+			$attrArray = null;
+			$value = null;
+			$args = func_get_args();
+			if(isset($args[1])) {
+				$attrArray = $args[1];
+			}
+			if(isset($args[2])) {
+				$value = $args[2];
+			}
+
+			$elementArray[] = new DomEl(
+				$this->_dom,
+				$toInsert,
+				$attrArray,
+				$value
+			);
+		}
+		else {
+			$elementArray[] = $toInsert;
+		}
+
+		foreach($elementArray as $element) {
+			$elNode = $element;
+			if($element instanceof DomEl) {
+				$elNode = $element->node;
+			}
+
+			if(strtolower($direction) == "before") {
+				$inserted = $this->node->parentNode->insertBefore(
+					$elNode, $this->node);
+			}
+			else {
+				$nextSibling = $this->node->nextSibling;
+				if(is_null($nextSibling)) {
+					$this->node->parentNode->appendChild($elNode);
+				}
+				else {
+					$this->node->parentNode->insertBefore(
+						$elNode, $nextSibling);
+				}
+			}
+		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
 	public function cloneNode($deep = true) {
 		return new DomEl($this->_dom, $this->node->cloneNode($deep));
 	}
