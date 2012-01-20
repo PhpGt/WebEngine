@@ -113,7 +113,7 @@ class DomEl implements ArrayAccess {
 				$this->_dom, 
 				$element->cloneNode(true));
 		}
-		else if($element instanceof DOMEl) {
+		else if($element instanceof DomEl) {
 			$elementToCreate = $element->cloneNode();
 		}
 		else if(is_string($element)) {
@@ -144,6 +144,46 @@ class DomEl implements ArrayAccess {
 	*/
 	public function remove() {
 		$this->node->parentNode->removeChild($this->node);
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function replace($replaceWith) {
+		$element = null;
+
+		if(is_array($replaceWith) || $replaceWith instanceof DomElCollection) {
+			// Can only replace one node with another - take 1st node of array.
+			$element = $replaceWith[0];
+		}
+		else if(is_string($replaceWith)) {
+			$attrArray = null;
+			$value = null;
+			$args = func_get_args();
+			if(isset($args[1])) {
+				$attrArray = $args[1];
+			}
+			if(isset($args[2])) {
+				$value = $args[2];
+			}
+
+			$element = new DomEl(
+				$this->_dom,
+				$replaceWith,
+				$attrArray,
+				$value
+			);
+		}
+		else {
+			$element = $replaceWith;
+		}
+	
+		$elNode = $element;
+		if($element instanceof DomEl) {
+			$elNode = $element->node;
+		}
+
+		return $this->node->parentNode->replaceChild($elNode, $this->node);		
 	}
 
 	/**
@@ -268,7 +308,7 @@ class DomEl implements ArrayAccess {
 			}
 
 			$nodeValueTags = array("h1", "h2", "h3", "h4", "h5", "h6",
-				"p", "span", "a", "label", "textarea", "pre");
+				"p", "span", "a", "label", "textarea", "pre", "time");
 			if(in_array($tag, $nodeValueTags)) {
 				$this->node->nodeValue = $value;
 				break;
