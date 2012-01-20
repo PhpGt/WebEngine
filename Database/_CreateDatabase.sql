@@ -1,1 +1,1 @@
-create database :DbName collate 'utf8_general_ci'
+create database :DbName collate 'utf8_general_ci';
