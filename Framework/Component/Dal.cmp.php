@@ -91,5 +91,18 @@ class Dal implements ArrayAccess {
 	public function prepare($sql) {
 		return $this->_dbh->prepare($sql);
 	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function fixError($errorName, $data) {
+		switch($errorName) {
+		case "NOTABLE":
+			// TODO: Attempt to find creation script for given table.
+			break;
+		default:
+			break;
+		}
+	}
 }
 ?>

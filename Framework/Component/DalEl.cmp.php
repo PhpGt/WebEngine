@@ -67,7 +67,26 @@ class DalElement {
 				$this->_tableName);
 		}
 		else {
+			// Grab the statment's error message.
+			$errorInfo = $stmt->errorInfo();
+			$error = $errorInfo[2];
+			$patternArray = array(
+				"NOTABLE" => "/^Table '(.*)' doesn't exist/"
+			);
+
+			// Find known error messages.
+			foreach ($patternArray as $patternName => $pattern) {
+				$matchArray = array();
+				if(preg_match($pattern, $error, &$matchArray) > 0) {
+					// Dispatch known error to DAL to attempt fix.
+					$this->_dal->fixError($patternName, $matchArray);
+				}
+			}
+
+			// FixError should replace Location header on success.
+			// At this point, there is no fix, an SQL error is output.
 			// TODO: Proper error handling.
+			var_dump($errorInfo);
 			die("Error executing SQL!");
 		}
 	}
