@@ -102,20 +102,23 @@ class Dal implements ArrayAccess {
 		}
 		else if($input instanceof PDOStatement) {
 			$message = $input->errorInfo();
+			$message = $message[2];
 		}
 		// Grab the statment's error message.
 		$patternArray = array(
-			"NO_TABLE" => "/^Table '(.*)' doesn't exist/",
+			"NO_TABLE" => "/Table '(.*)' doesn't exist/",
+			"NO_USER" => "/Access denied for user '(.*)'@/",
 			"NO_DB" => "/Unknown database '(.*)'/"
 		);
 
-		$data = array();
+		$data = array("Type" => null, "Match" => null);
+		$match = array();
 		// Find known error messages.
 		foreach ($patternArray as $patternName => $pattern) {
-			if(preg_match($pattern, $message, &$data) > 0) {
+			if(preg_match($pattern, $message, &$match) > 0) {
 				$data = array(
 					"Type" => $patternName,
-					"Match" => $data
+					"Match" => $match
 				);
 			}
 		}
@@ -125,35 +128,64 @@ class Dal implements ArrayAccess {
 			// Attempt to find creation script for given table.
 			$tableName = substr($data["Match"][1],
 				strrpos($data["Match"][1], ".") + 1);
+			if(strstr($tableName, "_")) {
+				$tableName = substr($tableName, 0, strpos($tableName, "_"));
+			}
 			$sqlPathArray = array(
 				APPROOT . DS . "Database" . DS . ucfirst($tableName),
 				GTROOT  . DS . "Database" . DS . ucfirst($tableName)
 			);
 
+			$reAttemptSql = array();
 			foreach($sqlPathArray as $sqlPath) {
 				// Look for underscore prefixed files.
 				if(!is_dir($sqlPath)) {
 					continue;
 				}
-				$dh = opendir($sqlPath);
-				while(false !== $file = readdir($dh)) {
+				$fileArray = scandir($sqlPath);
+				foreach ($fileArray as $file) {
 					if($file[0] !== "_") {
 						continue;
 					}
 
-					echo "Executing $file." . PHP_EOL;
+					echo "<p>";
+					echo "Deploying $file.";
 					$sql = file_get_contents($sqlPath . DS . $file);
 					$result = $this->_dbh->query($sql);
 
 					if($result === false) {
-						// TODO: Throw proper error.
-						die("Error in auto-deployment stage.");
+						// An error occurred. This is most likely because an
+						// App-specific insert script has run before a shared
+						// creation script... add the sql to the reAttemptSql
+						// array, try later.
+						$reAttemptSql[] = $sql;
+						echo " - Unsuccessful, trying again later.";
 					}
+					else {
+						echo " - SUCCESS!";
+					}
+					echo "</p>";
 				}
-				closedir($dh);
 			}
+			foreach($reAttemptSql as $sql) {
+				$result = $this->_dbh->query($sql);
+				echo "<p>";
+				echo "Deploying $file.";
+				if($result === false) {
+					// TODO: Throw proper error.
+					echo "Auto-deployment failed.";
+					exit;
+				}
+				else {
+					echo " - SUCCESS!";
+				}
+			}
+			echo "<p>Automatic deployment successful! "
+				. "<a href='" . $_SERVER["REQUEST_URI"] . "'>Continue</a></p>";
+			exit;
 			break;
 		case "NO_DB":
+		case "NO_USER":
 			$dbName = $data["Match"][1];
 			$sqlPath = GTROOT . DS . "Framework";
 			if(!is_dir($sqlPath)) {
@@ -165,7 +197,7 @@ class Dal implements ArrayAccess {
 				: null;
 			
 			if(is_null($rootPass)) {
-				header("Location: /Gt?DbDeploy=" . $_SERVER["REQUEST_URI"]);
+				header("Location: /Gt.html?DbDeploy=" . $_SERVER["REQUEST_URI"]);
 				exit;
 			}
 

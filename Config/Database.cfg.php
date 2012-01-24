@@ -26,6 +26,9 @@ class Database_Config_Framework {
 				$this->_driver 
 				. ":dbname=" . $this->_name 
 				. ";host=" . $this->_host,
+			"ConnectionString_Root" =>
+				$this->_driver
+				. ":host=" . $this->_host,
 			"Username"	=> $this->_user,
 			"Password"	=> $this->_pass,
 			"ParamChar"	=> $this->_paramChar,
