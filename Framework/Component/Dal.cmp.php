@@ -24,7 +24,7 @@ class Dal implements ArrayAccess {
 			// TODO: Proper error handling.
 			// In development mode, show help message to how to create database.
 			// Output SQL to create database and all users.
-			die("ERROR: Connection failed. " . $e->getMessage());
+			$this->fixError($e, $config);
 		}
 	}
 
@@ -88,21 +88,103 @@ class Dal implements ArrayAccess {
 	/**
 	 * TODO: Docs.
 	 */
-	public function prepare($sql) {
+	public function prepare($sql, $config = null) {
 		return $this->_dbh->prepare($sql);
 	}
 
 	/**
 	 * TODO: Docs.
 	 */
-	public function fixError($errorName, $data) {
-		switch($errorName) {
-		case "NOTABLE":
-			// TODO: Attempt to find creation script for given table.
+	public function fixError($input) {
+		$message = "";
+		if($input instanceof PDOException) {
+			$message = $input->getMessage();
+		}
+		else if($input instanceof PDOStatement) {
+			$message = $input->errorInfo();
+		}
+		// Grab the statment's error message.
+		$patternArray = array(
+			"NO_TABLE" => "/^Table '(.*)' doesn't exist/",
+			"NO_DB" => "/Unknown database '(.*)'/"
+		);
+
+		$data = array();
+		// Find known error messages.
+		foreach ($patternArray as $patternName => $pattern) {
+			if(preg_match($pattern, $message, &$data) > 0) {
+				$data = array(
+					"Type" => $patternName,
+					"Match" => $data
+				);
+			}
+		}
+		
+		switch($data["Type"]) {
+		case "NO_TABLE":
+			// Attempt to find creation script for given table.
+			$tableName = substr($data["Match"][1],
+				strrpos($data["Match"][1], ".") + 1);
+			$sqlPathArray = array(
+				APPROOT . DS . "Database" . DS . ucfirst($tableName),
+				GTROOT  . DS . "Database" . DS . ucfirst($tableName)
+			);
+
+			foreach($sqlPathArray as $sqlPath) {
+				// Look for underscore prefixed files.
+				if(!is_dir($sqlPath)) {
+					continue;
+				}
+				$dh = opendir($sqlPath);
+				while(false !== $file = readdir($dh)) {
+					if($file[0] !== "_") {
+						continue;
+					}
+
+					echo "Executing $file." . PHP_EOL;
+					$sql = file_get_contents($sqlPath . DS . $file);
+					$result = $this->_dbh->query($sql);
+
+					if($result === false) {
+						// TODO: Throw proper error.
+						die("Error in auto-deployment stage.");
+					}
+				}
+				closedir($dh);
+			}
+			break;
+		case "NO_DB":
+			$dbName = $data["Match"][1];
+			$sqlPath = GTROOT . DS . "Framework";
+			if(!is_dir($sqlPath)) {
+				die("ERROR: Invalid framework directory structure!");
+			}
+
+			$rootPass = isset($_POST["RootPass"])
+				? $_POST["RootPass"]
+				: null;
+			
+			if(is_null($rootPass)) {
+				header("Location: /Gt?DbDeploy=" . $_SERVER["REQUEST_URI"]);
+				exit;
+			}
+
+			$dh = opendir($sqlPath);
+
+			while(false !== $file = readdir($dh)) {
+				if($file[0] !== "_") {
+					continue;
+				}
+			}
+
+			closedir($dh);
+
 			break;
 		default:
 			break;
 		}
+
+		die();
 	}
 }
 ?>

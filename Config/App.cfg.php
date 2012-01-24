@@ -2,7 +2,7 @@
 class App_Config_Framework {
 	protected $_activeModules;
 	protected $_isCached = true;
-	private $_reserved = array("g105b", "admin");
+	private $_reserved = array("Gt", "g105b", "admin");
 
 	public function __construct() { }
 

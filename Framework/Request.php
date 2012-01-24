@@ -98,8 +98,8 @@ final class Request {
 		}
 
 		// Check for framework-reserved requests.
-		if(in_array(strtolower(FILE), $config["App"]->getReserved())
-		|| in_array(strtolower(BASEDIR), $config["App"]->getReserved() )) {
+		if(in_array(FILE, $config["App"]->getReserved())
+		|| in_array(BASEDIR, $config["App"]->getReserved() )) {
 
 			// Request is reserved, pass request on to the desired function.
 			$reservedName = BASEDIR == ""
@@ -111,7 +111,7 @@ final class Request {
 				require($reservedFile);
 				$reservedClassName = $reservedName . "_Reserved";
 				if(class_exists($reservedClassName)) {
-					new $reservedClassName();
+					new $reservedClassName($config);
 				}
 				exit;
 			}

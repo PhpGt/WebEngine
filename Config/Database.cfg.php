@@ -28,7 +28,9 @@ class Database_Config_Framework {
 				. ";host=" . $this->_host,
 			"Username"	=> $this->_user,
 			"Password"	=> $this->_pass,
-			"ParamChar"	=> $this->_paramChar
+			"ParamChar"	=> $this->_paramChar,
+			"DbName" 	=> $this->_name,
+			"Host"		=> $this->_host
 		);
 	}
 }
