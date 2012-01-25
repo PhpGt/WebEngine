@@ -9,7 +9,10 @@ class Content_PageTool extends PageTool {
 	public function main($api, $dom, $template) {
 		$this->_elements = $dom["*[@data-editable]"];
 		foreach ($this->_elements as $element) {
-			$element->innerHTML = "<p>test</p>";
+			$content = $api["Content"]->get(array("Name" => $element->id));
+			if(!empty($content["Value"])) {
+				$element->innerHTML = $content["Value"];
+			}
 		}
 	}
 }

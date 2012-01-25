@@ -365,12 +365,16 @@ class DomEl implements ArrayAccess {
 		switch($key) {
 		case "innerHTML":
 		case "innerHtml":
-			$frag = $this->_dom->createDocumentFragment();
-			$frag->appendXML($value);
+			$tempDom = new DOMDocument("1.0", "utf-8");
+			$tempDom->loadHTML($value);
+			$root = $tempDom->documentElement;
+			$newNode = $this->_dom->importNode($root, true);
+
 			while($this->node->firstChild) {
 				$this->node->removeChild($this->node->firstChild);
 			}
-			$this->node->appendChild($frag);
+			$this->node->appendChild($newNode);
+			$tempDom = null;
 			break;
 		case "innerText":
 			$this->node->nodeValue = $value;
