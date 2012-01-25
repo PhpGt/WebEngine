@@ -330,6 +330,15 @@ class DomEl implements ArrayAccess {
 		switch($key) {
 		case "innerHTML":
 		case "innerHtml":
+			$innerHtml = "";
+			$children = $this->node->childNodes;
+			foreach($children as $child) {
+				$tempDom = new DOMDocument("1.0", "utf-8");
+				$tempDom->appendChild($tempDom->importNode($child, true));
+				$innerHtml .= trim($tempDom->saveHTML());
+			}
+			return html_entity_decode($innerHtml);
+			break;
 		case "innerText":
 			return $this->node->nodeValue;
 			break;
@@ -356,6 +365,13 @@ class DomEl implements ArrayAccess {
 		switch($key) {
 		case "innerHTML":
 		case "innerHtml":
+			$frag = $this->_dom->createDocumentFragment();
+			$frag->appendXML($value);
+			while($this->node->firstChild) {
+				$this->node->removeChild($this->node->firstChild);
+			}
+			$this->node->appendChild($frag);
+			break;
 		case "innerText":
 			$this->node->nodeValue = $value;
 			break;

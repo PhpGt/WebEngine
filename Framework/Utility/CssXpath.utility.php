@@ -33,6 +33,8 @@
 /**
  * CssXpath class originally from Zend Framework 2, modified for distribution
  * within PHP.Gt.
+ * Located in /library/Zend/Dom/Css2Xpath.php
+ * Taken from commit on January 05, 2012.
  * TODO: Docs.
  */
 class CssXpath_Utility {
