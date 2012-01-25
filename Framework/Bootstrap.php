@@ -138,6 +138,8 @@ $required = array(
 	GTROOT . DS . "Framework" . DS . "Response.php",
 	"Dispatcher class" =>
 	GTROOT . DS . "Framework" . DS . "Dispatcher.php",
+	"PageTool class" =>
+	GTROOT . DS . "Framework" . DS . "PageTool.php",
 	"PageCode class" =>
 	GTROOT . DS . "Framework" . DS . "PageCode.php",
 

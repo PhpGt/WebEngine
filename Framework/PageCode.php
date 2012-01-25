@@ -3,7 +3,7 @@
  * TODO: Docs.
  */
 abstract class PageCode {
-	$this->_tools = null;
+	private $_tools = null;
 
 	public function __construct() { 
 		//  What initialisation is needed here?
@@ -17,7 +17,7 @@ abstract class PageCode {
 	 * @param array|string $toolName A single tool name, or an array of tool
 	 * names to assign for use within this page.
 	 */
-	private function assignTool($toolName) {
+	protected function assignTool($toolName) {
 		if(is_null($this->_tools)) {
 			$this->_tools = array();
 		}

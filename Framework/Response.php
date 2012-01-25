@@ -91,8 +91,8 @@ final class Response {
 					continue;
 				}
 				
-				if(file_exists($path . DS . $toolFile)) {
-					require_once($path . DS . $toolFile);
+				if(file_exists($path . DS . $tool . DS . $toolFile)) {
+					require_once($path . DS . $tool . DS . $toolFile);
 				}
 				else {
 					continue;
