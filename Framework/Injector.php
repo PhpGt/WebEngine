@@ -1,19 +1,23 @@
 <?php
 class Injector {
 	/**
+	 * TODO: Store the injected files here, they can be accessed from the
+	 * PageCode's render function.
+	 **/
+	/**
 	* TODO: Docs.
 	*/
-	public function __construct($dom) {
+	public function __construct($dom, $isCompiled) {
 		$this->injectStyleSheets($dom);
 		// TODO: Second param indicates whether to compile - add ability to
 		// change to false for debugging purposes.
-		$this->injectJavaScript($dom, false);
+		$this->injectJavaScript($dom, $isCompiled);
 	}
 
 	/**
 	* TODO: Docs.
 	*/
-	public function injectStyleSheets($dom) {
+	private function injectStyleSheets($dom) {
 		// Find all stylesheets except those
 		// that are required to be loaded separately.
 		$styleLinkArray = 
@@ -102,7 +106,7 @@ class Injector {
 	/**
 	* TODO: Docs.
 	*/
-	public function injectJavaScript($dom, $compile) {
+	private function injectJavaScript($dom, $compile) {
 		// Find all scripts.
 		$scriptArray = $dom["script[@src][not(@nocompile)]"];
 		$scriptString = "";

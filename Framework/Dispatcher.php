@@ -8,6 +8,8 @@ final class Dispatcher {
 	public function __construct($response, $config) {
 		$response->dispatch("init");
 
+		$appConfig = $config["App"];
+
 		$dal = new Dal($config["Database"]->getSettings());
 		if($response->dispatch("apiCall", $dal)) {
 			// Quit early if request is api call.
@@ -51,10 +53,15 @@ final class Dispatcher {
 
 		$dom = new Dom($response->getBuffer());
 		$response->includeDom($dom);
+
+		// Call a preRender function for backwards compatibility - this function
+		// is not needed at all though any more.
 		$response->dispatch("preRender", $dom);
 
 		$organiser = new FileOrganiser();
-		$injector  = new Injector($dom);
+
+		$isCompiled = $appConfig->isClientCompiled();
+		$injector  = new Injector($dom, $isCompiled);
 
 		$templates = $dom->template();
 		$response->dispatch("render", $dom, $templates, $injector);

@@ -1,8 +1,18 @@
 <?php
+/**
+ * TODO: Docs.
+ */
 abstract class PageCode {
 	public function __construct() { 
-		// TODO: What initialisation is needed here?
+		//  What initialisation is needed here?
 	}
+
+	/**
+	 * Called first, the init function should declare what modules to use in the
+	 * page. Modules will have full access to API and DOM, so highly interactive
+	 * pages can have some logic split between app-specific module files.
+	 */
+	abstract protected function init();
 
 	/**
 	* When an HTTP POST request is made, this function is called before any
@@ -26,21 +36,10 @@ abstract class PageCode {
 	abstract protected function main($api);
 
 	/**
-	* Called before any DOM elements are templated, so DOM at this stage
-	* represents the original HTML perfectly. Any API usage should have been
-	* done in main(), where preRender() and render() can access the result from
-	* $this->_data. ??? TODO: Confirm this functionality.
-	* @param Dom $dom The Dom object inherits from PHP's DOMDocument, giving it
-	* added functionality. Manipulations are updated before being sent to the
-	* browser.
-	*/
-	abstract protected function preRender($dom);
-
-	/**
 	* Called just before flushing the output buffer in the response. DOM
 	* manipulation is performed here, and DOM elements scraped from the HTML
-	* are accessible here. Any API usage should have been done in main(),
-	* where preRender() and render() can access the result from $this->_data.
+	* are accessible here. Any API usage should have been done in main(), and
+	* stored the data in private variables.
 	* @param Dom $dom The Dom object inherits from PHP's DOMDocument, giving it
 	* added functionality. Manipulations are updated before being sent to the
 	* browser.
