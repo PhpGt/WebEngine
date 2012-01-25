@@ -3,8 +3,43 @@
  * TODO: Docs.
  */
 abstract class PageCode {
+	$this->_tools = null;
+
 	public function __construct() { 
 		//  What initialisation is needed here?
+	}
+
+	/**
+	 * Must be called from the PageCode's init function. Declares what PageTools
+	 * are being used for this page. PageTools are reusable modules of code that
+	 * would be repetative to place in the PageCode. Examples of popular tools:
+	 * Content, Blog, Gallery.
+	 * @param array|string $toolName A single tool name, or an array of tool
+	 * names to assign for use within this page.
+	 */
+	private function assignTool($toolName) {
+		if(is_null($this->_tools)) {
+			$this->_tools = array();
+		}
+
+		if(is_array($toolName)) {
+			array_merge($this->_tools, $toolName);
+		}
+		else if(is_string($toolName)) {
+			$this->_tools[] = $toolName;
+		}
+		else {
+			// TODO: Throw error.
+			die("Invalid PageTool assigned.");
+		}
+	}
+
+	/**
+	 * Called by the dispatcher to obtain a list of all PageTools assigned.
+	 * PageTools assigned after init function will be ignored.
+	 */
+	public function getTools() {
+		return $this->_tools;
 	}
 
 	/**

@@ -7,6 +7,7 @@
 final class Dispatcher {
 	public function __construct($response, $config) {
 		$response->dispatch("init");
+		$pageTools = $response->dispatch("getTools");
 
 		$appConfig = $config["App"];
 
@@ -54,6 +55,7 @@ final class Dispatcher {
 		$dom = new Dom($response->getBuffer());
 		$response->includeDom($dom);
 
+
 		// Call a preRender function for backwards compatibility - this function
 		// is not needed at all though any more.
 		$response->dispatch("preRender", $dom);
@@ -63,8 +65,9 @@ final class Dispatcher {
 		$isCompiled = $appConfig->isClientCompiled();
 		$injector  = new Injector($dom, $isCompiled);
 
-		$templates = $dom->template();
-		$response->dispatch("render", $dom, $templates, $injector);
+		$template = $dom->template();
+		$response->executePageTools($pageTools, $apiWrapper, $dom, $template);
+		$response->dispatch("render", $dom, $template, $injector);
 
 		$dom->flush();
 	}

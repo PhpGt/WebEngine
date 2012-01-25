@@ -75,6 +75,41 @@ final class Response {
 
 	/**
 	 * TODO: Docs.
+	 * Creates and executes all PageTools assigned by current PageCode.
+	 */
+	public function executePageTools($pageToolArray, $api, $dom, $template) {
+		$toolPathArray = array(
+			APPROOT . DS . "PageTool",
+			GTROOT . DS . "PageTool"
+		);
+		foreach ($pageToolArray as $tool) {
+			$tool = ucfirst($tool);
+			$toolFile = $tool . ".tool.php";
+			$toolClass = $tool . "_PageTool";
+			foreach ($toolPathArray as $path) {
+				if(!is_dir($path)) {
+					continue;
+				}
+				
+				if(file_exists($path . DS . $toolFile)) {
+					require_once($path . DS . $toolFile);
+				}
+				else {
+					continue;
+				}
+
+				if(class_exists($toolClass)) {
+					new $toolClass($api, $dom, $template);
+				}
+				else {
+					continue;
+				}
+			}
+		}
+	}
+
+	/**
+	 * TODO: Docs.
 	 * Looks for <include> tags, puts them in place in the DOM.
 	 */
 	public function includeDom($dom) {
