@@ -32,6 +32,11 @@ class Api {
 			);
 
 			$this->_result = array();
+			if(empty($this->_dalResult)) {
+				// TODO: This catch was put in as the dalResult was null...
+				// is this an error? Investigate.
+				return false;
+			}
 			foreach($this->_dalResult as $key => $value) {
 				$this->_result[$key] = $value;
 			}
