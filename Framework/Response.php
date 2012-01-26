@@ -122,7 +122,6 @@ final class Response {
 		$includesLength = $includes->length;
 		for($i = 0; $i < $includesLength; $i++) {
 			$inc = $includes->item(0);
-			$frag = null;
 
 			if($inc->hasAttribute("href")) {
 				$href = $inc->getAttribute("href");
@@ -134,18 +133,18 @@ final class Response {
 				foreach($fileArray as $file) {
 					if(file_exists($file)) {
 						$html = file_get_contents($file);
-						$frag = $dom->createDocumentFragment();
-						$frag->appendXML($html);
+						$tempDom = new DOMDocument("1.0", "utf-8");
+						$tempDom->loadHTML($html);
+						$root = $tempDom->documentElement;
+						$imported = $dom->importNode($root, true);
+
+						$inc->parentNode->insertBefore($imported, $inc);
+						$inc->parentNode->removeChild($inc);
 						break;
 					}
 				}
 			}
 
-			if(is_null($frag)) {
-				continue;
-			}
-
-			$inc->parentNode->replaceChild($frag, $inc);
 			$success ++;
 		}
 
