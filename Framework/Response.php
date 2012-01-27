@@ -82,6 +82,9 @@ final class Response {
 			APPROOT . DS . "PageTool",
 			GTROOT . DS . "PageTool"
 		);
+		if(empty($pageToolArray)) {
+			return;
+		}
 		foreach ($pageToolArray as $tool) {
 			$tool = ucfirst($tool);
 			$toolFile = $tool . ".tool.php";

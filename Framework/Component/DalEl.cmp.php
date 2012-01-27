@@ -17,6 +17,7 @@ class DalElement {
 			}
 			$args = $args[0];
 		}
+
 		// Find the appropriate SQL file, perform SQL using $this->_dal;
 		$pathArray = array(
 			APPROOT . DS . "Database" . DS . $this->_tableName . DS,
@@ -59,7 +60,24 @@ class DalElement {
 		}
 
 		$stmt = $this->_dal->prepare($sql);
-		if($stmt->execute($paramArray)) {
+
+		// Limit and offset params must be treated differently. This means that
+		// a limitation in the SQL is that the parameters must be called
+		// :Limit and :Offset (upper-case first letters).
+		if(array_key_exists(":Limit", $paramArray)) {
+			$stmt->bindValue(":Limit", $paramArray[":Limit"], PDO::PARAM_INT);
+			unset($paramArray[":Limit"]);
+		}
+		if(array_key_exists(":Offset", $paramArray)) {
+			$stmt->bindValue(":Offset", $paramArray[":Offset"], PDO::PARAM_INT);
+			unset($paramArray[":Offset"]);
+		}
+
+		foreach ($paramArray as $key => &$value) {
+			$stmt->bindParam($key, $value);
+		}
+
+		if($stmt->execute()) {
 			return new DalResult(
 				$stmt,
 				$this->_dal->lastInsertId(), 
