@@ -330,6 +330,8 @@ class DomEl implements ArrayAccess {
 		switch($key) {
 		case "innerHTML":
 		case "innerHtml":
+		case "html":
+		case "HTML":
 			$innerHtml = "";
 			$children = $this->node->childNodes;
 			foreach($children as $child) {
@@ -340,6 +342,7 @@ class DomEl implements ArrayAccess {
 			return html_entity_decode($innerHtml);
 			break;
 		case "innerText":
+		case "text":
 			return $this->node->nodeValue;
 			break;
 		default: 
@@ -365,6 +368,8 @@ class DomEl implements ArrayAccess {
 		switch($key) {
 		case "innerHTML":
 		case "innerHtml":
+		case "html":
+		case "HTML":
 			$tempDom = new DOMDocument("1.0", "utf-8");
 			$tempDom->loadHTML($value);
 			$root = $tempDom->documentElement;
@@ -377,6 +382,7 @@ class DomEl implements ArrayAccess {
 			$tempDom = null;
 			break;
 		case "innerText":
+		case "text":
 			$this->node->nodeValue = $value;
 			break;
 		case "value":
