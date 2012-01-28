@@ -12,7 +12,6 @@ class DomEl implements ArrayAccess {
 	$element,
 	$attrArray  = null,
 	$value      = null) {
-
 		$this->_dom = $dom;
 
 		if($element instanceof DOMElement) {
@@ -49,15 +48,19 @@ class DomEl implements ArrayAccess {
 	}
 
 	/**
-	* TODO: Docs.
-	*/
-	public function append($toAppend) {
+	 * Internal function, converts a given input of either a DOMElement, DomEl,
+	 * DomElCollection or a string into an array of DomElements.
+	 * Used by append, prepend, before, after functions.
+	 * @param mixed $input TODO: Docs.
+	 * @return array TODO.
+	 */
+	private function obtainElementArray($input) {
 		$elementArray = array();
 
-		if(is_array($toAppend) || $toAppend instanceof DomElCollection) {
-			$elementArray = $toAppend;
+		if(is_array($input) || $input instanceof DomElCollection) {
+			$elementArray = $input;
 		}
-		else if(is_string($toAppend)) {
+		else if(is_string($input)) {
 			$attrArray = null;
 			$value = null;
 			$args = func_get_args();
@@ -70,14 +73,25 @@ class DomEl implements ArrayAccess {
 
 			$elementArray[] = new DomEl(
 				$this->_dom,
-				$toAppend,
+				$toAdd,
 				$attrArray,
 				$value
 			);
 		}
 		else {
-			$elementArray[] = $toAppend;
+			$elementArray[] = $input;
 		}
+
+		return $elementArray;
+	}
+
+	/**
+	* TODO: Docs.
+	*/
+	public function append($toAdd) {
+		$elementArray = call_user_func_array(
+			array($this, "obtainElementArray"), 
+			func_get_args());
 
 		foreach($elementArray as $element) {
 			$elNode = $element;
@@ -86,6 +100,63 @@ class DomEl implements ArrayAccess {
 			}
 
 			$this->node->appendChild($elNode);
+		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function prepend($toAdd) {
+		$elementArray = call_user_func_array(
+			array($this, "obtainElementArray"), 
+			func_get_args());
+
+		foreach($elementArray as $element) {
+			$elNode = $element;
+			if($element instanceof DomEl) {
+				$elNode = $element->node;
+			}
+
+			$this->node->insertBefore($elNode, $this->node->firstChild);
+		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function before($toAdd) {
+		$elementArray = call_user_func_array(
+			array($this, "obtainElementArray"), 
+			func_get_args());
+		
+		foreach($elementArray as $element) {
+			$elNode = $element;
+			if($element instanceof DomEl) {
+				$elNode = $element->node;
+			}
+
+			$this->node->parentNode->insertBefore($elNode, $this->node);
+		}
+	}
+
+	public function after($toAdd) {
+		$elementArray = call_user_func_array(
+			array($this, "obtainElementArray"), 
+			func_get_args());
+		
+		foreach($elementArray as $element) {
+			$elNode = $element;
+			if($element instanceof DomEl) {
+				$elNode = $element->node;
+			}
+
+			$nextSibling = $this->node->nextSibling;
+			if(!is_null($nextSibling)) {
+				$this->node->parentNode->insertBefore($elNode, $nextSibling);
+			}
+			else {
+				$this->node->parentNode->appendChild($elNode);
+			}
 		}
 	}
 
