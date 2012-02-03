@@ -10,8 +10,22 @@ class Content_PageTool extends PageTool {
 		$this->_elements = $dom["*[@data-editable]"];
 		foreach ($this->_elements as $element) {
 			$content = $api["Content"]->get(array("Name" => $element->id));
-			if(!empty($content["Value"])) {
-				$element->innerHTML = $content["Value"];
+			switch($content["L_Content_Type"]) {
+			case "Text":
+			case "TextPlain":
+			case "TextTitle":
+			case "TextRich":
+				if(!empty($content["Value"])) {
+					$element->html = $content["Value"];
+				}
+				break;
+			case "Image":
+				if(!empty($content["Value"])) {
+					$element->setAttribute("src", $content["Value"]);
+				}
+				break;
+			default: 
+				break;
 			}
 		}
 	}

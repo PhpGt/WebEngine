@@ -441,6 +441,11 @@ class DomEl implements ArrayAccess {
 		case "innerHtml":
 		case "html":
 		case "HTML":
+			// If plain text string is provided, skip generating DOMDocument.
+			if($value == strip_tags($value)) {
+				$this->node->nodeValue = $value;
+				break;
+			}
 			$tempDom = new DOMDocument("1.0", "utf-8");
 			$tempDom->loadHTML($value);
 			$root = $tempDom->documentElement;

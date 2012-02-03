@@ -102,7 +102,7 @@ class Dal implements ArrayAccess {
 		}
 		else if($input instanceof PDOStatement) {
 			$message = $input->errorInfo();
-			var_dump($message);die();
+			//var_dump($message);die();
 			$message = $message[2];
 		}
 		// Grab the statment's error message.
