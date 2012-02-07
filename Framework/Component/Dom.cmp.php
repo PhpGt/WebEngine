@@ -28,8 +28,8 @@ class Dom implements ArrayAccess {
 			}
 			$pathId .= FILE;
 
-			$bodyTag->addClass(FILE);
-			$bodyTag->setAttribute("id", $pathId);
+			$bodyTag->addClass(strtolower(FILE));
+			$bodyTag->setAttribute("id", strtolower($pathId));
 		}
 	}
 
