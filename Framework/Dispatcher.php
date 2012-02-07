@@ -68,6 +68,7 @@ final class Dispatcher {
 		$template = $dom->template();
 		$response->executePageTools($pageTools, $apiWrapper, $dom, $template);
 		$response->dispatch("render", $dom, $template, $injector);
+		$response->dispatch("go", $apiWrapper, $dom, $template);
 
 		$dom->flush();
 	}
