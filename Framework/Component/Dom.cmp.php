@@ -17,16 +17,40 @@ class Dom implements ArrayAccess {
 			// TODO: Throw and log a proper error.
 			die("Error loading HTML into Dom");
 		}
+
+		// Add the url and file to the body's id and class attributes.
+		$bodyTag = $this->getElementsByTagName("body");
+
+		if($bodyTag->length > 0) {
+			$pathId = str_replace("/", "_", DIR);
+			if(strlen($pathId) > 0 && strlen(FILE) > 0) {
+				$pathId .= "_";
+			}
+			$pathId .= FILE;
+
+			$bodyTag->addClass(FILE);
+			$bodyTag->setAttribute("id", $pathId);
+		}
 	}
 
 	/**
 	 * TODO: Docs.
 	 */
 	public function __call($name, $args) {
+		// If a missing method is called, attempt to call it on the DOMDocument.
 		if(method_exists($this->_domDoc, $name)) {
-			return call_user_func_array(
+			// Attempt to only pass PHP.Gt DomEl and DomElCollections.
+			$result = call_user_func_array(
 				array($this->_domDoc, $name),
 				$args);
+			if($result instanceof DOMElement) {
+				return new DomEl($this->_domDoc, $result);
+			}
+			if($result instanceof DOMNodeList) {
+				return new DomElCollection($this->_domDoc, $result);
+			}
+
+			return $result;
 		}
 	} 
 

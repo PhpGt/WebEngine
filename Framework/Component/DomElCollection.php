@@ -27,7 +27,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 
 				$elArray = array();
 				for($i = 0; $i < $listLength; $i++) {
-					$elArray[] = $dom->create($list->item($i));
+					$elArray[] = new DomEl($dom, $list->item($i));
 				}
 			}
 			else {
@@ -36,6 +36,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 				die("Error creating DomElCollection.");
 			}
 		}
+
 		$this->_elArray= $elArray;
 		$this->_index = 0;
 	}
@@ -84,13 +85,22 @@ class DomElCollection implements Iterator, ArrayAccess {
 	* @return mixed The value of the requested property.
 	*/
 	public function __get($key) {
-		if(count($this->_elArray) < 1) {
-			// TODO: Properly log and throw error.
-			die("Error: DomElCollection is empty.");
-			return;
-		}
+		$key = strtolower($key);
 
-		return $this->_elArray[0]->$key;
+		switch($key) {
+		case "length":
+			return count($this->_elArray);
+			break;
+		default:
+			if(count($this->_elArray) < 1) {
+				// TODO: Properly log and throw error.
+				die("Error: DomElCollection is empty.");
+				return;
+			}
+			
+			return $this->_elArray[0]->$key;
+			break;
+		}
 	}
 
 	/**

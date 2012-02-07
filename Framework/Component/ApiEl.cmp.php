@@ -28,6 +28,9 @@ final class ApiElement {
 		if(class_exists($className)) {
 			$this->_apiObject = new $className();
 		}
+		else {
+			$this->_apiObject = new Api();
+		}
 
 		$this->_dal = $dal;
 	}

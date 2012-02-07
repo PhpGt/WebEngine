@@ -13,7 +13,7 @@ abstract class PageCode {
 	 * logic to be performed.
 	 * @param ToolWrapper $tool A dependency injector to the PageTool objects.
 	 */
-	protected function init($tool);
+	protected function init($tool){}
 
 	/**
 	 * The main function that contains all data IO and DOM manipulation.
