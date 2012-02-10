@@ -454,6 +454,12 @@ class DomEl implements ArrayAccess {
 			while($this->node->firstChild) {
 				$this->node->removeChild($this->node->firstChild);
 			}
+
+			// Ensure a DOMNode is given provided.
+			if($newNode instanceof DomEl) {
+				$newNode = $newNode->node;
+			}
+
 			$this->node->appendChild($newNode);
 			$tempDom = null;
 			break;

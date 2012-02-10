@@ -13,13 +13,18 @@ class Navigation_PageTool extends PageTool {
 			$navLiTags = $nav["ul li"];
 			foreach($navLiTags as $li) {
 				$pattern = "/" . FILE . "/";
+
+				if(FILE === "Index") {
+					// Match "Index" with "/".
+					$pattern = "/[Index|\/]/";
+				}
+
 				if($li->hasAttribute("data-selected-pattern")) {
 					$pattern = $li->getAttribute("data-selected-pattern");
 				}
 				
 				// Match the current URL with the anchor's href.
 				$href = $li["a"]->getAttribute("href");
-
 				if(preg_match($pattern, $href) > 0) {
 					$li->addClass("selected");
 				}
