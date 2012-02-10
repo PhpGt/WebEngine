@@ -94,57 +94,61 @@ define("FILECLASS",  $fileClass);
 // compatibility).
 $required = array(
 	"Shared application config" => 
-	GTROOT . DS . "Config" . DS . "App.cfg.php",
+	GTROOT.DS."Config" . DS . "App.cfg.php",
 	"Shared database config" =>
-	GTROOT . DS . "Config" . DS . "Database.cfg.php",
+	GTROOT.DS."Config" . DS . "Database.cfg.php",
 	"Shared security config" =>
-	GTROOT . DS . "Config" . DS . "Security.cfg.php",
+	GTROOT.DS."Config" . DS . "Security.cfg.php",
 
 	"Application-specific application config" =>
-	APPROOT . DS . "Config" . DS . "App.cfg.php",
+	APPROOT.DS."Config" . DS . "App.cfg.php",
 	"Application-specific database config" => 
-	APPROOT . DS . "Config" . DS . "Database.cfg.php",
+	APPROOT.DS."Config" . DS . "Database.cfg.php",
 	"Application-specific security config" => 
-	APPROOT . DS . "Config" . DS . "Security.cfg.php",
+	APPROOT.DS."Config" . DS . "Security.cfg.php",
 
 	"API component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "Api.cmp.php",
-	"API wrapper componenet" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "ApiWrapper.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Api.cmp.php",
+	"API wrapper component" =>
+	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiWrapper.cmp.php",
 	"API element component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "ApiEl.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiEl.cmp.php",
+	"Template wrapper component" =>
+	GTROOT.DS."Framework" . DS . "Component" . DS . "TemplateWrapper.cmp.php",
+	"PageTool wrapper component" =>
+	GTROOT.DS."Framework" . DS . "Component" . DS . "PageToolWrapper.cmp.php",
 	"DAL component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "Dal.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Dal.cmp.php",
 	"DAL element component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "DalEl.cmp.php", 
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DalEl.cmp.php", 
 	"DAL result component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "DalResult.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DalResult.cmp.php",
 	"DOM component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "Dom.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Dom.cmp.php",
 	"DOM Element component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "DomEl.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DomEl.cmp.php",
 	"DOM Element Collection component" =>
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "DomElCollection.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.php",
 	"Error component" => 
-	GTROOT . DS . "Framework" . DS . "Component" . DS . "Error.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.cmp.php",
 
 	"File Organiser class" =>
-	GTROOT . DS . "Framework" . DS . "FileOrganiser.php",
+	GTROOT.DS."Framework" . DS . "FileOrganiser.php",
 	"Injector class" =>
-	GTROOT . DS . "Framework" . DS . "Injector.php",
+	GTROOT.DS."Framework" . DS . "Injector.php",
 	"Request class" =>
-	GTROOT . DS . "Framework" . DS . "Request.php",
+	GTROOT.DS."Framework" . DS . "Request.php",
 	"Response class" =>
-	GTROOT . DS . "Framework" . DS . "Response.php",
+	GTROOT.DS."Framework" . DS . "Response.php",
 	"Dispatcher class" =>
-	GTROOT . DS . "Framework" . DS . "Dispatcher.php",
+	GTROOT.DS."Framework" . DS . "Dispatcher.php",
 	"PageTool class" =>
-	GTROOT . DS . "Framework" . DS . "PageTool.php",
+	GTROOT.DS."Framework" . DS . "PageTool.php",
 	"PageCode class" =>
-	GTROOT . DS . "Framework" . DS . "PageCode.php",
+	GTROOT.DS."Framework" . DS . "PageCode.php",
 
 	"Main PHP.Gt object" =>
-	GTROOT . DS . "Framework" . DS . "Gt.php"
+	GTROOT.DS."Framework" . DS . "Gt.php"
 );
 foreach($required as $title => $path) {
 	if(!is_array($path)) { $path = array($path); }

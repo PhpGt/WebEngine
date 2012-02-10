@@ -8,11 +8,9 @@
  * be used to keep the PageCode clean.
  */
 abstract class PageTool {
-	public function __construct($api, $dom, $template) {
-		$this->main($api, $dom, $template);
-	}
+	public function __construct() {}
 
 	// Force PageTools to implement the main function with these parameters.
-	abstract protected function main($api, $dom, $template);
+	abstract protected function go($api, $dom, $template);
 }
 ?>

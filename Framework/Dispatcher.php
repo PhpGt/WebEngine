@@ -6,11 +6,6 @@
 */
 final class Dispatcher {
 	public function __construct($response, $config) {
-		$response->dispatch("init");
-		$pageTools = $response->dispatch("getTools");
-
-		$appConfig = $config["App"];
-
 		$dal = new Dal($config["Database"]->getSettings());
 		if($response->dispatch("apiCall", $dal)) {
 			// Quit early if request is api call.
@@ -18,15 +13,11 @@ final class Dispatcher {
 			return;
 		}
 
-		$apiWrapper = new ApiWrapper($dal);
-
-		if(count($_POST) > 0) {
-			$response->dispatch("onPost");
-		}
-
+		// On root URLs, the query string may be used as the "url" key.
+		// Ensure the $_GET variable is consistant across different webservers,
+		// also, remove the GET parameters that are used by PHP.Gt's internals.
 		$getData = $_GET;
 		if(array_key_exists("url", $getData)) {
-			// On root URLs, the query string may be used as the "url" key.
 			if(strstr($getData["url"], "?")) {
 				$keyValuePair = substr($getData["url"],
 					strpos($getData["url"], "?") + 1);
@@ -43,32 +34,36 @@ final class Dispatcher {
 		if(array_key_exists("ext", $getData)) {
 			unset($getData["ext"]);
 		}
-
 		$_GET = $getData;
 
-		if(count($getData) > 0) {
-			$response->dispatch("onGet");
-		}
+		// Start building the objects used across the PageCodes...
 
-		$response->dispatch("main", $apiWrapper);
-
+		// Load the DOM from the current buffer, include any externally linked
+		// PageViews from <include> tags. 
 		$dom = new Dom($response->getBuffer());
 		$response->includeDom($dom);
 
-
-		// Call a preRender function for backwards compatibility - this function
-		// is not needed at all though any more.
-		$response->dispatch("preRender", $dom);
-
+		// Compile and inject <script> and <link> tags, organise the contents
+		// of the Asset, Style, Script directories to be accessible through
+		// the web root.
+		$isCompiled = $config["App"]->isClientCompiled();
+		$injector  = new Injector($dom, $isCompiled);
 		$organiser = new FileOrganiser();
 
-		$isCompiled = $appConfig->isClientCompiled();
-		$injector  = new Injector($dom, $isCompiled);
+		// Create the wrapper classes for easy access to components.
+		$apiWrapper = new ApiWrapper($dal);
+		$templateArray = $dom->template();
+		$templateWrapper = new TemplateWrapper($templateArray);
+		$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
-		$template = $dom->template();
-		$response->executePageTools($pageTools, $apiWrapper, $dom, $template);
-		$response->dispatch("render", $dom, $template, $injector);
-		$response->dispatch("go", $apiWrapper, $dom, $template);
+		// Dispatch the all important "go" event, that is the entry point to
+		// each PageCode, and has access to all required components.
+		$response->dispatch(
+			"go",
+			$apiWrapper,
+			$dom,
+			$templateWrapper,
+			$toolWrapper);
 
 		$dom->flush();
 	}
