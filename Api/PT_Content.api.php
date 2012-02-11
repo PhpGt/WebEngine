@@ -1,5 +1,5 @@
 <?php
-class Content_Api extends Api {
+class PT_Content_Api extends Api {
 	public $externalMethods = array();
 }
 ?>

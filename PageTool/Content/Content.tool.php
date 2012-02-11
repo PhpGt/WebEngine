@@ -9,8 +9,11 @@ class Content_PageTool extends PageTool {
 	public function go($api, $dom, $template) {
 		$this->_elements = $dom["*[@data-editable]"];
 		foreach ($this->_elements as $element) {
-			$content = $api["Content"]->get(array("Name" => $element->id));
-			switch($content["L_Content_Type"]) {
+			$content = $api["PT_Content"]->get(array("Name" => $element->id));
+			if(empty($content["L_Type"])) {
+				return;
+			}
+			switch($content["L_Type"]) {
 			case "Text":
 			case "TextPlain":
 			case "TextTitle":
