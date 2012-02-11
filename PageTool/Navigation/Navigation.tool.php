@@ -12,11 +12,14 @@ class Navigation_PageTool extends PageTool {
 		foreach($this->_navElements as $nav) {
 			$navLiTags = $nav["ul li"];
 			foreach($navLiTags as $li) {
-				$pattern = "/" . FILE . "/";
+				$toMatch = strlen(DIR) > 0
+					? DIR
+					: FILE;
+				$pattern = "/" . $toMatch . "/";
 
 				if(FILE === "Index") {
 					// Match "Index" with "/".
-					$pattern = "/^\/$|Index/";
+					$pattern = "/^" . DIR . "\/$|Index/";
 				}
 
 				if($li->hasAttribute("data-selected-pattern")) {
