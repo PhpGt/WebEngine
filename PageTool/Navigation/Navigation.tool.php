@@ -16,7 +16,7 @@ class Navigation_PageTool extends PageTool {
 
 				if(FILE === "Index") {
 					// Match "Index" with "/".
-					$pattern = "/[Index|\/]/";
+					$pattern = "/^\/$|Index/";
 				}
 
 				if($li->hasAttribute("data-selected-pattern")) {
