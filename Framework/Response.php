@@ -21,10 +21,7 @@ final class Response {
 		// Buffer current PageView and optional header/footer.
 		$this->bufferPageView("Header");
 		if(!$this->bufferPageView()) {
-			// TODO: Maybe Request and Response class needs to extend a general
-			// HTTP class or something, so they can go $this->error(404) at any
-			// point?
-			die("TODO: Send error 404!");
+			throw new HttpError("Not found", 404);
 		}
 		$this->bufferPageView("Footer");
 

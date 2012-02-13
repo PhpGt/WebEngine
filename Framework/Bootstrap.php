@@ -100,6 +100,9 @@ $required = array(
 	"Shared security config" =>
 	GTROOT.DS."Config" . DS . "Security.cfg.php",
 
+	"Http Error Exception" =>
+	GTROOT.DS."Framework" . DS . "Error" . DS . "HttpError.php",
+
 	"Application-specific application config" =>
 	APPROOT.DS."Config" . DS . "App.cfg.php",
 	"Application-specific database config" => 
