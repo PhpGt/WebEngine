@@ -1,13 +1,13 @@
 <?php
 class TemplateWrapper implements ArrayAccess {
-	private $_templateArray = null;
+	private $_templateArray = array();
 
 	public function __construct($templateArray) {
-		$this->_templateArray = $templateArray;
+		$this->_templateArray = $templateArray->getElArray();
 	}
 	
 	public function offsetExists($offset) {
-		return isset($_this->_templateArray[$offset]);
+		return array_key_exists($offset, $this->_templateArray);
 	}
 
 	/**

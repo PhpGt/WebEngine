@@ -124,6 +124,14 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
+	 * TODO: Docs.
+	 * @return array
+	 */
+	public function getElArray() {
+		return $this->_elArray;
+	}
+
+	/**
 	 * Cloning a DomElCollection returns a brand new instance with clones of the
 	 * DomEl objects.
 	 * TODO: Docs.
