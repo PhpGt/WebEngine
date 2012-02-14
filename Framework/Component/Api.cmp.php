@@ -10,6 +10,8 @@ class Api {
 	private $_result 		= null;
 	private $_dalResult		= null;
 
+	protected $externalMethods = array();
+
 	/**
 	 * Called by the dispatcher when a JSON request is made to an API. This
 	 * function calls the API's correct method and passes in the given DAL and
