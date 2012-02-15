@@ -129,7 +129,7 @@ class Dal implements ArrayAccess {
 			// Attempt to find creation script for given table.
 			$tableName = substr($data["Match"][1],
 				strrpos($data["Match"][1], ".") + 1);
-			if(strstr($tableName, "_")) {
+			if(strrpos($tableName, "PT_") !== 0) {
 				$tableName = substr($tableName, 0, strpos($tableName, "_"));
 			}
 			$sqlPathArray = array(
@@ -168,6 +168,9 @@ class Dal implements ArrayAccess {
 					echo "</p>";
 				}
 			}
+
+			// TODO: Add failed sql to a stack. Try them all in all orders,
+			// rather than just another loop.
 			foreach($reAttemptSql as $sql) {
 				$result = $this->_dbh->query($sql);
 				echo "<p>";
@@ -183,6 +186,7 @@ class Dal implements ArrayAccess {
 			}
 			echo "<p>Automatic deployment successful! "
 				. "<a href='" . $_SERVER["REQUEST_URI"] . "'>Continue</a></p>";
+			var_dump($sqlPathArray);
 			exit;
 			break;
 		case "NO_DB":
@@ -216,8 +220,6 @@ class Dal implements ArrayAccess {
 		default:
 			break;
 		}
-
-		die();
 	}
 }
 ?>

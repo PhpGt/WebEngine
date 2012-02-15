@@ -87,7 +87,6 @@ class DalElement {
 		else {
 			// Pass the failed statement to the errorFix function.
 			$this->_dal->fixError($stmt);
-			die("Error executing SQL!");
 		}
 	}
 }
