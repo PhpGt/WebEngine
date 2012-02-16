@@ -194,5 +194,28 @@ class Dom implements ArrayAccess {
 		$domNodeCollection->remove();
 		return $domNodeCollection;
 	}
+
+	/**
+	 * Loops over all elements in current DOM. Those who's attribute value
+	 * matches a key in the $data object will have their value set to the 
+	 * value of the data key.
+	 * @param array|DalResult $data The dataset to use.
+	 * @param string $elementSelector Optional. The CSS selector to match on
+	 * elements.
+	 * @param strong $attr Optional. The name of the attribute to look for.
+	 * @return int The number of affected elements.
+	 */
+	public function mapData($data, $elementSelector = "*", $attr = "Name") {
+		$count = 0;
+		$domNodes = $this[$elementSelector];
+		foreach ($domNodes as $node) {
+			if(isset($data[$node->$attr])) {
+				$node->value = $data[$node->$attr];
+				$count++;
+			}
+		}
+
+		return $count;
+	}
 }
 ?>
