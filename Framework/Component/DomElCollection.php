@@ -160,6 +160,27 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
+	 * Randomises the order of the element's children.
+	 */
+	public function shuffle() {
+		$this->checkElementsInDom();
+
+		// Save reference to parent node, while the link exists.
+		$parentNode = $this->_elArray[0]->parentNode;
+		
+		// Remove them all from the DOM.
+		foreach ($this->_elArray as $el) {
+			$el->remove();
+		}
+
+		shuffle($this->_elArray);
+		// Add them back into the DOM, in their shuffled order.
+		foreach ($this->_elArray as $el) {
+			$parentNode->append($el);
+		}
+	}
+
+	/**
 	 * TODO: Docs.
 	 */
 	public function offsetExists($index) {
