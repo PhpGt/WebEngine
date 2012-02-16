@@ -45,7 +45,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 		$this->_index = 0;
 	}
 
-	public function valid() {
+	public function valid() {	
 		return isset($this->_elArray[$this->_index]);
 	}
 
@@ -89,6 +89,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 
 		switch($key) {
 		case "length":
+			$this->checkElementsInDom();
 			return count($this->_elArray);
 			break;
 		default:
@@ -146,10 +147,47 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
+	 * TODO: Docs. Makes sure all elements are still present in DOM.
+	 */
+	public function checkElementsInDom() {
+		foreach ($this->_elArray as $key => $el) {
+			if(is_null($el->node->parentNode)) {
+				unset($this->_elArray[$key]);
+			}
+		}
+
+		$this->_elArray = array_values($this->_elArray);
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function offsetExists($index) {
+		// Must check that offset hasn't been removed from DOM.
+		if(array_key_exists($index, $this->_elArray)) {
+			// No parent node? Not in DOM any more!
+			if(is_null($this->_elArray[$index]->parentNode)) {
+				// Remove from array, reset indices.
+				unset($this->_elArray[$index]);
+				$this->_elArray = array_values($this->_elArray);
+			}
+			return array_key_exists($index, $this->_elArray);
+		}
+		else {
+			return false;
+		}
+	} 
+
+	/**
 	 * TODO: Docs.
 	 */
 	public function offsetGet($index) {
-		return $this->_elArray[$index];
+		if($this->offsetExists($index)) {
+			return $this->_elArray[$index];
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
@@ -163,12 +201,6 @@ class DomElCollection implements Iterator, ArrayAccess {
 		return 0;
 	}
 
-	/**
-	 * TODO: Docs.
-	 */
-	public function offsetExists($index) {
-		return in_array($index, $this->_elArray);
-	}
 
 	/**
 	 * TODO: Docs.

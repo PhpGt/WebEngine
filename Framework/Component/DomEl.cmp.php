@@ -214,6 +214,10 @@ class DomEl implements ArrayAccess {
 	* TODO: Docs.
 	*/
 	public function remove() {
+		if(is_null($this->node->parentNode)) {
+			echo("Error: Node has no parent!");
+			var_dump($this->node->tagName);die();
+		}
 		$this->node->parentNode->removeChild($this->node);
 	}
 
