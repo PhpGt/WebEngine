@@ -2,8 +2,11 @@
 final class Request {
 	public $api = null;
 	public $pageCode = null;
-	public $pageCodeCommon = null;
+	public $pageCodeCommon = array();
 	public $contentType;
+
+	// Any page code can set this to true to stop executing any more page codes.
+	public $pageCodeStop = false;
 
 	public function __construct($config) {
 		$this->contentType = "text/html";
@@ -69,25 +72,51 @@ final class Request {
 			}
 		}
 		else {
-			// Look for PageCode that's relative to the requested path.
+			// Look for common PageCode for current directory, also work up the
+			// directory tree and look for and execute higher PageCodes.
+			$pcDirArray = array();
+			$pcBaseDir = APPROOT . DS . "PageCode" . DS;
+			$filePathArray = explode("/", DIR);
+			for($i = 0; $i < count($filePathArray); $i++) {
+				$prefix = "";
+				foreach ($pcDirArray as $pcDir) {
+					$prefix .= $pcDir . DS;
+				}
+
+				$pcDirArray[] = $prefix . $filePathArray[$i];
+			}
+			$pcDirArray = array_reverse($pcDirArray);
+			if(!in_array("", $pcDirArray)) {
+				$pcDirArray[] = "";
+			}
+
+			// $pcDirArray now contains at least 1 element, which is the
+			// relative directory of the current request, plus the relative
+			// directories moving up the tree to the root directory.
+			// For example: /Shop/NewItems/Item-1.html will become array(
+			// 0 => 'Shop/NewItems', 1 => 'Shop')
+
+			foreach ($pcDirArray as $pcDir) {
+				$pcCommonPath  = APPROOT . DS . "PageCode" . DS . $pcDir . DS;
+				$pcCommonFile  = "_Common.php";
+				$pcCommonClass = str_replace("/", "_", $pcDir) 
+					. "__Common_PageCode";
+				if(file_exists($pcCommonPath . $pcCommonFile)) {
+					require_once($pcCommonPath . $pcCommonFile);
+					if(class_exists($pcCommonClass)) {
+						$this->pageCodeCommon[] = 
+							new $pcCommonClass($this->pageCodeStop);
+					}
+				}
+			}
+
+			// Look for and load the page's specific PageCode.
 			$pageCodeFile  = APPROOT . DS . "PageCode" . DS . FILEPATH . ".php";
 			$pageCodeClass = FILECLASS . "_PageCode";
 			if(file_exists($pageCodeFile)) {
 				require($pageCodeFile);
 				if(class_exists($pageCodeClass)) {
-					$this->pageCode = new $pageCodeClass();
-				}
-			}
-
-			// Look for common PageCode for current directory.
-			$pageCodeComFile = APPROOT . DS . "PageCode" 
-				. DS . DIR . DS . "_Common.php"; 
-			$pageCodeComClass = str_replace("/", "_", DIR) 
-				. "__Common_PageCode";
-			if(file_exists($pageCodeComFile)) {
-				require($pageCodeComFile);
-				if(class_exists($pageCodeComClass)) {
-					$this->pageCodeCommon = new $pageCodeComClass();
+					$this->pageCode = new $pageCodeClass($this->pageCodeStop);
 				}
 			}
 		}

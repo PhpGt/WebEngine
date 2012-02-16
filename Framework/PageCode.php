@@ -3,6 +3,12 @@
  * TODO: Docs.
  */
 abstract class PageCode {
+	private $_stop;
+
+	public function __construct(&$stop) {
+		$this->_stop = &$stop;
+	}
+
 	/**
 	 * The main function that contains all data IO and DOM manipulation.
 	 * @param ApiWrapper $api The object that acts as a single entry point to
@@ -18,5 +24,15 @@ abstract class PageCode {
 	 * Associative array.
 	 */
 	abstract protected function go($api, $dom, $template, $tool);
+
+	/**
+	 * Calling this function will ensure that no more PageCode instances are
+	 * executed in the current request. This could be used to disable execution
+	 * of _Common.php PageCodes, or from within _Common.php itself where it will
+	 * stop the execution of nested PageCodes in directories above the cwd.
+	 */
+	protected function stop() {
+		$this->_stop = true;
+	}
 }
 ?>
