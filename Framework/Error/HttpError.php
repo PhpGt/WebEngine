@@ -14,8 +14,8 @@ class HttpError extends Exception {
 	private function displayError($code) {
 		$fileName = $code . ".html";
 		$pathArray = array(
-			APPROOT . DS . DIR . DS,
-			APPROOT . DS,
+			APPROOT . DS . "PageView" . DS . DIR . DS,
+			APPROOT . DS . "PageView" . DS,
 			GTROOT . DS . "Framework" . DS . "Error" . DS 
 		);
 
