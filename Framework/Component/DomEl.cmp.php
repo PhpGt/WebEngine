@@ -65,7 +65,12 @@ class DomEl implements ArrayAccess {
 			$value = null;
 			$args = func_get_args();
 			if(isset($args[1])) {
-				$attrArray = $args[1];
+				if(is_array($args[1])) {
+					$attrArray = $args[1];
+				}
+				else if(is_string($args[1])) {
+					$value = $args[1];
+				}
 			}
 			if(isset($args[2])) {
 				$value = $args[2];
@@ -73,7 +78,7 @@ class DomEl implements ArrayAccess {
 
 			$elementArray[] = new DomEl(
 				$this->_dom,
-				$toAdd,
+				$input,
 				$attrArray,
 				$value
 			);
