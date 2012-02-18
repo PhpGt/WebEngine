@@ -27,8 +27,11 @@ class Dom implements ArrayAccess {
 				$pathId .= "_";
 			}
 			$pathId .= FILE;
+			$classArray = explode("/", DIR . "/" . FILE);
 
-			$bodyTag->addClass(strtolower(FILE));
+			foreach($classArray as $class) {
+				$bodyTag->addClass(lcfirst($class));
+			}
 			$bodyTag->setAttribute("id", strtolower($pathId));
 		}
 	}
