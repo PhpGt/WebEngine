@@ -1,13 +1,37 @@
 <?php
 class HttpError extends Exception {
+	private $_errorCodeMessage = array(
+		301 => "Moved Permanently",
+		400 => "Bad Request",
+		401 => "Unauthorized",
+		403 => "Forbidden",
+		404 => "Not Found",
+		408 => "Request Timeout",
+		410 => "Gone",
+		429 => "Too Many Requests",
+		500 => "Internal Server Error",
+		501 => "Not Implemented",
+		503 => "Service Unavailable"
+	);
+
 	public function __construct(
-	$message, $code = 0, Exception $previous = null) {
-		$this->sendHeaders($message, $code);
+	$code, Exception $previous = null, $message = null) {
+		if(is_null($message)) {
+			if(array_key_exists($code, $this->_errorCodeMessage)) {
+				$message = $this->_errorCodeMessage[$code];
+			}
+			else {
+				$code = 500;
+				$message = $this->_errorCodeMessage[$code];
+			}
+		}
+
+		$this->sendHeaders($code, $message);
 		$this->displayError($code);
 		exit;
 	}
 
-	private function sendHeaders($message, $code) {
+	private function sendHeaders($code, $message) {
 		header($_SERVER["SERVER_PROTOCOL"] . " " . $code . " " . $message);
 	}
 
