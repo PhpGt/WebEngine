@@ -12,10 +12,19 @@ class Navigation_PageTool extends PageTool {
 		foreach($this->_navElements as $nav) {
 			$navLiTags = $nav["ul li"];
 			foreach($navLiTags as $li) {
-				$toMatch = strlen(DIR) > 0
-					? DIR
+				$dir = DIR;
+				if(strstr($dir, "/")) {
+					$dir = substr($dir, 0, strpos($dir, "/"));
+				}
+
+				$toMatch = strlen($dir) > 0
+					? $dir
 					: FILE;
 				$pattern = "/" . $toMatch . "/";
+
+				if (strstr(DIR, "/")) {
+					//var_dump($pattern, FILE);die();
+				}
 
 				if(FILE === "Index") {
 					// Match "Index" with "/".
