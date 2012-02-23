@@ -1,4 +1,4 @@
-insert into `PT_Content_Type` (`Name`)
+insert into `Content_Type` (`Name`)
 values
 	('Text'),
 	('TextTitle'),
