@@ -6,7 +6,7 @@
 class Navigation_PageTool extends PageTool {
 	private $_navElements;
 
-	public function go($api, $dom, $template) {
+	public function go($api, $dom, $template, $tool) {
 		$this->_navElements = $dom["nav"];
 
 		foreach($this->_navElements as $nav) {

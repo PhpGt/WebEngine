@@ -41,7 +41,12 @@ class PageToolWrapper implements ArrayAccess {
 					if(file_exists($path . $fileName)) {
 						require_once($path . $fileName);
 						if(class_exists($className)) {
-							$this->_pageToolObjects[$offset] = new $className();
+							$this->_pageToolObjects[$offset] = new $className(
+								$this->_api,
+								$this->_dom,
+								$this->_template,
+								$this
+							);
 							return $this->_pageToolObjects[$offset];
 						}
 						else {
@@ -67,12 +72,24 @@ class PageToolWrapper implements ArrayAccess {
 		die("What are you unsetting the PageTool for???");
 	}
 
+	/** 
+	 * Maps the PageToolWrapper's method to the PageTool object matching the
+	 * given name. For example, $tool->go("Foo") will call the "go" method
+	 * of the Foo PageTool, injecting the PHPGt arguments. More arguments can
+	 * be passed to the method by simply supplying them to the function 
+	 * e.g. $tool->go("Foo", $bar, $baz)
+	 */
+
 	public function __call($name, $args) {
 		$toolName = $args[0];
+		array_shift($args);
 
 		call_user_func_array(
 			array($this[$toolName], $name),
-			array($this->_api, $this->_dom, $this->_template)
+			array_merge(
+				array($this->_api, $this->_dom, $this->_template, $this),
+				$args
+			)
 		);
 	}
 }
