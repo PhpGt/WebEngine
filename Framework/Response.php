@@ -24,7 +24,7 @@ final class Response {
 		// Buffer current PageView and optional header/footer.
 		$this->bufferPageView("Header");
 		if(!$this->bufferPageView()) {
-			throw new HttpError("Not found", 404);
+			throw new HttpError(404);
 		}
 		$this->bufferPageView("Footer");
 
