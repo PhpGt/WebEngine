@@ -474,6 +474,7 @@ class DomEl implements ArrayAccess {
 			break;
 		case "innerText":
 		case "text":
+			$value = htmlentities($value);
 			$this->node->nodeValue = $value;
 			break;
 		case "value":
