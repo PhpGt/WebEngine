@@ -123,20 +123,20 @@ class Dal implements ArrayAccess {
 				);
 			}
 		}
+
+		var_dump($data["Type"]);
+		var_dump($message);
 		
 		switch($data["Type"]) {
 		case "NO_TABLE":
 			// Attempt to find creation script for given table.
 			$tableName = substr($data["Match"][1],
 				strrpos($data["Match"][1], ".") + 1);
-			if(strrpos($tableName, "PT_") !== 0) {
-				$tableName = substr($tableName, 0, strpos($tableName, "_"));
-			}
 			$sqlPathArray = array(
 				APPROOT . DS . "Database" . DS . ucfirst($tableName),
 				GTROOT  . DS . "Database" . DS . ucfirst($tableName)
 			);
-
+			
 			$reAttemptSql = array();
 			foreach($sqlPathArray as $sqlPath) {
 				// Look for underscore prefixed files.
@@ -202,7 +202,8 @@ class Dal implements ArrayAccess {
 				: null;
 			
 			if(is_null($rootPass)) {
-				header("Location: /Gt.html?DbDeploy=" . $_SERVER["REQUEST_URI"]);
+				header("Location: /Gt.html?DbDeploy="
+					. $_SERVER["REQUEST_URI"]);
 				exit;
 			}
 
