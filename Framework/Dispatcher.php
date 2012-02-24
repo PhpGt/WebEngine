@@ -21,13 +21,9 @@ final class Dispatcher {
 			if(strstr($getData["url"], "?")) {
 				$keyValuePair = substr($getData["url"],
 					strpos($getData["url"], "?") + 1);
-				if(is_string($keyValuePair)) {
-					$getData[$keyValuePair] = "";
-				}
-				else {
-					$keyValuePair = explode("=", $keyValuePair);
-					$getData[$keyValuePair[0]] = $keyValuePair[1];
-				}
+				
+				$keyValuePair = explode("=", $keyValuePair);
+				$getData[$keyValuePair[0]] = $keyValuePair[1];
 			}
 			unset($getData["url"]);
 		}
