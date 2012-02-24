@@ -74,6 +74,7 @@ final class Request {
 		else {
 			// Look for common PageCode for current directory, also work up the
 			// directory tree and look for and execute higher PageCodes.
+			$pcClassSuffix = "_PageCode";
 			$pcDirArray = array();
 			$pcBaseDir = APPROOT . DS . "PageCode" . DS;
 			$filePathArray = explode("/", DIR);
@@ -100,23 +101,32 @@ final class Request {
 				$pcCommonPath  = APPROOT . DS . "PageCode" . DS . $pcDir . DS;
 				$pcCommonFile  = "_Common.php";
 				$pcCommonClass = str_replace("/", "_", $pcDir) 
-					. "__Common_PageCode";
+					. "__Common";
 				if(file_exists($pcCommonPath . $pcCommonFile)) {
 					require_once($pcCommonPath . $pcCommonFile);
 					if(class_exists($pcCommonClass)) {
 						$this->pageCodeCommon[] = 
 							new $pcCommonClass($this->pageCodeStop);
 					}
+					else if(class_exists($pcCommonClass . $pcClassSuffix)) {
+						$pcWithSuffix = $pcCommonClass . $pcClassSuffix;
+						$this->pageCodeCommon[] = new $pcWithSuffix(
+							$this->pageCodeStop);
+					}
 				}
 			}
 
-			// Look for and load the page's specific PageCode.
+			//  for and load the page's specific PageCode.
 			$pageCodeFile  = APPROOT . DS . "PageCode" . DS . FILEPATH . ".php";
-			$pageCodeClass = FILECLASS . "_PageCode";
+			$pageCodeClass = FILECLASS;
 			if(file_exists($pageCodeFile)) {
 				require($pageCodeFile);
 				if(class_exists($pageCodeClass)) {
 					$this->pageCode = new $pageCodeClass($this->pageCodeStop);
+				}
+				else if(class_exists($pageCodeClass . $pcClassSuffix)) {
+					$pcWithSuffix = $pageCodeClass . $pcClassSuffix;
+					$this->pageCode = new $pcWithSuffix($this->pageCodeStop);
 				}
 			}
 		}
