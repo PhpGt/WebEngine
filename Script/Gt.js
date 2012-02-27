@@ -1,13 +1,23 @@
 /**
- * GT core JavaScript file. Contains the most essential utility functions.
- * TODO: Docs.
- * [jQuery's Dom Ready functionality included as standard]
- * [DomAssistant required to use query selectors in < IE9 properly 
- * (also adds nice DOM manipulation features)].
+ * GT core JavaScript file. Contains the most essential utility functions, such
+ * as DOM selection, event registration and ajax communication.
  *
- * Recommended to use DOMAssistant for lightweight, cross browser functionality,
- * but if only compliant browsers are targetted (i.e. for Chrome applications)
- * then GT object will handle some functions simply like ajax and querySelector.
+ * Bundled with this file is DOMAssistant from domassistant.com. A lightweight
+ * but powerful JavaScript library. DOMAssistant is wrapped by the GT function,
+ * and harmonised by default - this means that no global variables will be
+ * exposed, and using other JavaScript libraries that share variables such as
+ * the dollar sign will not be broken.
+ * To use DOMAssistant as standard (through $.*), call GT.$() function
+ * first.
+ *
+ * Provided as standard:
+ * `GT()`	- pass a string to perform CSS query selection. Returned elements
+ * contain DOMAssistant-injected properties.
+ *			- pass an element to inject DOMAssistant properties, and return it.
+ *			- pass a function to trigger the function on document ready.
+ * `GT.ajax`- perform a get or post request with minimal overheads.
+ * `GT.template - obtain a cloned reference to an element that has been
+ * templated by PHP.Gt.
  */
 
 (function() {
@@ -24,7 +34,7 @@
 		}
 		if(typeof arguments[0] === "string") {
 			// Return matching DomNodes from CSS selector.
-			return GT.querySelector(arguments[0], arguments[1]);
+			return GT.dom(arguments[0], arguments[1]);
 		}
 		// Must be an element reference - attempt to pass it to the $ function.
 		if(_$) {
@@ -112,7 +122,7 @@
 	 * DOM element.
 	 * @return NodeList An array like object containing the matching elements.
 	 */
-	GT.querySelector = function(selector, quickReference) {
+	GT.dom = function(selector, quickReference) {
 		var testEl;
 		// Check if DOMAssistant is loaded.
 		if(window.DOMAssistant) {
@@ -302,7 +312,7 @@
 	 * available (for speed), or falls back to a simple loop system.
 	 * Note that looping over many elements is slow without DOMAssistant.
 	 */
-	GT.template = function() {
+	GT.scrapeTemplate = function() {
 		var templateDiv = document.getElementById("PHPGt_Template_Elements"),
 			templateDivNodeCount,
 			i;
@@ -319,7 +329,7 @@
 	/**
 	 * TODO: Docs.
 	 */
-	GT.getTemplate = function(name, templateAttribute){
+	GT.template = function(name, templateAttribute){
 		var i, templateNodesCount, el, clone;
 
 		if(!templateAttribute) {
@@ -343,7 +353,7 @@
 
 	GT.harmonize();
 	GT.ready(GT.harmonize);
-	GT.ready(GT.template);
+	GT.ready(GT.scrapeTemplate);
 
 	window.GT = GT;
 }());
