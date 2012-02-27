@@ -27,7 +27,6 @@
  * `GT.template - obtain a cloned reference to an element that has been
  * templated by PHP.Gt.
  */
-
 (function() {
 	var _$ = window.$ || null,
 		_$$ = window.$$ || null;
@@ -151,12 +150,12 @@
 	GT.ajax = {
 		"get": function(url, callback) {
 			GT.DOMAssistant.AJAX.get(url, function(result) {
-				GT.ajaxCallback(result, callback)
+				GT.ajaxCallback(result, callback);
 			});
 		},
 		"post": function(url, callback) {
 			GT.DomAssistant.AJAX.post(url, function(result) {
-				GT.ajaxCallback(result, callback)
+				GT.ajaxCallback(result, callback);
 			});
 		}
 	};
@@ -166,12 +165,8 @@
 	 * is JSON.
 	 */
 	GT.ajaxCallback = function(result, callback) {
-		try {
-			// TODO: Why is this not being triggered???
-			resultObj = JSON.parse(result);
-			result = resultObj;
-		}
-		catch(e) {}
+		resultObj = JSON.parse(result);
+		result = resultObj;
 		
 		callback(result);
 	};
