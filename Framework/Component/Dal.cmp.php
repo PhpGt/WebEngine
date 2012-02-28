@@ -6,6 +6,7 @@ class Dal implements ArrayAccess {
 	private $_dbh = null;
 	private $_dalElArray = array();
 	private $_paramChar = null;
+	private $_createdTableCache = array();
 
 	/**
 	 * TODO: Docs.
@@ -96,6 +97,7 @@ class Dal implements ArrayAccess {
 	 * TODO: Docs.
 	 */
 	public function fixError($input) {
+		$this->errorStylesheet();
 		$message = "";
 		if($input instanceof PDOException) {
 			$message = $input->getMessage();
@@ -124,8 +126,8 @@ class Dal implements ArrayAccess {
 			}
 		}
 
-		var_dump($data["Type"]);
-		var_dump($message);
+		echo '<p class="error">' . $data["Type"];
+		echo '<p class="errorMessage">' . $message;
 		
 		switch($data["Type"]) {
 		case "NO_TABLE":
@@ -138,6 +140,8 @@ class Dal implements ArrayAccess {
 				die("Error: Table cannot be created. $tableName");
 			}
 			$this->createTableAndDependencies($tableName);
+			echo '<p class="success">Automatic deployment successful! '
+				. '<a href="' . $_SERVER["REQUEST_URI"] . '">Continue</a>';
 			break;
 		case "NO_DB":
 		case "NO_USER":
@@ -171,12 +175,30 @@ class Dal implements ArrayAccess {
 		default:
 			break;
 		}
+
+		// TODO: Replace with App.cfg's production value.
+		if(!false) {
+			exit;
+		}
 	}
 
 	/**
 	 * TODO: Docs.
 	 */
 	public function createTableAndDependencies($tableName) {
+		// Check table doesn't already exist.
+		$stmt = $this->_dbh->prepare("
+			select `TABLE_NAME` 
+			from `information_schema`.`TABLES`
+			where `TABLE_SCHEMA` = :TableName");
+		$stmt->execute(array(":TableName" => $tableName));
+		$dbResult = $stmt->fetch();
+		if($dbResult !== false) {
+			// There is a result - ignore because table is already created.
+			echo '<p class="alreadyDeployed">Already exists: ' . $tableName;
+			return;
+		}
+
 		// Attempt to find creation script for given table.
 		$sqlPathArray = array(
 			APPROOT . DS . "Database" . DS . ucfirst($tableName),
@@ -196,27 +218,28 @@ class Dal implements ArrayAccess {
 					continue;
 				}
 
-				echo "<p>Deploying $file.";
+				echo '<p class="deploying">Deploying: ' . $file;
 				$sql = file_get_contents($sqlPath . DS . $file);
-				var_dump($sql);
+				echo '<pre class="sql">' . $sql . '</pre>';
 
 				// Detect any table references in SQL and attempt to create
 				// them too.
-				/*
-				 constraint `Fk_User__User_Type`
-					foreign key (`Fk_User_Type`)
-					references `User_Type` (`Id`)
-					on delete restrict
-					on update cascade,
-				*/
 				$matches = array();
 				$pattern = "/REFERENCES\s*`([^`]+)`/i";
 				preg_match_all($pattern, $sql, $matches);
 				
 				foreach ($matches[1] as $dependency) {
-					echo "<p>DEPENDENCY DETECTED IN '$tableName': $dependency.";
+					if(in_array($dependency, $this->_createdTableCache)) {
+						echo '<p class="alreadyDeployed">Already exists: ' 
+							. $tableName;
+					}
+					else {
+						echo '<p class="dependency">DEPENDENCY DETECTED IN '
+							. "'$tableName': $dependency.";
+						// Recursively call this function for each dependency.
+						$this->createTableAndDependencies($dependency);
+					}
 				}
-				die();
 
 				$result = $this->_dbh->query($sql);
 
@@ -225,15 +248,53 @@ class Dal implements ArrayAccess {
 					exit;
 				}
 				else {
-					echo " - SUCCESS!";
+					echo '<p class="success">Success deploying ' . $file;
+					$this->_createdTableCache[] = $tableName;
 				}
-				echo "</p>";
 			}
 		}
+	}
 
-		echo "<p>Automatic deployment successful! "
-			. "<a href='" . $_SERVER["REQUEST_URI"] . "'>Continue</a></p>";
-		var_dump($sqlPathArray);
+	private function errorStyleSheet() {
+		echo <<<STYLE
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	font-family: "Ubuntu", "Arial", sans-serif;
+	color: #888;
+}
+p {
+	border-bottom: 1px dotted #aaa;
+	padding: 8px;
+}
+pre {
+	font-family: "Ubuntu-mono", "Consolas", monospace;
+	padding: 8px;
+	background: #272822;
+	color: #fefefe;
+}
+
+.error {
+	background: #D92E2E;
+	color: #fff;
+	font-weight: bold;
+}
+.alreadyDeployed {
+	background: #95FF91;
+}
+.deploying {
+	margin-top: 16px;
+	background: #F0DD89;
+}
+.dependency {
+	background: #ADC1ED;
+}
+.success {
+	background: #95FF91;
+}
+</style>
+STYLE;
 	}
 }
 ?>
