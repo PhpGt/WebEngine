@@ -7,10 +7,12 @@
  * similarly, but drop the _Framework suffix.
 */
 class App_Config_Framework {
-	protected $_activeModules;
+	// When an application is set to production mode, errors will be less
+	// verbose and less debugging information is available.
+	protected $_production = false;
+
 	protected $_isCached = true;
 	protected $_isClientCompiled = false;
-	private $_reserved = array("Gt", "g105b", "admin");
 
 	public function __construct() { }
 
@@ -20,10 +22,6 @@ class App_Config_Framework {
 
 	public function isCached() {
 		return $this->_isCached;
-	}
-
-	public function getReserved() {
-		return $this->_reserved;
 	}
 
 	public function isClientCompiled() {
