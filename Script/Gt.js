@@ -168,7 +168,14 @@
 		resultObj = JSON.parse(result);
 		result = resultObj;
 		
-		callback(result);
+		try {
+			callback(result);
+		}
+		catch(e) {
+			console.log("Ajax Callback error caught.");
+			console.log(e);
+			throw e;
+		}
 	};
 
 	/**
