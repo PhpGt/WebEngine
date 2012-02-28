@@ -1,17 +1,13 @@
 <?php
 class Injector {
 	/**
-	 * TODO: Store the injected files here, they can be accessed from the
-	 * PageCode's render function.
-	 **/
-	/**
 	* TODO: Docs.
 	*/
 	public function __construct($dom, $isCompiled) {
-		$this->injectStyleSheets($dom);
-		// TODO: Second param indicates whether to compile - add ability to
-		// change to false for debugging purposes.
-		$this->injectJavaScript($dom, $isCompiled);
+		if($isCompiled) {
+			$this->injectStyleSheets($dom);
+			$this->injectJavaScript($dom);
+		}
 	}
 
 	/**
