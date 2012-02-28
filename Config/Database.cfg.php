@@ -1,4 +1,7 @@
 <?php
+/**
+ * TODO: Docs (holds default settings, can be overridden by apps).
+ */
 class Database_Config_Framework {
 	protected $_host = "127.0.0.1";
 	protected $_name;
@@ -7,6 +10,19 @@ class Database_Config_Framework {
 
 	protected $_driver = "mysql";
 	protected $_paramChar = ":";
+
+	// The creation order of PHP.Gt tables (some may rely on others in foreign
+	// key constraints, for example).
+	private $_sharedCreationOrder = array(
+		"User",
+		"Content",
+		"Blog"
+	);
+
+	// The creation order of application specific tables. These will always be
+	// created *after* the PHP.Gt tables.
+	protected $_creationOrder = array(
+	);
 
 	public function __construct() {
 		$this->_name = isset($this->_name)
@@ -18,6 +34,12 @@ class Database_Config_Framework {
 		$this->_pass = isset($this->_pass)
 			? $this->_pass
 			: "Gt_" . APPNAME . "_Pass";
+	}
+
+	public function getCreationOrder() {
+		return array_merge(
+			$this->_sharedCreationOrder,
+			$this->_creationOrder);
 	}
 
 	public function getSettings() {
