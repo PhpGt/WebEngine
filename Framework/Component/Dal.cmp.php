@@ -129,65 +129,15 @@ class Dal implements ArrayAccess {
 		
 		switch($data["Type"]) {
 		case "NO_TABLE":
-			// Attempt to find creation script for given table.
+			// Function to create given table, but also create any 
+			// tables that are dependant - recursively.
 			$tableName = substr($data["Match"][1],
 				strrpos($data["Match"][1], ".") + 1);
-			$sqlPathArray = array(
-				APPROOT . DS . "Database" . DS . ucfirst($tableName),
-				GTROOT  . DS . "Database" . DS . ucfirst($tableName)
-			);
-			
-			$reAttemptSql = array();
-			foreach($sqlPathArray as $sqlPath) {
-				// Look for underscore prefixed files.
-				if(!is_dir($sqlPath)) {
-					continue;
-				}
-				$fileArray = scandir($sqlPath);
-				foreach ($fileArray as $file) {
-					if($file[0] !== "_") {
-						continue;
-					}
-
-					echo "<p>";
-					echo "Deploying $file.";
-					$sql = file_get_contents($sqlPath . DS . $file);
-					$result = $this->_dbh->query($sql);
-
-					if($result === false) {
-						// An error occurred. This is most likely because an
-						// App-specific insert script has run before a shared
-						// creation script... add the sql to the reAttemptSql
-						// array, try later.
-						$reAttemptSql[] = $sql;
-						echo " - Unsuccessful, trying again later.";
-					}
-					else {
-						echo " - SUCCESS!";
-					}
-					echo "</p>";
-				}
+			if(empty($tableName)) {
+				// TODO: Throw proper error at this point.
+				die("Error: Table cannot be created. $tableName");
 			}
-
-			// TODO: Add failed sql to a stack. Try them all in all orders,
-			// rather than just another loop.
-			foreach($reAttemptSql as $sql) {
-				$result = $this->_dbh->query($sql);
-				echo "<p>";
-				echo "Deploying $file.";
-				if($result === false) {
-					// TODO: Throw proper error.
-					echo "Auto-deployment failed.";
-					exit;
-				}
-				else {
-					echo " - SUCCESS!";
-				}
-			}
-			echo "<p>Automatic deployment successful! "
-				. "<a href='" . $_SERVER["REQUEST_URI"] . "'>Continue</a></p>";
-			var_dump($sqlPathArray);
-			exit;
+			$this->createTableAndDependencies($tableName);
 			break;
 		case "NO_DB":
 		case "NO_USER":
@@ -221,6 +171,69 @@ class Dal implements ArrayAccess {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	public function createTableAndDependencies($tableName) {
+		// Attempt to find creation script for given table.
+		$sqlPathArray = array(
+			APPROOT . DS . "Database" . DS . ucfirst($tableName),
+			GTROOT  . DS . "Database" . DS . ucfirst($tableName)
+		);
+		
+		foreach($sqlPathArray as $sqlPath) {
+			// Look for underscore prefixed files.
+			if(!is_dir($sqlPath)) {
+				continue;
+			}
+			$fileArray = scandir($sqlPath);
+			foreach ($fileArray as $file) {
+				// All creation scripts begin with an underscore. Skip the
+				// files that don't.
+				if($file[0] !== "_") {
+					continue;
+				}
+
+				echo "<p>Deploying $file.";
+				$sql = file_get_contents($sqlPath . DS . $file);
+				var_dump($sql);
+
+				// Detect any table references in SQL and attempt to create
+				// them too.
+				/*
+				 constraint `Fk_User__User_Type`
+					foreign key (`Fk_User_Type`)
+					references `User_Type` (`Id`)
+					on delete restrict
+					on update cascade,
+				*/
+				$matches = array();
+				$pattern = "/REFERENCES\s*`([^`]+)`/i";
+				preg_match_all($pattern, $sql, $matches);
+				
+				foreach ($matches[1] as $dependency) {
+					echo "<p>DEPENDENCY DETECTED IN '$tableName': $dependency.";
+				}
+				die();
+
+				$result = $this->_dbh->query($sql);
+
+				if($result === false) {
+					var_dump($this->_dbh->errorInfo());
+					exit;
+				}
+				else {
+					echo " - SUCCESS!";
+				}
+				echo "</p>";
+			}
+		}
+
+		echo "<p>Automatic deployment successful! "
+			. "<a href='" . $_SERVER["REQUEST_URI"] . "'>Continue</a></p>";
+		var_dump($sqlPathArray);
 	}
 }
 ?>
