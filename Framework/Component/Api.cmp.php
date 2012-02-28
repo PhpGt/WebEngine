@@ -10,6 +10,9 @@ class Api {
 	private $_result 		= null;
 	private $_dalResult		= null;
 
+	private $_affectedRows	= null;
+	private $_lastInsertId	= null;
+
 	protected $externalMethods = array();
 
 	/**
@@ -20,6 +23,11 @@ class Api {
 	 * @return bool True on success, false on failure.
 	 */
 	public function apiCall($dal) {
+		// Quit early if API is a special error class.
+		if($this->_apiName == "PhpGt_API_Error") {
+			return true;
+		}
+
 		// Check to see if there is a defined method of this API's method name.
 		if(method_exists($this, $this->_methodName)) {
 			$params = array_merge(
@@ -28,49 +36,57 @@ class Api {
 			);
 
 			// The DalResult object comes from the DalElement's query function.
-			$this->_dalResult = call_user_func_array(
-				array($this, $this->_methodName),
-				$params
-			);
+			try {
+				$this->_dalResult = call_user_func_array(
+					array($this, $this->_methodName),
+					$params
+				);
 
-			$this->_result = array();
-			if(empty($this->_dalResult)) {
-				// TODO: This catch was put in as the dalResult was null...
-				// is this an error? Investigate.
-				return false;
+				$this->_result = array();
+				if(empty($this->_dalResult)) {
+					// TODO: This catch was put in as the dalResult was null...
+					// is this an error? Investigate.
+					return false;
+				}
+				foreach($this->_dalResult as $key => $value) {
+					$this->_result[$key] = $value;
+				}
 			}
-			foreach($this->_dalResult as $key => $value) {
-				$this->_result[$key] = $value;
+			catch(PDOException $e) {
+				$this->setError($e->getMessage());
 			}
-
-			return true;
 		}
-
-		// If there is no defined method, execute the SQL and pass in the
-		// parameters directly.
-		// Only allow json calls to execute SQL if the script's name is
-		// contained within the externalMethods array (if not json, allow
-		// anyway).
+		
 		if(in_array(ucfirst($this->_methodName), $this->externalMethods)
 		|| strtolower(EXT) !== "json") {
+			// If there is no defined method, execute the SQL and pass in the
+			// parameters directly.
+			// Only allow json calls to execute SQL if the script's name is
+			// contained within the externalMethods array (if not json, allow
+			// anyway).
+
 			$dalElement = $dal[$this->_apiName];
 			
-			$this->_dalResult = call_user_func_array(
-				array($dalElement, $this->_methodName),
-				array($this->_methodParams)
-			);
+			try {
+				$this->_dalResult = call_user_func_array(
+					array($dalElement, $this->_methodName),
+					array($this->_methodParams)
+				);
 
-			$this->_result = array();
-			foreach ($this->_dalResult as $key => $value) {
-				$this->_result[$key] = $value;
+				$this->_result = array();
+				foreach ($this->_dalResult as $key => $value) {
+					$this->_result[$key] = $value;
+				}
+
+				$this->_affectedRows = $this->_dalResult->affectedRows;
+				$this->_lastInsertId = $this->_dalResult->lastInsertId;
 			}
-
-			$this->_affectedRows = $this->_dalResult->affectedRows;
-			$this->_lastInsertId = $this->_dalResult->lastInsertId;
-
-			return true;
+			catch(PDOException $e) {
+				$this->setError($e->getMessage());
+			}
 		}
-		return false;
+
+		return true;
 	}
 
 	public function apiOutput() {

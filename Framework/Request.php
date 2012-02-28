@@ -14,10 +14,6 @@ final class Request {
 
 		if(EXT == "json") { 
 			$this->contentType = "application/json";
-			
-			// Output json from requested API, or fail if invalid request.
-			$errorObject = new StdClass();
-			$errorObject->error = "API module not found.";
 
 			// Look for requested API. Note that API requests have to always
 			// be in the root directory i.e. /Blog.json, and can never be nested
@@ -62,12 +58,15 @@ final class Request {
 
 				if(!method_exists($this->api, lcfirst($methodName)) &&
 				!in_array(ucfirst($methodName), $this->api->externalMethods)) {
-					$this->api->setError("API method does not exist.");
+					$this->api->setError("Given method either does not exist "
+						. "or requires more parameters.");
 					return;
 				}
 			}
 			else {
-				$this->api = $errorObject;
+				$this->api = new Api();
+				$this->api->setApiName("PhpGt_API_Error");
+				$this->api->setError("Requested API does not exist.");
 				return;
 			}
 		}

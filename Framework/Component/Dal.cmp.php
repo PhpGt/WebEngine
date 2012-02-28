@@ -18,6 +18,9 @@ class Dal implements ArrayAccess {
 				$config["Username"],
 				$config["Password"]
 			);
+			$this->_dbh->setAttribute(
+				PDO::ATTR_ERRMODE,
+				PDO::ERRMODE_EXCEPTION);
 
 			$this->_paramChar = $config["ParamChar"];
 		}
