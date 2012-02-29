@@ -51,6 +51,7 @@ class Api {
 				foreach($this->_dalResult as $key => $value) {
 					$this->_result[$key] = $value;
 				}
+				return true;
 			}
 			catch(PDOException $e) {
 				$this->setError($e->getMessage());
@@ -63,7 +64,7 @@ class Api {
 			// parameters directly.
 			// Only allow json calls to execute SQL if the script's name is
 			// contained within the externalMethods array (if not json, allow
-			// anyway).
+			// anyway as in that case it will be being called internally).
 
 			$dalElement = $dal[$this->_apiName];
 			
@@ -80,13 +81,13 @@ class Api {
 
 				$this->_affectedRows = $this->_dalResult->affectedRows;
 				$this->_lastInsertId = $this->_dalResult->lastInsertId;
+				return true;
 			}
 			catch(PDOException $e) {
 				$this->setError($e->getMessage());
 			}
 		}
-
-		return true;
+		return false;
 	}
 
 	public function apiOutput() {

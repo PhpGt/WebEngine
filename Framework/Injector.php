@@ -102,7 +102,7 @@ class Injector {
 	/**
 	* TODO: Docs.
 	*/
-	private function injectJavaScript($dom, $compile) {
+	private function injectJavaScript($dom) {
 		// Find all scripts.
 		$scriptArray = $dom["script[@src][not(@nocompile)]"];
 		$scriptString = "";
