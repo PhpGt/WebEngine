@@ -1,5 +1,6 @@
 create table if not exists `User` (
 	`Id`					int			not null	auto_increment	primary key,
+	`Uuid`					varchar(128)null,
 	`Fk_User_Type`			int			not null	default 1,
 	`Fk_User_Department`	int			null		default null,
 	`Username`				varchar(32)	not null,
