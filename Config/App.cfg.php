@@ -32,5 +32,9 @@ class App_Config_Framework {
 	public function isClientCompiled() {
 		return $this->_isClientCompiled;
 	}
+
+	public function isProduction() {
+		return $this->_production;
+	}
 }
 ?>

@@ -161,13 +161,12 @@ class Injector {
 
 		// Only write the compiled file if there are newer CSS files.
 		if($scriptCacheInvalid) {
-			if($compile) {
-				$compiler = new JavaScriptCompiler_Utility($scriptString);
-				$compiledString = trim($compiler->output());
-				if(!empty($compiledString) ) {
-					$scriptString = $compiledString;
-				}
+			$compiler = new JavaScriptCompiler_Utility($scriptString);
+			$compiledString = trim($compiler->output());
+			if(!empty($compiledString) ) {
+				$scriptString = $compiledString;
 			}
+
 			file_put_contents($scriptCompileFile, $scriptString);
 		}
 

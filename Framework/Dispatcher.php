@@ -44,7 +44,7 @@ final class Dispatcher {
 		// the web root.
 		$isCompiled = $config["App"]->isClientCompiled();
 		$injector  = new Injector($dom, $isCompiled);
-		$organiser = new FileOrganiser();
+		$organiser = new FileOrganiser($config["App"]);
 
 		// Create the wrapper classes for easy access to components.
 		$apiWrapper = new ApiWrapper($dal);
