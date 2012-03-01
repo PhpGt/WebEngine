@@ -11,7 +11,7 @@ class Content_PageTool extends PageTool {
 		foreach ($this->_elements as $element) {
 			$content = $api["Content"]->get(array("Name" => $element->id));
 			if(empty($content["L_Type"])) {
-				return;
+				continue;
 			}
 			switch($content["L_Type"]) {
 			case "Text":
