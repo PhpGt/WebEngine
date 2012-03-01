@@ -9,7 +9,7 @@
 class App_Config_Framework {
 	// When an application is set to production mode, errors will be less
 	// verbose and less debugging information is available.
-	protected $_production = false;
+	protected $_isProduction = false;
 	
 	protected $_isCached = true;
 	protected $_isClientCompiled = false;
@@ -34,7 +34,7 @@ class App_Config_Framework {
 	}
 
 	public function isProduction() {
-		return $this->_production;
+		return $this->_isProduction;
 	}
 }
 ?>

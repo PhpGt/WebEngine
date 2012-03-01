@@ -10,7 +10,7 @@ final class FileOrganiser {
 
 		// For production sites, any un-compiled scripts that exist in the
 		// web root should be removed.
-		if($config->isProduction() && $config->isClientCompiled()) {
+		if($config->isClientCompiled()) {
 			$this->removePublicFiles();
 		}
 
@@ -55,8 +55,10 @@ final class FileOrganiser {
 				closedir($dh);
 			}
 
-			if(in_array($fileToDelete, $skipFiles)) {
-				continue;
+			foreach ($skipFiles as $skipFile) {
+				if(strstr($fileToDelete, $skipFile)) {
+					continue 2;
+				}
 			}
 
 			unlink($fileToDelete);
@@ -74,11 +76,11 @@ final class FileOrganiser {
 			GTROOT  . DS . "Style" . DS . "Img"  . DS =>
 				"Style" . DS . "Img",
 			GTROOT  . DS . "Style" . DS . "Font" . DS =>
-				"",
+				"Font",
 			APPROOT . DS . "Style" . DS . "Img"  . DS =>
 				"Style" . DS . "Img",
 			APPROOT . DS . "Style" . DS . "Font" . DS =>
-				"",
+				"Font",
 			APPROOT . DS . "Asset" . DS =>
 				"Asset"
 		);
@@ -86,22 +88,28 @@ final class FileOrganiser {
 		$copyNonProductionDirArray = array(
 			GTROOT  . DS . "Script" . DS =>
 				"",
+			GTROOT  . DS . "Style"  . DS =>
+				"",
 			APPROOT . DS . "Script" . DS =>
+				"",
+			APPROOT . DS . "Style"  . DS =>
 				""
 		);
 
-		if($config->isClientCompiled() && $config->isProduction()) {
-			$copyDirArray = array_merge($copyDirArray,
-				$copyNonProductionDirArray);
-		}
-
 		foreach ($copyDirArray as $source => $dest) {
 			$dest = $webroot . $dest;
-			$this->recursiveCopy($source, $dest);
+			$this->copyFiles($source, $dest, true);
+		}
+
+		if(!$config->isClientCompiled() ) {
+			foreach($copyNonProductionDirArray as $source => $dest) {
+				$dest = $webroot . $dest;
+				$this->copyFiles($source, $dest, false);
+			}
 		}
 	}
 
-	private function recursiveCopy($source, $dest) {
+	private function copyFiles($source, $dest, $recursive) {
 		if(!is_dir($source)) {
 			return;
 		}
@@ -119,8 +127,14 @@ final class FileOrganiser {
 			// created, but this solution is here for the time being because
 			// sometimes you *want* things to be overwritten.
 			if(is_dir($source . $name)) {
+				if(!$recursive) {
+					continue;
+				}
 				@mkdir($dest . DS . $name, 0775, true);
-				$this->recursiveCopy($source . DS . $name, $dest . DS . $name);
+				$this->copyFiles(
+					$source . DS . $name,
+					$dest . DS . $name,
+					true);
 			}
 			else {
 				// TODO: File permissions are not getting set correctly.
