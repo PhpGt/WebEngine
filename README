@@ -1,7 +1,10 @@
 PHP.Gt
+------
 
 A lightweight application development toolkit aimed at automating deployment,
 streamlining development and respecting web technologies
+
+Latest release: v0.0.1 (Alpha)
 
 Versions
 --------
