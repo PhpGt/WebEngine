@@ -124,6 +124,11 @@ final class DalResult implements Iterator, ArrayAccess {
 			}
 		}
 		else {
+			// Only attempt to fetch when there is data to fetch.
+			$count = $this->_stmt->columnCount();
+			if(!$count > 0) {
+				return;
+			}
 			if(false !== ($result = $this->_stmt->fetch(PDO::FETCH_ASSOC))) {
 				$this->result[] = $result;
 			}

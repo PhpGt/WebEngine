@@ -77,16 +77,17 @@ class DalElement {
 			$stmt->bindParam($key, $value);
 		}
 
-		if($stmt->execute()) {
+		try {
+			$result = $stmt->execute();
 			return new DalResult(
 				$stmt,
 				$this->_dal->lastInsertId(), 
 				$sql, 
 				$this->_tableName);
 		}
-		else {
-			// Pass the failed statement to the errorFix function.
-			$this->_dal->fixError($stmt);
+		catch(PDOException $e) {
+			$this->_dal->fixError($e);
+			return false;
 		}
 	}
 }

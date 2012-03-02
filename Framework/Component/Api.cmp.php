@@ -65,9 +65,8 @@ class Api {
 			// Only allow json calls to execute SQL if the script's name is
 			// contained within the externalMethods array (if not json, allow
 			// anyway as in that case it will be being called internally).
-
 			$dalElement = $dal[$this->_apiName];
-			
+
 			try {
 				$this->_dalResult = call_user_func_array(
 					array($dalElement, $this->_methodName),
