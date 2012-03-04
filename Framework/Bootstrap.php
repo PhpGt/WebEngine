@@ -77,8 +77,12 @@ while($filePath[0] == DS) {
 }
 $fileClass = str_replace(DS, "_", $filePath);
 
+$appName = strstr($cwd, ".")
+	? substr($cwd, 0, strrpos($cwd, "."))
+	: $cwd;
+
 define("VER",        "1.0");
-define("APPNAME",    substr($cwd, 0, strrpos($cwd, ".")) );
+define("APPNAME",    $appName);
 define("GTROOT",     dirname(dirname(__FILE__)));
 define("APPROOT",    getcwd());
 define("DIR",        $dirName);
