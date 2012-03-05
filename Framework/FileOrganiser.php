@@ -141,7 +141,9 @@ final class FileOrganiser {
 				copy($source . DS . $name, $dest . DS . $name);
 				$own = posix_getpwuid(fileOwner($source . DS . $name));
 				
-				chmod($dest . DS . $name, 0775);
+				// TODO: Had to surpress errors/warnings here after pulling 
+				// repo on another workstation.
+				@chmod($dest . DS . $name, 0775);
 				shell_exec("chown "
 					. $own["name"] . " "
 					. $dest . DS . $name);
