@@ -1,6 +1,7 @@
 insert into User (
 	Fk_User_Department,
 	Username,
+	Uuid,
 	Dt_Created,
 	FirstName,
 	LastName,
@@ -12,6 +13,7 @@ insert into User (
 values (
 	:Fk_User_Department,
 	:Username,
+	:Uuid,
 	now(),
 	:FirstName,
 	:LastName,

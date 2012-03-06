@@ -7,6 +7,7 @@ class Security_Config_Framework {
 	protected $_remoteAdminWhiteList = array(
 		"127.0.0.1"
 	);
+	protected $_salt = "Php.Gt default salt - please change this!";
 	protected $_domain;
 	private $_remoteIp;
 
@@ -15,6 +16,7 @@ class Security_Config_Framework {
 		$this->_domain = isset($this->_domain)
 			? $this->_domain
 			: $_SERVER["HTTP_HOST"];
+		define("APPSALT", $this->_salt);
 	}
 
 	public function getDomain() {

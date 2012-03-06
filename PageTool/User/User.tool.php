@@ -11,6 +11,8 @@ class User_PageTool extends PageTool {
 		$userId = null;
 		$username = null;
 		
+		// The openid_identity variable is sent by an OpenId provider on
+		// successful authentication.
 		if(isset($_GET["openid_identity"])) {
 			$this->auth();
 			if(isset($_GET["openid_return_to"])) {
@@ -18,18 +20,12 @@ class User_PageTool extends PageTool {
 				exit;
 			}
 		}
-
-		if(isset($_SESSION["PhpGt_User"])) {
-			if(empty($_SESSION["PhpGt_User"])) {
-				unset($_SESSION["PhpGt_User"]);
-				return false;
-			}
-		}
 		
-		if(isset($_SESSION["PhpGt_OpenId_Data"])) {
-			$username = $_SESSION["PhpGt_OpenId_Data"];
-			// User has just authenticated, needs to match to database user.
-			// The database user may need creating.
+		// User auth through OpenId or saved cookie is stored in the session.
+		if(isset($_SESSION["PhpGt_User.tool_AuthData"])) {
+			$username = $_SESSION["PhpGt_User.tool_AuthData"];
+			// User has authenticated, need to match to database.
+			// The database user may not exist and need creating.
 			$dbUser = $this->_api["User"]->get(array(
 				"Username" => $username
 			));
@@ -40,16 +36,78 @@ class User_PageTool extends PageTool {
 			else {
 				// Doesn't already exist - create and use new user.
 				$newDbUser = $this->_api["User"]->addEmpty(array(
-					"Username" => $username
+					"Username" => $username,
+					"Uuid" => hash("sha512", $username)
 				));
 				$userId = $newDbUser->lastInsertId;
+			}
+		}
+		else {
+			// Cookie information:
+			// Login 0 = sha512 of username (the user's UUID)
+			// Login 1 = sha512 unique salt, generated for this user only
+			// Login 2 = sha512 authentication hash sha(login0.login1.site_salt)
+			// The site salt is stored as a named constant, defined in security
+			// config.
+			if(isset($_COOKIE["PhpGt_Login"])) {
+				if(isset($_COOKIE["PhpGt_Login"][0])
+				&& isset($_COOKIE["PhpGt_Login"][1])
+				&& isset($_COOKIE["PhpGt_Login"][2])) {
+					$userHash = $_COOKIE["PhpGt_Login"][0];
+					$saltHash = $_COOKIE["PhpGt_Login"][1];
+					$authHash = $_COOKIE["PhpGt_Login"][2];
+					
+					// Find the user from their UUID.
+					$dbResult = $this->_api["User"]->getByUuid(array(
+						"Uuid" => $userHash
+					));
+					if($dbResult->hasResult) {
+						// Check authenticity of cookies before logging user in.
+						$authHash2 = hash("sha512",
+							$userHash . $saltHash . APPSALT);
+						if($authHash == $authHash2) {
+							// Log in.
+							$dbUser = $this->_api["User"]->getByUuid(array(
+								"Uuid" => $userHash
+							));
+							if($dbUser->hasResult) {
+								// Already exists - use this user.
+								$userId = $dbUser["Id"];
+								$_SESSION["PhpGt_User.tool_AuthData"] = 
+									$dbUser["Username"];
+								$this->refreshCookies();
+							}
+							else {
+								// Something's gone wrong... there is proper
+								// cookie authentication, but no user exists
+								// in database!
+								// TODO: Log this error.
+							}
+						}
+						else {
+							// Failure - kill all cookies.
+							$this->deleteCookies();
+						}
+					}
+				}
+				else {
+					// Kill any trace of the login cookie.
+					$this->deleteCookies();
+				}
+			}
+
+			if(isset($_SESSION["PhpGt_User"])) {
+				if(empty($_SESSION["PhpGt_User"])) {
+					unset($_SESSION["PhpGt_User"]);
+					return false;
+				}
 			}
 		}
 
 		if(!is_null($userId)) {
 			$_SESSION["PhpGt_User"] = array(
 				"Id" => $userId,
-				"Username" => $_SESSION["PhpGt_OpenId_Data"]
+				"Username" => $_SESSION["PhpGt_User.tool_AuthData"]
 			);
 		}
 
@@ -61,13 +119,57 @@ class User_PageTool extends PageTool {
 
 	public function auth($method = "Google") {
 		$oid = new OpenId_Utility($method);
-		$userData = $oid->getData();
-		$_SESSION["PhpGt_OpenId_Data"] = $userData;
+		$username = $oid->getData();
+		$_SESSION["PhpGt_User.tool_AuthData"] = $username;
+
+		$uuid = hash("sha512", $username);
+		$userSalt = $this->generateSalt();
+		$expires = strtotime("+2 weeks");
+		setcookie(
+			"PhpGt_Login[0]",
+			$uuid,
+			$expires);
+		setcookie(
+			"PhpGt_Login[1]",
+			$userSalt,
+			$expires);
+		setcookie(
+			"PhpGt_Login[2]",
+			hash("sha512", $uuid . $userSalt . APPSALT),
+			$expires);
 	}
 
 	public function unauth() {
-		unset($_SESSION["PhpGt_OpenId_Data"]);
+		unset($_SESSION["PhpGt_User.tool_AuthData"]);
 		unset($_SESSION["PhpGt_User"]);
+		$this->deleteCookies();
+	}
+
+	private function refreshCookies() {
+		$expires = strtotime("+2 weeks");
+		setcookie(
+			"PhpGt_Login[0]",
+			$_COOKIE["PhpGt_Login"][0],
+			$expires);
+		setcookie(
+			"PhpGt_Login[1]",
+			$_COOKIE["PhpGt_Login"][1],
+			$expires);
+		setcookie(
+			"PhpGt_Login[2]",
+			$_COOKIE["PhpGt_Login"][2],
+			$expires);
+	}
+
+	private function deleteCookies() {
+		setcookie("PhpGt_Login[0]", "deleted", time());
+		setcookie("PhpGt_Login[1]", "deleted", time());
+		setcookie("PhpGt_Login[2]", "deleted", time());
+	}
+
+	private function generateSalt() {
+		// TODO: A real salt function.
+		return hash("sha512", rand(0, 10000));
 	}
 }
 ?>
