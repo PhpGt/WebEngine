@@ -55,14 +55,14 @@ class Blog_PageTool extends PageTool {
 		return $preview;
 	}
 
-	public function outputLatest($selector) {
-		/**
-		MEGATODO: Why isn't this hooking up to the DOM properly?
-		**/
-		$domEl = $this->_dom[$selector];
+	public function outputLatest($output) {
 		$blog = $this->_api["Blog"]->getLatest();
 
-		$domEl["p.blogPreview"]->text = "Hello!!!!!";
+		$output["h1"]->text = $blog["Title"];
+		$output["p.date"]->text = date("jS F Y",
+			strtotime($blog["Dt_Publish"]));
+		$output["p.blogPreview"]->text = $this->getPreview($blog);
+		$output["a"]->href = $this->getUrl($blog);
 	}
 }
 ?>
