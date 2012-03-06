@@ -15,19 +15,13 @@ class HttpError extends Exception {
 	);
 
 	public function __construct(
-	$code, Exception $previous = null, $message = null) {
-		if(is_null($message)) {
-			if(array_key_exists($code, $this->_errorCodeMessage)) {
-				$message = $this->_errorCodeMessage[$code];
-			}
-			else {
-				$code = 500;
-				$message = $this->_errorCodeMessage[$code];
-			}
+	$code, $description = null, Exception $previous = null) {
+		if(array_key_exists($code, $this->_errorCodeMessage)) {
+			$message = $this->_errorCodeMessage[$code];
 		}
-
+		
 		$this->sendHeaders($code, $message);
-		$this->displayError($code);
+		$this->displayError($code, $description);
 		exit;
 	}
 
@@ -35,7 +29,7 @@ class HttpError extends Exception {
 		header($_SERVER["SERVER_PROTOCOL"] . " " . $code . " " . $message);
 	}
 
-	private function displayError($code) {
+	private function displayError($code, $description = "") {
 		$fileName = $code . ".html";
 		$pathArray = array(
 			APPROOT . DS . "PageView" . DS . DIR . DS,
@@ -52,6 +46,8 @@ class HttpError extends Exception {
 				}
 			}
 		}
+
+		// TODO: Do something with $description.
 	}
 }
 ?>
