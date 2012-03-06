@@ -207,6 +207,16 @@ class DomElCollection implements Iterator, ArrayAccess {
 			return $this->_elArray[$index];
 		}
 		else {
+			// Return new DomElCollection of elements within current collection.
+			if(is_string($index)) {
+				$subElements = array();
+				foreach ($this->_elArray as $element) {
+					$subElements[] = $element[$index];
+				}
+				$result = new DomElCollection($this->_dom, $subElements);
+
+				return $result;
+			}
 			return null;
 		}
 	}
