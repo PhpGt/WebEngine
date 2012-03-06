@@ -52,6 +52,15 @@ final class Dispatcher {
 		$templateWrapper = new TemplateWrapper($templateArray);
 		$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
+		// Allows the PageCode objects to have access to the important
+		// dependency injector variables internally.
+		$response->dispatch(
+			"setVars",
+			$apiWrapper,
+			$dom,
+			$templateWrapper,
+			$toolWrapper);
+
 		// Dispatch the all important "go" event, that is the entry point to
 		// each PageCode, and has access to all required components.
 		$response->dispatch(

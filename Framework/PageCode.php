@@ -4,9 +4,21 @@
  */
 abstract class PageCode {
 	private $_stop;
+	
+	protected $_api = null;
+	protected $_dom = null;
+	protected $_template = null;
+	protected $_tool = null;
 
 	public function __construct(&$stop) {
 		$this->_stop = &$stop;
+	}
+
+	public function setVars($api, $dom, $template, $tool) {
+		$this->_api = $api;
+		$this->_dom = $dom;
+		$this->_template = $template;
+		$this->_tool = $tool;
 	}
 
 	/**
