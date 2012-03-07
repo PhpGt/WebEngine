@@ -1,6 +1,13 @@
 <?php
 class User_PageTool extends PageTool {
-	public function go($api, $dom, $template, $tool) {}
+	public function go($api, $dom, $template, $tool) {
+		if(empty($_COOKIE["PhpGt_Track"])) {
+			$anonId = $this->generateSalt();
+			$expires = strtotime("+2 weeks");
+			setcookie("PhpGt_Track", $anonId, $expires);
+		}
+		return $_COOKIE["PhpGt_Track"];
+	}
 
 	/**
 	 * Checks the current session for authentication data. This may be
@@ -162,9 +169,10 @@ class User_PageTool extends PageTool {
 	}
 
 	private function deleteCookies() {
-		setcookie("PhpGt_Login[0]", "deleted", time());
-		setcookie("PhpGt_Login[1]", "deleted", time());
-		setcookie("PhpGt_Login[2]", "deleted", time());
+		unset($_COOKIE["PhpGt_Login"]);
+		setcookie("PhpGt_Login[0]", "deleted", 0);
+		setcookie("PhpGt_Login[1]", "deleted", 0);
+		setcookie("PhpGt_Login[2]", "deleted", 0);
 	}
 
 	private function generateSalt() {
