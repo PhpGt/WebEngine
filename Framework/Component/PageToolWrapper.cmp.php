@@ -84,7 +84,7 @@ class PageToolWrapper implements ArrayAccess {
 		$toolName = $args[0];
 		array_shift($args);
 
-		call_user_func_array(
+		return call_user_func_array(
 			array($this[$toolName], $name),
 			array_merge(
 				array($this->_api, $this->_dom, $this->_template, $this),
