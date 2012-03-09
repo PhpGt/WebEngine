@@ -10,6 +10,7 @@
 */
 // Directory is in Web root of current application.
 // Move one directory up to get the "app root".
+ini_set("display_errors", "on");
 chdir("..");
 $cwd = substr(getcwd(), strrpos(getcwd(), "/") + 1);
 // Get the requested path, remove initial slash and any query strings.

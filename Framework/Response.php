@@ -20,7 +20,6 @@ final class Response {
 		$this->_pageCodeCommon = $request->pageCodeCommon;
 		$this->_pageCodeStop = &$request->pageCodeStop;
 		ob_start();
-
 		// Buffer current PageView and optional header/footer.
 		$this->bufferPageView("Header");
 		if(!$this->bufferPageView()) {

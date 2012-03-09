@@ -120,7 +120,7 @@ class Dal implements ArrayAccess {
 		$match = array();
 		// Find known error messages.
 		foreach ($patternArray as $patternName => $pattern) {
-			if(preg_match($pattern, $message, &$match) > 0) {
+			if(preg_match($pattern, $message, $match) > 0) {
 				$data = array(
 					"Type" => $patternName,
 					"Match" => $match

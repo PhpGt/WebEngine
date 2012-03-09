@@ -13,6 +13,9 @@ class App_Config_Framework {
 	
 	protected $_isCached = true;
 	protected $_isClientCompiled = false;
+
+	protected $_timezone = "Europe/London";
+
 	private $_reserved = array("Gt", "g105b", "admin");
 
 	public function __construct() { }
@@ -27,6 +30,10 @@ class App_Config_Framework {
 
 	public function getReserved() {
 		return $this->_reserved;
+	}
+
+	public function getTimezone() {
+		return $this->_timezone;
 	}
 
 	public function isClientCompiled() {
