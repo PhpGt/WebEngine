@@ -450,6 +450,7 @@ class DomEl implements ArrayAccess {
 		case "innerHtml":
 		case "html":
 		case "HTML":
+			$value = mb_convert_encoding($value, 'html-entities', 'utf-8');
 			// If plain text string is provided, skip generating DOMDocument.
 			if($value == strip_tags($value)) {
 				$this->node->nodeValue = $value;
@@ -474,7 +475,7 @@ class DomEl implements ArrayAccess {
 			break;
 		case "innerText":
 		case "text":
-			$value = htmlentities($value);
+			$value = htmlentities($value);//, ENT_COMPAT | ENT_HTML401, "UTF-8", true);
 			$this->node->nodeValue = $value;
 			break;
 		case "value":

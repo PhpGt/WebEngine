@@ -14,8 +14,12 @@ class Content_PageTool extends PageTool {
 				continue;
 			}
 			switch($content["L_Type"]) {
-			case "Text":
 			case "TextPlain":
+				if(!empty($content["Value"])) {
+					$element->text = $content["Value"];
+				}
+				break;
+			case "Text":
 			case "TextTitle":
 			case "TextRich":
 				if(!empty($content["Value"])) {

@@ -4,6 +4,8 @@
  */
 class Database_Config_Framework {
 	protected $_host = "127.0.0.1";
+	protected $_port = "3306";
+	protected $_charset = "utf8";
 	protected $_name;
 	protected $_user;
 	protected $_pass;
@@ -46,8 +48,10 @@ class Database_Config_Framework {
 		return array(
 			"ConnectionString" => 
 				$this->_driver 
-				. ":dbname=" . $this->_name 
-				. ";host=" . $this->_host,
+				. ":dbname=" 	. $this->_name 
+				. ";host=" 		. $this->_host
+				. ";port=" 		. $this->_port
+				. ";charset=" 	. $this->_charset,
 			"ConnectionString_Root" =>
 				$this->_driver
 				. ":host=" . $this->_host,

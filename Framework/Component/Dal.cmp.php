@@ -16,8 +16,7 @@ class Dal implements ArrayAccess {
 			$this->_dbh = new PDO(
 				$config["ConnectionString"],
 				$config["Username"],
-				$config["Password"],
-				array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+				$config["Password"]
 			);
 			$this->_dbh->setAttribute(
 				PDO::ATTR_ERRMODE,
