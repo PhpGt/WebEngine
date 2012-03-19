@@ -82,6 +82,18 @@ $appName = strstr($cwd, ".")
 	? substr($cwd, 0, strrpos($cwd, "."))
 	: $cwd;
 
+$pageURL = ($_SERVER["HTTPS"])
+	? "https://" 
+	: "http://";
+if($_SERVER["SERVER_PORT"] != "80") {
+	$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]
+	. $_SERVER["REQUEST_URI"];
+}
+else {
+	$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+}
+
+define("URL",		$pageUrl);
 define("VER",        "1.0");
 define("APPNAME",    $appName);
 define("GTROOT",     dirname(dirname(__FILE__)));
