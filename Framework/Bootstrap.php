@@ -82,15 +82,15 @@ $appName = strstr($cwd, ".")
 	? substr($cwd, 0, strrpos($cwd, "."))
 	: $cwd;
 
-$pageURL = ($_SERVER["HTTPS"])
-	? "https://" 
-	: "http://";
+$pageUrl = (empty($_SERVER["HTTPS"]))
+	? "http://" 
+	: "https://";
 if($_SERVER["SERVER_PORT"] != "80") {
-	$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]
+	$pageUrl .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"]
 	. $_SERVER["REQUEST_URI"];
 }
 else {
-	$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+	$pageUrl .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
 }
 
 define("URL",		$pageUrl);
