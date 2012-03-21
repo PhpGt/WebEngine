@@ -1,10 +1,9 @@
 <?php
-require_once(dirname(__FILE__) . DS . "FacebookObject.class.php");
-
 class Facebook_PageTool extends PageTool {
 
 	private $_sdkStarted = false;
 	private $_fbRootJavaScript = null;
+	private $_accessToken = null;
 
 	/**
 	 * Starts the Facebook SDK/API for the current request. Calling go for the
@@ -34,6 +33,10 @@ JS;
 		$this->_sdkStarted = true;
 	}
 
+	public function setAccessToken($token) {
+		$this->_accessToken = $token;
+	}
+
 	public function checkSdk() {
 		if($this->_sdkStarted) {
 			return;
@@ -47,8 +50,20 @@ JS;
 		);
 	}
 
-	public function get($id, $authToken = null) {
-		return new FacebookObject($id, $authToken);
+	public function getGraphUrl($id) {
+		return "https://graph.facebook.com/" . $id;
+	}
+
+	public function getFeed($id) {
+		$url = $this->getGraphUrl($id)
+			. "/feed?access_token="
+			. $this->_accessToken;
+		$ch = curl_init($url);
+		$options = array(CURLOPT_RETURNTRANSFER => true);
+		curl_setopt_array($ch, $options);
+		$result = json_decode(curl_exec($ch));
+
+		return $result;
 	}
 
 	/**
