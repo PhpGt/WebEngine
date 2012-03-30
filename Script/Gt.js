@@ -154,7 +154,7 @@
 			});
 		},
 		"post": function(url, callback) {
-			GT.DomAssistant.AJAX.post(url, function(result) {
+			GT.DOMAssistant.AJAX.post(url, function(result) {
 				GT.ajaxCallback(result, callback);
 			});
 		}
