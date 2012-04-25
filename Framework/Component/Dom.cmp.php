@@ -37,7 +37,13 @@ class Dom implements ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Automatic calling of non-existent methods. Methods that are not explicitly
+	 * defined within this class will be caught here. Common uses of this will
+	 * be to call a method that is part of the DOMDocument itself, such as
+	 * saveHTML() or getElementById()
+	 * @param string $name The method's name
+	 * @param array $args An array of arguments passed to the method.
+	 * @return mixed Returns the outcome of calling the method with given args.
 	 */
 	public function __call($name, $args) {
 		// If a missing method is called, attempt to call it on the DOMDocument.
@@ -81,6 +87,7 @@ class Dom implements ArrayAccess {
 			}
 		}
 
+		// Working with an XQuery to CSS convertion utility:
 		$xQuery = new CssXpath_Utility($selector);
 		$xpath = new DOMXPath($this->_domDoc);
 
@@ -135,7 +142,6 @@ class Dom implements ArrayAccess {
 	$el,
 	$attrArray  = null,
 	$value      = null) {
-
 		return new DomEl($this, $el, $attrArray, $value);
 	}
 
