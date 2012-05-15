@@ -203,8 +203,8 @@ class Dal implements ArrayAccess {
 
 		// Attempt to find creation script for given table.
 		$sqlPathArray = array(
-			APPROOT . DS . "Database" . DS . ucfirst($tableName),
-			GTROOT  . DS . "Database" . DS . ucfirst($tableName)
+			GTROOT  . DS . "Database" . DS . ucfirst($tableName),
+			APPROOT . DS . "Database" . DS . ucfirst($tableName)
 		);
 		
 		foreach($sqlPathArray as $sqlPath) {
