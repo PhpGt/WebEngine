@@ -146,7 +146,7 @@ class User_PageTool extends PageTool {
 			$expires);
 	}
 
-	public function unauth() {
+	public function unAuth() {
 		unset($_SESSION["PhpGt_User.tool_AuthData"]);
 		unset($_SESSION["PhpGt_User"]);
 		$this->deleteCookies();
