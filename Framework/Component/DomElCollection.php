@@ -1,4 +1,10 @@
 <?php
+/**
+ * TODO: Docs.
+ *
+ * @author Greg Bowler <greg.bowler@g105b.com>
+ * @since 0.0.1
+ */
 class DomElCollection implements Iterator, ArrayAccess {
 	private $_dom;
 	private $_elArray;
@@ -6,6 +12,8 @@ class DomElCollection implements Iterator, ArrayAccess {
 
 	/**
 	* Stores a collection of DomEl objects, accessible as an inexed array.
+	*
+	* @param Dom $dom The reference to the current Dom object.
 	* @param array $elArray An array containing either DomEl objects or PHP's
 	* native DOMElement objects, that will be automatically converted into
 	* DomEl objects.
@@ -63,6 +71,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 
 	/**
 	* Calls the given function on each DomEl in the stored element array.
+	*
 	* @return mixed The result of calling the function on the last element in
 	* the collection.
 	*/
@@ -81,7 +90,9 @@ class DomElCollection implements Iterator, ArrayAccess {
 	* Returns the requested property from the first contained element. This
 	* allows for a more natrual coding style when using CSS selectors to work
 	* with selectors only matching one element i.e. $dom["p#main"]->innerText
+	* 
 	* @param string $key The property name to retrieve.
+	*
 	* @return mixed The value of the requested property.
 	*/
 	public function __get($key) {
@@ -107,6 +118,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 	/**
 	* Sets the property named $key of elements within the collection with the 
 	* provided value.
+	*
 	* @param string $key The property to set.
 	* @param mixed $value The value to assign to the given property.
 	*/
@@ -117,25 +129,37 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
-	 * Arbitary number of params to send into scope of callback.
+	 * Applies the given callback to the internal array, passing an array of
+	 * arguments to send into scope of callback.
+	 *
+	 * @param callable $callback The function name or callback reference to
+	 * apply on the array.
+	 * @param array $callbackArg An array of parameters to pass to the callback.
+	 *
+	 * @return bool True on success, false on failure.
 	 */
 	public function map($callback, $callbackArg = null) {
-		array_walk($this->_elArray, $callback, $callbackArg);
+		return array_walk($this->_elArray, $callback, $callbackArg);
 	}
 
 	/**
-	 * TODO: Docs.
-	 * @return array
+	 * Returns the internal array of elements.
+	 * TODO: Should this be private?
+	 *
+	 * @return array The internal array of elements.
 	 */
 	public function getElArray() {
 		return $this->_elArray;
 	}
 
 	/**
-	 * Cloning a DomElCollection returns a brand new instance with clones of the
-	 * DomEl objects.
-	 * TODO: Docs.
+	 * Returns a new DomElCollection containing clones of all elements.
+	 *
+	 * @param bool $deep Optional. True to clone all children within current
+	 * DomElCollection, false to ignore children in cloning process.
+	 *
+	 * @return DomElCollection A new instance, containing clones of all elements
+	 * (not referencing originals).
 	 */
 	public function cloneNodes($deep = true) {
 		$elArray = array();
@@ -147,7 +171,13 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs. Makes sure all elements are still present in DOM.
+	 * Makes sure all elements are still present in DOM, fixes any problems.
+	 *
+	 * Using methods such as remove(), or replacing methods with others will
+	 * lead to the internal array containing elements who are not actually
+	 * present within the DOM any more. This method iterates over the internal
+	 * array, removes any elements without a parent, and rebuilds the array's
+	 * zero-based index.
 	 */
 	public function checkElementsInDom() {
 		foreach ($this->_elArray as $key => $el) {
@@ -181,7 +211,12 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Checks if there is a value associated to the given offset within the
+	 * internal array. This method is usually used internally.
+	 * 
+	 * @param int $index The numerical offset to check.
+	 *
+	 * @return bool True if the internal array has the specified index.
 	 */
 	public function offsetExists($index) {
 		// Must check that offset hasn't been removed from DOM.
@@ -189,8 +224,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 			// No parent node? Not in DOM any more!
 			if(is_null($this->_elArray[$index]->parentNode)) {
 				// Remove from array, reset indices.
-				unset($this->_elArray[$index]);
-				$this->_elArray = array_values($this->_elArray);
+				$this->offsetUnset($index);
 			}
 			return array_key_exists($index, $this->_elArray);
 		}
@@ -200,7 +234,13 @@ class DomElCollection implements Iterator, ArrayAccess {
 	} 
 
 	/**
-	 * TODO: Docs.
+	 * Returns the DomEl at the provided numerical index, or returns the child
+	 * elements (if any) of the provided CSS selector. For instance:
+	 * $main = $dom["div#main"]; $childSpans = $main["span"];
+	 *
+	 * @param int|string $index The numerical index or CSS selector to retrieve.
+	 * 
+	 * @return DomElCollection A new collection of requested element(s).
 	 */
 	public function offsetGet($index) {
 		if($this->offsetExists($index)) {
@@ -222,23 +262,49 @@ class DomElCollection implements Iterator, ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Replaces contained element(s) with provided element(s).
+	 * This method should be used via ArrayAccess, typically
+	 * $dom["#OldElement"] = $newElement
+	 *
+	 * @param int|string $index The numerical or associative key for internal 
+	 * collection.
+	 * @param DomEl|DomElCollection|array $value The element(s) that will
+	 * replace the currently contained element(s).
 	 */
-	public function offsetSet($index, $value) {
-		die("TODO: OffsetSet not yet implemented");
-		// TODO: Implement offsetSet:
-		// Replace element[0] with given element, remove others.
-		// OR, if a collection is given, replace it with that instead.
-		return 0;
+	public function offsetSet($index, $value) {		
+		// Remove all elements in collection:
+		for($i = 0; $i < $elArrayCount; $i++) {
+			$this->offsetUnset($i);
+		}
+		$this->rewind();
+
+		// Create empty array, fill with provided element(s):
+		$this->_elArray = array();
+
+		if(is_array($value)) {
+			$this->_elArray = $value;
+		}
+		else if($value instanceof DomEl) {
+			$this->_elArray[] = $value);
+		}
+		else if($value instanceof DomElCollection) {
+			foreach ($value as $el) {
+				$this->_elArray[] = $el;
+			}
+		}
 	}
 
 
 	/**
-	 * TODO: Docs.
+	 * This method should only be used internally. It removes reference to the
+	 * indices within the internal collection, and re-indexes the array values
+	 * so there are no missing indices.
+	 *
+	 * @param int|string $index The numerical or associative key to remove.
 	 */
 	public function offsetUnset($index) {
-		// TODO: Implement offsetUnset... see above TODOs.
-		return 0;
+		unset($this->_elArray[$index]);
+		$this->_elArray = array_values($this->_elArray);
 	}
 }
 ?>
