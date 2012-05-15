@@ -4,8 +4,14 @@ class User_PageTool extends PageTool {
 		if(empty($_COOKIE["PhpGt_Track"])) {
 			$anonId = $this->generateSalt();
 			$expires = strtotime("+2 weeks");
-			setcookie("PhpGt_Track", $anonId, $expires);
+			if(setcookie("PhpGt_Track", $anonId, $expires) === false) {
+				// TODO: Throw proper error. Cookie can't be set if
+				// any output has been made!
+				die("Can't set cookie!!!");
+			}
+			return $anonId;
 		}
+
 		return $_COOKIE["PhpGt_Track"];
 	}
 
