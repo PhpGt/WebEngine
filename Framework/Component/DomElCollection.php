@@ -285,7 +285,7 @@ class DomElCollection implements Iterator, ArrayAccess {
 			$this->_elArray = $value;
 		}
 		else if($value instanceof DomEl) {
-			$this->_elArray[] = $value);
+			$this->_elArray[] = $value;
 		}
 		else if($value instanceof DomElCollection) {
 			foreach ($value as $el) {
