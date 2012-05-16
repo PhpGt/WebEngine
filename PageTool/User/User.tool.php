@@ -7,7 +7,7 @@ class User_PageTool extends PageTool {
 			if(setcookie("PhpGt_Track", $anonId, $expires) === false) {
 				// TODO: Throw proper error. Cookie can't be set if
 				// any output has been made!
-				die("Can't set cookie!!!");
+				die("Can't set PhpGt_Track cookie!");
 			}
 			return $anonId;
 		}
@@ -39,9 +39,7 @@ class User_PageTool extends PageTool {
 			$username = $_SESSION["PhpGt_User.tool_AuthData"];
 			// User has authenticated, need to match to database.
 			// The database user may not exist and need creating.
-			$dbUser = $this->_api["User"]->get(array(
-				"Username" => $username
-			));
+			$dbUser = $this->_api["User"]->get(["Username" => $username]);
 			if($dbUser->hasResult) {
 				// Already exists - use this user.
 				$userId = $dbUser["Id"];
@@ -118,10 +116,10 @@ class User_PageTool extends PageTool {
 		}
 
 		if(!is_null($userId)) {
-			$_SESSION["PhpGt_User"] = array(
+			$_SESSION["PhpGt_User"] = [
 				"Id" => $userId,
 				"Username" => $_SESSION["PhpGt_User.tool_AuthData"]
-			);
+			];
 		}
 
 		if(empty($_SESSION["PhpGt_User"])) {

@@ -10,7 +10,7 @@ class Navigation_PageTool extends PageTool {
 		$this->_navElements = $dom["nav"];
 
 		foreach($this->_navElements as $nav) {
-			$navLiTags = $nav["ul li"];
+			$navLiTags = $nav["ul li, ol li"];
 			foreach($navLiTags as $li) {
 				$dir = DIR;
 				if(strstr($dir, "/")) {

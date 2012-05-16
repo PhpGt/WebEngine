@@ -29,7 +29,7 @@ final class OpenId_Utility {
 
 			if(!$this->_openId->mode) {
 				$this->_openId->identity = $identityStr;
-				header("Location: " . $this->_openId->authUrl());
+				header("Location: " . $this->_openId->authUrl(true));
 				exit;
 			}
 			else if($this->_openId->mode === "cancel") {
@@ -42,7 +42,9 @@ final class OpenId_Utility {
 				}
 				else {
 					// TODO: Do something on false validation.
-					die("ERROR: OpenId validation failed.");
+					var_dump($this->_openId->getAttributes());
+					var_dump($this->_openId);
+					die("ERROR: OpenId validation failed...");
 				}
 			}
 		}
