@@ -57,13 +57,8 @@ class User_PageTool extends PageTool {
 	 * Checks the current session for authentication data. This may be
 	 * authentication with OpenId or using a simple username/password stored
 	 * in the User database table.
-	 * Note that if a user logs out of the OpenId provider in their browser, but
-	 * not within the application itself, the user will still be authenticated
-	 * in the application - even if another user is authenticated via OpenId
-	 * (using Facebook, Google, MyOpenId, etc). To prevent this, pass true to
-	 * this function, forcing a check with the OpenId provider every time.
 	 */
-	public function checkAuth($forceCheck = false) {
+	public function checkAuth() {
 		$userId = null;
 		$username = null;
 		
@@ -79,11 +74,6 @@ class User_PageTool extends PageTool {
 		
 		// User auth through OpenId or saved cookie is stored in the session.
 		if(isset($_SESSION["PhpGt_User.tool_AuthData"])) {
-			if($forceCheck) {
-				if(!$this->auth()) {
-					return false;
-				}
-			}
 			$username = $_SESSION["PhpGt_User.tool_AuthData"];
 			// User has authenticated, need to match to database.
 			// The database user may not exist and need creating.

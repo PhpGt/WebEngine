@@ -16,6 +16,7 @@ final class Dispatcher {
 		// On root URLs, the query string may be used as the "url" key.
 		// Ensure the $_GET variable is consistant across different webservers,
 		// also, remove the GET parameters that are used by PHP.Gt's internals.
+		// TODO: This needs to be replicated for REQUEST as well as GET!!
 		$getData = $_GET;
 		if(array_key_exists("url", $getData)) {
 			if(strstr($getData["url"], "?")) {
@@ -23,7 +24,12 @@ final class Dispatcher {
 					strpos($getData["url"], "?") + 1);
 				
 				$keyValuePair = explode("=", $keyValuePair);
-				$getData[$keyValuePair[0]] = $keyValuePair[1];
+				if(empty($keyValuePair[1])) {
+					$getData[$keyValuePair[0]] = null;
+				}
+				else {
+					$getData[$keyValuePair[0]] = $keyValuePair[1];
+				}
 			}
 			unset($getData["url"]);
 		}

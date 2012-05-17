@@ -2,25 +2,21 @@
 /**
  * TODO: Docs.
  */
+require_once(GTROOT . DS . "Framework" . DS . "Utility" 
+				. DS . "OpenId" . DS . "OpenId.php");
+
 final class OpenId_Utility {
 	private $_openId = null;
 	private $_attributes = null;
+	private $_identities = array(
+		"Google" => "https://www.google.com/accounts/o8/id"
+	);
 
 	/**
 	 * TODO: Docs.
 	 */
 	public function __construct($identity = "Google") {
-		require_once(GTROOT . DS . "Framework" . DS . "Utility" 
-			. DS . "OpenId" . DS . "OpenId.php");
-
-		$identityStr = "";
-		$identities = array(
-			"Google" => "https://www.google.com/accounts/o8/id"
-		);
-		if(array_key_exists($identity, $identities)) {
-			$identityStr = $identities[$identity];
-		}
-		
+		$identityStr = $this->getIdentityString($identity);
 		$domain = $_SERVER['HTTP_HOST'];
 
 		try {
@@ -52,6 +48,16 @@ final class OpenId_Utility {
 			die("Error Exception: " . $e->getMessage()
 				. " Please check your internet connection.");
 		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
+	private function getIdentityString($identity) {
+		if(array_key_exists($identity, $this->_identities)) {
+			return $this->_identities[$identity];
+		}
+		return false;
 	}
 
 	/**
