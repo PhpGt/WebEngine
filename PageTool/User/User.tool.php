@@ -47,10 +47,12 @@ class User_PageTool extends PageTool {
 		return true;
 	}
 
-	public function unAuth() {
+	public function unAuth($forwardTo = "/") {
 		unset($_SESSION["PhpGt_User.tool_AuthData"]);
 		unset($_SESSION["PhpGt_User"]);
 		$this->deleteCookies();
+		header("Location: " . $forwardTo);
+		return;
 	}
 
 	/**
