@@ -15,6 +15,38 @@ class User_PageTool extends PageTool {
 		return $_COOKIE["PhpGt_Track"];
 	}
 
+	public function get() {
+		return $_SESSION["PhpGt_User"];
+	}
+
+	public function auth($method = "Google") {
+		$oid = new OpenId_Utility($method);
+		$username = $oid->getData();
+		$_SESSION["PhpGt_User.tool_AuthData"] = $username;
+
+		$uuid = hash("sha512", $username);
+		$userSalt = $this->generateSalt();
+		$expires = strtotime("+2 weeks");
+		setcookie(
+			"PhpGt_Login[0]",
+			$uuid,
+			$expires);
+		setcookie(
+			"PhpGt_Login[1]",
+			$userSalt,
+			$expires);
+		setcookie(
+			"PhpGt_Login[2]",
+			hash("sha512", $uuid . $userSalt . APPSALT),
+			$expires);
+	}
+
+	public function unAuth() {
+		unset($_SESSION["PhpGt_User.tool_AuthData"]);
+		unset($_SESSION["PhpGt_User"]);
+		$this->deleteCookies();
+	}
+
 	/**
 	 * Checks the current session for authentication data. This may be
 	 * authentication with OpenId or using a simple username/password stored
@@ -126,34 +158,6 @@ class User_PageTool extends PageTool {
 			return false;
 		}
 		return $_SESSION["PhpGt_User"];
-	}
-
-	public function auth($method = "Google") {
-		$oid = new OpenId_Utility($method);
-		$username = $oid->getData();
-		$_SESSION["PhpGt_User.tool_AuthData"] = $username;
-
-		$uuid = hash("sha512", $username);
-		$userSalt = $this->generateSalt();
-		$expires = strtotime("+2 weeks");
-		setcookie(
-			"PhpGt_Login[0]",
-			$uuid,
-			$expires);
-		setcookie(
-			"PhpGt_Login[1]",
-			$userSalt,
-			$expires);
-		setcookie(
-			"PhpGt_Login[2]",
-			hash("sha512", $uuid . $userSalt . APPSALT),
-			$expires);
-	}
-
-	public function unAuth() {
-		unset($_SESSION["PhpGt_User.tool_AuthData"]);
-		unset($_SESSION["PhpGt_User"]);
-		$this->deleteCookies();
 	}
 
 	private function refreshCookies() {

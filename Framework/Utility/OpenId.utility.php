@@ -29,7 +29,7 @@ final class OpenId_Utility {
 
 			if(!$this->_openId->mode) {
 				$this->_openId->identity = $identityStr;
-				header("Location: " . $this->_openId->authUrl(true));
+				header("Location: " . $this->_openId->authUrl());
 				exit;
 			}
 			else if($this->_openId->mode === "cancel") {
