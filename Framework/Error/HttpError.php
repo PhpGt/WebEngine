@@ -44,10 +44,36 @@ class HttpError extends Exception {
 					require $path . $fileName;
 					break;
 				}
+				if(file_exists($path . "_Error.html")) {
+					$html = file_get_contents($path . "_Error.html");
+					$dom = new DomDocument("1.0", "utf-8");
+					libxml_use_internal_errors(true);
+					if(!$dom->loadHTML($html)) {
+						die("FATAL ERROR: Failed to load errorpage."
+							. "655034494:53");
+					}
+					$codeNode = $dom->getElementById("errorCode");
+					$msgNode = $dom->getElementById("errorMessage");
+					$tsNode = $dom->getElementById("timestamp");
+					if(!is_null($codeNode)) {
+						$codeNode->nodeValue = $code;
+					}
+					if(!is_null($msgNode)) {
+						$msgNode->nodeValue = $code;
+					}
+					if(!is_null($tsNode)) {
+						$tsNode->nodeValue = time();
+					}
+
+					ob_clean();
+					$dom->formatOutput = true;
+					echo $dom->saveHTML();
+					ob_flush();
+
+					break;
+				}
 			}
 		}
-
-		// TODO: Do something with $description.
 	}
 }
 ?>
