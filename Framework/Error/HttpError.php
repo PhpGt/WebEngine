@@ -55,6 +55,7 @@ class HttpError extends Exception {
 					$codeNode = $dom->getElementById("errorCode");
 					$msgNode = $dom->getElementById("errorMessage");
 					$tsNode = $dom->getElementById("timestamp");
+					$ipNode = $dom->getElementById("ipAddress");
 					if(!is_null($codeNode)) {
 						$codeNode->nodeValue = $code;
 					}
@@ -63,6 +64,9 @@ class HttpError extends Exception {
 					}
 					if(!is_null($tsNode)) {
 						$tsNode->nodeValue = time();
+					}
+					if(!is_null($ipNode)) {
+						$ipNode->nodeValue = $_SERVER["REMOTE_ADDR"];
 					}
 
 					ob_clean();
