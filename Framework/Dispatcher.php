@@ -17,26 +17,29 @@ final class Dispatcher {
 		// Ensure the $_GET variable is consistant across different webservers,
 		// also, remove the GET parameters that are used by PHP.Gt's internals.
 		// TODO: This needs to be replicated for REQUEST as well as GET!!
-		$getData = $_GET;
-		if(array_key_exists("url", $getData)) {
-			if(strstr($getData["url"], "?")) {
-				$keyValuePair = substr($getData["url"],
-					strpos($getData["url"], "?") + 1);
-				
-				$keyValuePair = explode("=", $keyValuePair);
-				if(empty($keyValuePair[1])) {
-					$getData[$keyValuePair[0]] = null;
+		$mapDataArr = array(&$_GET, &$_REQUEST);
+		foreach($mapDataArr as &$mapData) {
+			$data = $mapData;
+			if(array_key_exists("url", $data)) {
+				if(strstr($data["url"], "?")) {
+					$keyValuePair = substr($data["url"],
+						strpos($data["url"], "?") + 1);
+					
+					$keyValuePair = explode("=", $keyValuePair);
+					if(empty($keyValuePair[1])) {
+						$data[$keyValuePair[0]] = null;
+					}
+					else {
+						$data[$keyValuePair[0]] = $keyValuePair[1];
+					}
 				}
-				else {
-					$getData[$keyValuePair[0]] = $keyValuePair[1];
-				}
+				unset($data["url"]);
 			}
-			unset($getData["url"]);
+			if(array_key_exists("ext", $data)) {
+				unset($data["ext"]);
+			}
+			$mapData = $data;
 		}
-		if(array_key_exists("ext", $getData)) {
-			unset($getData["ext"]);
-		}
-		$_GET = $getData;
 
 		// Start building the objects used across the PageCodes...
 
