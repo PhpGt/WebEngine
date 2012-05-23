@@ -70,6 +70,9 @@ $baseDir = ($slashPos === false)
 		: $dirName)
 	: substr($dirName, 0, $slashPos);
 
+// TODO: Implement Directory/File style URLs and case-matching.
+// (Issues #34 and #19)
+
 // For finding the correct PageCode and PageView, on different systems.
 $dirPath = str_replace("/", DS, $dirName);
 $filePath = $dirName . DS . $fileName;
