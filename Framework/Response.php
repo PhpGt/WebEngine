@@ -123,10 +123,7 @@ final class Response {
 			return false;
 		}
 
-		$includesLength = $includes->length;
-		for($i = 0; $i < $includesLength; $i++) {
-			$inc = $includes->item(0);
-
+		foreach ($includes as $inc) {
 			if($inc->hasAttribute("href")) {
 				$href = $inc->getAttribute("href");
 
@@ -142,14 +139,14 @@ final class Response {
 						$root = $tempDom->documentElement;
 						$imported = $dom->importNode($root, true);
 
-						$inc->parentNode->insertBefore($imported, $inc);
-						$inc->parentNode->removeChild($inc);
+						$inc->before($imported);
+						$inc->remove();
+
+						$success ++;
 						break;
 					}
 				}
 			}
-
-			$success ++;
 		}
 
 		return $success;

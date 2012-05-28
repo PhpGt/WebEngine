@@ -27,6 +27,11 @@ class User_PageTool extends PageTool {
 		case "UserName":
 			return $_SESSION["PhpGt_User"]["Username"];
 			break;
+		case "UUID":
+		case "Uuid":
+		case "uuid":
+			return $_COOKIE["PhpGt_Login"][0];
+			break;
 		default:
 			// TODO: Throw proper error;
 			break;
@@ -98,7 +103,7 @@ class User_PageTool extends PageTool {
 			// User has authenticated, need to match to database.
 			// The database user may not exist and need creating.
 			$dbUser = $this->_api["User"]->get(["Username" => $username]);
-			if($dbUser->hasResult) {
+			if(is_null($dbUser) || $dbUser->hasResult) {
 				// Already exists - use this user.
 				$userId = $dbUser["Id"];
 			}
