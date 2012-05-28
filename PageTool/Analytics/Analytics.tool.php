@@ -4,8 +4,7 @@
  * Google Analytics.
  */
 class Analytics_PageTool extends PageTool {
-	public function go($api, $dom, $template, $tool) {
-	}
+	public function go($api, $dom, $template, $tool) { }
 
 	public function track($trackingCode) {
 		$js = file_get_contents(dirname(__FILE__) . DS . "Analytics.tool.js");

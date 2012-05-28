@@ -15,6 +15,24 @@ class User_PageTool extends PageTool {
 		return $_COOKIE["PhpGt_Track"];
 	}
 
+	public function __get($name) {
+		switch($name) {
+		case "id":
+		case "Id":
+			return $_SESSION["PhpGt_User"]["Id"];
+			break;
+		case "username":
+		case "userName":
+		case "Username":
+		case "UserName":
+			return $_SESSION["PhpGt_User"]["Username"];
+			break;
+		default:
+			// TODO: Throw proper error;
+			break;
+		}
+	}
+
 	public function get() {
 		return $_SESSION["PhpGt_User"];
 	}
