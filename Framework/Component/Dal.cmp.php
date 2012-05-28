@@ -1,12 +1,14 @@
 <?php
 /**
  * TODO: Docs.
+ * createTableAndDependencies needs optimising.
  */
 class Dal implements ArrayAccess {
 	private $_dbh = null;
 	private $_dalElArray = array();
 	private $_paramChar = null;
 	private $_createdTableCache = array();
+	private $_dependencyComplete = array();
 
 	/**
 	 * TODO: Docs.
@@ -186,8 +188,20 @@ class Dal implements ArrayAccess {
 
 	/**
 	 * TODO: Docs.
+	 * All tables should be named using PHP.Gt conventions to work fully.
 	 */
 	public function createTableAndDependencies($tableName) {
+		// Check for sub-tables being accessed.
+		if(empty($tableName)) {
+			return;
+		}
+
+		$baseTable = substr($tableName, 0, strpos($tableName, "_"));
+		if($baseTable !== false) {
+			$this->createTableAndDependencies($baseTable);
+		}
+
+
 		// Check table doesn't already exist.
 		$stmt = $this->_dbh->prepare("
 			select `TABLE_NAME` 
@@ -238,7 +252,9 @@ class Dal implements ArrayAccess {
 					else {
 						echo '<p class="dependency">DEPENDENCY DETECTED IN '
 							. "'$tableName': $dependency.";
-						// Recursively call this function for each dependency.
+						// Recursively call this function for each
+						// dependency, ignoring any already compelted.
+						$this->_createdTableCache[] = $dependency;
 						$this->createTableAndDependencies($dependency);
 					}
 				}
