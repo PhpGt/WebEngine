@@ -8,7 +8,6 @@ class Dal implements ArrayAccess {
 	private $_dalElArray = array();
 	private $_paramChar = null;
 	private $_createdTableCache = array();
-	private $_dependencyComplete = array();
 
 	/**
 	 * TODO: Docs.
@@ -191,84 +190,91 @@ class Dal implements ArrayAccess {
 	 * All tables should be named using PHP.Gt conventions to work fully.
 	 */
 	public function createTableAndDependencies($tableName) {
-		// Check for sub-tables being accessed.
 		if(empty($tableName)) {
 			return;
 		}
 
-		$baseTable = substr($tableName, 0, strpos($tableName, "_"));
-		if($baseTable !== false) {
-			$this->createTableAndDependencies($baseTable);
-		}
-
-
-		// Check table doesn't already exist.
-		$stmt = $this->_dbh->prepare("
-			select `TABLE_NAME` 
-			from `information_schema`.`TABLES`
-			where `TABLE_SCHEMA` = :TableName");
-		$stmt->execute(array(":TableName" => $tableName));
-		$dbResult = $stmt->fetch();
-		if($dbResult !== false) {
-			// There is a result - ignore because table is already created.
-			echo '<p class="alreadyDeployed">Already exists: ' . $tableName;
-			return;
-		}
-
-		// Attempt to find creation script for given table.
-		$sqlPathArray = array(
-			GTROOT  . DS . "Database" . DS . ucfirst($tableName),
-			APPROOT . DS . "Database" . DS . ucfirst($tableName)
-		);
-		
-		foreach($sqlPathArray as $sqlPath) {
-			// Look for underscore prefixed files.
-			if(!is_dir($sqlPath)) {
-				continue;
+		if(strstr($tableName, "_")) {
+			$baseTable = substr($tableName, 0, strpos($tableName, "_"));
+			if(!in_array($baseTable, $this->_createdTableCache)) {
+				var_dump($tableName, $baseTable);
+				$this->createTableAndDependencies($baseTable);
 			}
-			$fileArray = scandir($sqlPath);
-			foreach ($fileArray as $file) {
-				// All creation scripts begin with an underscore. Skip the
-				// files that don't.
-				if($file[0] !== "_") {
-					continue;
-				}
+		}
 
-				echo '<p class="deploying">Deploying: ' . $file;
-				$sql = file_get_contents($sqlPath . DS . $file);
-				echo '<pre class="sql">' . $sql . '</pre>';
+		// Only proceed if table doesn't already exist.
+		if(!in_array($tableName, $this->_createdTableCache)) {
+			$stmt = $this->_dbh->prepare("
+				select `TABLE_NAME`
+				from `information_schema`.`TABLES`
+				where `TABLE_SCHEMA` = :TableName
+			");
+			$stmt->execute([":TableName" => $tableName]);
+			$dbResult = $stmt->fetch();
+			if($dbResult === false) {
+				// There is no table created already.
+				// Attempt to find creating script for given table.
+				$sqlPathArray = array(
+					GTROOT  . DS . "Database" . DS . ucfirst($tableName),
+					APPROOT . DS . "Database" . DS . ucfirst($tableName)
+				);
 
-				// Detect any table references in SQL and attempt to create
-				// them too.
-				$matches = array();
-				$pattern = "/REFERENCES\s*`([^`]+)`/i";
-				preg_match_all($pattern, $sql, $matches);
-				
-				foreach ($matches[1] as $dependency) {
-					if(in_array($dependency, $this->_createdTableCache)) {
-						echo '<p class="alreadyDeployed">Already exists: ' 
-							. $tableName;
+				foreach ($sqlPathArray as $sqlPath) {
+					if(!is_dir($sqlPath)) {
+						continue;
 					}
-					else {
-						echo '<p class="dependency">DEPENDENCY DETECTED IN '
-							. "'$tableName': $dependency.";
-						// Recursively call this function for each
-						// dependency, ignoring any already compelted.
-						$this->_createdTableCache[] = $dependency;
-						$this->createTableAndDependencies($dependency);
+					$fileArray = scanDir($sqlPath);
+					foreach ($fileArray as $file) {
+						// All creation scripts begin with an underscore.
+						if($file[0] !== "_") {
+							continue;
+						}
+
+						echo '<p class="deploying">Deploying: ' . $file;
+						$sql = file_get_contents($sqlPath . DS . $file);
+						echo '<pre class="sql">' . $sql . '</pre>';
+
+						// Detect any table references in SQL and attempt
+						// to create them first.
+						$matches = array();
+						$pattern = "/REFERENCES\s*`([^`]+)`/i";
+						preg_match_all($pattern, $sql, $matches);
+
+						foreach ($matches[1] as $dep) {
+							if(in_array($dep, $this->_createdTableCache)) {
+								echo '<p class="alreadyDeployed">'
+									. 'Already exists:' . $dep;
+							}
+							else {
+								echo '<p class="dependency">'
+									. 'Dependency detected in '
+									. "'{$tableName}': {$dep}.";
+								// Recursively call this function for each
+								// dependency, ignoring any already completed.
+									$this->_createdTableCache[] = $dep;
+									$this->createTableAndDependencies($dep);
+							}
+						}
+
+						// Execute the creation/insertion script.
+						$result = $this->_dbh->query($sql);
+						if($result === false) {
+							// TODO: Throw proper error.
+							var_dump($this->_dbh->errorInfo());
+							exit;
+						}
+						else {
+							echo '<p class="success">'
+								. 'Success deploying ' . $file;
+							$this->_createdTableCache[] = $tableName;
+						}
 					}
 				}
-
-				$result = $this->_dbh->query($sql);
-
-				if($result === false) {
-					var_dump($this->_dbh->errorInfo());
-					exit;
-				}
-				else {
-					echo '<p class="success">Success deploying ' . $file;
-					$this->_createdTableCache[] = $tableName;
-				}
+			}
+			else {
+				$this->_createdTableCache[] = $tableName;
+				echo '<p class="alreadyDeployed">Already exists: ' . $tableName;
+				return;
 			}
 		}
 	}
