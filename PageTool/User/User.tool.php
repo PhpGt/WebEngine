@@ -18,23 +18,51 @@ class User_PageTool extends PageTool {
 	public function __get($name) {
 		switch($name) {
 		case "id":
-		case "Id":
 			return $_SESSION["PhpGt_User"]["Id"];
 			break;
 		case "username":
 		case "userName":
-		case "Username":
-		case "UserName":
 			return $_SESSION["PhpGt_User"]["Username"];
 			break;
-		case "UUID":
-		case "Uuid":
 		case "uuid":
 			return $_COOKIE["PhpGt_Login"][0];
 			break;
-		default:
-			// TODO: Throw proper error;
+		case "firstName":
+		case "firstname":
+			$this->checkNames();
+			return $_SESSION["PhpGt_User"]["FirstName"];
 			break;
+		case "lastName":
+		case "lastname":
+			$this->checkNames();
+			return $_SESSION["PhpGt_User"]["LastName"];
+			break;
+		case "fullName":
+		case "fullname":
+			$this->checkNames();
+			return $this->firstName . " " . $this->lastName;
+			break;
+		default:
+			// If non-standard property is requested, check in database for
+			// the field.
+			$dbUser = $this->_api["User"]->getById($this->id);
+			return $dbUser[$name];
+			break;
+		}
+	}
+
+	private function checkNames() {
+		if(empty($_SESSION["PhpGt_User"]["FirstName"])
+		|| empty($_SESSION["PhpGt_User"]["LastName"])) {
+			if(empty($_SESSION["PhpGt_User"]["Id"])) {
+				// TODO: Throw proper error.
+				die("Error: No user ID. (checkNames)");
+			}
+			$user = $this->_api["User"]->getById(
+				["Id" => $_SESSION["PhpGt_User"]["Id"]]);
+
+			$_SESSION["PhpGt_User"]["FirstName"] = $user["FirstName"];
+			$_SESSION["PhpGt_User"]["LastName"] = $user["LastName"];
 		}
 	}
 
