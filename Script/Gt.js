@@ -20,17 +20,35 @@
 (function() {
 	var _$ = window.$ || null,
 		_$$ = window.$$ || null,
+		_templates = {},
 		GT = function() {
-		if(typeof arguments[0] === "function") {
-			// Execute it on DomContentLoaded event.
-			return GT.ready(arguments[0], arguments[1]);
-		}
-		if(typeof arguments[0] === "string") {
-			// Return matching DomNodes from CSS selector.
-			return GT.dom(arguments[0], arguments[1]);
-		}
-		throw new GT.error("Invalid GT parameters", arguments);
-	};
+			if(typeof arguments[0] === "function") {
+				// Callback function provided, execute on DomReady event.
+				return GT.ready(arguments[0], arguments[1]);
+			}
+			if(typeof arguments[0] === "string") {
+				// Return matching DomNodes from CSS selector.
+				return GT.dom(arguments[0], arguments[1]);
+			}
+			throw new GT.error("Invalid GT parameters", arguments);
+		},
+		templateScrape = function() {
+			var tmplDiv = document.getElementById("PHPGt_Template_Elements"),
+				tmplDivNodeCount,
+				tmpl,
+				name,
+				i;
+
+			if(tmplDiv) {
+				tmplDivNodeCount = tmplDiv.children.length;
+				for(i = 0; i < tmplDivNodeCount; i++) {
+					tmpl = tmplDiv.children[i];
+					name = tmpl.getAttribute("data-template");
+					_templates[name] = tmpl;
+				}
+				tmplDiv.parentNode.removeChild(tmplDiv);
+			}
+		};
 
 	GT.error = function(message) {
 		var that = this;
@@ -106,6 +124,9 @@
 		}
 	};
 
+	/**
+	 * TODO: Provide REST access to public webservices.
+	 */
 	GT.api = function(name) {
 
 	};
@@ -120,12 +141,21 @@
 	};
 
 	GT.template = function(name) {
-
+		if(_templates.hasOwnProperty(name)) {
+			return _templates[name].cloneNode(true);
+		}
+		throw new GT.error("Invalid template item", arguments);
 	};
 
+	/**
+	 * TODO: Load and use named tool, providing a wrapper.
+	 */
 	GT.tool = function(name) {
 
 	};
-
 	window.GT = GT;
+
+	// Perform automatic template collection.
+	// The template elements are provided by PHP.Gt just before DOM flushing.
+	GT(templateScrape);
 }());
