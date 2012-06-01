@@ -45,7 +45,8 @@ class User_PageTool extends PageTool {
 		default:
 			// If non-standard property is requested, check in database for
 			// the field.
-			$dbUser = $this->_api["User"]->getById($this->id);
+			$name = ucfirst($name);
+			$dbUser = $this->_api["User"]->getById(["Id" => $this->id]);
 			return $dbUser[$name];
 			break;
 		}
