@@ -58,7 +58,7 @@ class DalElement {
 				unset($paramArray[$key]);
 			}
 		}
-
+		
 		$stmt = $this->_dal->prepare($sql);
 
 		// Limit and offset params must be treated differently. This means that

@@ -24,8 +24,13 @@ class TemplateWrapper implements ArrayAccess {
 	}
 
 	public function offsetSet($offset, $value) {
-		// TODO: More appropriate error message and logging.
-		die("What are you setting the Template for???");
+		if(!$this->offsetExists($offset)) {
+			// TODO: Throw proper error.
+			die("ERROR: Trying to set a non-existant template element.");
+		}
+		$this->_templateArray[$offset] = $value;
+
+		// TODO: Update JavaScript templates.
 	}
 
 	public function offsetUnset($offset) {

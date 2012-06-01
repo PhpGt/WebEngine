@@ -106,7 +106,6 @@ final class DalResult implements Iterator, ArrayAccess {
 				return $this->result[0][$offset];
 			}
 		}
-
 		return $this->result[$offset];
 	}
 

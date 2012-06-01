@@ -92,6 +92,7 @@ class DomEl implements ArrayAccess {
 
 	/**
 	* TODO: Docs.
+	* @return DomEl The appended element.
 	*/
 	public function append($toAdd) {
 		$elementArray = call_user_func_array(
@@ -106,6 +107,8 @@ class DomEl implements ArrayAccess {
 
 			$this->node->appendChild($elNode);
 		}
+
+		return $toAdd;
 	}
 
 	/**
