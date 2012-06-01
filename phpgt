@@ -1,2 +1,95 @@
 # Shell script for PHP.Gt automation.
+# -----------------------------------
 
+Colours() {
+	Escape="\033";
+
+	BlackF="${Escape}[30m";
+	RedF="${Escape}[31m";
+	GreenF="${Escape}[32m";
+	YellowF="${Escape}[33m";
+	BlueF="${Escape}[34m";
+	PurpleF="${Escape}[35m";
+	CyanF="${Escape}[36m";
+	WhiteF="${Escape}[37m";
+
+	BlackB="${Escape}[40m";
+	RedB="${Escape}[41m";
+	GreenB="${Escape}[42m";
+	YellowB="${Escape}[43m";
+	BlueB="${Escape}[44m";
+	PurpleB="${Escape}[45m";
+	CyanB="${Escape}[46m";
+	WhiteB="${Escape}[47m";
+
+	BoldY="${Escape}[1m";
+	BoldN="${Escape}[22m";
+	ItalicY="${Escape}[3m";
+	ItalicN="${Escape}[23m";
+	LineY="${Escape}[4m";
+	LineN="${Escape}[24m";
+	BlinkY="${Escape}[5m";
+	BlinkN="${Escape}[25m";
+	InvertY="${Escape}[7m";
+	InvertN="${Escape}[27m";
+
+	Reset="${Escape}[0m";
+	R="${Reset}"
+}
+Colours;
+
+Help() {
+	printf "PHP.Gt "
+	cat Version
+	printf "\n"
+	printf "http://phpgt.com"
+	printf " - Shell command docs: http://phpgt.com/Docs/Shell.html\n\n"
+	printf "Usage: phpgt command [parameters]\n\n"
+	printf "phpgt is a simple command line interface to the project management "
+	printf "automation\ntool within PHP.Gt\n\n"
+	printf "Commands:\n"
+	printf "  create  - Interactive tool for creating a new project\n"
+	printf "  page    - Create file templates for a new page in a project\n"
+	printf "  table   - Create file templates for a new database table in a project\n"
+	printf "  install - Interactive tool for installing new PageTools\n"
+	printf "  update  - Updates codebase files within the current release's latest patch\n"
+	printf "  upgrade - Upgrades entire codebase to a newer release\n"
+	printf "  config  - Sets up the bariables on your system used by PHP.Gt\n"
+}
+
+GetName() {
+	if [ $# -lt 1 ]
+	then
+		Type=""
+	else 
+		Type="$1 "
+	fi
+
+	printf "Please enter the %sname: " "$Type" >&2
+	read -r ProjName
+	printf "%s" "$ProjName"
+}
+
+if [ $# -lt 1 ]
+then
+	Help;
+else
+	case "$1" in 
+	create)
+		Proj=$(GetName project)
+		printf "New project: %s" "$Proj"
+		;;
+	page)
+		Page=$(GetName page)
+		printf "New page: %s" "$Page"
+		;;
+	--help)
+		Help;
+		;;
+	*)
+		printf "Invalid command. Type phpgt --help for available commands.\n"
+		;;
+	esac
+fi
+
+printf "\n"
