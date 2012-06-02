@@ -1,14 +1,14 @@
 /**
  * GT core JavaScript file. Allows accessing applications' APIs, DOM elements,
- * templated elements and PageTools' JavaScript functions using similar syntax.
+ * templated elements and PageTools' JavaScript functions using simple syntax.
  *
  * GT is developed by Greg Bowler / PHP.Gt team.
- * Code/licensing: http://phpgt.com
+ * Code/licensing: http://phpgt.com/Licence.html
  * Documentation: http://phpgt.com/Docs/ClientSide/GtJs.html
  *
  * Provided as standard:
  * GT.api("Name") - manipulate the application's REST API.
- * GT.dom("selector") - obtain a reference to the native DOM element.
+ * GT.dom("selector") - obtain a reference to DOM element, with helpers.
  * GT.template("Name") - obtain a cloned DOM element, taken from the templates.
  * GT.tool("Name") - obtain an object wrapper to the JavaScript extensions of 
  * certain PHP.Gt PageTools.
@@ -16,11 +16,28 @@
  * Note that the global GT object acts as a shorthand too:
  * GT(callback) - execute the callback function on the DOM ready event.
  * GT("selector") - shorthand to selecting a DOM element.
+ *
+ * Gt.js provides helper functions on the native DOM elements, which has been
+ * compatible with Google Chrom[e|ium] 12+, Mozilla Firefox 8+, Opera 11+,
+ * Internet Explorer 8+. Note that if old browser support is required, the
+ * helper functions should not be relied upon, and a larger library should be
+ * used instead. To test your browser, visit the PHP.Gt test application in
+ * the required browser. http://testapp.phpgt.com 
  */
 (function() {
+	// Ensures there are no compatibility issues with external libraries.
 	var _$ = window.$ || null,
 		_$$ = window.$$ || null,
+		// An object hash used to store all templated HTML elements.
 		_templates = {},
+		/**
+		 * GT is the global function used throughout the library.
+		 * @param callback|String Either a callback function to be executed when
+		 * the DOM ready event is triggered, or a CSS selector string to obtain
+		 * a reference to.
+		 * @param HTMLElement|NodeList (Optional) The context to query the
+		 * CSS selector with.
+		 */
 		GT = function() {
 			if(typeof arguments[0] === "function") {
 				// Callback function provided, execute on DomReady event.
@@ -29,11 +46,15 @@
 			if(typeof arguments[0] === "string"
 			|| arguments[0] instanceof NodeList
 			|| arguments[0] instanceof HTMLElement) {
-				// Return matching DomNodes from CSS selector.
+				// Return matching DomNodes from CSS selector, with an optional
+				// context node as second argument.
 				return GT.dom(arguments[0], arguments[1]);
 			}
 			throw new GT.error("Invalid GT parameters", arguments);
 		},
+		/**
+		 * TODO: Docs.
+		 */
 		templateScrape = function() {
 			var tmplDiv = document.getElementById("PHPGt_Template_Elements"),
 				tmplDivNodeCount,
@@ -43,14 +64,19 @@
 
 			if(tmplDiv) {
 				tmplDivNodeCount = tmplDiv.children.length;
+				// 
 				for(i = 0; i < tmplDivNodeCount; i++) {
 					tmpl = tmplDiv.children[i];
 					name = tmpl.getAttribute("data-template");
 					_templates[name] = tmpl;
 				}
+				// 
 				tmplDiv.parentNode.removeChild(tmplDiv);
 			}
 		},
+		/**
+		 * TODO: Docs.
+		 */
 		helpers = {
 			"addClass": function(name) {
 				this.className += " " + name;
@@ -61,8 +87,8 @@
 				return this;
 			},
 			"hasClass": function(name) {
-				var match = new Regexp(name, "im");
-				return classname.match(match);
+				var match = new RegExp(name, "im");
+				return this.className.match(match);
 			},
 			"remove": function() {
 				this.parentNode.removeChild(this);
@@ -85,12 +111,18 @@
 				return element;
 			}
 		},
+		/**
+		 * TODO: Docs.
+		 */
 		nodeListWrap = function(me, funcName, args) {
 			var i;
 			for(i = 0; i < me.length; i++) {
 				me[i][funcName].apply(me[i], args);
 			}
 		},
+		/**
+		 * TODO: Docs.
+		 */
 		addHelpers = function() {
 			Object.keys(helpers).map(function(key) {
 				Element.prototype[key] = helpers[key];
@@ -98,17 +130,11 @@
 					nodeListWrap(this, key, arguments);
 				}
 			});
-			/*Element.prototype.addClass = addClass;
-			Element.prototype.removeClass = removeClass;
-			Element.prototype.hasClass = hasClass;
-
-			NodeList.prototype.addClass = function(name) {
-				mapFunc(addClass, name)
-			};
-			NodeList.prototype.removeClass = removeClass;
-			NodeList.prototype.hasClass = hasClass;*/
 		};
 
+	/**
+	 * TODO: Docs.
+	 */
 	GT.error = function(message) {
 		var that = this;
 		this.name = "GtErrorException";
@@ -184,7 +210,8 @@
 	};
 
 	/**
-	 * TODO: Provide REST access to public webservices.
+	 * TODO: Docs.
+	 * Provide REST access to public webservices.
 	 */
 	GT.api = function(name) {
 
@@ -224,6 +251,9 @@
 		return context.querySelectorAll(selector);
 	};
 
+	/**
+	 * TODO: Docs.
+	 */
 	GT.template = function(name) {
 		if(_templates.hasOwnProperty(name)) {
 			return _templates[name].cloneNode(true);
@@ -232,7 +262,8 @@
 	};
 
 	/**
-	 * TODO: Load and use named tool, providing a wrapper.
+	 * TODO: Docs.
+	 * Load and use named tool, providing a wrapper.
 	 */
 	GT.tool = function(name) {
 
@@ -252,6 +283,7 @@
 		var req = function(url, callback, method) {
 			var xhr,
 				method = method.toUpperCase();
+			// Provide compatibility with older IE.
 			if(window.XMLHttpRequest) {
 				xhr = new XMLHttpRequest();
 			}
@@ -268,7 +300,6 @@
 			xhr.onreadystatechange = function() {
 				var response;
 				if(xhr.readyState === 4) {
-					console.log(xhr);
 					if(callback) {
 						response = xhr.response;
 						// Quick and dirty JSON detection (skipping real
@@ -280,6 +311,9 @@
 							}
 							catch(e) {}
 						}
+						// Call the callback function, passing the response. If
+						// response is in JSON format, the response will
+						// automatically be parsed into an Object.
 						callback(response, xhr);
 					}
 				}
@@ -288,13 +322,20 @@
 			xhr.send();
 			return xhr;
 		};
+		/**
+		 * TODO: Docs.
+		 */
 		this.get = function(url, callback) {
 			return req(url, callback, "get");
 		};
+		/**
+		 * TODO: Docs.
+		 */
 		this.post = function(url, callback) {
 			return req(url, callback, "post");
 		};
 	};
+	// Export the GT variable to the global context.
 	window.GT = GT;
 
 	// Perform automatic template collection.
