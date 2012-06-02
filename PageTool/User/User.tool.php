@@ -52,21 +52,6 @@ class User_PageTool extends PageTool {
 		}
 	}
 
-	private function checkNames() {
-		if(empty($_SESSION["PhpGt_User"]["FirstName"])
-		|| empty($_SESSION["PhpGt_User"]["LastName"])) {
-			if(empty($_SESSION["PhpGt_User"]["Id"])) {
-				// TODO: Throw proper error.
-				die("Error: No user ID. (checkNames)");
-			}
-			$user = $this->_api["User"]->getById(
-				["Id" => $_SESSION["PhpGt_User"]["Id"]]);
-
-			$_SESSION["PhpGt_User"]["FirstName"] = $user["FirstName"];
-			$_SESSION["PhpGt_User"]["LastName"] = $user["LastName"];
-		}
-	}
-
 	public function get() {
 		return $_SESSION["PhpGt_User"];
 	}
@@ -79,6 +64,25 @@ class User_PageTool extends PageTool {
 			return false;
 		}
 
+		return true;
+	}
+
+	/**
+	 * FakeAuth allows development to continue while offline. Using openId
+	 * requires an internet connection, so adding a special button in
+	 * development releases allows users to authenticate (with no real 
+	 * authentication happening). Simply pass a username to this function to
+	 * fully authenticate the username as if it were authenticated with OpenId.
+	 *
+	 * @param string $username The username to authenticate.
+	 * @return bool True on success (which will allways occur).
+	 */
+	public function fakeAuth($username) {
+		$this->setAuthData($username);
+		return true;
+	}
+
+	private function setAuthData($username) {
 		$_SESSION["PhpGt_User.tool_AuthData"] = $username;
 
 		$uuid = hash("sha512", $username);
@@ -96,7 +100,6 @@ class User_PageTool extends PageTool {
 			"PhpGt_Login[2]",
 			hash("sha512", $uuid . $userSalt . APPSALT),
 			$expires);
-		return true;
 	}
 
 	public function unAuth($forwardTo = "/") {
@@ -220,6 +223,21 @@ class User_PageTool extends PageTool {
 		return $_SESSION["PhpGt_User"];
 	}
 
+	private function checkNames() {
+		if(empty($_SESSION["PhpGt_User"]["FirstName"])
+		|| empty($_SESSION["PhpGt_User"]["LastName"])) {
+			if(empty($_SESSION["PhpGt_User"]["Id"])) {
+				// TODO: Throw proper error.
+				die("Error: No user ID. (checkNames)");
+			}
+			$user = $this->_api["User"]->getById(
+				["Id" => $_SESSION["PhpGt_User"]["Id"]]);
+
+			$_SESSION["PhpGt_User"]["FirstName"] = $user["FirstName"];
+			$_SESSION["PhpGt_User"]["LastName"] = $user["LastName"];
+		}
+	}
+	
 	private function refreshCookies() {
 		$expires = strtotime("+2 weeks");
 		setcookie(
