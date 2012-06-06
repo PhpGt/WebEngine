@@ -138,18 +138,18 @@
 				}
 					
 				return null;
-			}/*,
+			},
 			"isParent": function(el, parent) {
 				if(parent === el) {
 					return true;
 				}
 				else if(el.parentNode) {
-					return isParent(el.parentNode, parent);
+					return this.isParent(el.parentNode, parent);
 				}
 				else {
 					return false;
 				}
-			}*/
+			}
 		},
 		/**
 		 * TODO: Docs.
