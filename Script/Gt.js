@@ -110,7 +110,46 @@
 			"after": function(element) {
 				this.parentNode.insertBefore(element, this.nextSibling);
 				return element;
-			}
+			},
+			"parent": function(selector) {
+				var elArray = [],
+					el,
+					found,
+					i;
+				if(this instanceof NodeList) {
+					for(i = 0; i < this.length; i++) {
+						elArray.push(this[i]);
+					}
+				}
+				else {
+					elArray.push(this);
+				}
+
+				for(i = 0; i < elArray.length; i++) {
+					el = elArray[i];
+					while(el.parentNode) {
+						el = el.parentNode;
+						found = GT(selector, el);
+
+						if(found.length > 0) {
+							return found;
+						}
+					}
+				}
+					
+				return null;
+			}/*,
+			"isParent": function(el, parent) {
+				if(parent === el) {
+					return true;
+				}
+				else if(el.parentNode) {
+					return isParent(el.parentNode, parent);
+				}
+				else {
+					return false;
+				}
+			}*/
 		},
 		/**
 		 * TODO: Docs.
