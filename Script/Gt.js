@@ -83,7 +83,8 @@
 				return this;
 			},
 			"removeClass": function(name) {
-				this.className = this.className.replace(name, "");
+				var match = new RegExp(name, "g");
+				this.className = this.className.replace(match, "");
 				return this;
 			},
 			"hasClass": function(name) {
