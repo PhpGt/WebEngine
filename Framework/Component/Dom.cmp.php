@@ -218,7 +218,7 @@ class Dom implements ArrayAccess {
 	 * @param strong $attr Optional. The name of the attribute to look for.
 	 * @return int The number of affected elements.
 	 */
-	public function mapData($data, $elementSelector = "*", $attr = "Name") {
+	public function mapData($data, $elementSelector = "*", $attr = "name") {
 		$count = 0;
 		$domNodes = $this[$elementSelector];
 		foreach ($domNodes as $node) {
@@ -227,7 +227,6 @@ class Dom implements ArrayAccess {
 				$count++;
 			}
 		}
-
 		return $count;
 	}
 }

@@ -232,6 +232,15 @@ class DomEl implements ArrayAccess {
 	/**
 	 * TODO: Docs.
 	 */
+	public function removeChildren() {
+		while($this->node->hasChildNodes()) {
+			$this->node->removeChild($this->node->lastChild);
+		}
+	}
+
+	/**
+	 * TODO: Docs.
+	 */
 	public function replace($replaceWith) {
 		$element = null;
 
