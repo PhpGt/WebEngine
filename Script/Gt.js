@@ -83,7 +83,7 @@
 				return this;
 			},
 			"removeClass": function(name) {
-				this.className.replace(name, "");
+				this.className = this.className.replace(name, "");
 				return this;
 			},
 			"hasClass": function(name) {
