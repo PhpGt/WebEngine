@@ -95,6 +95,11 @@
 				this.parentNode.removeChild(this);
 				return this;
 			},
+			"empty": function() {
+				while(this.hasChildNodes()) {
+					this.removeChild(this.lastChild);
+				}
+			},
 			"append": function(element) {
 				this.appendChild(element);
 				return element;
@@ -111,11 +116,15 @@
 				this.parentNode.insertBefore(element, this.nextSibling);
 				return element;
 			},
+			// TODO: BUG: Getting the parent via selector gets all elements
+			// of a matching selector, so obtains elements that aren't actually
+			// the parent, but have a common ancestor and CSS selector.
 			"parent": function(selector) {
 				var elArray = [],
 					el,
 					found,
-					i;
+					result = [],
+					i, j;
 				if(this instanceof NodeList) {
 					for(i = 0; i < this.length; i++) {
 						elArray.push(this[i]);
@@ -132,7 +141,15 @@
 						found = GT(selector, el);
 
 						if(found.length > 0) {
-							return found;
+							// Check each found element is actually a parent.
+							for(j = 0; j < found.length; j++) {
+								if(this.isParent(found[j], el)) {
+									result.push(found[j]);
+								}
+							}
+							if(result.length > 0) {
+								return result.toNodeList();
+							}
 						}
 					}
 				}
@@ -152,6 +169,22 @@
 			}
 		},
 		/**
+		 * Added to the Array prototype, converts the array to a NodeList
+		 * collection.
+		 * @return NodeList
+		 */
+		// TODO: BUG: Taking the elements out of their DOM document and into the
+		// fragment causes them to be removed from the original.
+		arrayToNodeList = function() {
+			var nodeList = document.createDocumentFragment(),
+			len = this.length,
+			i;
+			for(i = 0; i < len; i++) {
+				nodeList.appendChild(this[i]);
+			}
+			return nodeList.childNodes;
+		},
+		/**
 		 * TODO: Docs.
 		 */
 		nodeListWrap = function(me, funcName, args) {
@@ -168,8 +201,9 @@
 				Element.prototype[key] = helpers[key];
 				NodeList.prototype[key] = function() {
 					nodeListWrap(this, key, arguments);
-				}
+				};
 			});
+			Array.prototype["toNodeList"] = arrayToNodeList;
 		};
 
 	/**
