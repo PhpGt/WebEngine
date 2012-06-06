@@ -177,6 +177,13 @@ class Dom implements ArrayAccess {
 
 		$domNodeCollection = new DomElCollection($this, $domNodeArray);
 
+		$domNodeCollection->remove();
+		return $domNodeCollection;
+	}
+
+	public function templateOutput($templateWrapper) {
+		$domNodeCollection = new DomElCollection(
+			$this, $templateWrapper->getArray());
 		// Remove the collection from the DOM (wherever it may be) and place it
 		// into a DIV with id of PHPGt_Template_Elements for picking up in
 		// Gt.js.
@@ -199,9 +206,6 @@ class Dom implements ArrayAccess {
 		$domNodeCollection->map(function(&$element, $key, $c_attribute) {
 			$element->removeAttribute($c_attribute);
 		}, $attribute);
-
-		$domNodeCollection->remove();
-		return $domNodeCollection;
 	}
 
 	/**

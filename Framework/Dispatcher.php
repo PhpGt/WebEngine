@@ -79,6 +79,7 @@ final class Dispatcher {
 			$templateWrapper,
 			$toolWrapper);
 
+		$dom->templateOutput($templateWrapper);
 		$dom->flush();
 	}
 }

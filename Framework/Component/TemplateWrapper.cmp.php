@@ -1,9 +1,14 @@
 <?php
-class TemplateWrapper implements ArrayAccess {
+class TemplateWrapper implements ArrayAccess, Iterator {
 	private $_templateArray = array();
+	private $_index = 0;
 
 	public function __construct($templateArray) {
 		$this->_templateArray = $templateArray->getElArray();
+	}
+
+	public function getArray() {
+		return $this->_templateArray;
 	}
 	
 	public function offsetExists($offset) {
@@ -36,6 +41,26 @@ class TemplateWrapper implements ArrayAccess {
 	public function offsetUnset($offset) {
 		// TODO: More appropriate error message and logging.
 		die("What are you unsetting the Template for???");
+	}
+
+	public function current() {
+		return $this->_templateArray[$this->_index];
+	}
+
+	public function key() {
+		return $this->_index;
+	}
+
+	public function next() {
+		++$this->_index;
+	}
+
+	public function rewind() {
+		$this->_index = 0;
+	}
+
+	public function valid() {
+		return isset($this->_templateArray[$this->_index]);
 	}
 }
 ?>
