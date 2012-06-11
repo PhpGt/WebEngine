@@ -64,6 +64,8 @@ class User_PageTool extends PageTool {
 			return false;
 		}
 
+		$this->setAuthData($username);
+
 		return true;
 	}
 
