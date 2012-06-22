@@ -123,11 +123,12 @@ class Dom implements ArrayAccess {
 	* Removes a given CSS selector from the DOM. If more than one element
 	* matches the given selector, all matches will be removed.
 	* @param string $selector CSS selector describing element(s) to remove.
-	* @return int The number of elements that were removed.
+	* @return DomElCollection The element(s) that were removed.
 	*/
 	public function offsetUnset($selector) {
-		// TODO: Implement offsetUnset.
-		return 0;
+		$current = $this[$selector];
+		$current->remove();
+		return $current;
 	}
 
 	public function getDomDoc() {
