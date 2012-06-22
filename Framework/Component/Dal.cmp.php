@@ -176,7 +176,9 @@ class Dal implements ArrayAccess {
 
 			break;
 		default:
-			xdebug_stack_trace();
+			if(function_exists("xdebug_stack_trace")) {
+				xdebug_stack_trace();
+			}
 			break;
 		}
 
