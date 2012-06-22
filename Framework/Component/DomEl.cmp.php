@@ -408,7 +408,19 @@ class DomEl implements ArrayAccess {
 	*/
 	public function __call($name, $args = array()) {
 		if(method_exists($this->node, $name)) {
-			return call_user_func_array(array($this->node, $name), $args);
+			$result = null;
+			try {
+				$result = call_user_func_array(
+					array($this->node, $name),
+					$args
+				);
+			}
+			catch(Exception $e) {
+				// TODO: Throw proper error.
+				var_dump(xdebug_get_function_stack());
+				var_dump($name, $args);die();
+			}
+			return $result;
 		}
 		else {
 			return false;
