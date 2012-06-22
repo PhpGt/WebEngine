@@ -65,12 +65,13 @@ class Dom implements ArrayAccess {
 
 	/**
 	* Checks to see if a given CSS selector exists matches any DOM Elements.
+	* Can be used via isset() or empty().
 	* @param string $selector CSS selector to check.
 	* @return bool Whether the CSS selector matches any DOM Elements.
 	*/
 	public function offsetExists($selector) {
-		// TODO: Implement offsetExists.
-		return null;
+		$collection = $this[$selector];
+		return $collection->length > 0;
 	}
 
 	/**
