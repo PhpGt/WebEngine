@@ -409,6 +409,37 @@
 			return req(url, callback, "post");
 		};
 	};
+
+	GT.setCookie = function(name, value, days) {
+		var date, expires = "";
+		if(days) {
+			date = new Date();
+			date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+			expires = "; expires=" + date.toGMTString();
+		}
+		document.cookie = name + "=" + value + expires + "; path=/";
+	};
+
+	GT.getCookie = function(name) {
+		var nameEQ = name + "=",
+			ca = document.cookie.split(";"),
+			i, c;
+		for(i = 0; i < ca.length; i++) {
+			c = ca[i];
+			while(c.charAt(0) == " ") {
+				c = c.substring(1, c.length);
+			}
+			if(c.indexOf(nameEQ) === 0) {
+				return c.substring(nameEQ.length, c.length);
+			}
+		}
+
+		return null;
+	};
+
+	GT.removeCookie = function(name) {
+		GT.setCookie(name, "", -1);
+	};
 	// Export the GT variable to the global context.
 	window.GT = GT;
 
