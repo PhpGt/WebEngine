@@ -109,11 +109,14 @@ class Dom implements ArrayAccess {
 	* another DOM Element.
 	* @param string $selector CSS selector describing element(s) to replace.
 	* @param DomEl|DomElCollection $value The element to replace with.
-	* @return int The number of elements that were replaced.
+	* @return DomElCollection The elements collection that was replaced.
 	*/
 	public function offsetSet($selector, $value) {
-		// TODO: Implement offsetSet.
-		return 0;
+		$current = $this[$selector];
+		$current->before($value);
+		$current->remove();
+		
+		return $current;
 	}
 
 	/**
