@@ -14,6 +14,10 @@ class App_Config_Framework {
 	protected $_isCached = true;
 	protected $_isClientCompiled = false;
 
+	// When true, URLs are converted into directory style, dropping the need
+	// for the file extension.
+	protected $_directoryUrls = false;
+
 	protected $_timezone = "Europe/London";
 
 	private $_reserved = array("Gt", "g105b", "admin");

@@ -56,7 +56,8 @@ if(empty($extension) && $fileName == "Index") {
 }
 
 // Redirect incorrectly requested extensions to always use .html.
-if($extension == "htm") {
+if($extension == "htm" || (strtolower($extension) != $extension &&
+(strtolower($extension) == "htm" || strtolower($extension) == "html") )) {
 	header("HTTP/1.1 301 Moved Permanently");
 	header("Location: $fileName.html");
 	exit;
@@ -191,30 +192,29 @@ foreach($required as $title => $path) {
 if(isset($_GET["DebugBootstrap"])) {
 	// If you don't trust your webserver has been set up correctly, have a look 
 	// through the output of this code block:
-
 	echo "PathInfo: " . PHP_EOL;
 	var_dump($pathInfo);
 
 	echo "Constants: " . PHP_EOL;
 	echo "<pre>";
-	echo "CWD: "      . $cwd      . PHP_EOL 
-	. "VER: "      . VER       . PHP_EOL
-	. "APPNAME: "  . APPNAME   . PHP_EOL
-	. "GTROOT: "   . GTROOT    . PHP_EOL
-	. "APPROOT: "  . APPROOT   . PHP_EOL
-	. "DS: "       . DS        . PHP_EOL 
+	echo "CWD: "	. $cwd		. PHP_EOL 
+	. "VER: "		. VER		. PHP_EOL
+	. "APPNAME: "	. APPNAME	. PHP_EOL
+	. "GTROOT: "	. GTROOT	. PHP_EOL
+	. "APPROOT: "	. APPROOT	. PHP_EOL
+	. "DS: "		. DS		. PHP_EOL 
 	. PHP_EOL
-	. "DIR: "      . DIR       . PHP_EOL
-	. "BASEDIR: "  . BASEDIR   . PHP_EOL
-	. "FILE: "     . FILE      . PHP_EOL
-	. "EXT: "      . EXT       . PHP_EOL
-	. "DIRPATH: "  . DIRPATH   . PHP_EOL
-	. "FILEPATH: " . FILEPATH  . PHP_EOL
-	. "FILECLASS: ". FILECLASS . PHP_EOL
+	. "DIR: "		. DIR		. PHP_EOL
+	. "BASEDIR: "	. BASEDIR	. PHP_EOL
+	. "FILE: "		. FILE		. PHP_EOL
+	. "EXT: "		. EXT		. PHP_EOL
+	. "DIRPATH: "	. DIRPATH	. PHP_EOL
+	. "FILEPATH: "	. FILEPATH	. PHP_EOL
+	. "FILECLASS: "	. FILECLASS	. PHP_EOL
 	. PHP_EOL;
 	echo "</pre>";
 
-	echo "GET: " . PHP_EOL;
+	echo "GET: "	. PHP_EOL;
 	var_dump($_GET);
 	exit;
 }
