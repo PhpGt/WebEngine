@@ -20,13 +20,9 @@ class App_Config_Framework {
 
 	protected $_timezone = "Europe/London";
 
-	private $_reserved = array("Gt", "g105b", "admin");
+	private $_reserved = array("PhpGt", "Gt", "g105b", "admin");
 
 	public function __construct() { }
-
-	public function getActiveModules() {
-		return $this->_activeModules;
-	}
 
 	public function isCached() {
 		return $this->_isCached;
