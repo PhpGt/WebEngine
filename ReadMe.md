@@ -1,20 +1,21 @@
 PHP.Gt
-------
-
+======
 A lightweight application development toolkit aimed at automating deployment,
 streamlining development and respecting web technologies.
 
 Versions
 --------
-
 Version numbers are given in the following format:
-vRelease.Beta.Alpha
+
+> vRelease.Beta.Alpha
 
 So the first public release is
-v1.0.0
+
+> v1.0.0
 
 The first ever public beta (before v1 release) is
-v0.1.0
+
+> v0.1.0
 
 **Alpha versions** are a collection of minor related code changes. Their
 progress can be quantified, and a version increments when the whole
