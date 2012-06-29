@@ -1,5 +1,7 @@
 <?php
 class User_PageTool extends PageTool {
+	private $_domainWhiteList = array("*");
+
 	public function go($api, $dom, $template, $tool) {
 		if(empty($_COOKIE["PhpGt_Track"])) {
 			$anonId = $this->generateSalt();
@@ -64,9 +66,41 @@ class User_PageTool extends PageTool {
 			return false;
 		}
 
+		// Check username is part of the whitelisted domains.
+		// TODO: Implement check.
+
 		$this->setAuthData($username);
 
 		return true;
+	}
+
+	/**
+	 * Applications can set white lists of domains to allow logging in through
+	 * OAuth/OpenID. Email addresses outside of this list will not be allowed
+	 * access to the application.
+	 *
+	 * @param Array|string An array of domains, a comma separated list of
+	 * domains, or a single domain to *add* to the white list.
+	 */
+	public function setDomainWhiteList($whiteList) {
+		$whiteListArray = array();
+
+		if(is_array($whiteList)) {
+			$whiteListArray = $whiteList;
+		}
+		else if(is_string($whiteList)) {
+			if(strstr($whiteList, ",")) {
+				// Comma separated values supplied.
+				$whiteListArray = explode(",", $whiteList);
+			}
+			else {
+				// A single domain provided.
+				$whiteListArray[] = $whiteList;
+			}
+		}
+
+		$this->_domainWhiteList = array_merge(
+			$this->_domainWhiteList, $whiteListArray);
 	}
 
 	/**
