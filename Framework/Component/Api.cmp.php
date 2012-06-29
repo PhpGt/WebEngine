@@ -1,6 +1,12 @@
 <?php
 /**
- * Api is a dependency injector for each module of the application.
+ * Api is a dependency injector for each module of the application's data layer.
+ * By default, the API links directly to the DAL class, and if standard queries
+ * are executed, there is no requirement for an API class to be created.
+ * 
+ * API classes are to be used when there are high levels of computation needed,
+ * or external data-sources (non-mysql) required, such as external webservices
+ * or file-based data structures.
  */
 class Api {
 	private $_errorMessage 	= null;

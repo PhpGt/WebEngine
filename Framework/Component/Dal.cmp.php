@@ -1,7 +1,14 @@
 <?php
 /**
- * TODO: Docs.
- * createTableAndDependencies needs optimising.
+ * The DAL object is a wrapper to the actual DAL provided by PHP's PDO class.
+ * There is no direct way of calling the DAL's methods, as this is done through
+ * the API class (the API class can perform manipulation on the data provided
+ * directly from the DAL).
+ *
+ * Handled in this class is the connection settings to the MySQL database, and
+ * the automatic database deployment and just-in-time table creation.
+ *
+ * TODO: createTableAndDependencies needs optimising.
  */
 class Dal implements ArrayAccess {
 	private $_dbh = null;
@@ -10,7 +17,8 @@ class Dal implements ArrayAccess {
 	private $_createdTableCache = array();
 
 	/**
-	 * TODO: Docs.
+	 * Only ever called internally. Creates the PDO class, passing in the
+	 * details stored in the database configuration file.
 	 */
 	public function __construct($config) {
 		try {
@@ -34,14 +42,23 @@ class Dal implements ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Called at the end of each page request. Setting a PDO object to null
+	 * is all that is required to allow PHP's garbage collector to deallocate
+	 * the resource, however if there are any advancements in the database
+	 * connector, they may need extra destruction actions.
 	 */
 	public function __destruct() {
 		$this->_dbh = null;
 	}
 
 	/**
-	 * TODO: Docs.
+	 * The Dal object implements ArrayAccess, so that each created DalElement
+	 * can be cached into an associative array. This means that during a single
+	 * request, only one DalElement of the same type is required to be
+	 * constructed.
+	 * 
+	 * The function always returns true, because if the offset does not exist,
+	 * it will be automatically created.
 	 */
 	public function offsetExists($offset) {
 		// First, check cache to see if DalObject already exists.
@@ -59,7 +76,9 @@ class Dal implements ArrayAccess {
 	}
 	
 	/**
-	 * TODO: Docs.
+	 * Gets the cached DalElement from the Dal object's internal array cache.
+	 * Providing an offset that doesn't exist will cause the offset to be
+	 * automatically created (from within offsetExists method).
 	 */
 	public function offsetGet($offset) {
 		$offset = ucfirst($offset);
@@ -72,33 +91,37 @@ class Dal implements ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Setting the DalElement cache is not allowed.
 	 */
-	public function offsetSet($offset, $value) {
-	}
+	public function offsetSet($offset, $value) {}
 
 	/**
-	 * TODO: Docs.
+	 * Unsetting the DalElement cache is not allowed.
 	 */
-	public function offsetUnset($offset) {
-	}
+	public function offsetUnset($offset) {}
 
 	/**
-	 * TODO: Docs.
+	 * Returns the value of the last inserted primary key, null if not set.
 	 */
 	public function lastInsertId() {
 		return $this->_dbh->lastInsertId();
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Prepares an SQL statement, ready to have variables injected and to be
+	 * executed later.
 	 */
 	public function prepare($sql, $config = null) {
 		return $this->_dbh->prepare($sql);
 	}
 
 	/**
-	 * TODO: Docs.
+	 * When an SQL error is thrown, this function will attempt to fix the error.
+	 * This will be done silently on production applications, but will display
+	 * the progress when debugging.
+	 *
+	 * Usual errors are non-existent table errors, where this method will
+	 * automatically attempt to create the tables and all dependencies.
 	 */
 	public function fixError($input) {
 		$this->errorStylesheet();
@@ -110,7 +133,7 @@ class Dal implements ArrayAccess {
 			$message = $input->errorInfo();
 			$message = $message[2];
 		}
-		// Grab the statment's error message.
+		// Grab the statement's error message.
 		$patternArray = array(
 			"NO_TABLE" => "/Table '(.*)' doesn't exist/",
 			"NO_USER" => "/Access denied for user '(.*)'@/",
@@ -189,7 +212,10 @@ class Dal implements ArrayAccess {
 	}
 
 	/**
-	 * TODO: Docs.
+	 * Supplying a name of a table, or sub-table within a table collection will
+	 * cause this method to deploy the table automatically, along with all the
+	 * dependencies detected within the creation query.
+	 *
 	 * All tables should be named using PHP.Gt conventions to work fully.
 	 */
 	public function createTableAndDependencies($tableName) {
@@ -282,6 +308,8 @@ class Dal implements ArrayAccess {
 		}
 	}
 
+	// TODO: This can be moved to an external file to avoid having css/php/html
+	// clashes.
 	private function errorStyleSheet() {
 		echo <<<STYLE
 <style>
