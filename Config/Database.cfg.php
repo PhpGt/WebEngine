@@ -1,6 +1,12 @@
 <?php
 /**
- * TODO: Docs (holds default settings, can be overridden by apps).
+ * All details of the database connection are stored in this file. 
+ * By default, there are certain connection settings that need to be changed 
+ * per-application, such as the database username and password, and possibly IP 
+ * address if an external server is used.
+ *
+ * The order of automatic deployment of database tables is specified here, so 
+ * any table dependencies can be specified.
  */
 class Database_Config_Framework {
 	protected $_host = "127.0.0.1";
