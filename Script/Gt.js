@@ -78,6 +78,11 @@
 		 * TODO: Docs.
 		 */
 		helpers = {
+			"addEvent": function(name, callback, useCapture) {
+				var useCapture = useCapture || false
+				this.addEventListener(name, callback, useCapture);
+				return this;
+			},
 			"addClass": function(name) {
 				this.className += " " + name;
 				return this;
@@ -148,7 +153,7 @@
 								}
 							}
 							if(result.length > 0) {
-								return result.toNodeList();
+								return result;
 							}
 						}
 					}
@@ -169,22 +174,6 @@
 			}
 		},
 		/**
-		 * Added to the Array prototype, converts the array to a NodeList
-		 * collection.
-		 * @return NodeList
-		 */
-		// TODO: BUG: Taking the elements out of their DOM document and into the
-		// fragment causes them to be removed from the original.
-		arrayToNodeList = function() {
-			var nodeList = document.createDocumentFragment(),
-			len = this.length,
-			i;
-			for(i = 0; i < len; i++) {
-				nodeList.appendChild(this[i]);
-			}
-			return nodeList.childNodes;
-		},
-		/**
 		 * TODO: Docs.
 		 */
 		nodeListWrap = function(me, funcName, args) {
@@ -202,8 +191,10 @@
 				NodeList.prototype[key] = function() {
 					nodeListWrap(this, key, arguments);
 				};
+				Array.prototype[key] = function() {
+					nodeListWrap(this, key, arguments);
+				}
 			});
-			Array.prototype["toNodeList"] = arrayToNodeList;
 		};
 
 	/**
@@ -299,7 +290,8 @@
 	 * @return DomNodeList An array containing the matching elements.
 	 */
 	GT.dom = function(selector) {
-		var context = document;
+		var context = document,
+			i, len, nodes, res;
 		if(arguments.length > 1) {
 			if(arguments[0] instanceof String) {
 				selector = arguments[0];
@@ -319,10 +311,27 @@
 				selector = arguments[1];
 			}
 			if(arguments[1] instanceof NodeList) {
-				context = arguments[1][0];
+				context = arguments[1];
 			}
 		}
-		return context.querySelectorAll(selector);
+
+		if(context instanceof Node) {
+			// A single element.
+			return context.querySelectorAll(selector);
+		}
+		else {
+			// Assumed another NodeList.
+			len = context.length;
+			result = [];
+			for(i = 0; i < len; i++) {
+				nodes = context[i].querySelectorAll(selector);
+				nodes = Array.prototype.slice.call(nodes);
+				result = Array.prototype.slice.call(result);
+				result = nodes.concat(result);
+			}
+
+			return result;
+		}
 	};
 
 	/**
