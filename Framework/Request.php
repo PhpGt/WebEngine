@@ -13,6 +13,13 @@ final class Request {
 		$this->contentType = "text/html";
 		session_start();
 
+		// Useful for faking slow connections on AJAX calls.
+		if(isset($_GET["FakeSlow"])) {
+			$seconds = empty($_GET["FakeSlow"])
+				? 2 : $_GET["FakeSlow"];
+			sleep($seconds);
+		}
+
 		if(EXT == "json") { 
 			$this->contentType = "application/json";
 
