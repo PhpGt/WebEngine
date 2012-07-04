@@ -123,6 +123,10 @@ class DomElCollection implements Iterator, ArrayAccess {
 	* @param mixed $value The value to assign to the given property.
 	*/
 	public function __set($key, $value) {
+		// TODO: BUG: When appending to values, the value set is that of the
+		// first element. Example: $dom["a.test"]->href .= "test";
+		// If each a.test element had a different href, they all get set to
+		// the value of the first, after appending "test".
 		foreach($this->_elArray as $el) {
 			$el->$key = $value;
 		}
