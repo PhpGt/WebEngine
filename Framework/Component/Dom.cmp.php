@@ -11,6 +11,9 @@ class Dom implements ArrayAccess {
 	* buffer.
 	*/
 	public function __construct($html) {
+		// If converting encoding costs too much time, use a simpler method
+		// by prepending '<?xml encoding="UTF-8">' to $html.
+		$html = mb_convert_encoding($html, "HTML-ENTITIES", "utf-8");
 		$this->_domDoc = new DomDocument("1.0", "utf-8");
 		libxml_use_internal_errors(true);
 		if(!$this->_domDoc->loadHTML($html) ) {
