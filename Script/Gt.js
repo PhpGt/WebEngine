@@ -376,7 +376,7 @@
 			xhr.open(method, url, true);
 
 			if(method === "POST") {
-				httpRequest.setRequestHeader(
+				xhr.setRequestHeader(
 					"Content-Type", "application/x-www-form-urlencoded");
 			}
 
