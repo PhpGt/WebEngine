@@ -1,5 +1,3 @@
-<?php
-class PayPal_ExpressCheckout extends PayPalObject {
+<?php class PayPal_ExpressCheckout extends PayPalObject {
 	
-}
-?>
+}?>
