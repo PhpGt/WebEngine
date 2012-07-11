@@ -139,7 +139,7 @@ private function checkDirFile() {
 private function checkCase() {
 	$dirList = explode("/", DIR);
 	if(FILE === "Index") {
-		array_pop($dirList);
+		$lastDir = array_pop($dirList);
 	}
 
 	$path = APPROOT . DS . "PageView";
@@ -150,11 +150,15 @@ private function checkCase() {
 			continue;
 		}
 
+		if(!is_dir($path)) {
+			continue;
+		}
+
 		$dh = opendir($path);
 		while(false !== ($name = readdir($dh)) ) {
 			if(strtolower($dir) == strtolower($name)) {
+				$originalDir = $dir;
 				$dir = $name;
-				$originalDir = $name;
 			}
 		}
 		closedir($dh);
@@ -164,6 +168,13 @@ private function checkCase() {
 	}
 
 	$fileName = FILE . "." . EXT;
+	// Kill filename if it is an implied filename from root directory.
+	if(FILE === "Index") {
+		$uri = $_SERVER["REQUEST_URI"];
+		if(!strstr($uri, "Index.html")) {
+			$fileName = $lastDir;
+		}
+	}
 
 	// Replace directory separator with forward slash for URL.
 	$url = str_replace(DS, "/", $path);
@@ -180,6 +191,7 @@ private function checkCase() {
 		. $url . "/";
 
 	if($path !== $originalPath) {
+		//var_dump($url, $fileName);die();
 		// Add fileName to the path
 		$url .= $fileName;
 
