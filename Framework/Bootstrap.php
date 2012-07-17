@@ -113,7 +113,8 @@ define("FILECLASS",  $fileClass);
 // Define the minimum required files to run the framework. The path of each
 // requirement can be an array of paths, in order of priority (for version 
 // compatibility).
-$required = array(
+$toLoad = array();
+$toLoad["Required"] = array(
 	"Shared application config" => 
 	GTROOT.DS."Config" . DS . "App.cfg.php",
 	"Shared database config" =>
@@ -123,13 +124,6 @@ $required = array(
 
 	"Http Error Exception" =>
 	GTROOT.DS."Framework" . DS . "Error" . DS . "HttpError.php",
-
-	"Application-specific application config" =>
-	APPROOT.DS."Config" . DS . "App.cfg.php",
-	"Application-specific database config" => 
-	APPROOT.DS."Config" . DS . "Database.cfg.php",
-	"Application-specific security config" => 
-	APPROOT.DS."Config" . DS . "Security.cfg.php",
 
 	"API component" =>
 	GTROOT.DS."Framework" . DS . "Component" . DS . "Api.cmp.php",
@@ -174,16 +168,32 @@ $required = array(
 	"Main PHP.Gt object" =>
 	GTROOT.DS."Framework" . DS . "Gt.php"
 );
-foreach($required as $title => $path) {
-	if(!is_array($path)) { $path = array($path); }
-	$pathLen = count($path);
-	for($i = 0; $i < $pathLen; $i++) {
-		if(file_exists($path[$i])) {
-			require($path[$i]);
-		}
-		else {
-			if($i === $pathLen - 1) {
-				die("PHP.Gt cannot load, the $title file cannot be found.");
+
+$toLoad["Optional"] = array(
+	"Application-specific application config" =>
+		APPROOT.DS."Config" . DS . "App.cfg.php",
+	"Application-specific database config" => 
+		APPROOT.DS."Config" . DS . "Database.cfg.php",
+	"Application-specific security config" => 
+		APPROOT.DS."Config" . DS . "Security.cfg.php",
+);
+
+foreach($toLoad as $requirement => $loadArray) {
+	foreach($loadArray as $title => $path) {
+		if(!is_array($path)) { $path = array($path); }
+		$pathLen = count($path);
+		for($i = 0; $i < $pathLen; $i++) {
+			if(file_exists($path[$i])) {
+				require($path[$i]);
+			}
+			else {
+				if($requirement === "Optional") {
+					continue;
+				} 
+				
+				if($i === $pathLen - 1) {
+					die("PHP.Gt cannot load, the $title file cannot be found.");
+				}
 			}
 		}
 	}

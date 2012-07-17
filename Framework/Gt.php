@@ -1,9 +1,24 @@
 <?php final class Gt {
 public function __construct() {
+	$baseSuffix = "_Framework";
+	$appConfigClass = "App_Config";
+	$databaseConfigClass = "Database_Config";
+	$securityConfigClass = "Security_Config";
+
+	if(!class_exists($appConfigClass)) {
+		$appConfigClass .= $baseSuffix;
+	}
+	if(!class_exists($databaseConfigClass)) {
+		$databaseConfigClass .= $baseSuffix;
+	}
+	if(!class_exists($securityConfigClass)) {
+		$securityConfigClass .= $baseSuffix;
+	}
+	
 	$config = array(
-		"App"       => new App_Config(),
-		"Database"  => new Database_Config(),
-		"Security"  => new Security_Config()
+		"App"       => new $appConfigClass(),
+		"Database"  => new $databaseConfigClass(),
+		"Security"  => new $securityConfigClass()
 	);
 
 	// Compute the request, instantiating the relavent PageCode/Api.
