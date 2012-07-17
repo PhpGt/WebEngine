@@ -1,28 +1,28 @@
-html, body.app {
+html, body {
 	height: 100%;
 }
-body.app {
+body {
 	position: relative;
 	overflow: hidden;
 	height: 100%;
 	font-family: "Ubuntu", Arial, sans-serif;
 }
-body.app * {
+* {
 	font-family: "Ubuntu", Arial, sans-serif;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
 	cursor: default;
 }
-body.app input,
-body.app textarea,
-body.app pre {
+input,
+textarea,
+pre {
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	user-select: text;
 	cursor: text;
 }
-body.app > header {
+body > header {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -32,21 +32,43 @@ body.app > header {
 	background: transparent;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
-body.app > header h1 {
+body > header h1 {
 	font-weight: normal;
 	font-size: 32px;
 	margin-top: 12px;
 	margin-left: 12px;
 	color: #666;
 }
-body.app > footer {
+body > header input.globalSearch {
+	position: absolute;
+	top: 8px;
+	left: 200px;
+	width: 50%;
+	font-size: 22px;
+	padding: 8px;
+	border: none;
+	color: #666;
+	opacity: 0.5;
+}
+body > header input.globalSearch:hover,
+body > header input.globalSearch:focus {
+	opacity: 1;
+}
+body > header input.globalSearch::-webkit-input-placeholder {
+	color: #666;
+}
+body > header input.globalSearch::-moz-input-placeholder {
+	color: #666;
+}
+
+body > footer {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
 	height: 24px;
 	z-index: 100;
 }
-body.app > aside {
+body > aside {
 	position: absolute;
 	top: 64px;
 	bottom: 16px;
@@ -54,13 +76,13 @@ body.app > aside {
 	border-right: 1px solid rgba(0, 0, 0, 0.1);
 	z-index: 100;
 }
-body.app > aside ul li {
+body > aside ul li {
 	position: relative;
 	display: block;
 	height: 48px;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
-body.app > aside ul li.selected::after {
+body > aside ul li.selected::after {
 	position: absolute;
 	top: 12px;
 	right: -12px;
@@ -72,51 +94,51 @@ body.app > aside ul li.selected::after {
 	border-right: 1px solid rgba(0, 0, 0, 0.1);
 	-webkit-transform: rotate(45deg);
 }
-body.app > aside ul li:nth-child(even) {
+body > aside ul li:nth-child(even) {
 	background: #f0f0f0;
 }
-body.app > aside ul li:nth-child(even).selected::after {
+body > aside ul li:nth-child(even).selected::after {
 	background: #f0f0f0;
 }
-body.app > aside ul li.selected:hover::after {
+body > aside ul li.selected:hover::after {
 	background: #ebf2f8;
 }
-body.app > aside ul li:hover {
+body > aside ul li:hover {
 	background: #ebf2f8;
 }
-body.app > aside ul li a {
+body > aside ul li a {
 	display: block;
 	text-decoration: none;
 	color: inherit;
 	padding: 12px 0;
 	opacity: 0.6;
 }
-body.app > aside ul li:hover a {
+body > aside ul li:hover a {
 	opacity: 1;
 }
-body.app > aside ul li i {
+body > aside ul li i {
 	position: absolute;
 	top: 0;
 	left: 0;
 	margin: 12px 8px;
 	font-size: 24px;
 }
-body.app > aside ul li h1 {
+body > aside ul li h1 {
 	display: block;
 	font-weight: bold;
 	font-size: 12px;
 	padding-left: 48px;
 	color: #000;
 }
-body.app > aside ul li h1.center {
+body > aside ul li h1.center {
 	margin-top: 6px;
 }
-body.app > aside ul li span {
+body > aside ul li span {
 	font-size: 12px;
 	padding-left: 48px;
 	color: #000;
 }
-body.app > div#main {
+div#main {
 	position: absolute;
 	top: 0;
 	left: 200px;
@@ -126,8 +148,8 @@ body.app > div#main {
 	background: #fff;
 }
 
-body.app button,
-body.app a.button {
+button,
+a.button {
 	position: relative;
 	display: inline-block;
 	font-size: 12px;
@@ -153,8 +175,8 @@ body.app a.button {
 	
 	color: #666 !important;
 }
-body.app button:hover,
-body.app a.button:hover {
+button:hover,
+a.button:hover {
 	color: #444 !important;
 
 	-webkit-box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
@@ -164,16 +186,16 @@ body.app a.button:hover {
 		/* color border */
 		rgba(0, 0, 0, 0.2) 0 2px 10px;
 }
-body.app button::before,
-body.app a.button::before {
+button::before,
+a.button::before {
 	position: absolute;
 	left: 10px;
 	content: attr(data-icon);
 	font-size: 18px;
 }
 
-body.app button:active,
-body.app a.button:active {
+button:active,
+a.button:active {
 	color: #444 !important;
 
 	-webkit-transform: translateY(1px);
@@ -184,18 +206,18 @@ body.app a.button:active {
 		/* color border */
 		rgba(0, 0, 0, 0.2) 0 2px 10px;
 }
-body.app button[data-icon],
-body.app a.button[data-icon] {
+button[data-icon],
+a.button[data-icon] {
 	min-width: 0;
 	padding-left: 32px;
 	padding-right: 16px;
 	text-align: left;
 }
-body.app button.small {
+button.small {
 	min-width: 36px;
 }
 
-body.app div#user {
+div#user {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -203,18 +225,18 @@ body.app div#user {
 	opacity: 0.5;
 	-webkit-transition: opacity 0.2s ease-in-out;
 }
-body.app div#user:hover {
+div#user:hover {
 	opacity: 1;
 }
-body.app div#user * {
+div#user * {
 	cursor: pointer;
 }
-body.app div#user label {
+div#user label {
 	font-size: 12px;
 	color: #666;
 	padding-left: 32px;
 }
-body.app div#user button.avatar {
+div#user button.avatar {
 	overflow: visible;
 	min-width: 0;
 	margin-top: 14px;
@@ -227,7 +249,7 @@ body.app div#user button.avatar {
 	-webkit-box-shadow: none;
 	vertical-align: middle;
 }
-body.app div#user button.avatar::after {
+div#user button.avatar::after {
 	position: absolute;
 	content: "▾";
 	width: 32px;
@@ -237,17 +259,17 @@ body.app div#user button.avatar::after {
 	left: 16px;
 	opacity: 0;
 }
-body.app div#user:hover button.avatar::after {
+div#user:hover button.avatar::after {
 	opacity: 1;
 }
 
-body.app input {
+input {
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-radius: 2px;
 	padding: 4px;
 }
 
-body.app > aside input {
+body > aside input {
 	width: 180px;
 	margin: 0 5px;
 }
