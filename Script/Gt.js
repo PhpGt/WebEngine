@@ -26,8 +26,7 @@
  */
 (function() {
 	// Ensures there are no compatibility issues with external libraries.
-	var _$ = window.$ || null,
-		_$$ = window.$$ || null,
+	var loadQueue = [],
 		// An object hash used to store all templated HTML elements.
 		_templates = {},
 		/**
@@ -74,13 +73,71 @@
 				tmplDiv.parentNode.removeChild(tmplDiv);
 			}
 		},
+
+		/**
+		 * TODO: Docs.
+		 */
+		attachLoadQueue = function() {
+			// Attack the event listener in real browsers.
+			if(document.addEventListener) {
+				document.addEventListener("DOMContentLoaded", function() {
+					document.removeEventListener(
+						"DOMContentLoaded",
+						arguments.callee,
+						false
+					);
+					executeLoadQueue();
+				}, false);
+			}
+			// Hack the event listener in IE.
+			else if(document.attachEvent) {
+				document.attachEvent("onreadystatechange", function() {
+					if(document.readyState === "complete") {
+						document.detachEvent(
+							"onreadystatechange",
+							arguments.callee
+						);
+						executeLoadQueue();
+						return;
+					}
+				});
+
+				if(document.documentElement.doScroll && window == window.top) {
+					(function(c_callback) {
+						try {
+							document.documentElement.doScroll("left");
+						}
+						catch(error) {
+							setTimeout(arguments.callee, 0);
+							return;
+						}
+
+						executeLoadQueue();
+					})(callback);
+				}
+			}
+		},
+		executeLoadQueue = function() {
+			var i, len = loadQueue.length;
+			for(i = 0; i < len; i++) {
+				loadQueue[i]();
+			}
+		},
 		/**
 		 * TODO: Docs.
 		 */
 		helpers = {
 			"addEvent": function(name, callback, useCapture) {
-				var useCapture = useCapture || false
-				this.addEventListener(name, callback, useCapture);
+				var useCapture = useCapture || false,
+					i;
+				if(name instanceof Array) {
+					for(i = 0; i < name.length; i++) {
+						this.addEventListener(name[i], callback, useCapture);
+					}
+				}
+				else {
+					this.addEventListener(name, callback, useCapture);
+				}
 				return this;
 			},
 			"addClass": function(name) {
@@ -216,8 +273,7 @@
 	 * matches given page]
 	 */
 	GT.ready = function(callback, page) {
-		var dollar, doubleDollar,
-			pathname = window.location.pathname;
+		var pathname = window.location.pathname;
 		
 		if(page) {
 			if(page instanceof RegExp) {
@@ -230,48 +286,7 @@
 			}
 		}
 
-		// Pass what was stored in the dollar and double dollar signs before 
-		// harmonization into the callback function.
-		dollar = _$;
-		doubleDollar = _$$;
-
-		// Attack the event listener in real browsers.
-		if(document.addEventListener) {
-			document.addEventListener("DOMContentLoaded", function() {
-				document.removeEventListener(
-					"DOMContentLoaded",
-					arguments.callee,
-					false
-				);
-				return callback(dollar, doubleDollar);
-			}, false);
-		}
-		// Hack the event listener in IE.
-		else if(document.attachEvent) {
-			document.attachEvent("onreadystatechange", function() {
-				if(document.readyState === "complete") {
-					document.detachEvent(
-						"onreadystatechange",
-						arguments.callee
-					);
-					return callback(dollar, doubleDollar);
-				}
-			});
-
-			if(document.documentElement.doScroll && window == window.top) {
-				(function(c_callback, c_dollar, c_doubleDollar) {
-					try {
-						document.documentElement.doScroll("left");
-					}
-					catch(error) {
-						setTimeout(arguments.callee, 0);
-						return;
-					}
-
-					c_callback(c_dollar, c_doubleDollar);
-				})(callback, dollar, doubleDollar);
-			}
-		}
+		loadQueue.push(callback);
 	};
 
 	/**
@@ -454,6 +469,7 @@
 
 	// Perform automatic template collection.
 	// The template elements are provided by PHP.Gt just before DOM flushing.
+	addHelpers();
 	GT(templateScrape);
-	GT(addHelpers);
+	attachLoadQueue();
 }());

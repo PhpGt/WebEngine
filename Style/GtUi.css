@@ -29,7 +29,7 @@ body > header {
 	width: 100%;
 	height: 64px;
 	z-index: 100;
-	background: transparent;
+	background: rgba(255, 255, 255, 0.6);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 body > header h1 {
@@ -67,6 +67,8 @@ body > footer {
 	width: 100%;
 	height: 24px;
 	z-index: 100;
+	background: rgba(255, 255, 255, 0.6);
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 body > aside {
 	position: absolute;
@@ -146,6 +148,9 @@ div#main {
 	bottom: 0;
 	padding-top: 64px;
 	background: #fff;
+}
+div.noSidebar#main {
+	left: 0; 
 }
 
 button,
