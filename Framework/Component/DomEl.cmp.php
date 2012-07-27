@@ -29,6 +29,13 @@ class DomEl implements ArrayAccess {
 				$this->node->setAttribute($key, $value);
 			}
 		}
+		else if(is_string($attrArray) && is_null($value)) {
+			// This allows a new element to be created by ignoring the attrArray
+			// parameter: $dom->create("p", "This is a test");
+			$value = $attrArray;
+			$attrArray = null;
+			$this->text = $value;
+		}
 	}
 
 	public function offsetExists($selector) {
