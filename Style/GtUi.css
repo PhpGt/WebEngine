@@ -6,6 +6,8 @@ body {
 	overflow: hidden;
 	height: 100%;
 	font-family: "Ubuntu", Arial, sans-serif;
+	background: #fff;
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAABQCAIAAADk7aCWAAABf0lEQVRogb3a0aqDMBCE4W3EvP/jFlE5F8ciSjTZ2Z3pbZP9+UppNfhZ1/X7/Rr0qrXO84ztLdM0lVKwzcuybNsGhs2s1opt/m/j4Qh633cMffT06COsR58xMfoMi9GXkhJ9CSvR94wMfQ/L0I2GBt0Ia9DtgADdDgvQj9PZ6McwG/02mop+C1PRnbk8dCfMQ/eHktD9MAk9NJGBHgoz0KPj0tGj4XS0Y1Yu2hHORfsGJaJ94US0e0oW2h3OQiMjUtBIOAUN7o+jwXAcDW62MLrAxzZBdIGPbSyGLvCxjcXQxQJnVRZAFwucVVkAfezRo4+wHn1uEKPPsBh9Wa1EX8JK9H2pDH0Py9CNdRp0I6xBtxcJ0O2wAP24go1+DLPRb29T0W9hKrrzgfDQnTAP3f/ek9D9MAk99PPGQA+FGejRf7F09Gg4He24WMlFO8K5aN81aSLaF05Eu289stDucBYaucNMQSPhFDT+sA220X5o9QMv9kPj51xBNN4Oov8ASdproLdwtn8AAAAASUVORK5CYII=");
 }
 * {
 	font-family: "Ubuntu", Arial, sans-serif;
@@ -29,7 +31,7 @@ body > header {
 	width: 100%;
 	height: 64px;
 	z-index: 100;
-	background: rgba(255, 255, 255, 0.6);
+	background: rgba(255, 255, 255, 0.5);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 body > header h1 {
@@ -49,6 +51,7 @@ body > header input.globalSearch {
 	border: none;
 	color: #666;
 	opacity: 0.5;
+	background: transparent;
 }
 body > header input.globalSearch:hover,
 body > header input.globalSearch:focus {
