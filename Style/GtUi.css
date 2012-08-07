@@ -1,3 +1,22 @@
+@-webkit-keyframes Push {
+	0% {
+		opacity: 0;
+		-webkit-transform: scale(0.9);
+	}
+	50% {
+		opacity: 0;
+		-webkit-transform: scale(0.9);
+	}
+	100% {
+		opacity: 1;
+		-webkit-transform: scale(1);
+	}
+}
+
+.hidden {
+	opacity: 0;
+}
+
 html, body {
 	height: 100%;
 }
@@ -62,6 +81,12 @@ body > header input.globalSearch::-webkit-input-placeholder {
 }
 body > header input.globalSearch::-moz-input-placeholder {
 	color: #666;
+}
+
+body > header button.proto {
+	position: absolute;
+	top: 12px;
+	right: 12px;
 }
 
 body > footer {
@@ -150,7 +175,6 @@ div#main {
 	right: 0;
 	bottom: 0;
 	padding-top: 64px;
-	background: #fff;
 }
 div.noSidebar#main {
 	left: 0; 
