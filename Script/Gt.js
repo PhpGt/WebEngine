@@ -434,14 +434,18 @@
 		};
 	};
 
-	GT.setCookie = function(name, value, days) {
-		var date, expires = "";
+	GT.setCookie = function(name, value, days, domain) {
+		var date, expires = "",
+			domain = domain 
+				? "; domain=" + domain
+				: "";
+
 		if(days) {
 			date = new Date();
 			date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
 			expires = "; expires=" + date.toGMTString();
 		}
-		document.cookie = name + "=" + value + expires + "; path=/";
+		document.cookie = name + "=" + value + expires + "; path=/" + domain;
 	};
 
 	GT.getCookie = function(name) {

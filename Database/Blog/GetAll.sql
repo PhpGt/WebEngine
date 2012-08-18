@@ -21,9 +21,9 @@ select
 	)as `PreviewLength`,
 	`Is_Private`
 from `Blog_Article`
-inner join (`Blog_Article__J__Blog_Tag`)
+left join (`Blog_Article__J__Blog_Tag`)
 	on (`Blog_Article__J__Blog_Tag`.`Fk_Blog_Article` = `Blog_Article`.`Id`)
-inner join (`Blog_Tag`)
+left join (`Blog_Tag`)
 	on (`Blog_Tag`.`Id` = `Blog_Article__J__Blog_Tag`.`Fk_Blog_Tag`)
 order by `Dt_Publish` desc
 limit 100;
