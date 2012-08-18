@@ -74,6 +74,9 @@ class DalElement {
 		}
 
 		foreach ($paramArray as $key => &$value) {
+			if($value instanceof DateTime) {
+				$value = $value->format("Y-m-d H:i:s");
+			}
 			$stmt->bindParam($key, $value);
 		}
 
