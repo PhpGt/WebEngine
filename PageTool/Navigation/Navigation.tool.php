@@ -38,6 +38,9 @@ public function go($api, $dom, $template, $tool) {
 			$href = $li["a"]->getAttribute("href");
 			if(preg_match($pattern, $href) > 0) {
 				$li->addClass("selected");
+				if($li->hasClass("tree")) {
+					$li->addClass("open");
+				}
 			}
 		}
 	}
