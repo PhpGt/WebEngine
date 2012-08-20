@@ -17,6 +17,11 @@
 	opacity: 0;
 }
 
+.loading * {
+	-webkit-transition: opacity 1.5s ease-in-out;
+	opacity: 0.2;
+}
+
 html, body {
 	height: 100%;
 }
@@ -136,7 +141,14 @@ body > aside > select option {
 	color: #67aae0;
 }
 
-body > aside > ul {
+body > aside > nav {
+	margin-top: 58px;
+}
+body > aside > nav.alignTop {
+	margin-top: 3px;
+}
+
+body > aside > nav > ul {
 	background: rgba(255, 255, 255, 0.95);
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-left: none;
@@ -150,35 +162,45 @@ body > aside > ul {
 		rgba(0, 0, 0, 0.4) 0 1px 1px,
 		/* outer shadow */
 		rgba(0, 0, 0, 0.2) 0 2px 5px;
+	overflow: hidden;
 }
-body > aside ul li {
+body > aside > nav ul li {
 	position: relative;
 }
-body > aside ul li a {
+body > aside > nav ul li a {
 	display: block;
 	text-decoration: none;
 	color: #36393d;
 	padding: 16px 0 16px 32px;
 }
-body > aside ul li a:hover {
+body > aside > nav ul li a:hover {
+	text-decoration: underline;
+	background: #F2FFF5;
+}
+body > aside > nav ul li a:hover * {
 	text-decoration: underline
 }
-body > aside > ul > li > a {
+body > aside > nav > ul > li.selected > a,
+body > aside > nav > ul > li > a:active {
+	background: #00ba35;
+	color: #fff;
+}
+body > aside > nav > ul > li > a {
 	font-weight: bold;
 	font-size: 12px;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
-body > aside > ul > li ul {
+body > aside > nav > ul > li ul {
 	overflow: hidden;
 	height: 0;
 }
-body > aside > ul > li.open {
+body > aside > nav > ul > li.open {
 }
-body > aside > ul > li.open ul {3
-	border-right: 4px solid #67aae0;
+body > aside > nav > ul > li.open ul {
+	border-right: 4px solid #00ba35;
 	height: auto;
 }
-body > aside > ul > li::before {
+body > aside > nav > ul > li.tree::before {
 	position: absolute;
 	content: "►";
 	font-size: 12px;
@@ -187,29 +209,57 @@ body > aside > ul > li::before {
 	color: #36393d;
 	opacity: 0.25;
 }
-body > aside > ul > li.open::before {
+body > aside > nav > ul > li.tree.open::before {
 	position: absolute;
 	content: "▼";
 	opacity: 1;
 }
 
-body > aside > ul > li ul li a {
+body > aside > nav > ul > li ul li a {
 	font-weight: normal;
 	font-size: 12px;
 	padding: 8px 0 8px 32px;
 	border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
 }
 
+body > aside > nav > ul li a h1 {
+	display: inline-block;
+}
+body > aside > nav > ul li a span {
+	font-weight: normal;
+	float: right;
+	margin-right: 32px;
+}
+
+body > aside > nav > ul li i {
+	float: right;
+	padding-right: 8px;
+	text-decoration: none !important;
+}
+
 div#main {
 	position: absolute;
 	top: 0;
-	left: 200px;
+	left: 284px;
 	right: 0;
 	bottom: 0;
-	padding-top: 64px;
+	padding-top: 94px;
+	background: rgba(255, 255, 255, 0.8);
+	padding-left: 48px;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 div.noSidebar#main {
 	left: 0; 
+}
+
+div#main h1 {
+	font-size: 32px;
+	font-weight: normal;
+	margin-bottom: 32px;
+}
+
+div#main p {
+	margin-bottom: 16px;
 }
 
 button,

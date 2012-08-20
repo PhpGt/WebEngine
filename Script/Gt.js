@@ -29,6 +29,7 @@
 	var loadQueue = [],
 		// An object hash used to store all templated HTML elements.
 		_templates = {},
+		_eventListeners = [],
 		/**
 		 * GT is the global function used throughout the library.
 		 * @param callback|String Either a callback function to be executed when
@@ -127,7 +128,7 @@
 		 * TODO: Docs.
 		 */
 		helpers = {
-			"addEvent": function(name, callback, useCapture) {
+			"addEventListener": function(name, callback, useCapture) {
 				var useCapture = useCapture || false,
 					i;
 				if(name instanceof Array) {
@@ -244,15 +245,55 @@
 		 */
 		addHelpers = function() {
 			Object.keys(helpers).map(function(key) {
-				Element.prototype[key] = helpers[key];
-				NodeList.prototype[key] = function() {
-					nodeListWrap(this, key, arguments);
-				};
-				Array.prototype[key] = function() {
-					nodeListWrap(this, key, arguments);
+				if(!Element.prototype[key]) {
+					Element.prototype[key] = helpers[key];
+				}
+				if(!NodeList.prototype[key]) {
+					NodeList.prototype[key] = function() {
+						nodeListWrap(this, key, arguments);
+					};
+				}
+				if(!Array.prototype[key]) {
+					Array.prototype[key] = function() {
+						nodeListWrap(this, key, arguments);
+					}
 				}
 			});
 		};
+
+	/**
+	 * TODO: Docs.
+	 */
+	GT.event = function(eventName, e) {
+		var i, listenerLength = _eventListeners.length;
+		for(i = 0; i < listenerLength; i++) {
+			if(_eventListeners[i].Name === eventName) {
+				_eventListeners[i]["Callback"](e);
+			}
+		}
+	};
+	
+	/**
+	 * TODO: Docs.
+	 */
+	GT.addEventListener = function(eventName, callback) {
+		_eventListeners.push({
+			"Name": eventName,
+			"Callback": callback
+		});
+	};
+
+	/**
+	 * TODO: Docs.
+	 */
+	GT.removeEventListener = function(eventName) {
+		var i, listenerLength = _eventListeners.length;
+		for(i = 0; i < listenerLength; i++) {
+			if(_eventListeners[i].Name === eventName) {
+				_eventListeners.splice(i, 1);
+			}
+		}
+	};
 
 	/**
 	 * TODO: Docs.
@@ -477,3 +518,50 @@
 	GT(templateScrape);
 	attachLoadQueue();
 }());
+
+/* 
+ * DOMParser HTML extension 
+ * 2012-02-02 
+ * 
+ * By Eli Grey, http://eligrey.com 
+ * Public domain. 
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
+ */  
+
+/*! @source https://gist.github.com/1129031 */  
+/*global document, DOMParser*/  
+
+(function(DOMParser) {  
+    "use strict";  
+    var DOMParser_proto = DOMParser.prototype  
+      , real_parseFromString = DOMParser_proto.parseFromString;
+
+    // Firefox/Opera/IE throw errors on unsupported types  
+    try {  
+        // WebKit returns null on unsupported types  
+        if ((new DOMParser).parseFromString("", "text/html")) {  
+            // text/html parsing is natively supported  
+            return;  
+        }  
+    } catch (ex) {}  
+
+    DOMParser_proto.parseFromString = function(markup, type) {  
+        if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {  
+            var doc = document.implementation.createHTMLDocument("")
+              , doc_elt = doc.documentElement
+              , first_elt;
+
+            doc_elt.innerHTML = markup;
+            first_elt = doc_elt.firstElementChild;
+
+            if (doc_elt.childElementCount === 1
+                && first_elt.localName.toLowerCase() === "html") {  
+                doc.replaceChild(first_elt, doc_elt);  
+            }  
+
+            return doc;  
+        } else {  
+            return real_parseFromString.apply(this, arguments);  
+        }  
+    };  
+}(DOMParser));
