@@ -378,7 +378,9 @@ class DomEl implements ArrayAccess {
 		$currentClass = $this->node->getAttribute("class");
 
 		foreach($stringArray as $string) {
-			$currentClass .= " " . $string;
+			if(!$this->hasClass($string)) {
+				$currentClass .= " " . $string;
+			}
 		}
 
 		$this->node->setAttribute("class", $currentClass);
@@ -402,7 +404,7 @@ class DomEl implements ArrayAccess {
 		foreach($stringArray as $string) {
 			// Remove any occurence of the string, with optional spaces.
 			$currentClass = preg_replace(
-				"/\s?" . $string . "\s?/",
+				"/\b" . $string . "\b/",
 				"",
 				$currentClass);
 		}
