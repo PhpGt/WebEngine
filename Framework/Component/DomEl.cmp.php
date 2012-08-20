@@ -411,6 +411,30 @@ class DomEl implements ArrayAccess {
 	}
 
 	/**
+	 * TODO: Docs.
+	 */
+	public function hasClass($className) {
+		$stringArray = array();
+
+		if(is_array($className)) {
+			$stringArray = $className;
+		}
+		else {
+			$stringArray = array($className);
+		}
+
+		$currentClass = $this->node->getAttribute("class");
+
+		foreach($stringArray as $string) {
+			if(preg_match("/\b" . $string . "\b/", $currentClass)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	* TODO: Docs.
 	*/
 	public function __call($name, $args = array()) {
