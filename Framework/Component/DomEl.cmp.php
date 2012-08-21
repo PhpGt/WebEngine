@@ -1,4 +1,9 @@
 <?php class DomEl implements ArrayAccess {
+/**
+* A wrapper to PHP's native DOMElement, adding more object oriented
+* features to be more like JavaScript's implementation.
+*/
+
 public $node;
 private $_dom;
 
@@ -8,10 +13,6 @@ private $_class;
 private $_id;
 private $_contents;
 
-/**
-* A wrapper to PHP's native DOMElement, adding more object oriented
-* features to be more like JavaScript's implementation.
-*/
 public function __construct(
 $dom,
 $element,

@@ -1,14 +1,12 @@
 <?php class Dom implements ArrayAccess {
-private $_domDoc = null;
-
 /**
 * Dom is a wrapper to PHP's native DOMDocument which adds many features to
 * boost development efficiency. The most notable feature is allowing
 * manipulation via CSS selectors.
-* @param string $html Whole document to parse in HTML format. This should
-* only ever be passed in via the Response object by flushing the output
-* buffer.
 */
+
+private $_domDoc = null;
+
 public function __construct($html) {
 	// If converting encoding costs too much time, use a simpler method
 	// by prepending '<?xml encoding="UTF-8">' to $html.

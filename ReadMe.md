@@ -1,5 +1,5 @@
-PHP.Gt
-======
+[PHP.Gt](http://php.gt)
+=======================
 A lightweight application development toolkit aimed at automating deployment,
 streamlining development and respecting web technologies.
 

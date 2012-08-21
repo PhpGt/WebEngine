@@ -1,5 +1,3 @@
-<?php
-class Error {
+<?php class Error {
 	
-}
-?>
+}?>

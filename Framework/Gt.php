@@ -1,4 +1,7 @@
 <?php final class Gt {
+/**
+ * TODO: Docs.
+ */
 public function __construct() {
 	$baseSuffix = "_Framework";
 	$appConfigClass = "App_Config";

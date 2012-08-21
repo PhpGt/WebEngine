@@ -1,4 +1,7 @@
 <?php class HttpError extends Exception {
+/**
+ * TODO: Docs.
+ */
 private $_errorCodeMessage = array(
 	301 => "Moved Permanently",		// Permanent redirect.
 	302 => "Found",					// Temporary redirect.
