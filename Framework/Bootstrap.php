@@ -109,11 +109,6 @@ define("EXT",       $extension);
 define("DIRPATH",   $dirPath);
 define("FILEPATH",  $filePath);
 define("FILECLASS", $fileClass);
-// Special strings are used for internal string manipulation to overcome
-// some limitations with PHP (such as DomElCollection text appending).
-define("GTSTRING_START",     "[");
-define("GTSTRING_END",       "]");
-define("GTSTRING_SEPARATOR", "|");
 
 // Define the minimum required files to run the framework. The path of each
 // requirement can be an array of paths, in order of priority (for version 
