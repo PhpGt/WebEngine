@@ -19,3 +19,7 @@ The following PageTools are included within the latest public release of PHP.Gt:
 * Navigation - simple adds a 'selected' class to the correct menu element within an application, according to the current URL.
 * PayPal - a wrapper to PayPal's API, exposing functions to convert HTML buttons to 'Buy It Now' buttons, and create recurring billing options.
 * User - provides user authentication using OAuth, along with anonymous user tracking.
+
+Getting more tools
+------------------
+The PHP.Gt management console provides a catalogue of complete tools for use within your applications. This catalogue is available on the web at http://tools.php.gt
