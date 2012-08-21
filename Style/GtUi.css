@@ -239,14 +239,16 @@ body > aside > nav > ul li i {
 
 div#main {
 	position: absolute;
-	top: 0;
+	top: 68px;
 	left: 284px;
 	right: 0;
-	bottom: 0;
-	padding-top: 94px;
+	bottom: 26px;
+	padding-top: 32px;
+	padding-bottom: 32px;
 	background: rgba(255, 255, 255, 0.8);
 	padding-left: 48px;
 	box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+	overflow-y: auto;
 }
 div.noSidebar#main {
 	left: 0; 
