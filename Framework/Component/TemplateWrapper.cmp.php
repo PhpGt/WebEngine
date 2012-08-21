@@ -34,6 +34,7 @@ public function offsetSet($offset, $value) {
 	}
 	$this->_templateArray[$offset] = $value;
 
+	// ALPHATODO: This may already work, needs testing.
 	// TODO: Update JavaScript templates.
 }
 

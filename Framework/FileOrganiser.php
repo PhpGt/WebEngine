@@ -121,6 +121,7 @@ private function copyFiles($source, $dest, $recursive) {
 			continue;
 		}
 
+		// ALPHATODO:
 		// TODO: There are a couple of errors surpressed here. A better
 		// solution would be to detect if the directories are already
 		// created, but this solution is here for the time being because

@@ -189,8 +189,6 @@ private function bufferPageView($fileName = null) {
 			APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html",
 			APPROOT . DS . "PageView" . DS . BASEDIR . DS . FILE . ".html"
 		);
-
-		// TODO: Test directory-less path if no directory is supplied.
 	}
 	else {
 		// Strip any underscores, as these are added automatically.
@@ -198,7 +196,6 @@ private function bufferPageView($fileName = null) {
 		$fileName = ucfirst($fileName);
 
 		// List of PageView locations in priority order.
-		// TODO: Test order.
 		$fileArray = array(
 			APPROOT . DS . "PageView" 
 				. DS . DIR . DS . "_{$fileName}.html",

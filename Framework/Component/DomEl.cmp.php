@@ -24,8 +24,6 @@ $value      = null) {
 		$this->node = $element;
 	}
 	else if(is_string($element)) {
-		// TODO: New feature: Allow passing in CSS selector to create
-		// the element, i.e. create("div.product.selected");
 		$this->node = $this->_dom->getDomDoc()->createElement(
 			$element, $value);
 	}
@@ -58,11 +56,11 @@ public function offsetGet($selector) {
 }
 
 public function offsetSet($selector, $value) {
-	// TODO: Does this need to be implemented?
+	// TODO: Throw error when trying to set an element.
 }
 
 public function offsetUnset($selector) {
-	// TODO: Remove item's children matching the selector.
+	// TODO: Throw error when trying to unset an element.
 }
 
 /**
@@ -312,8 +310,6 @@ public function insertAfter($toInsert) {
 
 /**
  * TODO: Docs.
- * TODO: Test case - this is an advanced function and has not yet been fully
- * tested. insertBefore seems to work in BbCrm.
  */
 private function insert($toInsert, $direction) {
 	$elementArray = array();

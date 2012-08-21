@@ -156,6 +156,7 @@ public function map($callback, $callbackArg = null) {
 
 /**
  * Returns the internal array of elements.
+ * ALPHATODO:
  * TODO: Should this be private?
  *
  * @return array The internal array of elements.

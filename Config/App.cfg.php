@@ -9,16 +9,13 @@
 // When an application is set to production mode, errors will be less
 // verbose and less debugging information is available.
 protected $_isProduction = false;
-
 protected $_isCached = true;
 protected $_isClientCompiled = false;
 
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
 protected $_directoryUrls = false;
-
 protected $_timezone = "Europe/London";
-
 private $_reserved = array("PhpGt", "Gt", "g105b", "admin");
 
 public function __construct() { }

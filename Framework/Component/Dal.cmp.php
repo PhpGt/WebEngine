@@ -8,7 +8,9 @@
  * Handled in this class is the connection settings to the MySQL database, and
  * the automatic database deployment and just-in-time table creation.
  *
- * TODO: createTableAndDependencies needs optimising.
+ * ALPHATODO:
+ * TODO: createTableAndDependencies needs optimising, plus there are too many
+ * bugs at the moment.
  */
 private $_dbh = null;
 private $_dalElArray = array();
@@ -202,6 +204,7 @@ public function fixError($input) {
 		break;
 	}
 
+	// ALPHATODO:
 	// TODO: Replace with App.cfg's production value.
 	if(!false) {
 		exit;

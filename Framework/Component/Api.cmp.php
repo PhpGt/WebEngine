@@ -49,6 +49,7 @@ public function apiCall($dal) {
 
 			$this->_result = array();
 			if(empty($this->_dalResult)) {
+				// ALPHATODO:
 				// TODO: This catch was put in as the dalResult was null...
 				// is this an error? Investigate.
 				return false;

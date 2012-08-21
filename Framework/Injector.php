@@ -81,6 +81,7 @@ private function injectStyleSheets($dom) {
 	// Remove the link elements from the page, replace them with the cache.
 	$styleLinkArray->remove();
 
+	// ALPHATODO:
 	// TODO: This is a hack until the DOM's prepend, before, after functions
 	// have been written and tested.
 	// Simply moves any <link> elements with a "media" attribute to the end

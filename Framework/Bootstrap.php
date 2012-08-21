@@ -71,9 +71,6 @@ $baseDir = ($slashPos === false)
 		: $dirName)
 	: substr($dirName, 0, $slashPos);
 
-// TODO: Implement Directory/File style URLs and case-matching.
-// (Issues #34 and #19)
-
 // For finding the correct PageCode and PageView, on different systems.
 $dirPath = str_replace("/", DS, $dirName);
 $filePath = $dirName . DS . $fileName;
@@ -150,6 +147,8 @@ $toLoad["Required"] = array(
 	"Error component" => 
 	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.cmp.php",
 
+	"Autoloader" =>
+	GTROOT.DS."Framework" . DS . "Autoloader.php",
 	"File Organiser class" =>
 	GTROOT.DS."Framework" . DS . "FileOrganiser.php",
 	"Injector class" =>
