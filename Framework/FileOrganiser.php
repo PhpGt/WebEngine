@@ -17,7 +17,7 @@ public function __construct($config) {
 }
 
 private function removePublicFiles() {
-	$dir = APPROOT . DS . "Web" . DS;
+	$dir = APPROOT . DS . "www" . DS;
 	$fileArray = scanDir($dir);
 	foreach ($fileArray as $file) {
 		$pattern = "/.*(\.css|\.js)$/i";
@@ -69,7 +69,7 @@ private function copyFilesToPublic($config) {
 	// files with their own, in which case they will be copied *over* the
 	// originals in the public directory.
 
-	$webroot = APPROOT . DS . "Web" . DS;
+	$webroot = APPROOT . DS . "www" . DS;
 
 	$copyDirArray = array(
 		GTROOT  . DS . "Style" . DS . "Img"  . DS =>

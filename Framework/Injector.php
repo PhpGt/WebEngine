@@ -18,7 +18,7 @@ private function injectStyleSheets($dom) {
 	$styleLinkArray = 
 	$dom["link[rel='stylesheet'][not(@media)][not(@nocompile)]"];
 	$styleString = "";
-	$styleCompileFile = APPROOT . DS . "Web" . DS . "Style.css";
+	$styleCompileFile = APPROOT . DS . "www" . DS . "Style.css";
 	$styleCompileFileModified = 0;
 	if(file_exists($styleCompileFile)) {
 		$styleCompileFileModified = filemtime($styleCompileFile);
@@ -76,7 +76,7 @@ private function injectStyleSheets($dom) {
 	}
 
 	$styleCompileFileUrl = str_replace(
-	APPROOT . DS . "Web", "", $styleCompileFile);
+	APPROOT . DS . "www", "", $styleCompileFile);
 
 	// Remove the link elements from the page, replace them with the cache.
 	$styleLinkArray->remove();
@@ -106,7 +106,7 @@ private function injectJavaScript($dom) {
 	// Find all scripts.
 	$scriptArray = $dom["script[@src][not(@nocompile)]"];
 	$scriptString = "";
-	$scriptCompileFile = APPROOT . DS . "Web" . DS . "Script.js";
+	$scriptCompileFile = APPROOT . DS . "www" . DS . "Script.js";
 
 	$scriptCompileFileModified = 0;
 
@@ -171,7 +171,7 @@ private function injectJavaScript($dom) {
 	}
 
 	$scriptCompileFileUrl = str_replace(
-	APPROOT . DS . "Web", "", $scriptCompileFile);
+	APPROOT . DS . "www", "", $scriptCompileFile);
 
 	// Remove the link elements from the page, replace them with the cache.
 	$scriptArray->remove();
