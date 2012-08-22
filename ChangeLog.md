@@ -1,3 +1,10 @@
+v0.0.3
+------
+Not yet released
+
+* dbtouch files are 'touched' only when each database table changes.
+* Public webroot directories are now named 'www'. Not backwards compatible!
+
 v0.0.2
 ------
 22 Aug 2012
