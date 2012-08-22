@@ -58,4 +58,4 @@ Between alpha versions, any point of the codebase can become unstable.
 
 Between beta versions, only pre-defined areas of the codebase can become unstable, and no beta release should break functionality out of this area.
 
-**Public versions** are finalised, finished and fully tested collections of beta updates. Public versions can only increment when there are **no known bugs** - future releases should not be fixes of public versions, but new features or improvements.
+**Public versions** are finalised, finished and fully tested collections of beta updates. Public versions can only increment when there are **no known bugs** - future releases should not be fixes of public versions, but new features or improvements. 

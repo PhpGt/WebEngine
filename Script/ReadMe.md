@@ -8,4 +8,4 @@ Scripts that are application specific are placed into APPROOT/Script, and are in
 
 Modular scripts
 ---------------
-For the most consistent, speedy and easy-to-debug client side scripting experience, every PageView within an application should have the same scripts loaded. This will mean the minifier / compiler will only have to work once. Using the `Gt` JavaScript library, it is possible to only execute certain scripts on certain pages, but they should all be present across all pages.
+For the most consistent, speedy and easy-to-debug client side scripting experience, every PageView within an application should have the same scripts loaded. This will mean the minifier / compiler will only have to work once. Using the `Gt` JavaScript library, it is possible to only execute certain scripts on certain pages, but they should all be present across all pages. 
