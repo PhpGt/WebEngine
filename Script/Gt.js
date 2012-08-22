@@ -3,8 +3,7 @@
  * templated elements and PageTools' JavaScript functions using simple syntax.
  *
  * GT is developed by Greg Bowler / PHP.Gt team.
- * Code/licensing: http://phpgt.com/Licence.html
- * Documentation: http://phpgt.com/Docs/ClientSide/GtJs.html
+ * Documentation: http://php.gt/Docs/ClientSide/GtJs.html
  *
  * Provided as standard:
  * GT.api("Name") - manipulate the application's REST API.
@@ -18,20 +17,23 @@
  * GT("selector") - shorthand to selecting a DOM element.
  *
  * Gt.js provides helper functions on the native DOM elements, which has been
- * compatible with Google Chrom[e|ium] 12+, Mozilla Firefox 8+, Opera 11+,
- * Internet Explorer 8+. Note that if old browser support is required, the
+ * compatible with Google Chrom[e|ium] 10+, Mozilla Firefox 8+, Opera 11+,
+ * Internet Explorer 9+. Note that if old browser support is required, the
  * helper functions should not be relied upon, and a larger library should be
  * used instead. To test your browser, visit the PHP.Gt test application in
- * the required browser. http://testapp.phpgt.com 
+ * the required browser. http://test.php.gt 
  */
 (function() {
-	// Ensures there are no compatibility issues with external libraries.
+		// All callbacks are queued ready for the DOM Ready event.
 	var loadQueue = [],
 		// An object hash used to store all templated HTML elements.
 		_templates = {},
 		_eventListeners = [],
 		/**
-		 * GT is the global function used throughout the library.
+		 * GT is the global function used throughout the library. It can be used
+		 * shorthand by passing a parameter in, or can be used as a module-based
+		 * object for exposing all Gt functionality.
+		 *
 		 * @param callback|String Either a callback function to be executed when
 		 * the DOM ready event is triggered, or a CSS selector string to obtain
 		 * a reference to.
@@ -53,7 +55,10 @@
 			throw new GT.error("Invalid GT parameters", arguments);
 		},
 		/**
-		 * TODO: Docs.
+		 * Internal function. PHP.Gt provides all templated elements in a
+		 * special hidden div. This function picks up the contents of the div
+		 * and removes it from the page once processed. Templated elements can
+		 * then be accessed via GT.template().
 		 */
 		templateScrape = function() {
 			var tmplDiv = document.getElementById("PHPGt_Template_Elements"),
@@ -76,7 +81,8 @@
 		},
 
 		/**
-		 * TODO: Docs.
+		 * Internal function. Creates an event listener on the DOM Ready event,
+		 * and executes the load queue when it fires.
 		 */
 		attachLoadQueue = function() {
 			// Attack the event listener in real browsers.
@@ -118,6 +124,10 @@
 				}
 			}
 		},
+		/**
+		 * Called when DOM Ready event fires. Executes all callbacks in the load
+		 * queue.
+		 */
 		executeLoadQueue = function() {
 			var i, len = loadQueue.length;
 			for(i = 0; i < len; i++) {
@@ -125,7 +135,7 @@
 			}
 		},
 		/**
-		 * TODO: Docs.
+		 * Defines the helper functions to be added to native elements.
 		 */
 		helpers = {
 			"addEventListener": function(name, callback, useCapture) {
