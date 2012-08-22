@@ -1,12 +1,12 @@
 <?php final class FileOrganiser {
 /**
- * TODO: Docs.
+ * All files are stored outside of the webroot (www directory), so it is the job
+ * of the FileOrganiser to copy the required files into the webroot when
+ * required. The files may need to be minified and compiled before they are
+ * copied.
  * TODO: What about overriding Gt files with App files? (test)
  */
 public function __construct($config) {
-	// TODO: Check filemtime - it may be possible to check directories'
-	// invalidation without saving a blank file somewhere.
-
 	// For production sites, any un-compiled scripts that exist in the
 	// web root should be removed.
 	if($config->isClientCompiled()) {

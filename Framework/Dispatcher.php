@@ -1,8 +1,9 @@
 <?php final class Dispatcher {
-/** TODO:
-* The purpose of this is to dispatch the events to the PageCode, which is
-* stored in the Request, which is stored in the Response, which is passed in
-* to this constructor... :S
+/** 
+* The dispatcher is used to link the Response, Request and PageCode objects, 
+* and call all related events in the correct order. The main aim of dispatching
+* events like this is to only pass around required data, so objects only have
+* access to exactly what they need.
 */
 public function __construct($response, $config) {
 	$dal = new Dal($config["Database"]->getSettings());
