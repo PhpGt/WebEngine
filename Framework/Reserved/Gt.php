@@ -18,7 +18,7 @@ private function getSqlArray($dbConfig) {
 	$dbPath = GTROOT . DS . "Database";
 	$fileArray = scandir($dbPath);
 	foreach($fileArray as $file) {
-		if($file[0] !== "_") {
+		if(strpos($file, "_CreateDatabase") !== 0) {
 			continue;
 		}
 

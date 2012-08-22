@@ -84,6 +84,13 @@ private function query($sqlFile, $paramArray = array()) {
 
 	try {
 		$result = $stmt->execute();
+		// Find out the number of affected rows (SQL for portability).
+		$rowCountStmt = $this->_dal->prepare("select row_count() as RowCount");
+		$rowCountStmt->execute();
+		$rowCountResult = $rowCountStmt->fetch();
+		if($rowCountResult[0] > 0) {
+			$this->touchCache();
+		}
 		return new DalResult(
 			$stmt,
 			$this->_dal->lastInsertId(), 
@@ -94,6 +101,20 @@ private function query($sqlFile, $paramArray = array()) {
 		$this->_dal->fixError($e);
 		return false;
 	}
+}
+
+/**
+ * Every time a table changes in the database, a file is touched in the Cache
+ * directory. The file has the name of the changed table. This is used by the 
+ * caching system to defer connecting to the database if nothing has changed.
+ */
+private function touchCache() {
+	$cacheDir = APPROOT . DS . "Cache";
+	$cacheFile = $this->_tableName . ".dbtouch";
+	if(!is_dir($cacheDir)) {
+		mkdir($cacheDir, 0775, true);
+	}
+	touch($cacheDir . DS . $cacheFile);
 }
 
 }?>
