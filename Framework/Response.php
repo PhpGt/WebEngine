@@ -1,4 +1,11 @@
 <?php final class Response {
+/**
+ * Deals with all view buffering and rendering, and provides a mechanism for the
+ * Dispatcher to execute functions on all instantiated PageCode and PageTool 
+ * objects. The Response object will be skipped if application cache is enabled,
+ * and the cache is valdid. Rather, the Request object will simply serve the
+ * cached response.
+ */
 private $_buffer = "";
 private $_api = null;
 private $_pageCode = null;
@@ -74,7 +81,6 @@ public function dispatch($name, $parameter = null) {
 }
 
 /**
- * TODO: Docs.
  * Creates and executes all PageTools assigned by current PageCode.
  */
 public function executePageTools($pageToolArray, $api, $dom, $template) {
@@ -112,8 +118,12 @@ public function executePageTools($pageToolArray, $api, $dom, $template) {
 }
 
 /**
- * TODO: Docs.
- * Looks for <include> tags, puts them in place in the DOM.
+ * Provides a mechanism for server-side includes. This means PageViews can be
+ * split up into multiple .html files and included where required using
+ * <include> tags.
+ *
+ * @param Dom $dom The current Dom object.
+ * @return int Number of successful files included.
  */
 public function includeDom($dom) {
 	$success = 0;
@@ -151,10 +161,17 @@ public function includeDom($dom) {
 	return $success;
 }
 
+/**
+ * Returns the current contents of the output buffer.
+ * @return string The output buffer.
+ */
 public function getBuffer() {
 	return $this->_buffer;
 }
 
+/**
+ * Flushes the buffer to the browser, and leaves the buffer clean.
+ */
 public function flush($clean = false) {
 	echo $this->_buffer;
 	if($clean) {

@@ -1,6 +1,13 @@
 <?php final class Gt {
 /**
- * TODO: Docs.
+ * The Bootstrap script's final job is to instantiate the Gt object. Gt acts as
+ * the parent object to everything in the whole request/response, but is in fact
+ * quite simple.
+ *
+ * The first task is to load the application's settings files, or provide
+ * defaults for when there aren't any. Then the request is handled, followed by
+ * the response. The final task is to compute all code and render the page. This
+ * is done by the Dispatcher.
  */
 public function __construct() {
 	$baseSuffix = "_Framework";

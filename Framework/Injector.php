@@ -1,6 +1,8 @@
 <?php class Injector {
 /**
-* TODO: Docs.
+* When client side compilation is enabled, the Injector object manipulates
+* the DOM's head element by removing all link and script elements and replacing
+* them with the compiled/minified versions.
 */
 public function __construct($dom, $isCompiled) {
 	if($isCompiled) {
@@ -10,7 +12,9 @@ public function __construct($dom, $isCompiled) {
 }
 
 /**
-* TODO: Docs.
+* Only performed if the isClientCompiled setting is enabled. Takes all link
+* elements without 'media' or 'nocompile' attributes and removes them from the
+* DOM, then replaces them with a single minified link element. 
 */
 private function injectStyleSheets($dom) {
 	// Find all stylesheets except those
@@ -100,7 +104,9 @@ private function injectStyleSheets($dom) {
 }
 
 /**
-* TODO: Docs.
+* Only performed if the isClientCompiled setting is enabled. Takes all script
+* elements without 'nocompile' attributes and removes them from the DOM,
+* then replaces them with a single script element containing a compiled version. 
 */
 private function injectJavaScript($dom) {
 	// Find all scripts.

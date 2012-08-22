@@ -12,6 +12,8 @@ Included in this directory is:
 * Dispatcher.php - calls all functions on framework objects in the correct order, and passes the objects only the information they require.
 * FileOrganiser.php - copies required files from the APPROOT and GTROOT directories into the application's webroot, so they are publicly accessible via HTTP.
 * Injector.php - removes and replaces script and link tags into the HTML document when client-side compilation is enabled.
+* PageCode.php - an abstract object that defines the entry point to user code.
+* PageTool.php - an abstract object that defines the entry point to shared application code.
 
 The subdirectories contained within the framework directory act as follows:
 

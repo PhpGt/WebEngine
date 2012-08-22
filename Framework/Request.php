@@ -1,4 +1,10 @@
 <?php final class Request {
+/**
+ * Deals with all elements of a page request. The URL is dissected to define
+ * which PageViews and PageCodes to load, or which API to serve, depending on
+ * extension. If the isCached setting is enabled, the cached version of the 
+ * current request will be used if valid.
+ */
 public $api = null;
 public $pageCode = null;
 public $pageCodeCommon = array();

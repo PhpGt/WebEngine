@@ -1,6 +1,9 @@
 <?php abstract class PageCode {
 /**
- * TODO: Docs.
+ * PageCode objects are where all user code is executed. This provides a single
+ * entry point for each page request's code, and exposes various wrappers 
+ * utilising dependency injection so that any required code can be executed or
+ * triggered from within the PageCode.
  */
 private $_stop;
 
@@ -13,6 +16,9 @@ public function __construct(&$stop) {
 	$this->_stop = &$stop;
 }
 
+/**
+ * Internal function for setting the protected variables (also used internally).
+ */
 public function setVars($api, $dom, $template, $tool) {
 	$this->_api = $api;
 	$this->_dom = $dom;
