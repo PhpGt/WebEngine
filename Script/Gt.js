@@ -75,7 +75,7 @@
 					name = tmpl.getAttribute("data-template");
 					_templates[name] = tmpl;
 				}
-				// 
+				// Remove the template div from the DOM.
 				tmplDiv.parentNode.removeChild(tmplDiv);
 			}
 		},
@@ -135,7 +135,10 @@
 			}
 		},
 		/**
-		 * Defines the helper functions to be added to native elements.
+		 * Defines the helper functions to be added to native elements. Helpers
+		 * are inspired from typical client-side frameworks, but Gt.js only
+		 * targets modern browsers, so doesn't aim to provide cross-old-browser
+		 * support.
 		 */
 		helpers = {
 			"addEventListener": function(name, callback, useCapture) {
@@ -242,7 +245,8 @@
 			}
 		},
 		/**
-		 * TODO: Docs.
+		 * Used to apply a given function to every element witin a nodeList.
+		 * Only used internally by helper functions.
 		 */
 		nodeListWrap = function(me, funcName, args) {
 			var i;
@@ -251,7 +255,10 @@
 			}
 		},
 		/**
-		 * TODO: Docs.
+		 * Adds the previously defined helper functions to the prototypes of
+		 * native objects, to be able to use shortcut functions without any
+		 * additional wrapper object. This allows for simple code such as 
+		 * document.getElementById("test").remove();
 		 */
 		addHelpers = function() {
 			Object.keys(helpers).map(function(key) {
@@ -272,7 +279,12 @@
 		};
 
 	/**
-	 * TODO: Docs.
+	 * Emits an event to the GT object itself. Useful for allowing modular 
+	 * JavaScript files that are properly enclosed in anonymous functions to
+	 * exchange information together.
+	 * 
+	 * Events that are emitted from GT object must have an event listener prior
+	 * to the event being emitted, see GT.addEventListener.
 	 */
 	GT.event = function(eventName, e) {
 		var i, listenerLength = _eventListeners.length;
@@ -284,7 +296,10 @@
 	};
 	
 	/**
-	 * TODO: Docs.
+	 * Attaches a callback function to the GT object and executes it when the
+	 * given event is emitted. Events can be emitted by the GT object by calling
+	 * GT.event() - this is useful for exchanging information between modular
+	 * scripts.
 	 */
 	GT.addEventListener = function(eventName, callback) {
 		_eventListeners.push({
@@ -294,7 +309,9 @@
 	};
 
 	/**
-	 * TODO: Docs.
+	 * Simply removes existing event listeners of the given name from the GT
+	 * object. Note that removing an event listener in one script may cause 
+	 * problems in other scripts that rely on the listener to function.
 	 */
 	GT.removeEventListener = function(eventName) {
 		var i, listenerLength = _eventListeners.length;
@@ -306,7 +323,7 @@
 	};
 
 	/**
-	 * TODO: Docs.
+	 * Displays an error message to the console.
 	 */
 	GT.error = function(message) {
 		var that = this;
@@ -319,9 +336,12 @@
 	};
 
 	/**
-	 * TODO: Docs.
-	 * [Will only trigger callback when no page is given, or current url
-	 * matches given page]
+	 * Adds a given callback to the loadQueue of a particular page. All
+	 * callbacks in the loadQueue are triggered on the DOMReady event.
+	 *
+	 * Callbacks will only be added to the loadQueue if the given page matches
+	 * the current URL. The page match can be either a string or Regular
+	 * Expression.
 	 */
 	GT.ready = function(callback, page) {
 		var pathname = window.location.pathname;
@@ -341,7 +361,7 @@
 	};
 
 	/**
-	 * TODO: Docs.
+	 * TODO:
 	 * Provide REST access to public webservices.
 	 */
 	GT.api = function(name) {
@@ -401,7 +421,11 @@
 	};
 
 	/**
-	 * TODO: Docs.
+	 * Obtains a cloned reference to a named template element. Template elements
+	 * are HTML elements with the data-template attribute, and are extracted
+	 * from the DOM in PHP.Gt, but are re-attached in a hidden div just before
+	 * the page renders. Gt.js removes these templated items and stores them in
+	 * an associative array for retrieval here.
 	 */
 	GT.template = function(name) {
 		if(_templates.hasOwnProperty(name)) {
@@ -411,7 +435,7 @@
 	};
 
 	/**
-	 * TODO: Docs.
+	 * TODO:
 	 * Load and use named tool, providing a wrapper.
 	 */
 	GT.tool = function(name) {
@@ -472,19 +496,25 @@
 			return xhr;
 		};
 		/**
-		 * TODO: Docs.
+		 * Executes a HTTP GET request on the given URL and passes the
+		 * response to the given callback function.
 		 */
 		this.get = function(url, callback) {
 			return req(url, callback, "get");
 		};
 		/**
-		 * TODO: Docs.
+		 * Executes a HTTP POST request on the given URL and passes the
+		 * response to the given callback function.
 		 */
 		this.post = function(url, callback) {
 			return req(url, callback, "post");
 		};
 	};
 
+	/**
+	 * Used to set a cookie from a client side script. Defaults to a session
+	 * cookie if no days are given.
+	 */
 	GT.setCookie = function(name, value, days, domain) {
 		var date, expires = "",
 			domain = domain 
@@ -499,6 +529,10 @@
 		document.cookie = name + "=" + value + expires + "; path=/" + domain;
 	};
 
+	/**
+	 * Retrieves a named cookie as a string, or null if the cookie does not
+	 * exist or has expired.
+	 */
 	GT.getCookie = function(name) {
 		var nameEQ = name + "=",
 			ca = document.cookie.split(";"),
@@ -516,16 +550,22 @@
 		return null;
 	};
 
+	/**
+	 * Removes a cookie from the cookie jar. Will not be sent with headers on
+	 * the next request.
+	 */
 	GT.removeCookie = function(name) {
 		GT.setCookie(name, "", -1);
 	};
 	// Export the GT variable to the global context.
 	window.GT = GT;
 
+	// Attach all helper functions to native JavaScript objects.
+	addHelpers();
 	// Perform automatic template collection.
 	// The template elements are provided by PHP.Gt just before DOM flushing.
-	addHelpers();
 	GT(templateScrape);
+	// Add all callbacks to the DOMReady event, ready for execution in order.
 	attachLoadQueue();
 }());
 
