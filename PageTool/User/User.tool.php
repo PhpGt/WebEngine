@@ -60,16 +60,13 @@ public function get() {
 public function auth($method = "Google") {
 	$oid = new OpenId_Utility($method);
 	$username = $oid->getData();
-	if(is_null($username)) {
+	if(!$this->checkWhiteList($username) 
+	|| empty($username)) {
 		$this->unAuth();
 		return false;
 	}
 
-	// Check username is part of the whitelisted domains.
-	// TODO: Implement check.
-
 	$this->setAuthData($username);
-
 	return true;
 }
 
@@ -78,28 +75,43 @@ public function auth($method = "Google") {
  * OAuth/OpenID. Email addresses outside of this list will not be allowed
  * access to the application.
  *
- * @param Array|string An array of domains, a comma separated list of
- * domains, or a single domain to *add* to the white list.
+ * @param Array|string An array of domains, regular expression that matches 
+ * multiple domains, or a single domain to add to the white list.
  */
-public function setDomainWhiteList($whiteList) {
+public function addDomainWhiteList($whiteList) {
 	$whiteListArray = array();
 
 	if(is_array($whiteList)) {
 		$whiteListArray = $whiteList;
 	}
 	else if(is_string($whiteList)) {
-		if(strstr($whiteList, ",")) {
-			// Comma separated values supplied.
-			$whiteListArray = explode(",", $whiteList);
-		}
-		else {
-			// A single domain provided.
-			$whiteListArray[] = $whiteList;
-		}
+		// A single domain provided.
+		$whiteListArray[] = $whiteList;
 	}
 
 	$this->_domainWhiteList = array_merge(
 		$this->_domainWhiteList, $whiteListArray);
+}
+
+public function checkWhiteList($username) {
+	foreach ($this->_domainWhiteList as $white) {
+		if(preg_match($white, $username) !== false) {
+			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
+			// false on error - note !==).
+			if(preg_match($white, $username) <= 0) {
+				return false;
+			}
+		}
+		else if(is_string($white)) {
+			$userDomain = substr($username, strrpos($username, "@") + 1);
+			if($userDomain != $white) {
+				return false;
+			}
+		}
+	}
+
+	// No mismatches have been found - allow this user to authenticate!
+	return true;
 }
 
 /**
