@@ -60,7 +60,10 @@ private function query($sqlFile, $paramArray = array()) {
 			unset($paramArray[$key]);
 		}
 	}
-	
+
+	// Up until now, there may be no connection present. The connect method
+	// ensures there is a connection, but doesn't create a new one each time.
+	$this->_dal->connect();
 	$stmt = $this->_dal->prepare($sql);
 
 	// Limit and offset params must be treated differently. This means that

@@ -16,7 +16,6 @@ public function __construct($response, $config) {
 	// On root URLs, the query string may be used as the "url" key.
 	// Ensure the $_GET variable is consistant across different webservers,
 	// also, remove the GET parameters that are used by PHP.Gt's internals.
-	// TODO: This needs to be replicated for REQUEST as well as GET!!
 	$mapDataArr = array(&$_GET, &$_REQUEST);
 	foreach($mapDataArr as &$mapData) {
 		$data = $mapData;

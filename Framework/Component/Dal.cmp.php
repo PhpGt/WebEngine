@@ -12,34 +12,19 @@
  * TODO: createTableAndDependencies needs optimising, plus there are too many
  * bugs at the moment.
  */
+private $_config = null;
 private $_dbh = null;
 private $_dalElArray = array();
 private $_paramChar = null;
 private $_createdTableCache = array();
 
 /**
- * Only ever called internally. Creates the PDO class, passing in the
- * details stored in the database configuration file.
+ * Only ever called internally. Stores the required settings for when the
+ * connection is made.
+ * For efficiency, the connection is not made until it needs to be used.
  */
 public function __construct($config) {
-	try {
-		$this->_dbh = new PDO(
-			$config["ConnectionString"],
-			$config["Username"],
-			$config["Password"]
-		);
-		$this->_dbh->setAttribute(
-			PDO::ATTR_ERRMODE,
-			PDO::ERRMODE_EXCEPTION);
-
-		$this->_paramChar = $config["ParamChar"];
-	}
-	catch (PDOException $e) {
-		// TODO: Proper error handling.
-		// In development mode, show help message to how to create database.
-		// Output SQL to create database and all users.
-		$this->fixError($e, $config);
-	}
+	$this->_config = $config;
 }
 
 /**
@@ -50,6 +35,32 @@ public function __construct($config) {
  */
 public function __destruct() {
 	$this->_dbh = null;
+}
+
+/**
+ * Creates a new database connection with the settings provided to the
+ * constructor. At the moment, it is only possible to connect to one database
+ * per application.
+ */
+public function connect() {
+	try {
+		$this->_dbh = new PDO(
+			$this->_config["ConnectionString"],
+			$this->_config["Username"],
+			$this->_config["Password"]
+		);
+		$this->_dbh->setAttribute(
+			PDO::ATTR_ERRMODE,
+			PDO::ERRMODE_EXCEPTION);
+
+		$this->_paramChar = $this->_config["ParamChar"];
+	}
+	catch(PDOException $e) {
+		// TODO: Proper error handling.
+		// In development mode, show help message to how to create database.
+		// Output SQL to create database and all users.
+		$this->fixError($e);
+	}
 }
 
 /**
