@@ -444,6 +444,19 @@ public function hasClass($className) {
 }
 
 /**
+ * TODO: Docs.
+ */
+public function injectAttribute($attr, $substr, $replacement) {
+	if(!$this->node->hasAttribute($attr)) {
+		return false;
+	}
+	$value = $this->node->getAttribute($attr);
+	$value = str_replace($substr, $replacement, $value);
+	$this->node->setAttribute($attr, $value);
+	return true;
+}
+
+/**
 * TODO: Docs.
 */
 public function __call($name, $args = array()) {

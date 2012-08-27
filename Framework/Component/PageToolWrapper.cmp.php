@@ -78,7 +78,6 @@ public function offsetUnset($offset) {
  * be passed to the method by simply supplying them to the function 
  * e.g. $tool->go("Foo", $bar, $baz)
  */
-
 public function __call($name, $args) {
 	$toolName = $args[0];
 	array_shift($args);
