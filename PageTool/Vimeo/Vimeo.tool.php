@@ -41,6 +41,7 @@ public function __call($name, $arguments) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL,
 		"http://vimeo.com/api/v2/{$userId}/{$name}.php");
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_HEADER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 

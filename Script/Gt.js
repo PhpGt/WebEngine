@@ -163,6 +163,14 @@
 				this.className = this.className.replace(match, "");
 				return this;
 			},
+			"switchClass": function(remove, add, duration, callback) {
+				this.removeClass(remove);
+				this.addClass(add);
+				if(duration && callback) {
+					setTimeout(callback, duration);
+				}
+				return this;
+			},
 			"hasClass": function(name) {
 				var match = new RegExp(name, "im");
 				return this.className.match(match);
