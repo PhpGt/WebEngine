@@ -242,6 +242,24 @@
 				else {
 					return false;
 				}
+			},
+			"forEach": function(callback) {
+				var elArray = [],
+					el,
+					i;
+				if(this instanceof NodeList) {
+					for(i = 0; i < this.length; i++) {
+						elArray.push(this[i]);
+					}
+				}
+				else {
+					elArray.push(this);
+				}
+
+				for(i = 0; i < elArray.length; i++) {
+					el = elArray[i];
+					callback.apply(el);
+				}
 			}
 		},
 		/**

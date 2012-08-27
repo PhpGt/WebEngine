@@ -6,7 +6,7 @@
 private $_navElements;
 
 public function go($api, $dom, $template, $tool) {
-	$this->_navElements = $dom["nav"];
+	$this->_navElements = $dom["body nav"];
 
 	foreach($this->_navElements as $nav) {
 		$navLiTags = $nav["ul li, ol li"];
