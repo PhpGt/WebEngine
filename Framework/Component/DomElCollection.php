@@ -105,7 +105,6 @@ public function __get($key) {
 	default:
 		if(count($this->_elArray) < 1) {
 			// TODO: Properly log and throw error.
-			die("Error: DomElCollection is empty.");
 			return;
 		}
 		
