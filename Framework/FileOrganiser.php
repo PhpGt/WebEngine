@@ -75,11 +75,11 @@ private function copyFilesToPublic($config) {
 		GTROOT  . DS . "Style" . DS . "Img"  . DS =>
 			"Style" . DS . "Img",
 		GTROOT  . DS . "Style" . DS . "Font" . DS =>
-			"Font",
+			"Style" . DS . "Font",
 		APPROOT . DS . "Style" . DS . "Img"  . DS =>
 			"Style" . DS . "Img",
 		APPROOT . DS . "Style" . DS . "Font" . DS =>
-			"Font",
+			"Style" . DS . "Font",
 		APPROOT . DS . "Asset" . DS =>
 			"Asset"
 	);
@@ -103,7 +103,7 @@ private function copyFilesToPublic($config) {
 	if(!$config->isClientCompiled() ) {
 		foreach($copyNonProductionDirArray as $source => $dest) {
 			$dest = $webroot . $dest;
-			$this->copyFiles($source, $dest, false);
+			$this->copyFiles($source, $dest, true);
 		}
 	}
 }
@@ -126,11 +126,14 @@ private function copyFiles($source, $dest, $recursive) {
 		// solution would be to detect if the directories are already
 		// created, but this solution is here for the time being because
 		// sometimes you *want* things to be overwritten.
-		if(is_dir($source . $name)) {
+		if(is_dir($source . DS . $name)) {
 			if(!$recursive) {
 				continue;
 			}
-			@mkdir($dest . DS . $name, 0775, true);
+			if(is_dir($dest . DS . $name)) {
+				continue;
+			}
+			mkdir($dest . DS . $name, 0777, true);
 			$this->copyFiles(
 				$source . DS . $name,
 				$dest . DS . $name,
