@@ -78,7 +78,7 @@ public function auth($method = "Google") {
  * @param Array|string An array of domains, regular expression that matches 
  * multiple domains, or a single domain to add to the white list.
  */
-public function addDomainWhiteList($whiteList) {
+public function addWhiteList($whiteList) {
 	$whiteListArray = array();
 
 	if(is_array($whiteList)) {
