@@ -135,15 +135,18 @@ private function setAuthData($username) {
 	setcookie(
 		"PhpGt_Login[0]",
 		$uuid,
-		$expires);
+		$expires,
+		"/");
 	setcookie(
 		"PhpGt_Login[1]",
 		$userSalt,
-		$expires);
+		$expires,
+		"/");
 	setcookie(
 		"PhpGt_Login[2]",
 		hash("sha512", $uuid . $userSalt . APPSALT),
-		$expires);
+		$expires,
+		"/");
 }
 
 public function unAuth($forwardTo = "/") {
@@ -299,10 +302,10 @@ private function refreshCookies() {
 }
 
 private function deleteCookies() {
+	setcookie("PhpGt_Login[0]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
 	unset($_COOKIE["PhpGt_Login"]);
-	setcookie("PhpGt_Login[0]", "deleted", 0);
-	setcookie("PhpGt_Login[1]", "deleted", 0);
-	setcookie("PhpGt_Login[2]", "deleted", 0);
 }
 
 private function generateSalt() {
