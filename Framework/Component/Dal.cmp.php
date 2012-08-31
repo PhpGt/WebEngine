@@ -17,6 +17,7 @@ private $_dbh = null;
 private $_dalElArray = array();
 private $_paramChar = null;
 private $_createdTableCache = array();
+private $_dbDeploy = null;
 
 /**
  * Only ever called internally. Stores the required settings for when the
@@ -136,7 +137,6 @@ public function prepare($sql, $config = null) {
  * automatically attempt to create the tables and all dependencies.
  */
 public function fixError($input) {
-	$this->errorStylesheet();
 	$message = "";
 	if($input instanceof PDOException) {
 		$message = $input->getMessage();
@@ -164,8 +164,16 @@ public function fixError($input) {
 		}
 	}
 
-	echo '<p class="error">' . $data["Type"];
-	echo '<p class="errorMessage">' . $message;
+	// Store the automatic deployment details for outputting later.
+	$this->_dbDeploy = new StdClass();
+	$this->_dbDeploy->type = $data["Type"];
+	$this->_dbDeploy->match = $data["Match"];
+	$this->_dbDeploy->message = $message;
+	$this->_dbDeploy->tableCollectionsDeployed = array();
+	$this->_dbDeploy->tableCollectionsFailed = array();
+	$this->_dbDeploy->tablesDeployed = array();
+	$this->_dbDeploy->tablesFailed = array();
+	$this->_dbDeploy->tablesSkipped = array();
 	
 	switch($data["Type"]) {
 	case "NO_TABLE":
@@ -177,15 +185,19 @@ public function fixError($input) {
 			// TODO: Throw proper error at this point.
 			die("Error: Table cannot be created. $tableName");
 		}
-		$this->createTableAndDependencies($tableName);
-		echo '<p class="success">Automatic deployment successful! '
-			. '<a href="' . $_SERVER["REQUEST_URI"] . '">Continue</a>';
+		if($this->createTableAndDependencies($tableName) === true) {
+			$this->_dbDeploy->tableCollectionsDeployed[] = $tableName;
+		}
+		else {
+			$this->_dbDeploy->tableCollectionsFailed[] = $tableName;
+		}
 		break;
 	case "NO_DB":
 	case "NO_USER":
 		$dbName = $data["Match"][1];
 		$sqlPath = GTROOT . DS . "Framework";
 		if(!is_dir($sqlPath)) {
+			// TODO: Throw proper error at this point.
 			die("ERROR: Invalid framework directory structure!");
 		}
 
@@ -193,32 +205,26 @@ public function fixError($input) {
 			? $_POST["RootPass"]
 			: null;
 		
-		if(is_null($rootPass)) {
+		if(empty($rootPass)) {
 			header("Location: /Gt.html?DbDeploy="
 				. $_SERVER["REQUEST_URI"]);
 			exit;
 		}
 
 		$dh = opendir($sqlPath);
-
 		while(false !== $file = readdir($dh)) {
 			if($file[0] !== "_") {
 				continue;
 			}
 		}
-
 		closedir($dh);
 
 		break;
 	default:
-		xdebug_stack_trace();
+		$this->_dbDeploy->error = "Invalid deployment type.";
+		// TODO: Throw proper error at this point.
+		die("Invalid deployment type.");
 		break;
-	}
-
-	// ALPHATODO:
-	// TODO: Replace with App.cfg's production value.
-	if(!false) {
-		exit;
 	}
 }
 
@@ -234,10 +240,12 @@ public function createTableAndDependencies($tableName) {
 		return;
 	}
 
+	// Table Collections should have the name of their base table at the start
+	// of their name, for instance BaseTable_SubTable. This makes it easy to
+	// find what Table Collection to deploy from any contained table.
 	if(strstr($tableName, "_")) {
 		$baseTable = substr($tableName, 0, strpos($tableName, "_"));
 		if(!in_array($baseTable, $this->_createdTableCache)) {
-			var_dump($tableName, $baseTable);
 			$this->createTableAndDependencies($baseTable);
 		}
 	}
@@ -270,9 +278,7 @@ public function createTableAndDependencies($tableName) {
 						continue;
 					}
 
-					echo '<p class="deploying">Deploying: ' . $file;
 					$sql = file_get_contents($sqlPath . DS . $file);
-					echo '<pre class="sql">' . $sql . '</pre>';
 
 					// Detect any table references in SQL and attempt
 					// to create them first.
@@ -281,31 +287,25 @@ public function createTableAndDependencies($tableName) {
 					preg_match_all($pattern, $sql, $matches);
 
 					foreach ($matches[1] as $dep) {
-						if(in_array($dep, $this->_createdTableCache)) {
-							echo '<p class="alreadyDeployed">'
-								. 'Already exists:' . $dep;
-						}
-						else {
-							echo '<p class="dependency">'
-								. 'Dependency detected in '
-								. "'{$tableName}': {$dep}.";
+						if(!in_array($dep, $this->_createdTableCache)) {
 							// Recursively call this function for each
 							// dependency, ignoring any already completed.
-								$this->_createdTableCache[] = $dep;
-								$this->createTableAndDependencies($dep);
+							$this->_createdTableCache[] = $tableName;
+							$this->createTableAndDependencies($dep);
 						}
 					}
 
 					// Execute the creation/insertion script.
 					$result = $this->_dbh->query($sql);
 					if($result === false) {
+						$this->_dbDeploy->tablesFailed[] = $dep;
+						$this->_dbDeploy->error = $this->_dbh->errorInfo();
 						// TODO: Throw proper error.
-						var_dump($this->_dbh->errorInfo());
+						die($this->_dbh->errorInfo());
 						exit;
 					}
 					else {
-						echo '<p class="success">'
-							. 'Success deploying ' . $file;
+						$this->_dbDeploy->tablesDeployed[] = $tableName;
 						$this->_createdTableCache[] = $tableName;
 					}
 				}
@@ -313,54 +313,13 @@ public function createTableAndDependencies($tableName) {
 		}
 		else {
 			$this->_createdTableCache[] = $tableName;
-			echo '<p class="alreadyDeployed">Already exists: ' . $tableName;
+			$this->_dbDeploy->tablesSkipped[] = $tableName;
 			return;
 		}
 	}
-}
 
-// TODO: This can be moved to an external file to avoid having css/php/html
-// clashes.
-private function errorStyleSheet() {
-	echo <<<STYLE
-<style>
-* {
-	margin: 0;
-	padding: 0;
-	font-family: "Ubuntu", "Arial", sans-serif;
-	color: #888;
-}
-p {
-	border-bottom: 1px dotted #aaa;
-	padding: 8px;
-}
-pre {
-	font-family: "Ubuntu-mono", "Consolas", monospace;
-	padding: 8px;
-	background: #272822;
-	color: #fefefe;
-}
-
-.error {
-	background: #D92E2E;
-	color: #fff;
-	font-weight: bold;
-}
-.alreadyDeployed {
-	background: #95FF91;
-}
-.deploying {
-	margin-top: 16px;
-	background: #F0DD89;
-}
-.dependency {
-	background: #ADC1ED;
-}
-.success {
-	background: #95FF91;
-}
-</style>
-STYLE;
+	// Output the dbDeploy status as JSON into a session cookie.
+	setcookie("PhpGt_DbDeploy", json_encode($this->_dbDeploy));
 }
 
 }?>

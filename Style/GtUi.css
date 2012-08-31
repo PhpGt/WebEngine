@@ -275,6 +275,7 @@ a.button {
 	text-decoration: none;
 	font-weight: bold;
 	text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
+	text-align: center;
 
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-top: 1px solid transparent;

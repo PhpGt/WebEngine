@@ -115,7 +115,7 @@ private function touchCache() {
 	$cacheDir = APPROOT . DS . "Cache";
 	$cacheFile = $this->_tableName . ".dbtouch";
 	if(!is_dir($cacheDir)) {
-		mkdir($cacheDir, 0775, true);
+		mkdir($cacheDir, 0777, true);
 	}
 	touch($cacheDir . DS . $cacheFile);
 }

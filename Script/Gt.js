@@ -135,6 +135,19 @@
 			}
 		},
 		/**
+		 * Logs the deployment of the database to the JavaScript console, then
+		 * removes the session cookie of where the details are stored.
+		 */
+		dbDeploy = function() {
+			if (document.cookie.indexOf("PhpGt_DbDeploy") < 0) {
+				return;
+			}
+			var dbDeployObj = JSON.parse(
+				decodeURIComponent(GT.getCookie("PhpGt_DbDeploy")) );
+			GT.removeCookie("PhpGt_DbDeploy");
+			console.log(dbDeployObj);
+		},
+		/**
 		 * Defines the helper functions to be added to native elements. Helpers
 		 * are inspired from typical client-side frameworks, but Gt.js only
 		 * targets modern browsers, so doesn't aim to provide cross-old-browser
@@ -588,6 +601,7 @@
 
 	// Attach all helper functions to native JavaScript objects.
 	addHelpers();
+	dbDeploy();
 	// Perform automatic template collection.
 	// The template elements are provided by PHP.Gt just before DOM flushing.
 	GT(templateScrape);
