@@ -301,7 +301,7 @@ a.button.focus {
 		/* outer shadow */
 		rgba(0, 0, 0, 0.2) 0 2px 10px,
 		/* colour border */
-		rgba(255, 187, 0, 0.8) 0 0 0 4px !important;
+		#00ba35 0 0 0 4px !important;
 }
 button:hover,
 a.button:hover {
@@ -395,6 +395,21 @@ input {
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-radius: 2px;
 	padding: 4px;
+	height: 26px;
+
+	box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
+		inset rgba(0, 0, 0, 0.2) 0 -1px 1px,
+		/* outer shadow */
+		rgba(0, 0, 0, 0.2) 0 2px 10px;
+}
+input:focus,
+textarea:focus {
+	box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
+		inset rgba(0, 0, 0, 0.2) 0 -1px 1px,
+		/* outer shadow */
+		rgba(0, 0, 0, 0.2) 0 2px 10px,
+		/* colour border */
+		rgba(0, 186, 53, 1.0) 0 0 0 4px !important;
 }
 
 body > aside input {

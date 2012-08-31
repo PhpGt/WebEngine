@@ -65,7 +65,6 @@ public function auth($method = "Google") {
 		$this->unAuth();
 		return false;
 	}
-
 	$this->setAuthData($username);
 	return true;
 }
@@ -78,7 +77,7 @@ public function auth($method = "Google") {
  * @param Array|string An array of domains, regular expression that matches 
  * multiple domains, or a single domain to add to the white list.
  */
-public function addDomainWhiteList($whiteList) {
+public function addWhiteList($whiteList) {
 	$whiteListArray = array();
 
 	if(is_array($whiteList)) {
@@ -95,7 +94,7 @@ public function addDomainWhiteList($whiteList) {
 
 public function checkWhiteList($username) {
 	foreach ($this->_domainWhiteList as $white) {
-		if(preg_match($white, $username) !== false) {
+		if (preg_match("/^\/.*\/[a-zA-Z]?$/", $white)) {
 			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
 			// false on error - note !==).
 			if(preg_match($white, $username) <= 0) {
@@ -103,13 +102,11 @@ public function checkWhiteList($username) {
 			}
 		}
 		else if(is_string($white)) {
-			$userDomain = substr($username, strrpos($username, "@") + 1);
-			if($userDomain != $white) {
+			if(!fnmatch($white, $username)) {
 				return false;
 			}
 		}
 	}
-
 	// No mismatches have been found - allow this user to authenticate!
 	return true;
 }
@@ -138,15 +135,18 @@ private function setAuthData($username) {
 	setcookie(
 		"PhpGt_Login[0]",
 		$uuid,
-		$expires);
+		$expires,
+		"/");
 	setcookie(
 		"PhpGt_Login[1]",
 		$userSalt,
-		$expires);
+		$expires,
+		"/");
 	setcookie(
 		"PhpGt_Login[2]",
 		hash("sha512", $uuid . $userSalt . APPSALT),
-		$expires);
+		$expires,
+		"/");
 }
 
 public function unAuth($forwardTo = "/") {
@@ -302,10 +302,10 @@ private function refreshCookies() {
 }
 
 private function deleteCookies() {
+	setcookie("PhpGt_Login[0]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
 	unset($_COOKIE["PhpGt_Login"]);
-	setcookie("PhpGt_Login[0]", "deleted", 0);
-	setcookie("PhpGt_Login[1]", "deleted", 0);
-	setcookie("PhpGt_Login[2]", "deleted", 0);
 }
 
 private function generateSalt() {
