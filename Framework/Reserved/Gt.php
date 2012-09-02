@@ -19,7 +19,7 @@ public function __construct($config) {
 			. "<a href='?CheckSql=true'>Click here</a></p>";
 		exit;
 	}
-	
+
 	if(isset($_POST["RootPass"])) {
 		// Automatically deploy the database!
 		try {
@@ -54,6 +54,9 @@ public function __construct($config) {
 		require(
 			GTROOT . DS . "Framework" . DS . "Reserved" . DS . "Gt.html");
 		exit;
+	}
+	else if(isset($_GET["CheckSql"])) {
+		$_SESSION["DbDeploy"]["Complete"] = true;
 	}
 }
 
