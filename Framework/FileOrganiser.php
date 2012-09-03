@@ -114,7 +114,7 @@ private function copyFiles($source, $dest, $recursive) {
 	}
 
 	$dh = opendir($source);
-	@mkdir($dest, 0775, true);
+	@mkdir($dest, 0777, true);
 
 	while(false !== ($name = readdir($dh)) ) {
 		if($name[0] == ".") {
@@ -146,7 +146,7 @@ private function copyFiles($source, $dest, $recursive) {
 			
 			// TODO: Had to surpress errors/warnings here after pulling 
 			// repo on another workstation.
-			@chmod($dest . DS . $name, 0775);
+			@chmod($dest . DS . $name, 0777);
 			shell_exec("chown "
 				. $own["name"] . " "
 				. $dest . DS . $name);

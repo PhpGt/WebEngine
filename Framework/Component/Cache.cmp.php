@@ -18,7 +18,7 @@ public function __construct($type, $reference = null, $contextObj = null) {
 	$this->_cacheDir = APPROOT . DS . "Cache" . DS . $type;
 }
 
-public function __call($name) {
+public function __call($name, $args) {
 	// TODO: Wrap the context object's method, storing the output in cache.
 }
 
