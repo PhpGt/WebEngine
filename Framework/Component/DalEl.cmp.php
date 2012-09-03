@@ -112,8 +112,9 @@ private function query($sqlFile, $paramArray = array()) {
  * caching system to defer connecting to the database if nothing has changed.
  */
 private function touchCache() {
-	$cacheDir = APPROOT . DS . "Cache";
+	$cacheDir = APPROOT . DS . "Cache" . DS . "Database";
 	$cacheFile = $this->_tableName . ".dbtouch";
+
 	if(!is_dir($cacheDir)) {
 		mkdir($cacheDir, 0777, true);
 	}

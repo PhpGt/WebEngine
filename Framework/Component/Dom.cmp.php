@@ -161,8 +161,27 @@ $value      = null) {
 public function flush() {
 	ob_clean();
 	$this->_domDoc->formatOutput = true;
-	echo $this->_domDoc->saveHTML();
+	$html = $this->_domDoc->saveHTML();
+	$this->cacheOutput($html);
+	echo $html;
 	ob_flush();
+}
+
+/**
+ * Saves the HTML of the current PageView to a cache file, to be handled by the
+ * CacheHandler.
+ */
+public function cacheOutput($output) {
+	$cacheDir = APPROOT . DS . "Cache" . DS . "PageView";
+	$dir = str_replace("/", DS, DIR);
+	$cacheDir .= DS . $dir;
+	$cacheFile = FILE . "." . EXT;
+
+	if(!is_dir($cacheDir)) {
+		mkdir($cacheDir, 0777, true);
+	}
+
+	file_put_contents($cacheDir . DS . $cacheFile, $output);
 }
 
 /**

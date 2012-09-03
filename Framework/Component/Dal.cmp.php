@@ -221,9 +221,10 @@ public function fixError($input) {
 
 		break;
 	default:
-		$this->_dbDeploy->error = "Invalid deployment type.";
+		$this->_dbDeploy->error = "Error in SQL.";
 		// TODO: Throw proper error at this point.
-		die("Invalid deployment type.");
+		var_dump($input);
+		die("Error in SQL.");
 		break;
 	}
 }
