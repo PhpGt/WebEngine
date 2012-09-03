@@ -145,6 +145,8 @@ $toLoad["Required"] = array(
 	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.php",
 	"Error component" => 
 	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.cmp.php",
+	"Cache component" =>
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Cache.cmp.php",
 
 	"Autoloader" =>
 	GTROOT.DS."Framework" . DS . "Autoloader.php",

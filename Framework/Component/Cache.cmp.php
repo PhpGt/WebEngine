@@ -8,12 +8,18 @@
 
 private $_type = null;
 private $_reference = null;
+private $_contextObj = null;
 private $_cacheDir;
 
-public function __construct($type, $reference = null) {
+public function __construct($type, $reference = null, $contextObj = null) {
 	$this->_type = $type;
 	$this->_reference = $reference;
+	$this->_contextObj = $contextObj;
 	$this->_cacheDir = APPROOT . DS . "Cache" . DS . $type;
+}
+
+public function __call($name) {
+	// TODO: Wrap the context object's method, storing the output in cache.
 }
 
 /**
@@ -37,7 +43,7 @@ public function offsetGet($offset) {
 }
 
 /**
- * Caches arbitary data for use in recurring requests.
+ * Caches arbitrary data for use in recurring requests.
  */
 public function offsetSet($offset, $value) {
 }
@@ -57,14 +63,15 @@ public function offsetUnset($offset) {
 private function checkValidDatabase($tableName) {
 	$cacheDir = $this->_cacheDir . DS . $tableName;
 	$touchFile = $cacheDir . ".dbtouch";
+	$tableDir = $cacheDir . DS . $tableName;
 
-	// If there is no cachedir, there definitely is no cache set.
-	if(is_dir($cacheDir)) {
+	// If there is no tableDir, there definitely is no cache set.
+	if(is_dir($tableDir)) {
 		$touchT = file_exists($touchFile)
 			? filemtime($touchFile)
 			: 0;
-		$cacheT = filemtime($cacheDir);
-		if($cacheT > $touchT) {
+		$tableT = filemtime($tableDir);
+		if($tableT > $touchT) {
 			return true;
 		}
 	}
