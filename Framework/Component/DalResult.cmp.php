@@ -60,6 +60,34 @@ public function __get($key) {
 	}
 }
 
+public function __toString() {
+	$string = "";
+
+	$this->storeResult(true);
+	$i = 0;
+	foreach($this->result as $result) {
+		if($i > 0) {
+			$string .= ", ";
+		}
+		$string .= "$i: { ";
+		$j = 0;
+		foreach ($result as $key => $value) {
+			if(is_numeric($key)) {
+				continue;
+			}
+			if($j > 0) {
+				$string .= ", ";
+			}
+			$string .= "\"$key\" => \"$value\"";
+			$j++;
+		}
+		$string .= " } ";
+		$i++;
+	}
+
+	return $string;
+}
+
 // Iterator ----------------------------------------------------------------
 public function current() {
 	return $this->result[$this->_position];
