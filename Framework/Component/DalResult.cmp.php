@@ -1,4 +1,4 @@
-<?php final class DalResult implements Iterator, ArrayAccess {
+<?php final class DalResult implements Iterator, ArrayAccess, Serializable {
 /**
  * TODO: Docs.
  */
@@ -55,7 +55,8 @@ public function __get($key) {
 		return count($this->result);
 	default:
 		// TODO: Throw proper error.
-		die("Error: Invalid key requested from DalResult $tableName.");
+		die("Error: Invalid key requested from DalResult $this->_tableName: "
+			. $key);
 		break;
 	}
 }
@@ -64,6 +65,31 @@ public function __toString() {
 	$this->storeResult(true);
 	$string = json_encode($this->result);
 	return $string;
+}
+
+public function serialize() {
+	$this->storeResult(true);
+	$obj = array(
+		"InsertId" => $this->_insertId,
+		"OriginalSql" => $this->_originalSql,
+		"TableName" => $this->_tableName,
+		"Position" => $this->_position,
+		"Result" => $this->result,
+		"Stmt" => "This object is from the PHP.Gt cache, so the PDO "
+		. "statement is not accessible."
+	);
+	
+	return serialize($obj);
+}
+
+public function unserialize($string) {
+	$obj = unserialize($string);
+	$this->_insertId = $obj["InsertId"];
+	$this->_originalSql = $obj["OriginalSql"];
+	$this->_tableName = $obj["TableName"];
+	$this->_position = $obj["Position"];
+	$this->result = $obj["Result"];
+	$this->_stmt = $obj["Stmt"];
 }
 
 // Iterator ----------------------------------------------------------------
