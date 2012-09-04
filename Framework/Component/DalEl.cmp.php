@@ -119,6 +119,18 @@ private function touchCache() {
 		mkdir($cacheDir, 0777, true);
 	}
 	touch($cacheDir . DS . $cacheFile);
+
+	// In some situations i.e. unit testing, a cache miss is directly followed
+	// by a cache hit, but the filemtime set by touching the file is only
+	// measured in seconds... Setting a session variable allows more exact 
+	// cache measurement.
+	if(empty($_SESSION["PhpGt_Cache"])) {
+		$_SESSION["PhpGt_Cache"] = array();
+	}
+	if(empty($_SESSION["PhpGt_Cache"]["Database"])) {
+		$_SESSION["PhpGt_Cache"]["Database"] = array();
+	}
+	$_SESSION["PhpGt_Cache"]["Database"][$this->_tableName] = microtime(true);
 }
 
 }?>

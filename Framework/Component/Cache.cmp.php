@@ -40,7 +40,7 @@ public function __call($name, $args) {
 		die("ERROR: Cache context not set.");
 	}
 	$files = $this->getDatabaseFiles();
-	$cacheFile = $files["TableDir"] . DS . $name;
+	$cacheFile = $files["TableDir"] . DS . $name . ".dbobj";
 
 	if($this->valid) {
 		if(file_exists($cacheFile)) {
@@ -80,10 +80,11 @@ public function __get($name) {
 
 		break;
 	case "timestamp":
+	case "timestamps":
 
 		switch($this->_type) {
 		case "Database":
-			return $this->getTimestampDatabase();
+			return $this->getTimeStampDatabase();
 			break;
 		default:
 			die("Cache: Not yet implemented.");
@@ -113,7 +114,7 @@ public function invalidate() {
 private function getDatabaseFiles() {
 	return array(
 		"TouchFile" => $this->_cacheDir . DS . $this->_reference . ".dbtouch",
-		"TableDir"	=> $this->_cacheDir . DS . $this->_reference
+		"TableDir"	=> $this->_cacheDir . DS . $this->_reference . DS . "."
 	);
 }
 /**
@@ -126,12 +127,17 @@ private function checkValidDatabase() {
 	$files = $this->getDatabaseFiles();
 	// If there is no tableDir, there definitely is no cache set.
 	if(is_dir($files["TableDir"])) {
-		$touchT = file_exists($files["TouchFile"])
-			? filemtime($files["TouchFile"])
-			: 0;
-		$tableT = filemtime($files["TableDir"]);
-		if($tableT > $touchT) {
+		$timeStamps = $this->getTimestampDatabase();
+		
+		if($timeStamps["TableDir"] > $timeStamps["TouchFile"]) {
 			return true;
+		}
+		if(isset($_SESSION["PhpGt_Cache"]["Database"][$this->_reference])) {
+			$sessionT = $_SESSION["PhpGt_Cache"]["Database"][$this->_reference];
+			//var_dump($sessionT > $timeStamps["TableDir"]);die();
+			if($sessionT <= $timeStamps["TableDir"]) {
+				return true;
+			}
 		}
 	}
 
@@ -141,14 +147,33 @@ private function checkValidDatabase() {
 /**
  * @return int The unix timestamp of the current cached database table.
  */
-private function getTimestampDatabase() {
-	$files = $this->getDatabaseFiles();
-	// If there is no tableDir, there definitely is no cache set.
-	if(is_dir($files["TableDir"])) {
-		return filemtime($files["TouchFile"]);
-	}
+private function getTimeStampDatabase() {
+	$timeStamps = array(
+		"TouchFile" => 0,	// Last Db Modification
+		"TableDir" => 0		// Last Cache
+	);
 
-	return 0;
+	$files = $this->getDatabaseFiles();
+	$timeStamps["TouchFile"] = file_exists($files["TouchFile"])
+		? filemtime($files["TouchFile"])
+		: 0;
+
+	$tableDirMax = 0;
+	if(is_dir($files["TableDir"])) {
+		$dirIt = new DirectoryIterator($files["TableDir"]);
+		foreach ($dirIt as $fileInfo) {
+			if(!$fileInfo->isFile()) {
+				continue;
+			}
+			$filemtime = $fileInfo->getMTime();
+			if($filemtime > $tableDirMax) {
+				$tableDirMax = $filemtime;
+			}
+		}
+	}
+	$timeStamps["TableDir"] = $tableDirMax;
+
+	return $timeStamps;
 }
 
 }?>
