@@ -61,7 +61,7 @@
 		 * then be accessed via GT.template().
 		 */
 		templateScrape = function() {
-			var tmplDiv = document.getElementById("PHPGt_Template_Elements"),
+			var tmplDiv = document.getElementById("PhpGt_Template_Elements"),
 				tmplDivNodeCount,
 				tmpl,
 				name,

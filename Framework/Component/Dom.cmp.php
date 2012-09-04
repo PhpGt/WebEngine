@@ -6,6 +6,7 @@
 */
 
 private $_domDoc = null;
+private $_templateAttribute = null;
 
 public function __construct($html) {
 	// If converting encoding costs too much time, use a simpler method
@@ -191,6 +192,7 @@ public function cacheOutput($output) {
 * values as the array keys.
 */
 public function template($attribute = "data-template") {
+	$this->_templateAttribute = $attribute;
 	$xpath = new DOMXPath($this->_domDoc);
 	$domNodeList = $xpath->query("//*[@{$attribute}]");
 	$domNodeListLength = $domNodeList->length;
@@ -223,7 +225,7 @@ public function templateOutput($templateWrapper) {
 			$this,
 			"div",
 			array(
-				"id"	=> "PHPGt_Template_Elements",
+				"id"	=> "PhpGt_Template_Elements",
 				"style"	=> "display: none;"
 			)
 		);
@@ -233,7 +235,7 @@ public function templateOutput($templateWrapper) {
 	
 	$domNodeCollection->map(function(&$element, $key, $c_attribute) {
 		$element->removeAttribute($c_attribute);
-	}, $attribute);
+	}, $this->_templateAttribute);
 }
 
 /**
