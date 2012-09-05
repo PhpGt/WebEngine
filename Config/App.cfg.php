@@ -15,7 +15,8 @@ protected $_isClientCompiled = false;
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
 protected $_directoryUrls = false;
-protected $_timezone = "Europe/London";
+//"Europe/London" may be preferred. UTC is GMT ignoring any daylight saving.
+protected $_timezone = "UTC";
 private $_reserved = array("PhpGt", "Gt", "g105b", "admin");
 
 public function __construct() { }
