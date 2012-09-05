@@ -27,11 +27,18 @@ public function __construct($request) {
 	$this->_pageCodeStop = &$request->pageCodeStop;
 	ob_start();
 	// Buffer current PageView and optional header/footer.
-	$this->bufferPageView("Header");
-	if(!$this->bufferPageView()) {
+	$mtimeHeader = $this->bufferPageView("Header");
+	$mtimeView = $this->bufferPageView();
+	if($mtimeView === false) {
 		throw new HttpError(404);
 	}
-	$this->bufferPageView("Footer");
+	$mtimeFooter = $this->bufferPageView("Footer");
+
+	$mtimeMax = max($mtimeHeader, $mtimeView, $mtimeFooter);
+	if(empty($_SESSION["PhpGt_Cache"])) {
+		$_SESSION["PhpGt_Cache"] = array();
+	}
+	$_SESSION["PhpGt_Cache"]["PageView_mtime"] = $mtimeMax;
 
 	$this->storeBuffer();
 
@@ -192,7 +199,8 @@ private function storeBuffer() {
 * non-required addition to the PAgeView, such as a header or footer file.
 * Arbitary files are prefixed with an underscore automatically.
 * @param string $fileName The file to load.
-* @return bool Whether the file was buffered successfully.
+* @return int|bool On success, the filemtime of the view file is returned. If
+* the file cannot be found, false is returned.
 */
 private function bufferPageView($fileName = null) {
 	$fileArray = null;
@@ -232,7 +240,7 @@ private function bufferPageView($fileName = null) {
 			// File being required is straight HTML - will be inserted into
 			// the output buffer.
 			require($file);
-			return true;
+			return filemtime($file);
 		}
 	}
 
@@ -244,7 +252,7 @@ private function bufferPageView($fileName = null) {
 			// File being required is straight HTML - will be inserted into 
 			// the output buffer.
 			require($dynamicFileName);
-			return true;
+			return filemtime($dynamicFileName);
 		}
 	}
 

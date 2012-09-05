@@ -116,6 +116,9 @@ public function __get($name) {
  * checks. Useful for when a page is dependent on multiple database tables.
  */
 public function tryRender($dependencies = array()) {
+	if(!$this->valid) {
+		return;
+	}
 	// Fail rendering cache if any of the dependencies are invalid.
 	if(!empty($dependencies)) {
 		foreach ($dependencies as $dependency) {
@@ -204,7 +207,14 @@ private function getPageFile() {
 
 private function checkValidPage() {
 	$file = $this->getPageFile();
-	return file_exists($file);
+	if(file_exists($file)) {
+		if(!empty($_SESSION["PhpGt_Cache"]["PageView_mtime"])) {
+			$filemtime = filemtime($file);
+			$_SESSION["PhpGt_Cache"]["PageView_mtime"];
+			return $filemtime > $_SESSION["PhpGt_Cache"]["PageView_mtime"];
+		}
+	}
+	return false;
 }
 
 /**

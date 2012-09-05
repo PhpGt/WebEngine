@@ -113,7 +113,7 @@ public function __construct($config) {
 			$pcCommonPath  = APPROOT . DS . "PageCode" . DS . $pcDir . DS;
 			$pcCommonFile  = "_Common.php";
 			$pcCommonClass = str_replace("/", "_", $pcDir) 
-				. "__Common";
+				. "_Common";
 			if(file_exists($pcCommonPath . $pcCommonFile)) {
 				require_once($pcCommonPath . $pcCommonFile);
 				if(class_exists($pcCommonClass)) {
