@@ -8,6 +8,7 @@ Not yet released
 * Vimeo PageTool for interacting with the Vimeo API.
 * Database connection is not opened until it is used.
 * User PageTool allows white-listed domains.
+* PageView _Header and _Footer files can be ignored using ignore comments.
 
 v0.0.2
 ------

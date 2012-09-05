@@ -12,27 +12,24 @@ public function __construct($html) {
 	// If converting encoding costs too much time, use a simpler method
 	// by prepending '<?xml encoding="UTF-8">' to $html.
 	$html = mb_convert_encoding($html, "HTML-ENTITIES", "utf-8");
+	$ignoreHeader = "<!--ignore-header-->";
+	$ignoreFooter = "<!--ignore-footer-->";
+	if(strstr($html, $ignoreHeader)
+	|| strstr($html, $ignoreFooter)) {
+		$ignoreHeaderPos = strpos($html, $ignoreHeader);
+		if($ignoreHeaderPos !== false) {
+			$html = substr($html, $ignoreHeaderPos + strlen($ignoreHeader));
+		}
+		$ignoreFooterPos = strpos($html, $ignoreFooter);
+		if($ignoreFooterPos !== false) {
+			$html = substr($html, 0, $ignoreFooterPos);
+		}
+	}
 	$this->_domDoc = new DomDocument("1.0", "utf-8");
 	libxml_use_internal_errors(true);
 	if(!$this->_domDoc->loadHTML($html) ) {
 		// TODO: Throw and log a proper error.
 		die("Error loading HTML into Dom");
-	}
-
-	// Find optional attributes to remove headers/footers.
-	$htmlElements = $this->getElementsByTagName("html");
-	$htmlCount = $htmlElements->length;
-	for($i = 0; $i < $htmlCount; $i++) {
-		$html = $htmlElements->item($i);
-		if($html->hasAttribute("data-no-header")) {
-			$this->removeBefore($html);
-		}
-		if($html->hasAttribute("data-no-footer")) {
-			$this->removeAfter($html);
-		}
-		if($html->hasAttribute("data-no-header-footer")) {
-			$this->removeExcept($html);
-		}
 	}
 
 	// Add the url and file to the body's id and class attributes.
