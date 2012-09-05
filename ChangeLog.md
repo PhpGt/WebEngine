@@ -2,6 +2,7 @@ v0.0.3
 ------
 Not yet released
 
+* Cache handler allows bi-directional cache access from anywhere.
 * dbtouch files are 'touched' only when each database table changes.
 * Public webroot directories are now named 'www'. Not backwards compatible!
 * Vimeo PageTool for interacting with the Vimeo API.

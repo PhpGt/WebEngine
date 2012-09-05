@@ -173,7 +173,10 @@ public function flush() {
  * CacheHandler.
  */
 public function cacheOutput($output) {
-	$cacheDir = APPROOT . DS . "Cache" . DS . "PageView";
+	if(empty($_SESSION["PhpGt_Cache"]["Page"])) {
+		return;
+	}
+	$cacheDir = APPROOT . DS . "Cache" . DS . "Page";
 	$dir = str_replace("/", DS, DIR);
 	$cacheDir .= DS . $dir;
 	$cacheFile = FILE . "." . EXT;

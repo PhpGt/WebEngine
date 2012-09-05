@@ -12,20 +12,27 @@ private $_contextObj = null;
 private $_cacheDir;
 
 /**
- * @param string $type What type of cache to use. Not only does this indicate
- * the name of the subdirectory of where the cache is stored, but has different
- * effects for some types, such as "Database" checks the .dbtouch files.
- * @param string $reference An optional reference to an area of the current
- * type's cache. For Database type, the reference is the cached TableCollection.
- * @param mixel $contextObj To provide a short-hand automatic cached object,
- * methods can be called on this object which will return cached data or
- * alternatively return the output of the method on the context object. 
+ * @param mixed $context Optional. Any object that you wish to use as the cached
+ * resource. Most commonly will be an ApiEl, but could be any custom object too.
  */
-public function __construct($type, $reference = null, $contextObj = null) {
-	$this->_type = $type;
-	$this->_reference = $reference;
-	$this->_contextObj = $contextObj;
-	$this->_cacheDir = APPROOT . DS . "Cache" . DS . $type;
+public function __construct($context = null) {
+	if(!is_null($context)) {
+		$this->_contextObj = $context;
+		if($context instanceof PageCode) {
+			$this->_type = "Page";
+			$this->setPageCache();
+		}
+		else if($context instanceof ApiEl) {
+			$this->_type = "Database";
+			$this->_reference = $context->getName();
+		}
+		// TODO: More type checks.
+		else {
+			$this->_type = "Custom";
+		}
+	}
+
+	$this->_cacheDir = APPROOT . DS . "Cache" . DS . $this->_type;
 	if(!is_dir($this->_cacheDir)) {
 		mkdir($this->_cacheDir, 0777, true);
 	}
@@ -70,6 +77,9 @@ public function __get($name) {
 	case "valid":
 
 		switch($this->_type) {
+		case "Page":
+			return $this->checkValidPage();
+			break;
 		case "Database":
 			return $this->checkValidDatabase();
 			break;
@@ -98,10 +108,45 @@ public function __get($name) {
 }
 
 /**
+ * Attempts to render the current requested page from cache. This will terminate
+ * all scripts if successful, else it will quietly fail.
+ *
+ * @param array $dependencies Optional. Pass either an array of Cache objects,
+ * or a list of Cache objects as multiple parameters to add to the dependency
+ * checks. Useful for when a page is dependent on multiple database tables.
+ */
+public function tryRender($dependencies = array()) {
+	// Fail rendering cache if any of the dependencies are invalid.
+	if(!empty($dependencies)) {
+		foreach ($dependencies as $dependency) {
+			if(!$dependency->valid) {
+				return;
+			}
+		}
+	}
+	$file = $this->getPageFile();
+	if(!file_exists($file)) {
+		return;
+	}
+	$filemtime = filemtime($file);
+	$html = file_get_contents($file);
+	echo "<!-- PHP.Gt cache modified: " 
+		. date("d/m/y h:i:s", $filemtime) 
+		. " ($filemtime) -->";
+	echo $html;
+	exit;
+}
+
+/**
  * Deletes the current cached data, if any.
  */
 public function invalidate() {
 	switch($this->_type) {
+	case "Page":
+		$file = $this->getPageFile();
+		unlink($file);
+		$_SESSION["PhpGt_Cache"]["Page"] = false;
+		break;
 	case "Database":
 		$files = $this->getDatabaseFiles();
 		touch($files["TouchFile"]);
@@ -142,6 +187,24 @@ private function checkValidDatabase() {
 	}
 
 	return false;
+}
+
+private function setPageCache() {
+	if(empty($_SESSION["PhpGt_Cache"])) {
+		$_SESSION["PhpGt_Cache"] = array();
+	}
+	if(empty($_SESSION["PhpGt_Cache"]["Page"])) {
+		$_SESSION["PhpGt_Cache"]["Page"] = true;
+	}
+}
+
+private function getPageFile() {
+	return $this->_cacheDir . DS . DIR . DS . FILE . "." . EXT;
+}
+
+private function checkValidPage() {
+	$file = $this->getPageFile();
+	return file_exists($file);
 }
 
 /**
