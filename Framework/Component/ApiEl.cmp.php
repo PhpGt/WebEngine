@@ -1,4 +1,4 @@
-<?php final class ApiElement {
+<?php final class ApiEl {
 /**
  * The ApiElement object acts as the wrapper to the API object itself. A wrapper
  * is necessary because API objects for each DAL table collection are not
@@ -58,6 +58,10 @@ public function __call($methodName, $params) {
 	)) {
 		return $this->_apiObject->getDalResult();
 	}
+}
+
+public function getName() {
+	return $this->_apiName;
 }
 
 }?>

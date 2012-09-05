@@ -79,7 +79,7 @@ public function offsetExists($offset) {
 		return true;
 	}
 
-	$this->_dalElArray[$offset] = new DalElement(
+	$this->_dalElArray[$offset] = new DalEl(
 		$this,
 		$offset,
 		$this->_paramChar

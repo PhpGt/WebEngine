@@ -1,4 +1,4 @@
-<?php class DalElement {
+<?php class DalEl {
 /**
  * TODO: Docs.
  */

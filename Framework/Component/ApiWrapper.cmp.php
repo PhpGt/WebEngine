@@ -27,7 +27,7 @@ public function offsetGet($offset) {
 
 	if(!$this->offsetExists($offset)) {
 		$this->_apiElObjects[$offset] = 
-			new ApiElement($offset, $this->_dal);
+			new ApiEl($offset, $this->_dal);
 	}
 
 	return $this->_apiElObjects[$offset];
