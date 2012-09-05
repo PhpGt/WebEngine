@@ -19,6 +19,22 @@ public function __construct($html) {
 		die("Error loading HTML into Dom");
 	}
 
+	// Find optional attributes to remove headers/footers.
+	$htmlElements = $this->getElementsByTagName("html");
+	$htmlCount = $htmlElements->length;
+	for($i = 0; $i < $htmlCount; $i++) {
+		$html = $htmlElements->item($i);
+		if($html->hasAttribute("data-no-header")) {
+			$this->removeBefore($html);
+		}
+		if($html->hasAttribute("data-no-footer")) {
+			$this->removeAfter($html);
+		}
+		if($html->hasAttribute("data-no-header-footer")) {
+			$this->removeExcept($html);
+		}
+	}
+
 	// Add the url and file to the body's id and class attributes.
 	$bodyTag = $this->getElementsByTagName("body");
 
