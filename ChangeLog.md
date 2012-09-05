@@ -6,6 +6,8 @@ Not yet released
 * dbtouch files are 'touched' only when each database table changes.
 * Public webroot directories are now named 'www'. Not backwards compatible!
 * Vimeo PageTool for interacting with the Vimeo API.
+* Database connection is not opened until it is used.
+* User PageTool allows white-listed domains.
 
 v0.0.2
 ------
