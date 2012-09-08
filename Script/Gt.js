@@ -529,7 +529,28 @@
 	GT.ajax = new function(url, callback) {
 		var req = function(url, callback, method) {
 			var xhr,
-				method = method.toUpperCase();
+				method = method.toUpperCase(),
+				obj, objLen,
+				i, key;
+			if(typeof(url) !== "string") {
+				// Assume object given.
+				obj = url;
+				url = window.location.href;
+				objLen = obj.length;
+				key = "?";
+				for(i in obj) {
+					if(!obj.hasOwnProperty(i)) {
+						continue;
+					}
+					url += key + i + "=" + obj[i];
+					key = "&";
+				}
+			}
+			if(url.indexOf("?") >= 0) {
+				obj = url.substring(url.indexOf("?") + 1);
+				url = url.substring(0, url.indexOf("?"));
+			}
+			
 			// Provide compatibility with older IE.
 			if(window.XMLHttpRequest) {
 				xhr = new XMLHttpRequest();
@@ -537,11 +558,14 @@
 			else {
 				xhr = new ActiveXObject("Microsoft.XMLHTTP");
 			}
-			xhr.open(method, url, true);
 
 			if(method === "POST") {
+				xhr.open(method, url, true);
 				xhr.setRequestHeader(
 					"Content-Type", "application/x-www-form-urlencoded");
+			}
+			else {
+				xhr.open(method, url + "?" + obj, true);
 			}
 
 			xhr.onreadystatechange = function() {
@@ -566,7 +590,12 @@
 				}
 			};
 
-			xhr.send();
+			if(method === "POST") {
+				xhr.send(obj);
+			}
+			else {
+				xhr.send();
+			}
 			return xhr;
 		};
 		/**
