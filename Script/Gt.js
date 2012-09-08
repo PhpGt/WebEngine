@@ -213,6 +213,41 @@
 				this.parentNode.insertBefore(element, this.nextSibling);
 				return element;
 			},
+			"next": function() {
+				var n = this;
+				while(n.nextSibling) {
+					n = n.nextSibling;
+					if(n instanceof HTMLElement) {
+						return n;
+					}
+				}
+				return false;
+			},
+			"prev": function() {
+				var p = this;
+				while(p.previousSibling) {
+					p = p.previousSibling;
+					if(p instanceof HTMLElement) {
+						return p;
+					}
+				}
+				return false;
+			},
+			"replace": function(element) {
+				var prev = this.prev(),
+					next = this.next(),
+					parent = this.parentNode;
+				if(prev) {
+					prev.after(element);
+				}
+				else if(next) {
+					next.before(element);
+				}
+				else {
+					parent.append(element);
+				}
+				this.remove();
+			},
 			// TODO: BUG: Getting the parent via selector gets all elements
 			// of a matching selector, so obtains elements that aren't actually
 			// the parent, but have a common ancestor and CSS selector.
