@@ -5,7 +5,7 @@ public function go($api, $dom, $template, $tool) {
 	if(empty($_COOKIE["PhpGt_Track"])) {
 		$anonId = $this->generateSalt();
 		$expires = strtotime("+2 weeks");
-		if(setcookie("PhpGt_Track", $anonId, $expires) === false) {
+		if(setcookie("PhpGt_Track", $anonId, $expires, "/") === false) {
 			// TODO: Throw proper error. Cookie can't be set if
 			// any output has been made!
 			die("Can't set PhpGt_Track cookie!");
@@ -290,15 +290,18 @@ private function refreshCookies() {
 	setcookie(
 		"PhpGt_Login[0]",
 		$_COOKIE["PhpGt_Login"][0],
-		$expires);
+		$expires,
+		"/");
 	setcookie(
 		"PhpGt_Login[1]",
 		$_COOKIE["PhpGt_Login"][1],
-		$expires);
+		$expires,
+		"/");
 	setcookie(
 		"PhpGt_Login[2]",
 		$_COOKIE["PhpGt_Login"][2],
-		$expires);
+		$expires,
+		"/");
 }
 
 private function deleteCookies() {

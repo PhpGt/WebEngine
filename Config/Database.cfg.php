@@ -16,7 +16,6 @@ protected $_user;
 protected $_pass;
 
 protected $_driver = "mysql";
-protected $_paramChar = ":";
 
 // The creation order of PHP.Gt tables (some may rely on others in foreign
 // key constraints, for example).
@@ -62,7 +61,6 @@ public function getSettings() {
 			. ":host=" . $this->_host,
 		"Username"	=> $this->_user,
 		"Password"	=> $this->_pass,
-		"ParamChar"	=> $this->_paramChar,
 		"DbName" 	=> $this->_name,
 		"Host"		=> $this->_host
 	);

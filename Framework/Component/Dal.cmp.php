@@ -15,7 +15,6 @@
 private $_config = null;
 private $_dbh = null;
 private $_dalElArray = array();
-private $_paramChar = null;
 private $_createdTableCache = array();
 private $_dbDeploy = null;
 
@@ -53,8 +52,6 @@ public function connect() {
 		$this->_dbh->setAttribute(
 			PDO::ATTR_ERRMODE,
 			PDO::ERRMODE_EXCEPTION);
-
-		$this->_paramChar = $this->_config["ParamChar"];
 	}
 	catch(PDOException $e) {
 		// TODO: Proper error handling.
@@ -81,8 +78,7 @@ public function offsetExists($offset) {
 
 	$this->_dalElArray[$offset] = new DalEl(
 		$this,
-		$offset,
-		$this->_paramChar
+		$offset
 	);
 
 	return true;
@@ -319,8 +315,13 @@ public function createTableAndDependencies($tableName) {
 		}
 	}
 
+	// TODO: Doesn't seem to be setting cookie...
 	// Output the dbDeploy status as JSON into a session cookie.
-	setcookie("PhpGt_DbDeploy", json_encode($this->_dbDeploy));
+	setcookie("PhpGt_DbDeploy",
+		json_encode($this->_dbDeploy), 
+		time() + 60, 
+		"/"
+	);
 }
 
 }?>
