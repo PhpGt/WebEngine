@@ -8,6 +8,7 @@ create table if not exists `Blog_Article` (
 	`Fk_User`				int			not null,
 	`Content`				text		not null,
 	`Is_Private`			bool		null,
+	`Is_Featured`			bool		null,
 	
 	index `Fk_Blog_Article__Blog` (`Fk_Blog` asc),
 	constraint `Fk_Blog_Article__Blog`
