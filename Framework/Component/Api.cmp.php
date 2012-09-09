@@ -35,9 +35,11 @@ public function apiCall($dal) {
 
 	// Check to see if there is a defined method of this API's method name.
 	if(method_exists($this, $this->_methodName)) {
+		$dalEl = new DalEl($dal, $this->_apiName);
 		$params = array_merge(
+			array($this->_methodParams),
 			array($dal),
-			array($this->_methodParams)
+			array($dalEl)
 		);
 
 		// The DalResult object comes from the DalElement's query function.

@@ -4,12 +4,10 @@
  */
 private $_dal = null;
 private $_tableName = null;
-private $_paramChar = null;
 
-public function __construct($dal, $tableName, $paramChar) {
+public function __construct($dal, $tableName) {
 	$this->_dal = $dal;
 	$this->_tableName = $tableName;
-	$this->_paramChar = $paramChar;
 }
 
 public function __call($name, $args) {
@@ -49,7 +47,7 @@ private function query($sqlFile, $paramArray = array()) {
 
 	foreach ($paramArray as $key => $value) {
 		unset($paramArray[$key]);
-		$key = $this->_paramChar . $key;
+		$key = ":" . $key;
 		$paramArray[$key] = $value;
 
 		// Remove any params that don't actually occur in the SQL...
@@ -85,25 +83,34 @@ private function query($sqlFile, $paramArray = array()) {
 		$stmt->bindParam($key, $value);
 	}
 
-	try {
-		$result = $stmt->execute();
-		// Find out the number of affected rows (SQL for portability).
-		$rowCountStmt = $this->_dal->prepare("select row_count() as RowCount");
-		$rowCountStmt->execute();
-		$rowCountResult = $rowCountStmt->fetch();
-		if($rowCountResult[0] > 0) {
-			$this->touchCache();
+	// The database may not be deployed yet. It will automatically deploy, but
+	// will need to re-execute the statement once deployed.
+	$tries = 0;
+	while($tries <= 1) {
+		try {
+			$result = $stmt->execute();
+			// Find out the number of affected rows (SQL for portability).
+			$rowCountStmt = $this->_dal->prepare(
+				"select row_count() as RowCount");
+			$rowCountStmt->execute();
+			$rowCountResult = $rowCountStmt->fetch();
+			if($rowCountResult[0] > 0) {
+				$this->touchCache();
+			}
+			return new DalResult(
+				$stmt,
+				$this->_dal->lastInsertId(), 
+				$sql, 
+				$this->_tableName);
 		}
-		return new DalResult(
-			$stmt,
-			$this->_dal->lastInsertId(), 
-			$sql, 
-			$this->_tableName);
+		catch(PDOException $e) {
+			$this->_dal->fixError($e);
+		}
+		$tries ++;
 	}
-	catch(PDOException $e) {
-		$this->_dal->fixError($e);
-		return false;
-	}
+
+	// TODO: Throw error here... Database can't be deployed.
+	return false;
 }
 
 /**
