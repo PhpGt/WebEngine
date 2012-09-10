@@ -336,8 +336,8 @@
 		 */
 		addHelpers = function() {
 			Object.keys(helpers).map(function(key) {
-				if(!Element.prototype[key]) {
-					Element.prototype[key] = helpers[key];
+				if(!Node.prototype[key]) {
+					Node.prototype[key] = helpers[key];
 				}
 				if(!NodeList.prototype[key]) {
 					NodeList.prototype[key] = function() {
