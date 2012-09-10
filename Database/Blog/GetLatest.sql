@@ -1,12 +1,12 @@
 select
 	`Blog_Article`.`Id`,
 	`Fk_Blog`,
+	`Fk_User`,
 	`Blog`.`Name` as `BlogName`,
 	`Title`,
-	`Dt_Created`,
-	`Dt_Publish`,
-	`Dt_Publish_End`,
-	`Fk_User`,
+	`Blog_Article`.`Dt_Created`,
+	`Blog_Article`.`Dt_Publish`,
+	`Blog_Article`.`Dt_Publish_End`,
 	concat_ws(' ', `User`.`FirstName`, `User`.`LastName`
 	)as `UserFullName`,
 	`Content`,
@@ -15,7 +15,7 @@ select
 	`Is_Featured`
 from `Blog_Article`
 inner join (`Blog`)
-	on `Blog.Id` = `Fk_Blog`,
+	on `Blog`.`Id` = `Fk_Blog`
 left join (`Blog_Article__J__Blog_Tag`)
 	on `Blog_Article__J__Blog_Tag`.`Fk_Blog_Article` = `Blog_Article`.`Id`
 left join (`Blog_Tag`)

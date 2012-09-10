@@ -20,7 +20,7 @@ $attrArray  = null,
 $value      = null) {
 	$this->_dom = $dom;
 
-	if($element instanceof DOMElement) {
+	if($element instanceof DOMNode) {
 		$this->node = $element;
 	}
 	else if(is_string($element)) {
@@ -41,9 +41,14 @@ $value      = null) {
 		$this->text = $value;
 	}
 
-	$this->_tagName = $this->node->tagName;
-	$this->_class = $this->node->getAttribute("class");
-	$this->_id = $this->node->getAttribute("id");
+	if($this->node instanceof DOMElement) {
+		$this->_tagName = $this->node->tagName;
+		$this->_class = $this->node->getAttribute("class");
+		$this->_id = $this->node->getAttribute("id");
+	}
+	else {
+		$this->_tagName = "TEXTNODE";
+	}
 	$this->_contents = $this->node->nodeValue;
 }
 
@@ -423,6 +428,9 @@ public function removeClass($className) {
  * TODO: Docs.
  */
 public function hasClass($className) {
+	if(!$this->node instanceof DOMElement) {
+		return false;
+	}
 	$stringArray = array();
 
 	if(is_array($className)) {
@@ -502,18 +510,22 @@ public function __get($key) {
 	case "text":
 		return $this->node->nodeValue;
 		break;
-	default: 
+	default:
 		if(property_exists($this->node, $key)) {
 			// Attempt to never pass a native DOMElement without converting
 			// to DomEl wrapper class.
-			if($this->node->$key instanceof DOMELement) {
+			if($this->node->$key instanceof DOMNode) {
 				return $this->_dom->create($this->node->$key);
 			}
 			return $this->node->$key;
 		}
-		else if($this->node->hasAttribute($key)) {
-			return $this->node->getAttribute($key);
+		else if($this->node instanceof DOMElement) {
+			if($this->node->hasAttribute($key)) {
+				return $this->node->getAttribute($key);
+			}
 		}
+		
+		return null;
 		break;
 	}
 }
@@ -547,7 +559,12 @@ public function __set($key, $value) {
 			$newNode = $newNode->node;
 		}
 
-		$this->node->appendChild($newNode);
+		$nodesToAdd = $newNode->firstChild->childNodes;
+		for($i = 0; $i < $nodesToAdd->length; $i++) {
+			$add = $nodesToAdd->item($i)->cloneNode(true);
+			$this->node->appendChild($add);
+		}
+
 		$tempDom = null;
 		break;
 	case "innerText":

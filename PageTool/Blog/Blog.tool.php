@@ -26,10 +26,10 @@ public function go($api, $dom, $template, $tool) {
 	$dom["div#blogContent"]->html = $blog["Content"];
 }
 
-public function getUrl($blogObj) {
+public function getUrl($blogObj, $blogName = "Blog") {
 	$dtPublish = new DateTime($blogObj["Dt_Publish"]);
-	$url = "/Blog/";
-	$url .= $dtPublish->format("Y/M/j");
+	$url = "/$blogName/";
+	$url .= $dtPublish->format("Y/M/d");
 	$url .= "/" . $blogObj["Id"] . "-";
 	$url .= urlencode($blogObj["Title"]);
 	$url .= ".html";

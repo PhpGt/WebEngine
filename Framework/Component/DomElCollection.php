@@ -95,8 +95,6 @@ public function __call($name, $args) {
 * @return mixed The value of the requested property.
 */
 public function __get($key) {
-	$key = strtolower($key);
-
 	switch($key) {
 	case "length":
 		$this->checkElementsInDom();
