@@ -221,7 +221,7 @@
 						return n;
 					}
 				}
-				return false;
+				return null;
 			},
 			"prev": function() {
 				var p = this;
@@ -231,7 +231,27 @@
 						return p;
 					}
 				}
-				return false;
+				return null;
+			},
+			"first": function() {
+				var el = this.firstChild;
+				while(el) {
+					if(el instanceof HTMLElement) {
+						return el;
+					}
+					el = el.nextSibling;
+				}
+				return null;
+			},
+			"last": function() {
+				var el = this.lastChild;
+				while(el) {
+					if(el instanceof HTMLElement) {
+						return el;
+					}
+					el = el.previousSibling;
+				}
+				return null;
 			},
 			"replace": function(element) {
 				var prev = this.prev(),
