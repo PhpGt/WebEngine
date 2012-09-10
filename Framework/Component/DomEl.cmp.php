@@ -244,6 +244,9 @@ $attrArray = array(), $textKey = null) {
 */
 public function remove() {
 	if(is_null($this->node->parentNode)) {
+		// TODO: How can this ever be possible? (It is ... but doesn't seem to
+		// break anything if ignored.) NEEDS TEST CASE.
+		return;
 		echo("Error: Node has no parent!");
 		var_dump($this->node->tagName);die();
 	}
