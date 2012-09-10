@@ -109,6 +109,9 @@ public function __construct($config) {
 		// For example: /Shop/NewItems/Item-1.html will become array(
 		// 0 => 'Shop/NewItems', 1 => 'Shop')
 
+		// Reverse array so that common PageCodes are executed in tree order.
+		$pcDirArray = array_reverse($pcDirArray);
+
 		foreach ($pcDirArray as $pcDir) {
 			$pcCommonPath  = APPROOT . DS . "PageCode" . DS . $pcDir . DS;
 			$pcCommonFile  = "_Common.php";
