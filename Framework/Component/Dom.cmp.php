@@ -217,8 +217,14 @@ public function template($attribute = "data-template") {
 
 	for($i = 0; $i < $domNodeListLength; $i++) {
 		$item = $domNodeList->item($i);
-		$domNodeArray[$item->getAttribute($attribute)] = 
-			new DomEl($this, $item);
+		$attr = $item->getAttribute($attribute);
+		if(isset($domNodeArray[$attr])) {
+			$item->parentNode->removeChild($item);
+		}
+		else {
+			$domNodeArray[$attr] = 
+				new DomEl($this, $item);
+		}
 	}
 
 	$domNodeCollection = new DomElCollection($this, $domNodeArray);
