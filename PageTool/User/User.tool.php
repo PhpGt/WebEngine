@@ -1,5 +1,5 @@
 <?php class User_PageTool extends PageTool {
-private $_domainWhiteList = array("*");
+private $_domainWhiteList = array();
 
 public function go($api, $dom, $template, $tool) {
 	if(empty($_COOKIE["PhpGt_Track"])) {
@@ -60,6 +60,8 @@ public function get() {
 public function auth($method = "Google") {
 	$oid = new OpenId_Utility($method);
 	$username = $oid->getData();
+	// TODO: If not in white list, display plain white PHP.Gt message
+	// on error 403 page. Provide mechanism to use different account.
 	if(!$this->checkWhiteList($username) 
 	|| empty($username)) {
 		$this->unAuth();
@@ -93,22 +95,28 @@ public function addWhiteList($whiteList) {
 }
 
 public function checkWhiteList($username) {
+	// If there is no whitelist, allow all.
+	if(empty($this->_domainWhiteList)) {
+		$this->addWhiteList("*");
+	}
+
+	$result = false;
+
 	foreach ($this->_domainWhiteList as $white) {
 		if (preg_match("/^\/.*\/[a-zA-Z]?$/", $white)) {
 			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
 			// false on error - note !==).
-			if(preg_match($white, $username) <= 0) {
-				return false;
+			if(preg_match($white, $username) > 0) {
+				$result = true;
 			}
 		}
 		else if(is_string($white)) {
-			if(!fnmatch($white, $username)) {
-				return false;
+			if(fnmatch($white, $username)) {
+				$result = true;
 			}
 		}
 	}
-	// No mismatches have been found - allow this user to authenticate!
-	return true;
+	return $result;
 }
 
 /**
