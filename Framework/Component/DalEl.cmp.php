@@ -46,6 +46,9 @@ private function query($sqlFile, $paramArray = array()) {
 	$sql = file_get_contents($sqlFile);
 
 	foreach ($paramArray as $key => $value) {
+		if($value === "null") {
+			$value = null;
+		}
 		unset($paramArray[$key]);
 		$key = ":" . $key;
 		$paramArray[$key] = $value;

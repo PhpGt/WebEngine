@@ -46,7 +46,7 @@ public function __construct($config) {
 		}
 		if(class_exists($className)) {
 			$this->api = new $className();
-			$data = $_GET;
+			$data = $_REQUEST;
 			if(isset($data["url"])) {
 				unset($data["url"]);
 			}
