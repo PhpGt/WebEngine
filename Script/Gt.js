@@ -153,7 +153,7 @@
 		 * targets modern browsers, so doesn't aim to provide cross-old-browser
 		 * support.
 		 */
-		helpers = {
+		domHelpers = {
 			"addEventListener": function(name, callback, useCapture) {
 				var useCapture = useCapture || false,
 					i;
@@ -268,6 +268,12 @@
 				}
 				this.remove();
 			},
+			"getValue": function() {
+				return this.value;
+			},
+			"isChecked": function() {
+				return this.checked;
+			},
 			// TODO: BUG: Getting the parent via selector gets all elements
 			// of a matching selector, so obtains elements that aren't actually
 			// the parent, but have a common ancestor and CSS selector.
@@ -338,15 +344,59 @@
 				}
 			}
 		},
+		objHelpers = {
+			"toObject": function() {
+				var i, len, 
+					obj = {};
+				if(!this.length) {
+					throw new GT.error("Object has no length property");
+					return {};
+				}
+				len = this.length;
+				for(i = 0; i < this.length; i++) {
+					obj[i] = this[i];
+				}
+
+				return obj;
+			},
+			"merge": function(obj2) {
+				var obj1 = this,
+					obj3 = {},
+					i;
+				if(typeof(obj1) !== "object") {
+					obj1 = obj1.toObject();
+				}
+				if(typeof(obj2) !== "object") {
+					obj2 = obj2.toObject();
+				}
+
+				for(i in obj1) {
+					if(obj1.hasOwnProperty(i)) {
+						obj3[i] = obj1[i];
+					}
+				}
+				for(i in obj2) {
+					if(obj2.hasOwnProperty(i)) {
+						obj3[i] = obj2[i];
+					}
+				}
+
+				return obj3;
+			}
+		},
 		/**
 		 * Used to apply a given function to every element witin a nodeList.
 		 * Only used internally by helper functions.
 		 */
 		nodeListWrap = function(me, funcName, args) {
-			var i;
+			var i, result, tempResult;
 			for(i = 0; i < me.length; i++) {
-				me[i][funcName].apply(me[i], args);
+				tempResult = me[i][funcName].apply(me[i], args);
+				if(typeof(result) == "undefined") {
+					result = tempResult;
+				}
 			}
+			return result;
 		},
 		/**
 		 * Adds the previously defined helper functions to the prototypes of
@@ -355,19 +405,24 @@
 		 * document.getElementById("test").remove();
 		 */
 		addHelpers = function() {
-			Object.keys(helpers).map(function(key) {
+			Object.keys(domHelpers).map(function(key) {
 				if(!Node.prototype[key]) {
-					Node.prototype[key] = helpers[key];
+					Node.prototype[key] = domHelpers[key];
 				}
 				if(!NodeList.prototype[key]) {
 					NodeList.prototype[key] = function() {
-						nodeListWrap(this, key, arguments);
+						return nodeListWrap(this, key, arguments);
 					};
 				}
 				if(!Array.prototype[key]) {
 					Array.prototype[key] = function() {
-						nodeListWrap(this, key, arguments);
+						return nodeListWrap(this, key, arguments);
 					}
+				}
+			});
+			Object.keys(objHelpers).map(function(key) {
+				if(!Object.prototype[key]) {
+					Object.prototype[key] = objHelpers[key];
 				}
 			});
 		};
@@ -543,15 +598,34 @@
 	 *
 	 * @param string url The url to request, with parameters in the query string
 	 * for GET and POST.
-	 * @param function callback The function to call when response is ready.
+	 * @param function|object cbOrObj The function to call when response is 
+	 * ready, or the parameters as an object.
 	 * @return XMLHttpRequest The XHR object.
 	 */
 	GT.ajax = new function(url, callback) {
-		var req = function(url, callback, method) {
+		var that = this;
+		var req = function(url, cbOrObj, method, cb) {
 			var xhr,
 				method = method.toUpperCase(),
-				obj, objLen,
-				i, key;
+				obj, objLen, objStr,
+				i, key,
+				callback = !!cb 
+					? cb
+					: cbOrObj;
+
+			if(cb) {
+				if(typeof(cbOrObj) !== "object") {
+					throw new GT.error("Invalid object parameters.");
+					return;
+				}
+				if(typeof(url) !== "string") {
+					throw new GT.error("URL must be passed as string if params "
+						+ "are passed as object");
+					return;
+				}
+				obj = cbOrObj;
+			}
+
 			if(typeof(url) !== "string") {
 				// Assume object given.
 				obj = url;
@@ -566,9 +640,25 @@
 					key = "&";
 				}
 			}
-			if(url.indexOf("?") >= 0) {
+			if(url.indexOf("?") >= 0 && !obj) {
+				// `&& !obj` makes sure this isn't done if obj is already set.
 				obj = url.substring(url.indexOf("?") + 1);
 				url = url.substring(0, url.indexOf("?"));
+			}
+			
+			// Transform obj into param string.
+			if(typeof(obj) !== "string") {
+				objStr = "";
+				for(i in obj) {
+					if(!obj.hasOwnProperty(i)) {
+						continue;
+					}
+					if(objStr.length > 0) {
+						objStr += "&";
+					}
+					objStr += i + "=" + obj[i];
+				}
+				obj = objStr;
 			}
 			
 			// Provide compatibility with older IE.
@@ -591,6 +681,7 @@
 			xhr.onreadystatechange = function() {
 				var response;
 				if(xhr.readyState === 4) {
+					that.active --;
 					if(callback) {
 						response = xhr.response;
 						// Quick and dirty JSON detection (skipping real
@@ -616,21 +707,26 @@
 			else {
 				xhr.send();
 			}
+			that.active ++;
 			return xhr;
 		};
+
+		/** The number of active HTTP requests (awaiting responses). **/
+		this.active = 0;
+
 		/**
 		 * Executes a HTTP GET request on the given URL and passes the
 		 * response to the given callback function.
 		 */
-		this.get = function(url, callback) {
-			return req(url, callback, "get");
+		this.get = function(url, cbOrObj, cb) {
+			return req(url, cbOrObj, "get", cb);
 		};
 		/**
 		 * Executes a HTTP POST request on the given URL and passes the
 		 * response to the given callback function.
 		 */
-		this.post = function(url, callback) {
-			return req(url, callback, "post");
+		this.post = function(url, cbOrObj, cb) {
+			return req(url, cbOrObj, "post", cb);
 		};
 	};
 
