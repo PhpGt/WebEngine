@@ -153,7 +153,7 @@
 		 * targets modern browsers, so doesn't aim to provide cross-old-browser
 		 * support.
 		 */
-		helpers = {
+		domHelpers = {
 			"addEventListener": function(name, callback, useCapture) {
 				var useCapture = useCapture || false,
 					i;
@@ -271,6 +271,9 @@
 			"getValue": function() {
 				return this.value;
 			},
+			"isChecked": function() {
+				return this.checked;
+			},
 			// TODO: BUG: Getting the parent via selector gets all elements
 			// of a matching selector, so obtains elements that aren't actually
 			// the parent, but have a common ancestor and CSS selector.
@@ -341,6 +344,46 @@
 				}
 			}
 		},
+		objHelpers = {
+			"toObject": function() {
+				var i, len, 
+					obj = {};
+				if(!this.length) {
+					throw new GT.error("Object has no length property");
+					return {};
+				}
+				len = this.length;
+				for(i = 0; i < this.length; i++) {
+					obj[i] = this[i];
+				}
+
+				return obj;
+			},
+			"merge": function(obj2) {
+				var obj1 = this,
+					obj3 = {},
+					i;
+				if(typeof(obj1) !== "object") {
+					obj1 = obj1.toObject();
+				}
+				if(typeof(obj2) !== "object") {
+					obj2 = obj2.toObject();
+				}
+
+				for(i in obj1) {
+					if(obj1.hasOwnProperty(i)) {
+						obj3[i] = obj1[i];
+					}
+				}
+				for(i in obj2) {
+					if(obj2.hasOwnProperty(i)) {
+						obj3[i] = obj2[i];
+					}
+				}
+
+				return obj3;
+			}
+		},
 		/**
 		 * Used to apply a given function to every element witin a nodeList.
 		 * Only used internally by helper functions.
@@ -362,9 +405,9 @@
 		 * document.getElementById("test").remove();
 		 */
 		addHelpers = function() {
-			Object.keys(helpers).map(function(key) {
+			Object.keys(domHelpers).map(function(key) {
 				if(!Node.prototype[key]) {
-					Node.prototype[key] = helpers[key];
+					Node.prototype[key] = domHelpers[key];
 				}
 				if(!NodeList.prototype[key]) {
 					NodeList.prototype[key] = function() {
@@ -375,6 +418,11 @@
 					Array.prototype[key] = function() {
 						return nodeListWrap(this, key, arguments);
 					}
+				}
+			});
+			Object.keys(objHelpers).map(function(key) {
+				if(!Object.prototype[key]) {
+					Object.prototype[key] = objHelpers[key];
 				}
 			});
 		};
