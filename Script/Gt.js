@@ -547,6 +547,7 @@
 	 * @return XMLHttpRequest The XHR object.
 	 */
 	GT.ajax = new function(url, callback) {
+		var that = this;
 		var req = function(url, callback, method) {
 			var xhr,
 				method = method.toUpperCase(),
@@ -591,6 +592,7 @@
 			xhr.onreadystatechange = function() {
 				var response;
 				if(xhr.readyState === 4) {
+					that.active --;
 					if(callback) {
 						response = xhr.response;
 						// Quick and dirty JSON detection (skipping real
@@ -616,8 +618,13 @@
 			else {
 				xhr.send();
 			}
+			that.active ++;
 			return xhr;
 		};
+
+		/** The number of active HTTP requests (awaiting responses). **/
+		this.active = 0;
+
 		/**
 		 * Executes a HTTP GET request on the given URL and passes the
 		 * response to the given callback function.
