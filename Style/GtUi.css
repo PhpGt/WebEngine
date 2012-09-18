@@ -22,35 +22,33 @@
 	opacity: 0.2;
 }
 
-html, body {
+html, body.gtapp {
 	height: 100%;
 }
-body {
+body.gtapp {
 	position: relative;
 	overflow: hidden;
-	height: 100%;
 	font-family: "Ubuntu", Arial, sans-serif;
-	background: #fff;
 	background-image: -webkit-repeating-linear-gradient(20deg,
-	    #f4f4f4, #f4f4f4 32px, 
+	    #f8f8f8, #f8f8f8 32px, 
 	    #ffffff 32px, #ffffff 60px);
 }
-* {
+body.app * {
 	font-family: "Ubuntu", Arial, sans-serif;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
 	cursor: default;
 }
-input,
-textarea,
-pre {
+body.gtapp input,
+body.gtapp textarea,
+body.gtapp pre {
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	user-select: text;
 	cursor: text;
 }
-body > header {
+body.gtapp > header {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -71,14 +69,14 @@ body > header {
 		/* outer shadow */
 		rgba(0, 0, 0, 0.2) 0 2px 5px;
 }
-body > header h1 {
+body.gtapp > header h1 {
 	font-weight: normal;
 	font-size: 32px;
 	margin-top: 12px;
 	margin-left: 32px;
 	color: #666;
 }
-body > header input.globalSearch {
+body.gtapp > header input.globalSearch {
 	position: absolute;
 	top: 8px;
 	left: 200px;
@@ -90,24 +88,24 @@ body > header input.globalSearch {
 	opacity: 0.5;
 	background: transparent;
 }
-body > header input.globalSearch:hover,
-body > header input.globalSearch:focus {
+body.gtapp > header input.globalSearch:hover,
+body.gtapp > header input.globalSearch:focus {
 	opacity: 1;
 }
-body > header input.globalSearch::-webkit-input-placeholder {
+body.gtapp > header input.globalSearch::-webkit-input-placeholder {
 	color: #666;
 }
-body > header input.globalSearch::-moz-input-placeholder {
+body.gtapp > header input.globalSearch::-moz-input-placeholder {
 	color: #666;
 }
 
-body > header button.proto {
-	position: absolute;
-	top: 12px;
-	right: 32px;
+body.gtapp > header > button {
+	float: right;
+	margin-top: 12px;
+	margin-right: 32px;
 }
 
-body > footer {
+body.gtapp > footer {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
@@ -119,36 +117,37 @@ body > footer {
 	    #f4f4f4, #f4f4f4 2px, 
 	    #ffffff 2px, #ffffff 6px);
 }
-body > footer.active {
+body.gtapp > footer.active {
 	height: 320px;
 }
 
-body > aside {
+body.gtapp > aside {
 	position: absolute;
-	top: 64px;
+	top: 0;
+	left: 0;
 	width: 300px;
 	z-index: 100;
 }
-body > aside > select {
-	margin: 8px 32px;
+body.gtapp > aside > select {
+	margin: 14px 32px;
 	font-size: 32px;
 	color: #67aae0;
 	background: transparent;
 	border: none;
 }
-body > aside > select option {
+body.gtapp > aside > select option {
 	text-align: center;
 	color: #67aae0;
 }
 
-body > aside > nav {
+body.gtapp > aside > nav {
 	margin-top: 58px;
 }
-body > aside > nav.alignTop {
+body.gtapp > aside > nav.alignTop {
 	margin-top: 3px;
 }
 
-body > aside > nav > ul {
+body.gtapp > aside > nav > ul {
 	background: rgba(255, 255, 255, 0.95);
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-left: none;
@@ -164,43 +163,43 @@ body > aside > nav > ul {
 		rgba(0, 0, 0, 0.2) 0 2px 5px;
 	overflow: hidden;
 }
-body > aside > nav ul li {
+body.gtapp > aside > nav ul li {
 	position: relative;
 }
-body > aside > nav ul li a {
+body.gtapp > aside > nav ul li a {
 	display: block;
 	text-decoration: none;
 	color: #36393d;
 	padding: 16px 0 16px 32px;
 }
-body > aside > nav ul li a:hover {
+body.gtapp > aside > nav ul li a:hover {
 	text-decoration: underline;
 	background: #F2FFF5;
 }
-body > aside > nav ul li a:hover * {
+body.gtapp > aside > nav ul li a:hover * {
 	text-decoration: underline
 }
-body > aside > nav > ul > li.selected > a,
-body > aside > nav > ul > li > a:active {
+body.gtapp > aside > nav > ul > li.selected > a,
+body.gtapp > aside > nav > ul > li > a:active {
 	background: #00ba35;
 	color: #fff;
 }
-body > aside > nav > ul > li > a {
+body.gtapp > aside > nav > ul > li > a {
 	font-weight: bold;
 	font-size: 12px;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
-body > aside > nav > ul > li ul {
+body.gtapp > aside > nav > ul > li ul {
 	overflow: hidden;
 	height: 0;
 }
-body > aside > nav > ul > li.open {
+body.gtapp > aside > nav > ul > li.open {
 }
-body > aside > nav > ul > li.open ul {
+body.gtapp > aside > nav > ul > li.open ul {
 	border-right: 4px solid #00ba35;
 	height: auto;
 }
-body > aside > nav > ul > li.tree::before {
+body.gtapp > aside > nav > ul > li.tree::before {
 	position: absolute;
 	content: "►";
 	font-size: 12px;
@@ -209,63 +208,57 @@ body > aside > nav > ul > li.tree::before {
 	color: #36393d;
 	opacity: 0.25;
 }
-body > aside > nav > ul > li.tree.open::before {
+body.gtapp > aside > nav > ul > li.tree.open::before {
 	position: absolute;
 	content: "▼";
 	opacity: 1;
 }
 
-body > aside > nav > ul > li ul li a {
+body.gtapp > aside > nav > ul > li ul li a {
 	font-weight: normal;
 	font-size: 12px;
 	padding: 8px 0 8px 32px;
 	border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
 }
 
-body > aside > nav > ul li a h1 {
+body.gtapp > aside > nav > ul li a h1 {
 	display: inline-block;
 }
-body > aside > nav > ul li a span {
+body.gtapp > aside > nav > ul li a span {
 	font-weight: normal;
 	float: right;
 	margin-right: 32px;
 }
 
-body > aside > nav > ul li i {
+body.gtapp > aside > nav > ul li i {
 	float: right;
 	padding-right: 8px;
 	text-decoration: none !important;
 }
 
-div#main {
+body.gtapp div#main {
 	position: absolute;
 	top: 68px;
-	left: 284px;
+	left: 0;
 	right: 0;
 	bottom: 26px;
-	padding-top: 32px;
-	padding-bottom: 32px;
-	background: rgba(255, 255, 255, 0.8);
-	padding-left: 48px;
-	box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-	overflow-y: auto;
 }
-div.noSidebar#main {
+body.gtapp div.noSidebar#main {
 	left: 0; 
 }
 
-div#main h1 {
+body.gtapp div#main h1 {
 	font-size: 32px;
 	font-weight: normal;
-	margin-bottom: 32px;
+	/*margin-bottom: 32px;*/
 }
 
-div#main p {
+body.gtapp div#main p {
 	margin-bottom: 16px;
 }
 
-button,
-a.button {
+body.gtapp button,
+body.gtapp a.button {
 	position: relative;
 	display: inline-block;
 	font-size: 12px;
@@ -292,8 +285,8 @@ a.button {
 	
 	color: #666 !important;
 }
-button:focus,
-a.button.focus {
+body.gtapp button:focus,
+body.gtapp a.button.focus {
 	box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
 		inset rgba(0, 0, 0, 0.2) 0 -1px 1px,
 		/* inner shadow */ 
@@ -303,8 +296,8 @@ a.button.focus {
 		/* colour border */
 		#00ba35 0 0 0 4px !important;
 }
-button:hover,
-a.button:hover {
+body.gtapp button:hover,
+body.gtapp a.button:hover {
 	color: #444 !important;
 
 	box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
@@ -314,16 +307,16 @@ a.button:hover {
 		/* outer shadow */
 		rgba(0, 0, 0, 0.2) 0 2px 10px;
 }
-button::before,
-a.button::before {
+body.gtapp button::before,
+body.gtapp a.button::before {
 	position: absolute;
 	left: 10px;
 	content: attr(data-icon);
 	font-size: 18px;
 }
 
-button:active,
-a.button:active {
+body.gtapp button:active,
+body.gtapp a.button:active {
 	color: #444 !important;
 
 	-webkit-transform: translateY(1px);
@@ -334,18 +327,18 @@ a.button:active {
 		/* color border */
 		rgba(0, 0, 0, 0.2) 0 2px 10px;
 }
-button[data-icon],
-a.button[data-icon] {
+body.gtapp button[data-icon],
+body.gtapp a.button[data-icon] {
 	min-width: 0;
 	padding-left: 32px;
 	padding-right: 16px;
 	text-align: left;
 }
-button.small {
+body.gtapp button.small {
 	min-width: 36px;
 }
 
-div#user {
+body.gtapp div#user {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -353,18 +346,18 @@ div#user {
 	opacity: 0.5;
 	-webkit-transition: opacity 0.2s ease-in-out;
 }
-div#user:hover {
+body.gtapp div#user:hover {
 	opacity: 1;
 }
-div#user * {
+body.gtapp div#user * {
 	cursor: pointer;
 }
-div#user label {
+body.gtapp div#user label {
 	font-size: 12px;
 	color: #666;
 	padding-left: 32px;
 }
-div#user button.avatar {
+body.gtapp div#user button.avatar {
 	overflow: visible;
 	min-width: 0;
 	margin-top: 14px;
@@ -377,7 +370,7 @@ div#user button.avatar {
 	-webkit-box-shadow: none;
 	vertical-align: middle;
 }
-div#user button.avatar::after {
+body.gtapp div#user button.avatar::after {
 	position: absolute;
 	content: "▾";
 	width: 32px;
@@ -387,11 +380,11 @@ div#user button.avatar::after {
 	left: 16px;
 	opacity: 0;
 }
-div#user:hover button.avatar::after {
+body.gtapp div#user:hover button.avatar::after {
 	opacity: 1;
 }
 
-input {
+body.gtapp input {
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-radius: 2px;
 	padding: 4px;
@@ -402,8 +395,8 @@ input {
 		/* outer shadow */
 		rgba(0, 0, 0, 0.2) 0 2px 10px;
 }
-input:focus,
-textarea:focus {
+body.gtapp input:focus,
+body.gtapp textarea:focus {
 	box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
 		inset rgba(0, 0, 0, 0.2) 0 -1px 1px,
 		/* outer shadow */
@@ -412,7 +405,7 @@ textarea:focus {
 		rgba(0, 186, 53, 1.0) 0 0 0 4px !important;
 }
 
-body > aside input {
+body.gtapp body > aside input {
 	width: 180px;
 	margin: 0 5px;
 }
