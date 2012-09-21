@@ -59,14 +59,6 @@ header, footer, section, article, aside {
    clear: both;
 }
 
-body.app p,
-body.app span,
-body.app h1,body.app h2,body.app h3,body.app h4,body.app h5,body.app h6,
-body.app a {
-   -webkit-user-select: none; 
-   cursor: default;
-}
-
 input, textarea, pre {
    cursor: text;
    -webkit-user-select: text;
