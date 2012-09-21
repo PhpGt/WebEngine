@@ -271,6 +271,18 @@
 			"getValue": function() {
 				return this.value;
 			},
+			"setValue": function(val) {
+				this.value = val;
+			},
+			"getAttribute": function(attr) {
+				return this.getAttribute(attr);
+			},
+			"setAttribute": function(attr, val) {
+				return this.setAttribute(attr, val);
+			},
+			"removeAttribute": function(attr) {
+				return this.removeAttribute(attr);
+			},
 			"isChecked": function() {
 				return this.checked;
 			},
