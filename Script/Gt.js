@@ -681,7 +681,7 @@
 				xhr = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-			if(method === "POST") {
+			if(method !== "GET") {
 				xhr.open(method, url, true);
 				xhr.setRequestHeader(
 					"Content-Type", "application/x-www-form-urlencoded");
@@ -713,7 +713,7 @@
 				}
 			};
 
-			if(method === "POST") {
+			if(method !== "GET") {
 				xhr.send(obj);
 			}
 			else {
@@ -726,19 +726,17 @@
 		/** The number of active HTTP requests (awaiting responses). **/
 		this.active = 0;
 
-		/**
-		 * Executes a HTTP GET request on the given URL and passes the
-		 * response to the given callback function.
-		 */
 		this.get = function(url, cbOrObj, cb) {
 			return req(url, cbOrObj, "get", cb);
 		};
-		/**
-		 * Executes a HTTP POST request on the given URL and passes the
-		 * response to the given callback function.
-		 */
 		this.post = function(url, cbOrObj, cb) {
 			return req(url, cbOrObj, "post", cb);
+		};
+		this.put = function(url, cbOrObj, cb) {
+			return req(url, cbOrObj, "put", cb);
+		};
+		this.delete = function(url, cbOrObj, cb) {
+			return req(url, cbOrObj, "delete", cb);
 		};
 	};
 
