@@ -218,6 +218,7 @@ public function template($attribute = "data-template") {
 	for($i = 0; $i < $domNodeListLength; $i++) {
 		$item = $domNodeList->item($i);
 		$attr = $item->getAttribute($attribute);
+		$item->removeAttribute($attribute);
 		if(isset($domNodeArray[$attr])) {
 			$item->parentNode->removeChild($item);
 		}
