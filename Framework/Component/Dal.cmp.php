@@ -43,6 +43,9 @@ public function __destruct() {
  * per application.
  */
 public function connect() {
+	if(!is_null($this->_dbh)) {
+		return;
+	}
 	try {
 		$this->_dbh = new PDO(
 			$this->_config["ConnectionString"],
@@ -219,8 +222,7 @@ public function fixError($input) {
 	default:
 		$this->_dbDeploy->error = "Error in SQL.";
 		// TODO: Throw proper error at this point.
-		var_dump($input);
-		die("Error in SQL.");
+		die("PDO error: " . $message);
 		break;
 	}
 }

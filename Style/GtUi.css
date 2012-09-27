@@ -25,7 +25,7 @@ body.gtapp {
 	overflow: hidden;
 	font-family: "Ubuntu", Arial, sans-serif;
 	background-image: -webkit-repeating-linear-gradient(20deg,
-	    #f8f8f8, #f8f8f8 32px, 
+	    #fafafa, #fafafa 32px, 
 	    #ffffff 32px, #ffffff 60px);
 }
 body.gtapp * {
@@ -46,7 +46,6 @@ body.gtapp > header {
 	position: relative;
 	display: -webkit-box;
 	height: 64px;
-	overflow: hidden;
 }
 body.gtapp > header:not(.undiscovered) {
 	border: 1px solid rgba(0, 0, 0, 0.2);
@@ -74,6 +73,7 @@ body.gtapp > header > div.organisation h1 {
 	font-size: 24px;
 	font-weight: normal;
 	padding: 14px;
+	padding-right: 8px;
 	padding-top: 20px;
 	z-index: 50;
 }
@@ -82,47 +82,30 @@ body.gtapp > header > div.organisation h1 a {
 	text-decoration: none;
 	color: #666;
 }
-body.gtapp > header > div.organisation:hover a {
+body.gtapp > header > div.organisation h1:hover a {
 	text-decoration: underline;
-}
-body.gtapp > header > div.organisation > button {
-	float: left;
-	margin-top: 14px;
-	z-index: 100;
-	background: transparent;
-	border-color: transparent;
-	box-shadow: none;
-	opacity: 0;
-}
-body.gtapp > header:hover > div.organisation > button {
-	opacity: 1;
-}
-body.gtapp > header > div.organisation select {
-	position: absolute;
-	opacity: 0;
-	top: 14px;
-	left: 0;
-	right: 0;
-	font-size: 16px;
-	z-index: 0;
-}
-body.gtapp > header > div.organisation button:hover + select,
-body.gtapp > header > div.organisation select:hover {
-	z-index: 150;
 }
 
 body.gtapp > header > div.centrePanel {
+	position: relative;
 	-webkit-box-flex: 1;
+	padding: 4px 0;
 }
 body.gtapp > header > div.centrePanel > div.quickList {
-	background: red;
-	height: 64px;
+	margin: 0 64px;
+	height: 54px;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	box-shadow: inset rgba(255, 255, 255, 0.6) 0 -3px 3px;
+	background: #fff;
+}
+body.gtapp > header > div.centrePanel > div.quickList:hover {
 }
 body.gtapp > header > div.centrePanel > button {
-	float: right;
+	position: absolute;
+	top: 13px;
+	right: 0;
 	min-width: 0;
 	width: 38px;
-	margin: 14px;
 }
 body.gtapp > header > div.actionButtons {
 	text-align: right;
