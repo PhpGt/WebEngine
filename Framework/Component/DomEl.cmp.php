@@ -601,6 +601,9 @@ public function __set($key, $value) {
 		}
 		// Fix for setting HTML5 date input:
 		if($this->node->getAttribute("type") == "date") {
+			if(strstr($value, "/")) {
+				$value = str_replace("/", "-", $value);
+			}
 			$dt_value = new DateTime($value);
 			$value = $dt_value->format("Y-m-d");
 		}
