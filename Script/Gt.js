@@ -83,7 +83,7 @@
 
 			// If Gt.js is being used without PHP.Gt, the original template
 			// elements will still be present in the DOM - scrape them here.
-			toScrape = GT("[data-template]");
+			/*toScrape = GT("[data-template]");
 			toScrapeLength = toScrape.length;
 
 			if(toScrape && toScrapeLength > 0) {
@@ -95,7 +95,7 @@
 				}
 
 				toScrape.remove();
-			}
+			}*/
 		},
 
 		/**
