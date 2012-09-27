@@ -623,7 +623,8 @@
 				i, key,
 				callback = !!cb 
 					? cb
-					: cbOrObj;
+					: cbOrObj,
+				qsCharacter = "?";
 
 			if(cb) {
 				if(typeof(cbOrObj) !== "object") {
@@ -681,13 +682,18 @@
 				xhr = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-			if(method !== "GET") {
+			if(method === "POST") {
 				xhr.open(method, url, true);
 				xhr.setRequestHeader(
 					"Content-Type", "application/x-www-form-urlencoded");
 			}
 			else {
-				xhr.open(method, url + "?" + obj, true);
+				// Change qsCharacter to & if there is already a ? in the URL
+				// (as there is when using a proxy).
+				if(url.indexOf("?") >= 0) {
+					qsCharacter = "&";
+				}
+				xhr.open(method, url + qsCharacter + obj, true);
 			}
 
 			xhr.onreadystatechange = function() {
@@ -713,7 +719,7 @@
 				}
 			};
 
-			if(method !== "GET") {
+			if(method === "POST") {
 				xhr.send(obj);
 			}
 			else {

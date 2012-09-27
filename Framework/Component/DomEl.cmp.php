@@ -599,6 +599,11 @@ public function __set($key, $value) {
 			$this->node->nodeValue = $value;
 			break;
 		}
+		// Fix for setting HTML5 date input:
+		if($this->node->getAttribute("type") == "date") {
+			$dt_value = new DateTime($value);
+			$value = $dt_value->format("Y-m-d");
+		}
 		$this->node->setAttribute($key, $value);
 		break;
 	default:

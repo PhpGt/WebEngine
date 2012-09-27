@@ -77,6 +77,12 @@ public function __construct($response, $config) {
 		$dom,
 		$templateWrapper,
 		$toolWrapper);
+	$response->dispatch(
+		"endGo",
+		$apiWrapper,
+		$dom,
+		$templateWrapper,
+		$toolWrapper);
 
 	$dom->templateOutput($templateWrapper);
 	$dom->flush();
