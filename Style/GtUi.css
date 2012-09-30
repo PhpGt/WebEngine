@@ -92,10 +92,11 @@ body.gtapp > header > div.centrePanel {
 	padding: 4px 0;
 }
 body.gtapp > header > div.centrePanel > div.quickList {
-	margin: 0 64px;
-	height: 54px;
-	border: 1px solid rgba(0, 0, 0, 0.05);
-	box-shadow: inset rgba(255, 255, 255, 0.6) 0 -3px 3px;
+	margin: 2px 64px;
+	height: 50px;
+	border: 1px solid rgba(0, 0, 0, 0.0);
+	border-radius: 4px;
+	box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
 	background: #fff;
 }
 body.gtapp > header > div.centrePanel > div.quickList:hover {
@@ -119,23 +120,6 @@ body.gtapp > header > div.actionButtons button {
 	text-align: left;
 	padding-left: 14px;
 	padding-right: 38px;
-}
-body.gtapp > header > div.actionButtons button::before {
-	position: absolute;
-	display: block;
-	content: "";
-	top: 4px;
-	bottom: 4px;
-	left: 0;
-	right: 24px;
-	border-right: 1px solid rgba(0, 0, 0, 0.2);
-}
-body.gtapp > header > div.actionButtons button::after {
-	position: absolute;
-	display: block;
-	content: "▼";
-	top: 1px;
-	right: 6px;
 }
 
 body.gtapp > footer {
@@ -283,6 +267,7 @@ body.gtapp button,
 body.gtapp a.button,
 body.gtapp select,
 body.gtapp label.button {
+	z-index: 0;
 	-webkit-appearance: none;
 	position: relative;
 	display: inline-block;
@@ -341,7 +326,7 @@ body.gtapp a.button::before {
 	font-size: 18px;
 }
 
-body.gtapp button:active,
+body.gtapp button:active:not(.active),
 body.gtapp a.button:active {
 	color: #444 !important;
 
@@ -363,6 +348,75 @@ body.gtapp a.button[data-icon] {
 body.gtapp button.icon,
 body.gtapp a.button.icon {
 	min-width: 36px;
+}
+
+body.gtapp button.dropdown::before {
+	position: absolute;
+	display: block;
+	content: "";
+	top: 4px;
+	bottom: 4px;
+	left: 0;
+	right: 24px;
+	border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+body.gtapp button.dropdown::after {
+	position: absolute;
+	display: block;
+	content: "▼";
+	top: 1px;
+	right: 6px;
+}
+body.gtapp button.dropdown.active::after {
+	content: "▲";
+}
+
+body.gtapp button.dropdown.active {
+	z-index: 1000;
+}
+
+body.gtapp button.dropdown div.menu {
+	z-index: 1000;
+	position: absolute;
+	top: 30px;
+	right: -1px;
+	min-width: 128px;
+	min-height: 32px;
+
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	border-top: 1px solid transparent;
+	border-radius: 4px;
+	border-top-right-radius: 0;
+	
+	box-shadow:  
+		inset rgba(0, 0, 0, 0.2) 0 -1px 1px;;
+
+	background-color: #f0f0f0;	
+	color: #666;
+}
+body.gtapp button.dropdown div.menu::before {
+	z-index: -1000;
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	box-shadow: rgba(0, 0, 0, 0.4) 0 0 1px,
+		rgba(0, 0, 0, 0.2) 0 0 5px;
+}
+body.gtapp button.dropdown div.menu::after {
+	content: "";
+	position: absolute;
+	top: -2px;
+	right: -1px;
+	border-right: 1px solid rgba(0, 0, 0, 0.2);
+	width: 0;
+	height: 4px;
+	background: #f0f0f0;
+}
+body.gtapp button.dropdown div.menu * {
+	z-index: 1010;
 }
 
 body.gtapp select {
