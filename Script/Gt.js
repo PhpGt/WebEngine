@@ -629,7 +629,8 @@
 	 * @param string url The url to request, with parameters in the query string
 	 * for GET and POST.
 	 * @param function|object cbOrObj The function to call when response is 
-	 * ready, or the parameters as an object.
+	 * ready, an object containing Load, Error and Progress callbacks, or the
+	 * parameters to send as an object.
 	 * @return XMLHttpRequest The XHR object.
 	 */
 	GT.ajax = new function(url, callback) {
@@ -678,18 +679,21 @@
 			}
 			
 			// Transform obj into param string.
-			if(typeof(obj) !== "string") {
-				objStr = "";
-				for(i in obj) {
-					if(!obj.hasOwnProperty(i)) {
-						continue;
+			if(method === "GET"
+			|| method === "DELETE") {
+				if(typeof(obj) !== "string") {
+					objStr = "";
+					for(i in obj) {
+						if(!obj.hasOwnProperty(i)) {
+							continue;
+						}
+						if(objStr.length > 0) {
+							objStr += "&";
+						}
+						objStr += i + "=" + obj[i];
 					}
-					if(objStr.length > 0) {
-						objStr += "&";
-					}
-					objStr += i + "=" + obj[i];
-				}
-				obj = objStr;
+					obj = objStr;
+				}				
 			}
 			
 			// Provide compatibility with older IE.
@@ -700,7 +704,8 @@
 				xhr = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-			if(method === "POST") {
+			if(method === "POST"
+			|| method === "PUT") {
 				xhr.open(method, url, true);
 				xhr.setRequestHeader(
 					"Content-Type", "application/x-www-form-urlencoded");
@@ -714,30 +719,40 @@
 				xhr.open(method, url + qsCharacter + obj, true);
 			}
 
+			if("progress" in callback) {
+				xhr.addEventListener("progress", callback.progress);
+			}
+			if("error" in callback) {
+				xhr.addEventListener("error", callback.error);
+			}
 			xhr.onreadystatechange = function() {
 				var response;
 				if(xhr.readyState === 4) {
 					that.active --;
-					if(callback) {
-						response = xhr.response;
-						// Quick and dirty JSON detection (skipping real
-						// detection).
-						if(xhr.response[0] === "{" || xhr.response[0] === "[") {
-							// Real JSON detection (slower).
-							try {
-								response = JSON.parse(xhr.response);
-							}
-							catch(e) {}
+					response = xhr.response;
+					// Quick and dirty JSON detection (skipping real
+					// detection).
+					if(xhr.response[0] === "{" || xhr.response[0] === "[") {
+						// Real JSON detection (slower).
+						try {
+							response = JSON.parse(xhr.response);
 						}
+						catch(e) {}
+					}
+
+					if(typeof(callback) === "function") {
 						// Call the callback function, passing the response. If
 						// response is in JSON format, the response will
 						// automatically be parsed into an Object.
 						callback(response, xhr);
+					} else if("load" in callback) {
+						callback.load(response, xhr);
 					}
 				}
 			};
 
-			if(method === "POST") {
+			if(method === "POST"
+			|| method === "PUT") {
 				xhr.send(obj);
 			}
 			else {
