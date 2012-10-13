@@ -704,11 +704,13 @@
 				xhr = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
+			if(method === "POST") {
+				xhr.setRequestHeader(
+					"Content-Type", "application/x-www-form-urlencoded");
+			}
 			if(method === "POST"
 			|| method === "PUT") {
 				xhr.open(method, url, true);
-				xhr.setRequestHeader(
-					"Content-Type", "application/x-www-form-urlencoded");
 			}
 			else {
 				// Change qsCharacter to & if there is already a ? in the URL
