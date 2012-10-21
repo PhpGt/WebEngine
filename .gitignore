@@ -2,3 +2,4 @@ www/*
 !www/*.php
 Cache
 Upload
+PHP.Gt.sublime-*
