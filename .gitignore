@@ -1,0 +1,4 @@
+www/*
+!www/*.php
+Cache
+Upload
