@@ -1,26 +1,37 @@
 <?php function __autoload($className) {
 /**
-* Utilities are small and uncommon code libraries. Typically, a utility does not
-* complete a single task on its own, otherwise it would be classed as a 'tool'.
-* Autoloading is not heavily relied upon within PHP.Gt as there is usually a 
-* logical location for all files to reside, but generic utilities are an
-* exception. Because utilities are uncommonly used (otherwise they would become
-* PageTools), to avoid having an overhead of loading utilities, the PHP
-* autoloader is used to require the utility file.
+* Utility classes are small and uncommon code libraries. Typically, a utility
+* class does not complete a whole task on its own, otherwise it would be classed
+* as a 'tool'.
+*
+* The point in the utility classes here are to provide object-oriented
+* enhancements to PHP. Certain areas of PHP can be enhanced by wrapping in
+* objects, and new features can be introduced.
 */
+
+// ALPHA TODO: Before first beta version, remove the dependency to the old
+// Utility directory.
+$classDirArray = array(
+	APPROOT .DS . "Class" . DS . $className . DS,
+	GTROOT . DS . "Class" . DS . $className . DS 
+);
+foreach ($classDirArray as $classDir) {
+	$fileName = $className . ".class.php";
+	if(file_exists($classDir . $fileName)) {
+		require_once($classDir . $fileName);
+		return;
+	}
+}
+
 $utilityDir = GTROOT . DS . "Framework" . DS . "Utility" . DS;
 $fileName = str_replace("_", ".", $className . ".php");
 if($dh = opendir($utilityDir)) {
 	while(false !== ($file = readdir($dh)) ) {
 		if(stristr($file, $fileName)) {
-			require $utilityDir . $file;
+			require_once($utilityDir . $file);
 			break;
 		}
 	}
-}
-else {
-	// TODO: Proper error log and output.
-	die("Failed to open utility directory.");
 }
 
 }?>
