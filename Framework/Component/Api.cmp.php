@@ -81,6 +81,10 @@ public function apiCall($dal) {
 				array($this->_methodParams)
 			);
 
+			if(!$this->_dalResult) {
+				return $this->_dalResult;
+			}
+
 			$this->_result = array();
 			foreach ($this->_dalResult as $key => $value) {
 				$this->_result[$key] = $value;
