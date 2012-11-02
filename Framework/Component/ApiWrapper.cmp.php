@@ -1,13 +1,15 @@
-<?php final class ApiWrapper implements ArrayAccess {
+<?php class ApiWrapper implements ArrayAccess {
 /**
  * TODO: Docs.
  */
 
 private $_dal = null;
 private $_apiElObjects = array();	// Cache of APIs used in this request.
+private $_tool = false;
 
-public function __construct($dal) {
+public function __construct($dal, $tool = false) {
 	$this->_dal = $dal;
+	$this->_tool = $tool;
 }
 
 /**
@@ -27,7 +29,7 @@ public function offsetGet($offset) {
 
 	if(!$this->offsetExists($offset)) {
 		$this->_apiElObjects[$offset] = 
-			new ApiEl($offset, $this->_dal);
+			new ApiEl($offset, $this->_dal, $this->_tool);
 	}
 
 	return $this->_apiElObjects[$offset];

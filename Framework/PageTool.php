@@ -25,8 +25,8 @@ public function __construct($api, $dom, $template, $tool) {
 
 /**
  * Works in the same way that PageCode's go() function does.
- * @param ApiWrapper $api The object that acts as a single entry point to
- * all database manipulation. Acts as a dependency injector.
+ * @param ApiWrapper $api Used exactly like the $api variable from within
+ * PageCode, but with access to this tool's TableCollections.
  * @param Dom $dom An extended DomDocument, providing helpful functions and
  * most notably element CSS selection. Any manipulation that is made to the
  * DOM will be sent to the browser.

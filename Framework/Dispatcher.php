@@ -55,9 +55,11 @@ public function __construct($response, $config) {
 	$organiser = new FileOrganiser($config["App"]);
 
 	// Create the wrapper classes for easy access to components.
-	$apiWrapper = new ApiWrapper($dal);
 	$templateArray = $dom->template();
 	$templateWrapper = new TemplateWrapper($templateArray);
+
+	$apiWrapper = new ApiWrapper($dal);
+	$apiToolWrapper = new ApiWrapper($dal, true);
 	$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
 	// Allows the PageCode objects to have access to the important

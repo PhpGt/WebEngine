@@ -14,13 +14,12 @@ public function go($api, $dom, $template, $tool) { }
  * this: UA-12345678-1
  */
 public function track($trackingCode) {
-	$js = file_get_contents(dirname(__FILE__) . DS . "Analytics.tool.js");
+	$js = file_get_contents(dirname(__FILE__) . DS 
+		. "Script" . DS . "Analytics.tool.js");
 	if($js === false) {
 		throw new HttpError(500, "Google Analytics script failure");
 	}
 	$js = str_replace("{ANALYTICS_CODE}", $trackingCode, $js);
-
-	//$script = $this->_dom->create("script", null, $js);
 	$this->_dom["head"]->append("script", null, $js);
 }
 

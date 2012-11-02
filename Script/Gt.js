@@ -6,883 +6,334 @@
  * Documentation: http://php.gt/Docs/ClientSide/GtJs.html
  *
  * Provided as standard:
- * GT.api("Name") - manipulate the application's REST API.
- * GT.dom("selector") - obtain a reference to DOM element, with helpers.
- * GT.template("Name") - obtain a cloned DOM element, taken from the templates.
+ * GT.api("Name") - manipulate the application's API.
+ * GT.dom("selector") - obtain a reference to GTDOM element, with helpers.
+ * GT.template("Name") - obtain a cloned GTDOM element, taken from the template.
  * GT.tool("Name") - obtain an object wrapper to the JavaScript extensions of 
  * certain PHP.Gt PageTools.
  *
  * Note that the global GT object acts as a shorthand too:
  * GT(callback) - execute the callback function on the DOM ready event.
- * GT("selector") - shorthand to selecting a DOM element.
+ * GT("selector") - shorthand to selecting a GTDOM element.
  *
- * Gt.js provides helper functions on the native DOM elements, which has been
- * compatible with Google Chrom[e|ium] 10+, Mozilla Firefox 8+, Opera 11+,
- * Internet Explorer 9+. Note that if old browser support is required, the
- * helper functions should not be relied upon, and a larger library should be
- * used instead. To test your browser, visit the PHP.Gt test application in
- * the required browser. http://test.php.gt 
+ * Gt.js provides helper functions on the DOM elements by wrapping all elements
+ * within the GT.DOM namespace.
+ * Compatible with Google Chrom[e|ium] 10+, Mozilla Firefox 8+, Opera 11+,
+ * Internet Explorer 8+. 
  */
-(function() {
-		// All callbacks are queued ready for the DOM Ready event.
-	var loadQueue = [],
-		// An object hash used to store all templated HTML elements.
-		_templates = {},
-		_eventListeners = [],
-		/**
-		 * GT is the global function used throughout the library. It can be used
-		 * shorthand by passing a parameter in, or can be used as a module-based
-		 * object for exposing all Gt functionality.
-		 *
-		 * @param callback|String Either a callback function to be executed when
-		 * the DOM ready event is triggered, or a CSS selector string to obtain
-		 * a reference to.
-		 * @param HTMLElement|NodeList (Optional) The context to query the
-		 * CSS selector with.
-		 */
-		GT = function() {
-			if(typeof arguments[0] === "function") {
-				// Callback function provided, execute on DomReady event.
-				return GT.ready(arguments[0], arguments[1]);
-			}
-			if(typeof arguments[0] === "string"
-			|| arguments[0] instanceof NodeList
-			|| arguments[0] instanceof HTMLElement) {
-				// Return matching DomNodes from CSS selector, with an optional
-				// context node as second argument.
-				return GT.dom(arguments[0], arguments[1]);
-			}
-			throw new GT.error("Invalid GT parameters", arguments);
-		},
-		/**
-		 * Internal function. PHP.Gt provides all templated elements in a
-		 * special hidden div. This function picks up the contents of the div
-		 * and removes it from the page once processed. Templated elements can
-		 * then be accessed via GT.template().
-		 */
-		templateScrape = function() {
-			var toScrape, toScrapeLength,
-				tmplDiv = document.getElementById("PhpGt_Template_Elements"),
-				tmplDivNodeCount,
-				tmpl,
-				name,
-				i;
+;(function() {
+/**
+ * This function represents the function that is attached to the window as 
+ * window.GT, and also acts as a shorthand function for many of the features
+ * of this library.
+ *
+ * Pass a string, and it will be treated as a CSS selector, returning a
+ * GT.domElCollection containing all matching GT.domElement objects. The context
+ * of the selection can be passed into the second argument as any representation
+ * of DOM Elements, native or GT.
+ *
+ * Pass a function, and the function will be added to the loadQueue and invoked
+ * on the browser's DOM Ready event. A second argument can be passed in as a 
+ * string or regular expression to match on the current window.location.href.
+ * If there is no match, the function will be ignored.
+ */
+var _GT = function() {
+	if(GT.typeOf(arguments[0]) === "function") {
+		console.log("Function added.");
+		return;
+	}
+	if(GT.typeOf(arguments[0]) === "string") {
+		console.log("CSS selector");
+		return;
+	}
+	if(GT.instanceOf(arguments[0], GT.baseType("NodeList"))
+	|| GT.instanceOf(arguments[0], GT.baseType("Node")) ){
+		console.log("Returning a GT.dom.element");
+		return;
+	}
 
-			if(tmplDiv) {
-				tmplDivNodeCount = tmplDiv.children.length;
-				// 
-				for(i = 0; i < tmplDivNodeCount; i++) {
-					tmpl = tmplDiv.children[i];
-					name = tmpl.getAttribute("data-template");
-					tmpl.removeAttribute("data-template");
-					_templates[name] = tmpl;
-				}
-				// Remove the template div from the DOM.
-				tmplDiv.parentNode.removeChild(tmplDiv);
-			}
+	throw new GT.error("Invalid GT parameters.", arguments);
+},
 
-			// If Gt.js is being used without PHP.Gt, the original template
-			// elements will still be present in the DOM - scrape them here.
-			/*toScrape = GT("[data-template]");
-			toScrapeLength = toScrape.length;
+_domFunctions = {
+	"create": function(el, attrArray, value) {
+		return "CREATED ELEMENT";
+	},
+},
+_domElementFunctions = {
+	"addClass": function(className) {
+	},
+	"removeClass": function(className) {
+	},
+	"toggleClass": function(className) {
+	},
+	"hasClass": function(className) {
+	},
 
-			if(toScrape && toScrapeLength > 0) {
-				for(i = 0; i < toScrapeLength; i++) {
-					tmpl = toScrape[i];
-					name = tmpl.getAttribute("data-template");
-					tmpl.removeAttribute("data-template");
-					_templates[name] = tmpl;
-				}
+	"appendChild": function(child) {
+	},
+	"appendChildAfter": function(child) {
+	},
+	"appendChildBefore": function(child) {
+	},
 
-				toScrape.remove();
-			}*/
-		},
+	"getAttribute": function(name) {
+	},
+	"setAttribute": function(name, value) {
+	},
+	"hasAttribute": function(name) {
+	}
+},
+/**
+ * Element map functions listed here are mapped directly to functions in the
+ * _domElementFunctions object of the same name. Each element within the
+ * collection is iterated over. The returned result is the combination of all
+ * elements within the collection. For example, .hasClass will return true if
+ * any of the elements have the specified class name.
+ */
+_domElementCollectionFunctions = {
+	"mappedFunctions": [
+		"addClass",
+		"removeClass",
+		"toggleClass",
+		"hasClass",
+	]
+},
 
-		/**
-		 * Internal function. Creates an event listener on the DOM Ready event,
-		 * and executes the load queue when it fires.
-		 */
-		attachLoadQueue = function() {
-			// Attack the event listener in real browsers.
-			if(document.addEventListener) {
-				document.addEventListener("DOMContentLoaded", function() {
-					document.removeEventListener(
-						"DOMContentLoaded",
-						arguments.callee,
-						false
-					);
-					executeLoadQueue();
-				}, false);
-			}
-			// Hack the event listener in IE.
-			else if(document.attachEvent) {
-				document.attachEvent("onreadystatechange", function() {
-					if(document.readyState === "complete") {
-						document.detachEvent(
-							"onreadystatechange",
-							arguments.callee
-						);
-						executeLoadQueue();
-						return;
-					}
-				});
+/**
+ * Internal function.
+ * Once PHP.Gt has processed any template elements, they will be placed in a 
+ * special hidden DIV in the document.body, retrieved by this function.
+ * In projects that do not use PHP.Gt, the templating functionality can still
+ * be used because of this function.
+ *
+ * Called internally, it adds all template elements within the special PHP.Gt
+ * DIV to the internal template object, then removes any existing elements 
+ * with a data-template attribute, storing them in the internal object.
+ *
+ * The template list object is exposed by the GT.template function.
+ */
+_templateScrape = function() {
 
-				if(document.documentElement.doScroll && window == window.top) {
-					(function(c_callback) {
-						try {
-							document.documentElement.doScroll("left");
-						}
-						catch(error) {
-							setTimeout(arguments.callee, 0);
-							return;
-						}
+},
 
-						executeLoadQueue();
-					})(callback);
-				}
-			}
-		},
-		/**
-		 * Called when DOM Ready event fires. Executes all callbacks in the load
-		 * queue.
-		 */
-		executeLoadQueue = function() {
-			var i, len = loadQueue.length;
-			for(i = 0; i < len; i++) {
-				loadQueue[i]();
-			}
-		},
-		/**
-		 * Logs the deployment of the database to the JavaScript console, then
-		 * removes the session cookie of where the details are stored.
-		 */
-		dbDeploy = function() {
-			if (document.cookie.indexOf("PhpGt_DbDeploy") < 0) {
-				return;
-			}
-			var dbDeployObj = JSON.parse(
-				decodeURIComponent(GT.getCookie("PhpGt_DbDeploy")) );
-			GT.removeCookie("PhpGt_DbDeploy");
-			console.log(dbDeployObj);
-		},
-		/**
-		 * Defines the helper functions to be added to native elements. Helpers
-		 * are inspired from typical client-side frameworks, but Gt.js only
-		 * targets modern browsers, so doesn't aim to provide cross-old-browser
-		 * support.
-		 */
-		domHelpers = {
-			"addEventListener": function(name, callback, useCapture) {
-				var useCapture = useCapture || false,
-					i;
-				if(name instanceof Array) {
-					for(i = 0; i < name.length; i++) {
-						this.addEventListener(name[i], callback, useCapture);
-					}
-				}
-				else {
-					this.addEventListener(name, callback, useCapture);
-				}
-				return this;
-			},
-			"addClass": function(name) {
-				this.className += " " + name;
-				return this;
-			},
-			"removeClass": function(name) {
-				var match = new RegExp(name, "g");
-				this.className = this.className.replace(match, "");
-				return this;
-			},
-			"switchClass": function(remove, add, duration, callback) {
-				this.removeClass(remove);
-				this.addClass(add);
-				if(duration && callback) {
-					setTimeout(callback, duration);
-				}
-				return this;
-			},
-			"hasClass": function(name) {
-				var match = new RegExp(name, "im");
-				return this.className.match(match);
-			},
-			"remove": function() {
-				this.parentNode.removeChild(this);
-				return this;
-			},
-			"empty": function() {
-				while(this.hasChildNodes()) {
-					this.removeChild(this.lastChild);
-				}
-			},
-			"append": function(element) {
-				this.appendChild(element);
-				return element;
-			},
-			"prepend": function(element) {
-				this.insertBefore(element, this.firstChild);
-				return element;
-			},
-			"before": function(element) {
-				this.parentNode.insertBefore(element, this);
-				return element;
-			},
-			"after": function(element) {
-				this.parentNode.insertBefore(element, this.nextSibling);
-				return element;
-			},
-			"next": function() {
-				var n = this;
-				while(n.nextSibling) {
-					n = n.nextSibling;
-					if(n instanceof HTMLElement) {
-						return n;
-					}
-				}
-				return null;
-			},
-			"prev": function() {
-				var p = this;
-				while(p.previousSibling) {
-					p = p.previousSibling;
-					if(p instanceof HTMLElement) {
-						return p;
-					}
-				}
-				return null;
-			},
-			"first": function() {
-				var el = this.firstChild;
-				while(el) {
-					if(el instanceof HTMLElement) {
-						return el;
-					}
-					el = el.nextSibling;
-				}
-				return null;
-			},
-			"last": function() {
-				var el = this.lastChild;
-				while(el) {
-					if(el instanceof HTMLElement) {
-						return el;
-					}
-					el = el.previousSibling;
-				}
-				return null;
-			},
-			"replace": function(element) {
-				var prev = this.prev(),
-					next = this.next(),
-					parent = this.parentNode;
-				if(prev) {
-					prev.after(element);
-				}
-				else if(next) {
-					next.before(element);
-				}
-				else {
-					parent.append(element);
-				}
-				this.remove();
-			},
-			"getValue": function() {
-				return this.value;
-			},
-			"setValue": function(val) {
-				this.value = val;
-			},
-			"getAttribute": function(attr) {
-				return this.getAttribute(attr);
-			},
-			"setAttribute": function(attr, val) {
-				return this.setAttribute(attr, val);
-			},
-			"removeAttribute": function(attr) {
-				return this.removeAttribute(attr);
-			},
-			"isChecked": function() {
-				return this.checked;
-			},
-			// TODO: BUG: Getting the parent via selector gets all elements
-			// of a matching selector, so obtains elements that aren't actually
-			// the parent, but have a common ancestor and CSS selector.
-			"parent": function(selector) {
-				var elArray = [],
-					el,
-					found,
-					result = [],
-					i, j;
-				if(this instanceof NodeList) {
-					for(i = 0; i < this.length; i++) {
-						elArray.push(this[i]);
-					}
-				}
-				else {
-					elArray.push(this);
-				}
+/**
+ * Internal function.
+ * Creates a listener on the DOM ready event and invokes the load queue when it
+ * fires. Compatible with old IE browsers too.
+ */
+_attachLoadQueue = function() {
 
-				for(i = 0; i < elArray.length; i++) {
-					el = elArray[i];
-					while(el.parentNode) {
-						el = el.parentNode;
-						found = GT(selector, el);
+},
 
-						if(found.length > 0) {
-							// Check each found element is actually a parent.
-							for(j = 0; j < found.length; j++) {
-								if(this.isParent(found[j], el)) {
-									result.push(found[j]);
-								}
-							}
-							if(result.length > 0) {
-								return result;
-							}
-						}
-					}
-				}
-					
-				return null;
-			},
-			"isParent": function(el, parent) {
-				if(parent === el) {
-					return true;
-				}
-				else if(el.parentNode) {
-					return this.isParent(el.parentNode, parent);
-				}
-				else {
-					return false;
-				}
-			},
-			"forEach": function(callback) {
-				var elArray = [],
-					el,
-					i;
-				if(this instanceof NodeList) {
-					for(i = 0; i < this.length; i++) {
-						elArray.push(this[i]);
-					}
-				}
-				else {
-					elArray.push(this);
-				}
+/**
+ * Internal function.
+ * Called when the DOM ready event fires. Executes all callbacks in the load 
+ * queue.
+ */
+_invokeLoadQueue = function() {
 
-				for(i = 0; i < elArray.length; i++) {
-					el = elArray[i];
-					callback.apply(el);
-				}
-			}
-		},
-		objHelpers = {
-			"toObject": function() {
-				var i, len, 
-					obj = {};
-				if(!this.length) {
-					throw new GT.error("Object has no length property");
-					return {};
-				}
-				len = this.length;
-				for(i = 0; i < this.length; i++) {
-					obj[i] = this[i];
-				}
+},
 
-				return obj;
-			},
-			"merge": function(obj2) {
-				var obj1 = this,
-					obj3 = {},
-					i;
-				if(typeof(obj1) !== "object") {
-					obj1 = obj1.toObject();
-				}
-				if(typeof(obj2) !== "object") {
-					obj2 = obj2.toObject();
-				}
+/**
+ * Creates an exception object with an optional object to report to the console.
+ *
+ * @param {string} message The message to be logged.
+ * @param {object} [obj] The associated object, or array of objects.
+ * @return {object} The exception object, to be thrown.  
+ */
+error = function(message, obj) {
+	var that = this;
+	this.name = "GtErrorException";
+	this.message = this.name + ": " + message;
+	this.arguments = Array.prototype.pop.apply(arguments);
+	this.toString = function() {
+		return that.message;
+	}
+},
 
-				for(i in obj1) {
-					if(obj1.hasOwnProperty(i)) {
-						obj3[i] = obj1[i];
-					}
-				}
-				for(i in obj2) {
-					if(obj2.hasOwnProperty(i)) {
-						obj3[i] = obj2[i];
-					}
-				}
-
-				return obj3;
-			}
-		},
-		/**
-		 * Used to apply a given function to every element witin a nodeList.
-		 * Only used internally by helper functions.
-		 */
-		nodeListWrap = function(me, funcName, args) {
-			var i, result, tempResult;
-			for(i = 0; i < me.length; i++) {
-				tempResult = me[i][funcName].apply(me[i], args);
-				if(typeof(result) == "undefined") {
-					result = tempResult;
-				}
-			}
-			return result;
-		},
-		/**
-		 * Adds the previously defined helper functions to the prototypes of
-		 * native objects, to be able to use shortcut functions without any
-		 * additional wrapper object. This allows for simple code such as 
-		 * document.getElementById("test").remove();
-		 */
-		addHelpers = function() {
-			Object.keys(domHelpers).map(function(key) {
-				if(!Node.prototype[key]) {
-					Node.prototype[key] = domHelpers[key];
-				}
-				if(!NodeList.prototype[key]) {
-					NodeList.prototype[key] = function() {
-						return nodeListWrap(this, key, arguments);
-					};
-				}
-				if(!Array.prototype[key]) {
-					Array.prototype[key] = function() {
-						return nodeListWrap(this, key, arguments);
-					}
-				}
-			});
-			Object.keys(objHelpers).map(function(key) {
-				if(!Object.prototype[key]) {
-					Object.prototype[key] = objHelpers[key];
-				}
-			});
-		};
-
-	/**
-	 * Emits an event to the GT object itself. Useful for allowing modular 
-	 * JavaScript files that are properly enclosed in anonymous functions to
-	 * exchange information together.
-	 * 
-	 * Events that are emitted from GT object must have an event listener prior
-	 * to the event being emitted, see GT.addEventListener.
-	 */
-	GT.event = function(eventName, e) {
-		var i, listenerLength = _eventListeners.length;
-		for(i = 0; i < listenerLength; i++) {
-			if(_eventListeners[i].Name === eventName) {
-				_eventListeners[i]["Callback"](e);
-			}
-		}
-	};
+/**
+ * Returns a string representation of the type of the passed in object.
+ */
+typeOf = function(obj) {
+	return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+},
+/**
+ * Checks the prototype tree of the passed in object. The test subject could be
+ * a string representation of the type to check for.
+ */
+instanceOf = function(obj, test) {
+	var ref = obj,
+		test = test.toLowerCase(),
+		newRef,
+		count = 0;
 	
-	/**
-	 * Attaches a callback function to the GT object and executes it when the
-	 * given event is emitted. Events can be emitted by the GT object by calling
-	 * GT.event() - this is useful for exchanging information between modular
-	 * scripts.
-	 */
-	GT.addEventListener = function(eventName, callback) {
-		_eventListeners.push({
-			"Name": eventName,
-			"Callback": callback
-		});
-	};
+	// Check parameters are correctly typed.
+	if(GT.typeOf(test) !== "string") {
+		throw new GT.error(
+			"GT.instanceOf method parameters incorrect types.",
+			arguments
+		);
+	}
 
-	/**
-	 * Simply removes existing event listeners of the given name from the GT
-	 * object. Note that removing an event listener in one script may cause 
-	 * problems in other scripts that rely on the listener to function.
-	 */
-	GT.removeEventListener = function(eventName) {
-		var i, listenerLength = _eventListeners.length;
-		for(i = 0; i < listenerLength; i++) {
-			if(_eventListeners[i].Name === eventName) {
-				_eventListeners.splice(i, 1);
-			}
+
+	// Because of certain popular browsers not supporting W3C DOM2 standard,
+	// HTMLElement and Node tests have to be handled differently.
+	if(test === "node") {
+		return !!(
+			typeof obj == "object" 
+			&& "nodeType" in obj
+			&& obj.nodeType >= 1
+			&& obj.nodeType <= 12 
+			&& obj.cloneNode
+		);
+	}
+	if(test === "htmlelement") {
+		return !!(
+			typeof obj == "object" 
+			&& "nodeType" in obj
+			&& obj.nodeType === 1
+			&& obj.cloneNode
+		);
+	}
+
+	// Recursive loop on reference.constructor, checking the type.
+	while(ref && count < 100) {
+		newRef = new Object(ref.constructor);
+		if(newRef === ref) {
+			break;
 		}
-	};
-
-	/**
-	 * Displays an error message to the console.
-	 */
-	GT.error = function(message) {
-		var that = this;
-		this.name = "GtErrorException";
-		this.message = this.name + ": " + message;
-		this.arguments = Array.prototype.pop.apply(arguments);
-		this.toString = function() {
-			return that.message;
-		}
-	};
-
-	/**
-	 * Adds a given callback to the loadQueue of a particular page. All
-	 * callbacks in the loadQueue are triggered on the DOMReady event.
-	 *
-	 * Callbacks will only be added to the loadQueue if the given page matches
-	 * the current URL. The page match can be either a string or Regular
-	 * Expression.
-	 */
-	GT.ready = function(callback, page) {
-		var pathname = window.location.pathname;
+		ref = newRef;
 		
-		if(page) {
-			if(page instanceof RegExp) {
-				if(!page.test(pathname)) {
-					return;
-				}
-			}
-			else if(page !== pathname) {
-				return;
+		if(GT.typeOf(ref) === test) {
+			return true;
+		}
+		count++;
+	}
+
+	return false;
+},
+
+/**
+ * Merges all properties from obj1, obj2, obj3, obj4, ... and returns 
+ * the new object.
+ * @param {object} target The object who's properties to extend.
+ * @param {object} obj1 First object to take the properties from.
+ * @param {object} [obj2] Second object to take the properties from.
+ * @param {object} [objN] Any number of objects to take the properties from.
+ * @return {object} The merged object.
+ */
+merge = function(target, obj1, obj2, objN) {
+	var argLen = arguments.length,
+		i = 1,
+		prop;
+	for(; i < argLen; i++) {
+		for(prop in arguments[i]) {
+			if(arguments[i].hasOwnProperty(prop)) {
+				target[prop] = arguments[i][prop];
 			}
 		}
+	}
 
-		loadQueue.push(callback);
-	};
+	return target;
+},
 
-	/**
-	 * TODO:
-	 * Provide REST access to public webservices.
-	 */
-	GT.api = function(name) {
-
-	};
-
-	/**
-	 * Wrapper to querySelectorAll method. Pass an optional context node to
-	 * perform a query selection within that node.
-	 *
-	 * @param string selector The CSS selector to find.
-	 * @return DomNodeList An array containing the matching elements.
-	 */
-	GT.dom = function(selector) {
-		var context = document,
-			i, len, nodes, res;
-		if(arguments.length > 1) {
-			if(arguments[0] instanceof String) {
-				selector = arguments[0];
-			}
-			if(arguments[1] instanceof String) {
-				selector = arguments[1];
-			}
-			if(arguments[0] instanceof HTMLElement) {
-				context = arguments[0];
-				selector = arguments[1];
-			}
-			if(arguments[1] instanceof HTMLElement) {
-				context = arguments[1];
-			}
-			if(arguments[0] instanceof NodeList) {
-				context = arguments[0][0];
-				selector = arguments[1];
-			}
-			if(arguments[1] instanceof NodeList) {
-				context = arguments[1];
-			}
-		}
-
-		if(context instanceof Node) {
-			// A single element.
-			return context.querySelectorAll(selector);
-		}
-		else {
-			// Assumed another NodeList.
-			len = context.length;
-			result = [];
-			for(i = 0; i < len; i++) {
-				nodes = context[i].querySelectorAll(selector);
-				nodes = Array.prototype.slice.call(nodes);
-				result = Array.prototype.slice.call(result);
-				result = nodes.concat(result);
-			}
-
-			return result;
-		}
-	};
-
-	/**
-	 * Obtains a cloned reference to a named template element. Template elements
-	 * are HTML elements with the data-template attribute, and are extracted
-	 * from the DOM in PHP.Gt, but are re-attached in a hidden div just before
-	 * the page renders. Gt.js removes these templated items and stores them in
-	 * an associative array for retrieval here.
-	 */
-	GT.template = function(name) {
-		if(_templates.hasOwnProperty(name)) {
-			return _templates[name].cloneNode(true);
-		}
-		throw new GT.error("Invalid template item", arguments);
-	};
-
-	/**
-	 * TODO:
-	 * Load and use named tool, providing a wrapper.
-	 */
-	GT.tool = function(name) {
-
-	};
-
-	/**
-	 * Provides a really simple ajax library, intended for modern browsers.
-	 * Will automatically parse the response, converting into JSON object when
-	 * possible.
-	 *
-	 * @param string url The url to request, with parameters in the query string
-	 * for GET and POST.
-	 * @param function|object cbOrObj The function to call when response is 
-	 * ready, an object containing Load, Error and Progress callbacks, or the
-	 * parameters to send as an object.
-	 * @return XMLHttpRequest The XHR object.
-	 */
-	GT.ajax = new function(url, callback) {
-		var that = this;
-		var req = function(url, cbOrObj, method, cb) {
-			var xhr,
-				method = method.toUpperCase(),
-				obj, objLen, objStr,
-				i, key,
-				callback = !!cb 
-					? cb
-					: cbOrObj,
-				qsCharacter = "?";
-
-			if(cb) {
-				if(typeof(cbOrObj) !== "object") {
-					throw new GT.error("Invalid object parameters.");
-					return;
-				}
-				if(typeof(url) !== "string") {
-					throw new GT.error("URL must be passed as string if params "
-						+ "are passed as object");
-					return;
-				}
-				obj = cbOrObj;
-			}
-
-			if(typeof(url) !== "string") {
-				// Assume object given.
-				obj = url;
-				url = window.location.href;
-				objLen = obj.length;
-				key = "?";
-				for(i in obj) {
-					if(!obj.hasOwnProperty(i)) {
-						continue;
-					}
-					url += key + i + "=" + obj[i];
-					key = "&";
-				}
-			}
-			if(url.indexOf("?") >= 0 && !obj) {
-				// `&& !obj` makes sure this isn't done if obj is already set.
-				obj = url.substring(url.indexOf("?") + 1);
-				url = url.substring(0, url.indexOf("?"));
-			}
-			
-			// Transform obj into param string.
-			if(method === "GET"
-			|| method === "DELETE") {
-				if(typeof(obj) !== "string") {
-					objStr = "";
-					for(i in obj) {
-						if(!obj.hasOwnProperty(i)) {
-							continue;
-						}
-						if(objStr.length > 0) {
-							objStr += "&";
-						}
-						objStr += i + "=" + obj[i];
-					}
-					obj = objStr;
-				}				
-			}
-			
-			// Provide compatibility with older IE.
-			if(window.XMLHttpRequest) {
-				xhr = new XMLHttpRequest();
-			}
-			else {
-				xhr = new ActiveXObject("Microsoft.XMLHTTP");
-			}
-
-			if(method === "POST") {
-				xhr.setRequestHeader(
-					"Content-Type", "application/x-www-form-urlencoded");
-			}
-			if(method === "POST"
-			|| method === "PUT") {
-				xhr.open(method, url, true);
-			}
-			else {
-				// Change qsCharacter to & if there is already a ? in the URL
-				// (as there is when using a proxy).
-				if(url.indexOf("?") >= 0) {
-					qsCharacter = "&";
-				}
-				xhr.open(method, url + qsCharacter + obj, true);
-			}
-
-			if("progress" in callback) {
-				xhr.addEventListener("progress", callback.progress);
-			}
-			if("error" in callback) {
-				xhr.addEventListener("error", callback.error);
-			}
-			xhr.onreadystatechange = function() {
-				var response;
-				if(xhr.readyState === 4) {
-					that.active --;
-					response = xhr.response;
-					// Quick and dirty JSON detection (skipping real
-					// detection).
-					if(xhr.response[0] === "{" || xhr.response[0] === "[") {
-						// Real JSON detection (slower).
-						try {
-							response = JSON.parse(xhr.response);
-						}
-						catch(e) {}
-					}
-
-					if(typeof(callback) === "function") {
-						// Call the callback function, passing the response. If
-						// response is in JSON format, the response will
-						// automatically be parsed into an Object.
-						callback(response, xhr);
-					} else if("load" in callback) {
-						callback.load(response, xhr);
-					}
-				}
-			};
-
-			if(method === "POST"
-			|| method === "PUT") {
-				xhr.send(obj);
-			}
-			else {
-				xhr.send();
-			}
-			that.active ++;
-			return xhr;
-		};
-
-		/** The number of active HTTP requests (awaiting responses). **/
-		this.active = 0;
-
-		this.get = function(url, cbOrObj, cb) {
-			return req(url, cbOrObj, "get", cb);
-		};
-		this.post = function(url, cbOrObj, cb) {
-			return req(url, cbOrObj, "post", cb);
-		};
-		this.put = function(url, cbOrObj, cb) {
-			return req(url, cbOrObj, "put", cb);
-		};
-		this.delete = function(url, cbOrObj, cb) {
-			return req(url, cbOrObj, "delete", cb);
-		};
-	};
-
-	/**
-	 * Used to set a cookie from a client side script. Defaults to a session
-	 * cookie if no days are given.
-	 */
-	GT.setCookie = function(name, value, days, domain) {
-		var date, expires = "",
-			domain = domain 
-				? "; domain=" + domain
-				: "";
-
-		if(days) {
-			date = new Date();
-			date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-			expires = "; expires=" + date.toGMTString();
-		}
-		document.cookie = name + "=" + value + expires + "; path=/" + domain;
-	};
-
-	/**
-	 * Retrieves a named cookie as a string, or null if the cookie does not
-	 * exist or has expired.
-	 */
-	GT.getCookie = function(name) {
-		var nameEQ = name + "=",
-			ca = document.cookie.split(";"),
-			i, c;
-		for(i = 0; i < ca.length; i++) {
-			c = ca[i];
-			while(c.charAt(0) == " ") {
-				c = c.substring(1, c.length);
-			}
-			if(c.indexOf(nameEQ) === 0) {
-				return c.substring(nameEQ.length, c.length);
-			}
-		}
-
-		return null;
-	};
-
-	/**
-	 * Removes a cookie from the cookie jar. Will not be sent with headers on
-	 * the next request.
-	 */
-	GT.removeCookie = function(name) {
-		GT.setCookie(name, "", -1);
-	};
-	// Export the GT variable to the global context.
-	window.GT = GT;
-
-	// Attach all helper functions to native JavaScript objects.
-	addHelpers();
-	dbDeploy();
-	// Perform automatic template collection.
-	// The template elements are provided by PHP.Gt just before DOM flushing.
-	GT(templateScrape);
-	// Add all callbacks to the DOMReady event, ready for execution in order.
-	attachLoadQueue();
-}());
-
-/* 
- * DOMParser HTML extension 
- * 2012-02-02 
+/**
+ * Initializes a nested namespace within the GT global for use in modular
+ * scripts.
  * 
- * By Eli Grey, http://eligrey.com 
- * Public domain. 
- * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK. 
- */  
+ * @return {Object} The created namespace object.
+ */
+namespace = function() {
 
-/*! @source https://gist.github.com/1129031 */  
-/*global document, DOMParser*/  
+},
 
-(function(DOMParser) {  
-    "use strict";  
-    var DOMParser_proto = DOMParser.prototype  
-      , real_parseFromString = DOMParser_proto.parseFromString;
+/**
+ * Adds a callback to the load queue to be invoked on the DOM ready event.
+ * If a page is given, callbacks will only be added to the queue if the current
+ * window.location.href matches the given string or regular expression.
+ *
+ * @param {function} callback The callback to invoke on DOM ready.
+ * @param {string|RegExp} [page] The match to make in order to add the callback.
+ */
+ready = function(callback, page) {
 
-    // Firefox/Opera/IE throw errors on unsupported types  
-    try {  
-        // WebKit returns null on unsupported types  
-        if ((new DOMParser).parseFromString("", "text/html")) {  
-            // text/html parsing is natively supported  
-            return;  
-        }  
-    } catch (ex) {}  
+},
 
-    DOMParser_proto.parseFromString = function(markup, type) {  
-        if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {  
-            var doc = document.implementation.createHTMLDocument("")
-              , doc_elt = doc.documentElement
-              , first_elt;
+/**
+ * Used to perform asynchronous HTTP requests. Automatically parses the response
+ * by converting to JSON wherever possible. For connection pooling, the GT.http
+ * object is instantiated with `new`.
+ *
+ */
+http = function() {
+	/**
+	 * @param {string} uri The HTTP URI to connect to with or without query 
+	 * string parameters. For HTTP GET and DELETE methods, the data parameter
+	 * will be converted to a query string as these methods do not allow data
+	 * in the body.
+	 * @param {string} [method] Defaults to GET, can be either GET, POST, PUT
+	 * or DELETE.
+	 * @param {object|string} [data] The key-value-pair object to place in the 
+	 * request body. Optionally, a querystring style string can be used. When
+	 * data is passed in on GET or DELETE methods, the keys are moved to the
+	 * querystring, as they do not allow data in the request body. If there is 
+	 * already a querystring, an exception is thrown.
+	 * @param {function} [callback] The callback to invoke when the HTTP request
+	 * gets a response. The callback is passed two parameters: `responseData`,
+	 * either a string containing the response or an object when JSON was
+	 * returned, and `xhr`, a reference to the XMLHttpRequest object used.
+	 */
+	var execute = function(uri, method, data, callback) {
+	};
 
-            doc_elt.innerHTML = markup;
-            first_elt = doc_elt.firstElementChild;
+	return {
+		"execute": execute
+	}
+},
 
-            if (doc_elt.childElementCount === 1
-                && first_elt.localName.toLowerCase() === "html") {  
-                doc.replaceChild(first_elt, doc_elt);  
-            }  
+/**
+ * Used as a shorthand function to interact with PHP.Gt's public HTTP APIs.
+ */
+api = function() {
 
-            return doc;  
-        } else {  
-            return real_parseFromString.apply(this, arguments);  
-        }  
-    };  
-}(DOMParser));
+},
+
+/**
+ * Wraps CSS selectors to GT.dom.elementCollection objects.
+ * @param {string} selector The CSS selector to search the DOM for.
+ * Alternatively, a reference to a native HTML element, array of native HTML
+ * elements, or a DOM Node List can be passed as the first argument, which will 
+ * be converted into a GT.dom.elementCollection.
+ * @param {GT.dom.element} [context] The context to execute the CSS selector in.
+ * This defaults to window.document.
+ */
+dom = function(selector, context) {
+	return "SELECTED ELEMT";
+},
+
+/**
+ * Obtains a cloned reference to a template element.
+ */
+template = function(name) {
+
+},
+
+tool = function() {
+
+};
+
+// Attach the GT object to the window, exposing the namespace as a global.
+window.GT = _GT;
+// Build the GT object to expose public methods.
+GT.error = error;
+GT.typeOf = typeOf;
+GT.instanceOf = instanceOf;
+GT.dom = dom;
+GT.merge = merge;
+
+// Extend GT.dom capabilities.
+GT.merge(GT.dom, _domFunctions);
+return;
+
+})();

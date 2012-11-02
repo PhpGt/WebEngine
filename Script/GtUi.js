@@ -2,7 +2,7 @@
 GT.ui = function() {
 };
 
-GT.ui.dropdownMenu = function(button, name, contents) {
+GT.ui.dropdownMenu = function(button, name, contents, e) {
 	var menu,
 		name = name || "",
 		contents = contents || null,
@@ -13,11 +13,16 @@ GT.ui.dropdownMenu = function(button, name, contents) {
 		helperRand,
 		newStyle;
 
-		for(0; i < childLen; i++) {
-			if(button.children[i].hasClass("menu")) {
-				menu = button.children[i];
-			}
+	if(e) {
+		if(e.target !== button) {
+			return;
 		}
+	}
+	for(0; i < childLen; i++) {
+		if(button.children[i].hasClass("menu")) {
+			menu = button.children[i];
+		}
+	}
 
 	if(!menu) {
 		menu = document.createElement("div");
@@ -42,8 +47,10 @@ GT.ui.dropdownMenu = function(button, name, contents) {
 		}
 
 		var cancelClick = function(e) {
-			if(e.target == button
-			|| e.target == menu) {
+			return;
+
+			// TODO: When GT DOM wrapper is made, this will be a piece of cake.
+			if(GT(e.target).hasParent(menu)) {
 				return;
 			}
 			menu.remove();

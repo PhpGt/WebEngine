@@ -1,12 +1,12 @@
 PageTool
 ========
-Within any PHP.Gt application, a page's code is put inside individual PageCode objects, and is executed with the `go()` function.
-
-There comes a time when code within PageCode objects is required on other pages, or from within other applications. A PageTool can be seen as PageCode that is required by one or many applications, from multiple areas in code.
+Within any PHP.Gt application, a page's code is put inside individual PageCode objects, and is executed with the `go()` function. There comes a time when code within PageCode objects is required on other pages, or from within other applications. A PageTool can be seen as PageCode that is required by one or many applications, from multiple areas in code.
 
 Just like a PageCode object executes from the `go()` function, so does a PageTool, which is triggered from within PageCode via the `$tool` wrapper. 
 
 Common tools are included with the PHP.Gt codebase, which are shared across all applications. Applications can have their own private tools, or even *override shared tools* if they require different functionality without affecting other applications.
+
+*All code for each PageTool is completely contained within its own subdirectory within /PageTool*, including all database queries & migrations and all classes used.
 
 Included PageTools
 ------------------
