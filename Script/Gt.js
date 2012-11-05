@@ -19,7 +19,7 @@
  * Gt.js provides helper functions on the DOM elements by wrapping all elements
  * within the GT.DOM namespace.
  * Compatible with Google Chrom[e|ium] 10+, Mozilla Firefox 8+, Opera 11+,
- * Internet Explorer 8+. 
+ * Internet Explorer 8+, Safari 5+.
  */
 ;(function() {
 /**
@@ -55,6 +55,128 @@ var _GT = function() {
 	throw new GT.error("Invalid GT parameters.", arguments);
 },
 
+/**
+ * As browser support for HTMLElement and Node varies across the mainstream
+ * browsers, DomElement wraps all DOM interaction and provides a normalised 
+ * API across all browsers.
+ *
+ * DomElement is exposed on GT.dom.element and can be constructed as
+ * new GT.dom.element, and is returned by using any of the DOM manipulation
+ * functions within GT. 
+ */
+DomElement = function(el, attrObj, value) {
+	var that = this,
+		dummy = document.createElement("_"),
+		_node = null,
+		prop,
+		propsToWrap = [
+			"childNodes",
+			"children",
+			"firstChild",
+			"lastChild",
+		];
+
+	if(GT.instanceOf(el, "Node")) {
+		_node = el;
+	}
+	else if(GT.typeOf(el) === "string") {
+		_node = document.createElement(el);
+	}
+	else if(GT.typeOf(el) === "domelement") {
+		_node = el._node;
+	}
+	else {
+		throw new GT.error(
+			"DomElement constructor passed invalid element parameter", el);
+	}
+
+	if(GT.typeOf(attrObj) === "object") {
+		for(prop in attrObj) {
+			if(!attrObj.hasOwnProperty(prop)) {
+				continue;
+			}
+			_node.setAttribute(prop, attrObj[prop]);
+		}
+	}
+	else if(GT.typeOf(attrObj) === "string") {
+		// This allows a new element to be created by ignoring the attrArray
+		// parameter: GT.dom.create("p", "This is a test");
+		value = attrObj;
+	}
+
+	if(value) {
+		_node.textContent = value;
+	}
+
+`
+	// Copy all properties from the native node to the DomElement, but skip
+	// any that need references to DomElement objects themselves.
+	for(prop in _node) {
+		try {
+			//if(!Object.prototype.hasOwnProperty.call(_node, prop)) {
+			//	continue;
+			//}
+			if(propsToWrap.indexOf(prop) >= 0) {
+				// TODO: Wrap property.
+			}
+			else {
+				this[prop] = _node[prop];
+			}
+		}
+		catch(e) {
+			this[prop] = 0;
+		}
+	}
+	this._node = _node;
+
+	// Attach all property listeners.
+	_node.constructor.prototype.watch = _domElementPropWatch;
+	_node.watch("textContent", function(v1, v2, v3, v4) {
+		console.log("WIN!!!", v1, v2, v3, v4);
+	});
+
+	return _node;
+},
+
+DomElementCollection = function(elArray) {
+	this.value = "I AM AN ELEMENT COLLECTION!";
+},
+
+/**
+ * Object.watch is a non-standard function in the Gecko rendering engine, added
+ * to the current browser's native DOM Element in this shim.
+ * Watches for a property to be assigned a value and runs a function when
+ * that occurs.
+ * @param {string} prop The property name to watch upon.
+ * @param {function} callback The function to call when the property changes.
+ */
+_domElementPropWatch = function(prop, callback) {
+	var oldval = this[prop], 
+		newval = oldval,
+		getter = function() {
+			return newval;
+		},
+		setter = function(val) {
+			oldval = newval;
+			return newval = callback.call(this, prop, oldval, val);
+		};
+	if (delete this[prop]) { // can't watch constants
+		// ES5-compliant browsers:
+		if(Object.defineProperty) { 
+			Object.defineProperty(this, prop, {
+				get: getter,
+				set: setter
+			});
+		}
+		// Legacy browsers:
+		else if(Object.prototype.__defineGetter__ 
+		&& Object.prototype.__defineSetter__) {
+			Object.prototype.__defineGetter__.call(this, prop, getter);
+			Object.prototype.__defineSetter__.call(this, prop, setter);
+		}
+	}
+};
+
 _domFunctions = {
 	"create": function(el, attrArray, value) {
 		return "CREATED ELEMENT";
@@ -82,7 +204,7 @@ _domElementFunctions = {
 	"setAttribute": function(name, value) {
 	},
 	"hasAttribute": function(name) {
-	}
+	},
 },
 /**
  * Element map functions listed here are mapped directly to functions in the
@@ -92,12 +214,120 @@ _domElementFunctions = {
  * any of the elements have the specified class name.
  */
 _domElementCollectionFunctions = {
-	"mappedFunctions": [
+	"fnMapAll": [
 		"addClass",
 		"removeClass",
 		"toggleClass",
 		"hasClass",
-	]
+	],
+	"fnMapFirst": [
+		"appendChild",
+		"appendChildAfter",
+		"appendChildBefore",
+		"getAttribute",
+		"setAttribute",
+		"hasAttribute",
+	],
+},
+
+/**
+ * To allow certain JavaScript features to be usable across all mainstream
+ * browsers, shims are functions that are attached to particular objects' 
+ * prototypes. Each key in the _shims object represents the object to
+ * extend, and the properties within each object's keys are the named functions
+ * to assign. This is done in the _addShims function.
+ */
+_shims = {
+	"Object": {
+	},
+	"Array": {
+		/**
+		 * Returns the first index at which a given element can be found in 
+		 * the array, or -1 if it is not present.
+		 */
+		"indexOf": function (searchElement /*, fromIndex */ ) {
+	        "use strict";
+	        if (this == null) {
+	            throw new TypeError();
+	        }
+	        var t = Object(this);
+	        var len = t.length >>> 0;
+	        if (len === 0) {
+	            return -1;
+	        }
+	        var n = 0;
+	        if (arguments.length > 1) {
+	            n = Number(arguments[1]);
+	            if (n != n) { // shortcut for verifying if it's NaN
+	                n = 0;
+	            } else if (n != 0 && n != Infinity && n != -Infinity) {
+	                n = (n > 0 || -1) * Math.floor(Math.abs(n));
+	            }
+	        }
+	        if (n >= len) {
+	            return -1;
+	        }
+	        var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+	        for (; k < len; k++) {
+	            if (k in t && t[k] === searchElement) {
+	                return k;
+	            }
+	        }
+	        return -1;
+	    }
+	},
+},
+
+/**
+ * Called internally, attaches JavaScript versions of native functionality to
+ * older / non-supportive browsers, or attaches special helper functions to all
+ * browsers.
+ *
+ * Iterates over all functions in the _shims object, checks if the function
+ * already exists and if not, attaches it to the relevant prototype.
+ */
+_addShims = function() {
+	var obj, 	// Name of the object to extend.
+		def,	// Name of the function definition to add.
+		proto;	// Reference to the object prototype's function. 
+	for(obj in _shims) {
+		if(!_shims.hasOwnProperty(obj)) {
+			continue;
+		}
+
+		for(def in _shims[obj]) {
+			if(!_shims[obj].hasOwnProperty(def)) {
+				continue;
+			}
+
+			proto = window[obj].prototype[def];
+			if(proto) {
+				continue;
+			}
+
+			/**
+			 * TODO: Try to get IE to play ball one last time, then if not we'll
+			 * just have to get EVERYTHING in a method... not as sexy but owell.
+			 */
+
+			try {
+				Object.defineProperty(
+					window[obj].prototype, 
+					def,
+					{
+						"enumerable": false,
+						"configurable": true,
+						"writable": false,
+						"value": _shims[obj][def],
+					}
+				);
+			}
+			catch(e) {
+				// For non ES5-compliant browsers.
+				window[obj].prototype[def] = _shims[obj][def];
+			}
+		}
+	}
 },
 
 /**
@@ -325,11 +555,19 @@ tool = function() {
 
 // Attach the GT object to the window, exposing the namespace as a global.
 window.GT = _GT;
+
+// Extend any objects required for full functionality.
+_addShims();
+
 // Build the GT object to expose public methods.
 GT.error = error;
 GT.typeOf = typeOf;
 GT.instanceOf = instanceOf;
+
 GT.dom = dom;
+GT.dom.element = DomElement;
+GT.dom.elementCollection = DomElementCollection;
+
 GT.merge = merge;
 
 // Extend GT.dom capabilities.
