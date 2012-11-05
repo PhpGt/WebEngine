@@ -127,15 +127,12 @@ DomElement = function(el, attrObj, value) {
 	this._node = _node;
 
 	// TODO: Attach all property listeners.
-	elementObject = window.Element || window.HTMLElement;
-	if(elementObject
-	&& !elementObject.prototype.watch) {
-		elementObject.prototype.watch = _domElementPropWatch;
-	}
+	_node.__defineSetter__("something", function() {
+		alert("YOU REALY ARE GOOD LOLOLASUGHN");
+	});
 
-	_node.watch("textContent", function(prop, from, to) {
-		this.innerText = to;
-		return to;
+	_node.__defineGetter__("something", function() {
+		return "SOMETHINGLOLOLOLOL";
 	});
 
 	return _node;
@@ -216,41 +213,156 @@ _domElementCollectionFunctions = {
 	],
 },
 
-/**
- * Object.watch is a non-standard function in the Gecko rendering 
- * engine, added to the current browser's native DOM Element in this 
- * shim.
- * Watches for a property to be assigned a value and runs a function
- * when that occurs.
- * @param {string} prop The property name to watch upon.
- * @param {function} callback The function to call when the property
- * changes value.
- */
-_domElementPropWatch = function(prop, callback) {
-	var oldval = this[prop], 
-		newval = oldval,
-		getter = function() {
-			return newval;
-		},
-		setter = function(val) {
-			oldval = newval;
-			return newval = callback.call(this, prop, oldval, val);
-		};
-	//if(delete this[prop]) { // can't watch constants
-		// ES5-compliant browsers:
-		if(Object.defineProperty) { 
-			Object.defineProperty(this, prop, {
-				get: getter,
-				set: setter
-			});
+_domElementAccessorES3 = function() {
+	var
+	defineProp = Object.defineProperty,
+	getProp    = Object.getOwnPropertyDescriptor,
+
+	// methods being implemented
+	methods    = [
+		"__defineGetter__", "__defineSetter__", "__lookupGetter__", "__lookupSetter__"
+	],
+
+	// objects to implement legacy methods onto their prototypes
+	// Object.prototype[method] doesn't work on everything for IE
+	extend     = [Object, String, Array, Function, Boolean, Number,
+	             RegExp, Date, Error, Element, Window, HTMLDocument],
+	len        = extend.length,
+	proto      = "prototype",
+	extendMethod = function (method, fun) {
+		var i = len;
+		if (!(method in {})) {
+			while (i--) {
+				extend[i][proto][method] = fun;
+			}
 		}
-		// Legacy browsers:
-		else if(Object.prototype.__defineGetter__ 
-		&& Object.prototype.__defineSetter__) {
-			Object.prototype.__defineGetter__.call(this, prop, getter);
-			Object.prototype.__defineSetter__.call(this, prop, setter);
+	};
+
+	if (defineProp) {
+		extendMethod(methods[0], function (prop, fun) { // __defineGetter__
+			defineProp(this, prop, { get: fun });
+		});
+
+		extendMethod(methods[1], function (prop, fun) { // __defineSetter__
+			defineProp(this, prop, { set: fun });
+		});
+	}
+
+	if (getProp) {
+		extendMethod(methods[2], function (prop) { // __lookupGetter__
+			return getProp(this, prop).get ||
+				getProp(this.constructor[proto], prop).get; // look in prototype too
+		});
+		extendMethod(methods[3], function (prop) { // __lookupSetter__
+			return getProp(this, prop).set ||
+				getProp(this.constructor[proto], prop).set; // look in prototype too
+		});
+	}
+},
+_domElementAccessorES5 = function() {
+	var ObjectProto = Object.prototype,
+	defineGetter = ObjectProto.__defineGetter__,
+	defineSetter = ObjectProto.__defineSetter__,
+	lookupGetter = ObjectProto.__lookupGetter__,
+	lookupSetter = ObjectProto.__lookupSetter__,
+	hasOwnProp = ObjectProto.hasOwnProperty;
+
+	if (defineGetter && defineSetter && lookupGetter && lookupSetter) {
+
+		if (!Object.defineProperty) {
+			Object.defineProperty = function (obj, prop, descriptor) {
+				if (arguments.length < 3) { // all arguments required
+					throw new TypeError("Arguments not optional");
+				}
+
+				prop += ""; // convert prop to string
+
+				if (hasOwnProp.call(descriptor, "value")) {
+					if (!lookupGetter.call(obj, prop) && !lookupSetter.call(obj, prop)) {
+						// data property defined and no pre-existing accessors
+						obj[prop] = descriptor.value;
+					}
+
+					if ((hasOwnProp.call(descriptor, "get") ||
+					     hasOwnProp.call(descriptor, "set"))) 
+					{
+						// descriptor has a value prop but accessor already exists
+						throw new TypeError("Cannot specify an accessor and a value");
+					}
+				}
+
+				// can't switch off these features in ECMAScript 3
+				// so throw a TypeError if any are false
+				if (!(descriptor.writable && descriptor.enumerable && descriptor.configurable))
+				{
+					throw new TypeError(
+						"This implementation of Object.defineProperty does not support" +
+						" false for configurable, enumerable, or writable."
+					);
+				}
+
+				if (descriptor.get) {
+					defineGetter.call(obj, prop, descriptor.get);
+				}
+				if (descriptor.set) {
+					defineSetter.call(obj, prop, descriptor.set);
+				}
+
+				return obj;
+			};
 		}
-	//}
+
+		if (!Object.getOwnPropertyDescriptor) {
+			Object.getOwnPropertyDescriptor = function (obj, prop) {
+				if (arguments.length < 2) { // all arguments required
+					throw new TypeError("Arguments not optional.");
+				}
+
+				prop += ""; // convert prop to string
+
+				var descriptor = {
+					configurable: true,
+					enumerable  : true,
+					writable    : true
+				},
+				getter = lookupGetter.call(obj, prop),
+				setter = lookupSetter.call(obj, prop);
+
+				if (!hasOwnProp.call(obj, prop)) {
+					// property doesn't exist or is inherited
+					return descriptor;
+				}
+				if (!getter && !setter) { // not an accessor so return prop
+					descriptor.value = obj[prop];
+					return descriptor;
+				}
+
+				// there is an accessor, remove descriptor.writable;
+				// populate descriptor.get and descriptor.set (IE's behavior)
+				delete descriptor.writable;
+				descriptor.get = descriptor.set = undefined;
+
+				if (getter) {
+					descriptor.get = getter;
+				}
+				if (setter) {
+					descriptor.set = setter;
+				}
+
+				return descriptor;
+			};
+		}
+
+		if (!Object.defineProperties) {
+			Object.defineProperties = function (obj, props) {
+				for (var prop in props) {
+					if (hasOwnProp.call(props, prop)) {
+						Object.defineProperty(obj, prop, props[prop]);
+					}
+				}
+			};
+		}
+	}
 },
 
 /**
@@ -669,6 +781,8 @@ window.GT = _GT;
 
 // Extend any objects required for full functionality.
 _addShims();
+_domElementAccessorES3();
+_domElementAccessorES5();
 
 // Build the GT object to expose public methods.
 GT.error = error;
