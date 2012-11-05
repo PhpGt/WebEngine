@@ -103,6 +103,9 @@ DomElement = function(el, attrObj, value) {
 		if(!_domPropHandlers.hasOwnProperty(prop)) {
 			continue;
 		}
+		if(!_domPropHandlers[prop]) {
+			continue;
+		}
 		(function(c_prop) {
 			node.__defineGetter__(c_prop, function() {
 				var getter = this.__lookupGetter__(c_prop),
@@ -132,6 +135,15 @@ DomElement = function(el, attrObj, value) {
 		})(prop);
 	}
 
+	// Add DomElement functions:
+	for(prop in _domElementFunctions) {
+		if(!_domElementFunctions.hasOwnProperty(prop)) {
+			continue;
+		}
+
+		node.constructor.prototype[prop] = _domElementFunctions[prop];
+	}
+
 	return node;
 },
 
@@ -157,28 +169,56 @@ DomElementCollection = function(elementList) {
 	return domElementArray;
 },
 
+/**
+ * A list of getter and setter functions to be applied on all matching
+ * properties, enforcing W3C standards across non-compliant browsers.
+ */
 _domPropHandlers = {
 	"textContent": { "get": function() {
-		return this.textContent;
+		return this.textContent || this.innerText;
 	}, "set": function(val) {
 		this.innerText = val;
 		return this.textContent = val;
 	}},
 	"children": { "get": function() {
-		console.log("getting children");
+		return new DomElementCollection(this.children);
 	}, "set": function(val) {
 		console.log("setting children");
 	}},
+	"madeUpProperty": { "get": function() {
+		return "this is made up";
+	}, "set": function(val) {
+		return;
+	}}
 },
+
+/**
+ * List of functions to be added on the GT.dom object, adding useful
+ * capabilities to the DOM.
+ */
 _domFunctions = {
 	"create": function(el, attrArray, value) {
 		return "CREATED ELEMENT";
 	},
 },
+
+/**
+ * List of functions to be added on GT.dom.element objects.
+ */
 _domElementFunctions = {
 	"addClass": function(className) {
+		var classRegExp = new RegExp("(^| )" + className + "( |$)");
+		if(!classRegExp.test(this.className)) {
+			this.className = (this.className + " " + className).trim();
+		}
+		return this;
 	},
 	"removeClass": function(className) {
+		var classRegExp = new RegExp("(^| )" + className + "( |$)");
+		if(classRegExp.test(this.className)) {
+			this.className = this.className.replace(classRegExp, " ").trim();
+		}
+		return this;
 	},
 	"toggleClass": function(className) {
 	},
@@ -391,7 +431,7 @@ _shims = {
 		 * Returns the first index at which a given element can be found in 
 		 * the array, or -1 if it is not present.
 		 */
-		"indexOf": function (searchElement /*, fromIndex */ ) {
+		"indexOf": function(searchElement /*, fromIndex */ ) {
 	        "use strict";
 	        if (this == null) {
 	            throw new TypeError();
@@ -420,7 +460,12 @@ _shims = {
 	            }
 	        }
 	        return -1;
-	    }
+	    },
+	},
+	"String": {
+		"trim": function() {
+			return this.replace(/^\s+|\s+$/g, '');
+		},
 	},
 },
 
