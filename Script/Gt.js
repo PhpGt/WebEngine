@@ -106,22 +106,9 @@ DomElement = function(el, attrObj, value) {
 		if(!_domPropHandlers[prop]) {
 			continue;
 		}
+		node.__defineGetter__(prop, _domPropHandlers[prop].get);
+		//node.__defineSetter__(prop, _domPropHandlers[prop].set);
 		(function(c_prop) {
-			node.__defineGetter__(c_prop, function() {
-				var getter = this.__lookupGetter__(c_prop),
-					setter = this.__lookupSetter__(c_prop),
-					clone = node.cloneNode(true),
-					oldVal = clone[c_prop],
-					result = null;
-				delete this[c_prop];
-				this[c_prop] = oldVal;
-
-				result = _domPropHandlers[c_prop].get.call(this);
-				this.__defineGetter__(c_prop, getter);
-				this.__defineSetter__(c_prop, setter);
-
-				return result;
-			});
 			node.__defineSetter__(c_prop, function(val) {
 				var getter = this.__lookupGetter__(c_prop),
 					setter = this.__lookupSetter__(c_prop),
@@ -175,13 +162,15 @@ DomElementCollection = function(elementList) {
  */
 _domPropHandlers = {
 	"textContent": { "get": function() {
-		return this.textContent || this.innerText;
+		var clone = this.cloneNode(true);
+		return clone.textContent || clone.innerText;
 	}, "set": function(val) {
 		this.innerText = val;
 		return this.textContent = val;
 	}},
 	"children": { "get": function() {
-		return new DomElementCollection(this.children);
+		var clone = this.cloneNode(true);
+		return new DomElementCollection(clone.children);
 	}, "set": function(val) {
 		console.log("setting children");
 	}},
