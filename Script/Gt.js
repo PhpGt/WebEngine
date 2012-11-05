@@ -128,7 +128,9 @@ DomElement = function(el, attrObj, value) {
 			continue;
 		}
 
-		node.constructor.prototype[prop] = _domElementFunctions[prop];
+		if(!node.constructor.prototype[prop]) {
+			node.constructor.prototype[prop] = _domElementFunctions[prop];
+		}
 	}
 
 	return node;
@@ -174,6 +176,15 @@ _domPropHandlers = {
 	}, "set": function(val) {
 		console.log("setting children");
 	}},
+
+	// Attributes:
+	//"href": { "get": function() {
+	//	return "TWAT!";//this.getAttribute("href");
+	//}, "set": function(val) {
+	//	return this.setAttribute("href", val);
+	//}},
+
+	// Test:
 	"madeUpProperty": { "get": function() {
 		return "this is made up";
 	}, "set": function(val) {
@@ -195,6 +206,24 @@ _domFunctions = {
  * List of functions to be added on GT.dom.element objects.
  */
 _domElementFunctions = {
+	// Legacy browser functions (will not fire on compliant browsers):
+	"addEventListener": function(event, callback) {
+		var that = this;
+		if(!this.attachEvent) {
+			throw new GT.error("Cannot add event listener or attach event");
+		}
+		this.attachEvent("on" + event.toLowerCase(), function(e) {
+			var e = e || window.event;
+			// Build up event functionality for legacy browsers.
+			if(!e.preventDefault) {
+				e.preventDefault = function() {
+					e.returnValue = false;
+					e.cancelBubble = true;
+				}
+			}
+			callback.call(that, e);
+		});
+	},
 	"addClass": function(className) {
 		var classRegExp = new RegExp("(^| )" + className + "( |$)");
 		if(!classRegExp.test(this.className)) {
@@ -495,18 +524,9 @@ _addShims = function() {
 				});
 			}
 			// Legacy browsers:
-			//else if(Object.prototype.__defineGetter__ 
-			//&& Object.prototype.__defineSetter__) {
-			//	Object.prototype.__defineGetter__.call(this, prop, getter);
-			//	Object.prototype.__defineSetter__.call(this, prop, setter);
-			//}
 			catch(e) {
 				window[obj].prototype[def] = _shims[obj][def];
 			}
-			//catch(e) {
-				// For non ES5-compliant browsers.
-			//	
-			//}
 		}
 	}
 },
@@ -776,7 +796,110 @@ http = function() {
 	 * either a string containing the response or an object when JSON was
 	 * returned, and `xhr`, a reference to the XMLHttpRequest object used.
 	 */
-	var execute = function(uri, method, data, callback) {
+	var execute = function(uri, /* method, data, */ callback) {
+		var uri = uri,
+			method = "GET",
+			data = null,
+			callback = callback,
+			objStr = "",
+			xhr,
+			qsCharacter = "?";
+
+		GT.http.active ++;
+
+		if(GT.typeOf(arguments[0]) !== "string") {
+			throw new GT.error("Invalid URI specified to http.execute.", uri);
+		}
+		// Allow for lazy parameters:
+		if(GT.typeOf(arguments[1]) === "function") {
+			callback = arguments[1];
+		}
+		else if(GT.typeOf(arguments[1]) === "object") {
+			if("error" in arguments[1]
+			|| "progress" in arguments[1]
+			|| "load" in arguments[1]) {
+				callback = arguments[1];
+			}
+			else {
+				data = arguments[1];
+			}
+		}
+		if(GT.typeOf(arguments[2]) === "function") {
+			callback = arguments[2];
+		}
+		else if(GT.typeOf(arguments[2]) === "object") {
+			if("error" in arguments[2]
+			|| "progress" in arguments[2]
+			|| "load" in arguments[2]) {
+				callback = arguments[2];
+			}
+			else {
+				data = arguments[2];
+			}
+		}
+		if(GT.typeOf(arguments[3]) === "function"
+		|| GT.typeOf(arguments[3]) === "object") {
+			callback = arguments[3];
+		}
+		else if(arguments[3]) {
+			throw new GT.error("Invalid http.execute arguments.", arguments);
+		}
+
+		if(window.XMLHttpRequest) {
+			xhr = new XMLHttpRequest();
+		}
+		else if(window.ActiveXObject) {
+			xhr = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		else {
+			throw new GT.error("XMLHttpRequest cannot be created.");
+		}
+
+		method = method.toUpperCase();
+
+		if(uri.indexOf("?") >= 0) {
+			objStr = url.substring(url.indexOf("?") + 1);
+			url = url.substring(0, url.indexOf("?"));
+		}
+
+		if(method === "GET"
+		|| method === "DELETE") {
+			if(GT.typeOf(data) !== "string") {
+				data = objStr;
+			}
+		}
+
+		if(method === "POST") {
+			xhr.setRequestHeader(
+				"Content-Type", "application/x-www-form-urlencoded");
+		}
+		if(method === "POST"
+		|| method === "PUT") {
+			xhr.open(method, url, true);
+		}
+		else {
+			// TODO: This check seems obsolete - tidy.
+			if(uri.indexOf("?") >= 0) {
+				qsCharacter = "&";
+			}
+			xhr.open(method, url + qsCharacter + objStr, true);
+		}
+
+		// Allow multiple callbacks to be passed as an object.
+		if("progress" in callback) {
+			xhr.addEventListener("progress", callback.progress);
+		}
+		if("error" in callback) {
+			xhr.addEventListener("error", callback.error);
+		}
+
+		xhr.onreadystatechange = function() {
+			var response;
+			if(xhr.readyState === 4) {
+				// TODO: COMPLETE!
+			}
+		};
+
 	};
 
 	return {
@@ -832,12 +955,14 @@ _domElementAccessorES5();
 GT.error = error;
 GT.typeOf = typeOf;
 GT.instanceOf = instanceOf;
+GT.merge = merge;
 
 GT.dom = dom;
 GT.dom.element = DomElement;
 GT.dom.elementCollection = DomElementCollection;
 
-GT.merge = merge;
+GT.http = http;
+GT.http.active = 0;
 
 // Extend GT.dom capabilities.
 GT.merge(GT.dom, _domFunctions);
