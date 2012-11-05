@@ -65,9 +65,9 @@ _GT = function() {
  */
 DomElement = function(el, attrObj, value) {
 	var that = this,
-		dummy = document.createElement("_"),
 		_node = null,
 		prop,
+		elementObject,
 		propsToWrap = [
 			"childNodes",
 			"children",
@@ -117,20 +117,25 @@ DomElement = function(el, attrObj, value) {
 			if(propsToWrap.indexOf(prop) >= 0) {
 				// TODO: Wrap property.
 			}
-			else {
-				this[prop] = _node[prop];
-			}
 		}
 		catch(e) {
 			this[prop] = 0;
 		}
 	}
+
+	// Expose the native node.
 	this._node = _node;
 
-	// Attach all property listeners.
-	_node.constructor.prototype.watch = _domElementPropWatch;
-	_node.watch("textContent", function(v1, v2, v3, v4) {
-		console.log("WIN!!!", v1, v2, v3, v4);
+	// TODO: Attach all property listeners.
+	elementObject = window.Element || window.HTMLElement;
+	if(elementObject
+	&& !elementObject.prototype.watch) {
+		elementObject.prototype.watch = _domElementPropWatch;
+	}
+
+	_node.watch("textContent", function(prop, from, to) {
+		this.innerText = to;
+		return to;
 	});
 
 	return _node;
@@ -157,41 +162,6 @@ DomElementCollection = function(elementList) {
 
 	return domElementArray;
 },
-
-/**
- * Object.watch is a non-standard function in the Gecko rendering engine, added
- * to the current browser's native DOM Element in this shim.
- * Watches for a property to be assigned a value and runs a function when
- * that occurs.
- * @param {string} prop The property name to watch upon.
- * @param {function} callback The function to call when the property changes.
- */
-_domElementPropWatch = function(prop, callback) {
-	var oldval = this[prop], 
-		newval = oldval,
-		getter = function() {
-			return newval;
-		},
-		setter = function(val) {
-			oldval = newval;
-			return newval = callback.call(this, prop, oldval, val);
-		};
-	if (delete this[prop]) { // can't watch constants
-		// ES5-compliant browsers:
-		if(Object.defineProperty) { 
-			Object.defineProperty(this, prop, {
-				get: getter,
-				set: setter
-			});
-		}
-		// Legacy browsers:
-		else if(Object.prototype.__defineGetter__ 
-		&& Object.prototype.__defineSetter__) {
-			Object.prototype.__defineGetter__.call(this, prop, getter);
-			Object.prototype.__defineSetter__.call(this, prop, setter);
-		}
-	}
-};
 
 _domFunctions = {
 	"create": function(el, attrArray, value) {
@@ -247,6 +217,43 @@ _domElementCollectionFunctions = {
 },
 
 /**
+ * Object.watch is a non-standard function in the Gecko rendering 
+ * engine, added to the current browser's native DOM Element in this 
+ * shim.
+ * Watches for a property to be assigned a value and runs a function
+ * when that occurs.
+ * @param {string} prop The property name to watch upon.
+ * @param {function} callback The function to call when the property
+ * changes value.
+ */
+_domElementPropWatch = function(prop, callback) {
+	var oldval = this[prop], 
+		newval = oldval,
+		getter = function() {
+			return newval;
+		},
+		setter = function(val) {
+			oldval = newval;
+			return newval = callback.call(this, prop, oldval, val);
+		};
+	//if(delete this[prop]) { // can't watch constants
+		// ES5-compliant browsers:
+		if(Object.defineProperty) { 
+			Object.defineProperty(this, prop, {
+				get: getter,
+				set: setter
+			});
+		}
+		// Legacy browsers:
+		else if(Object.prototype.__defineGetter__ 
+		&& Object.prototype.__defineSetter__) {
+			Object.prototype.__defineGetter__.call(this, prop, getter);
+			Object.prototype.__defineSetter__.call(this, prop, setter);
+		}
+	//}
+},
+
+/**
  * To allow certain JavaScript features to be usable across all mainstream
  * browsers, shims are functions that are attached to particular objects' 
  * prototypes. Each key in the _shims object represents the object to
@@ -255,6 +262,7 @@ _domElementCollectionFunctions = {
  */
 _shims = {
 	"Object": {
+		
 	},
 	"Array": {
 		/**
@@ -321,27 +329,28 @@ _addShims = function() {
 				continue;
 			}
 
-			/**
-			 * TODO: Try to get IE to play ball one last time, then if not we'll
-			 * just have to get EVERYTHING in a method... not as sexy but owell.
-			 */
-
+			// W3C compliant browsers:
 			try {
-				Object.defineProperty(
-					window[obj].prototype, 
-					def,
-					{
-						"enumerable": false,
-						"configurable": true,
-						"writable": false,
-						"value": _shims[obj][def],
-					}
-				);
+				Object.defineProperty(window[obj].prototype, def, {
+					"enumerable": false,
+					"configurable": true,
+					"writable": false,
+					"value": _shims[obj][def]
+				});
 			}
+			// Legacy browsers:
+			//else if(Object.prototype.__defineGetter__ 
+			//&& Object.prototype.__defineSetter__) {
+			//	Object.prototype.__defineGetter__.call(this, prop, getter);
+			//	Object.prototype.__defineSetter__.call(this, prop, setter);
+			//}
 			catch(e) {
-				// For non ES5-compliant browsers.
 				window[obj].prototype[def] = _shims[obj][def];
 			}
+			//catch(e) {
+				// For non ES5-compliant browsers.
+			//	
+			//}
 		}
 	}
 },
