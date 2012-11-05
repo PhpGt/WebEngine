@@ -22,6 +22,7 @@
  * Internet Explorer 8+, Safari 5+.
  */
 ;(function() {
+var _readyQueue = [],		// Stores a list of callbacks to invoke on DOMReady.
 /**
  * This function represents the function that is attached to the window as 
  * window.GT, and also acts as a shorthand function for many of the features
@@ -37,14 +38,12 @@
  * string or regular expression to match on the current window.location.href.
  * If there is no match, the function will be ignored.
  */
-var _GT = function() {
+_GT = function() {
 	if(GT.typeOf(arguments[0]) === "function") {
-		console.log("Function added.");
-		return;
+		return _readyAdd(arguments[0], arguments[1]);
 	}
 	if(GT.typeOf(arguments[0]) === "string") {
-		console.log("CSS selector");
-		return;
+		return dom(arguments[0], arguments[1]);
 	}
 	if(GT.instanceOf(arguments[0], GT.baseType("NodeList"))
 	|| GT.instanceOf(arguments[0], GT.baseType("Node")) ){
@@ -108,7 +107,6 @@ DomElement = function(el, attrObj, value) {
 		_node.textContent = value;
 	}
 
-`
 	// Copy all properties from the native node to the DomElement, but skip
 	// any that need references to DomElement objects themselves.
 	for(prop in _node) {
@@ -138,8 +136,26 @@ DomElement = function(el, attrObj, value) {
 	return _node;
 },
 
-DomElementCollection = function(elArray) {
-	this.value = "I AM AN ELEMENT COLLECTION!";
+/**
+ * Represents a colelction of GT.dom.element objects, which can be iterated
+ * as an array. Can be built from a single element, a NodeList, or an array of
+ * native Dom elements.
+ */
+DomElementCollection = function(elementList) {
+	var elementListLen = elementList.length,
+		i = 0,
+		domElement,
+		domElementArray = [];
+	for(; i < elementListLen; i++) {
+		// Ensure the current node is wrapped in a GT DomElement.
+		domElement = elementList[i];
+		if(GT.typeOf(elementList[i]) !== "domelement") {
+			domElement = new DomElement(domElement);
+		}
+		domElementArray.push(new DomElement(elementList[i]));
+	}
+
+	return domElementArray;
 },
 
 /**
@@ -328,6 +344,87 @@ _addShims = function() {
 			}
 		}
 	}
+},
+
+/**
+ * Internal function.
+ * Adds a callback function to the DOM ready queue, stored as an array in
+ * _readyQueue. Callbacks will only be added to the readyQueue if the given page
+ * matches the current URL. The page match can either be a string or a RegExp.
+ * @param {function} callback The function to invoke when DOMReady event fires.
+ * @param {string|RegExp} [page] The URL to match in order to add to the queue.
+ * @return {bool} True if the callback was added.
+ */
+_readyAdd = function(callback, page) {
+	var pathname = window.location.pathname;
+
+	if(page) {
+		if(GT.typeOf(page) === "regexp") {
+			if(!page.test(pathname)) {
+				return false;
+			}
+		}
+		else {
+			if(page !== pathname) {
+				return false;
+			}
+		}
+	}
+
+	_readyQueue.push(callback);
+	return true;
+},
+
+/**
+ * Invokes all callbacks stored in the ready queue.
+ * @return {int} The number of callbacks invoked.
+ */
+_readyInvoke = function() {
+	var readyQueueLen = _readyQueue.length,
+		i = 0;
+	for(; i < readyQueueLen; i++) {
+		_readyQueue[i]();
+	}
+
+	return readyQueueLen;
+},
+
+/**
+ * Internal function.
+ * Creates an event listener on the DOM Ready event, and inbokes the load queue
+ * when it fires.
+ */
+_readyListen = function() {
+	// W3C compliant browsers:
+	if(document.addEventListener) {
+		document.addEventListener("DOMContentLoaded", function() {
+			document.removeEventListener(
+				"DOMContentLoaded", 
+				arguments.callee,
+				false
+			);
+			_readyInvoke();
+
+		}, false);
+	}
+	// Legacy browsers:
+	else if(document.attachEvent) {
+		document.attachEvent("onreadystatechange", function() {
+			if(document.readyState === "complete") {
+				document.detachEvent(
+					"onreadystatechange",
+					arguments.callee
+				);
+				_readyInvoke();
+				return;
+			}
+		});
+	}
+	else {
+		throw new GT.error("Cannot add DOM Ready event listener.");
+	}
+
+	return;
 },
 
 /**
@@ -538,8 +635,13 @@ api = function() {
  * @param {GT.dom.element} [context] The context to execute the CSS selector in.
  * This defaults to window.document.
  */
+// TODO: Context could be a NodeList / DomElementCollection, in which case,
+// it should use the first element as the context.
 dom = function(selector, context) {
-	return "SELECTED ELEMT";
+	var context = context || document,
+		selection = context.querySelectorAll(selector);
+
+	return new DomElementCollection(selection);
 },
 
 /**
@@ -572,6 +674,9 @@ GT.merge = merge;
 
 // Extend GT.dom capabilities.
 GT.merge(GT.dom, _domFunctions);
+
+// GT is now ready, attach the ready listener to the DOM.
+_readyListen();
 return;
 
 })();
