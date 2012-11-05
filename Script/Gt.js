@@ -65,24 +65,15 @@ _GT = function() {
  */
 DomElement = function(el, attrObj, value) {
 	var that = this,
-		_node = null,
+		node = null,
 		prop,
-		elementObject,
-		propsToWrap = [
-			"childNodes",
-			"children",
-			"firstChild",
-			"lastChild",
-		];
+		elementObject;
 
 	if(GT.instanceOf(el, "Node")) {
-		_node = el;
+		node = el;
 	}
 	else if(GT.typeOf(el) === "string") {
-		_node = document.createElement(el);
-	}
-	else if(GT.typeOf(el) === "domelement") {
-		_node = el._node;
+		node = document.createElement(el);
 	}
 	else {
 		throw new GT.error(
@@ -94,7 +85,7 @@ DomElement = function(el, attrObj, value) {
 			if(!attrObj.hasOwnProperty(prop)) {
 				continue;
 			}
-			_node.setAttribute(prop, attrObj[prop]);
+			node.setAttribute(prop, attrObj[prop]);
 		}
 	}
 	else if(GT.typeOf(attrObj) === "string") {
@@ -104,38 +95,44 @@ DomElement = function(el, attrObj, value) {
 	}
 
 	if(value) {
-		_node.textContent = value;
+		node.textContent = value;
 	}
 
-	// Copy all properties from the native node to the DomElement, but skip
-	// any that need references to DomElement objects themselves.
-	for(prop in _node) {
-		try {
-			//if(!Object.prototype.hasOwnProperty.call(_node, prop)) {
-			//	continue;
-			//}
-			if(propsToWrap.indexOf(prop) >= 0) {
-				// TODO: Wrap property.
-			}
+	// Attach all property listeners.
+	for(prop in _domPropHandlers) {
+		if(!_domPropHandlers.hasOwnProperty(prop)) {
+			continue;
 		}
-		catch(e) {
-			this[prop] = 0;
-		}
+		(function(c_prop) {
+			node.__defineGetter__(c_prop, function() {
+				var getter = this.__lookupGetter__(c_prop),
+					setter = this.__lookupSetter__(c_prop),
+					clone = node.cloneNode(true),
+					oldVal = clone[c_prop],
+					result = null;
+				delete this[c_prop];
+				this[c_prop] = oldVal;
+
+				result = _domPropHandlers[c_prop].get.call(this);
+				this.__defineGetter__(c_prop, getter);
+				this.__defineSetter__(c_prop, setter);
+
+				return result;
+			});
+			node.__defineSetter__(c_prop, function(val) {
+				var getter = this.__lookupGetter__(c_prop),
+					setter = this.__lookupSetter__(c_prop),
+					oldVal = this[c_prop];
+				delete this[c_prop];
+				this[c_prop] = oldVal;
+				_domPropHandlers[c_prop].set.call(this, val);
+				this.__defineGetter__(c_prop, getter);
+				this.__defineSetter__(c_prop, setter);
+			});
+		})(prop);
 	}
 
-	// Expose the native node.
-	this._node = _node;
-
-	// TODO: Attach all property listeners.
-	_node.__defineSetter__("something", function() {
-		alert("YOU REALY ARE GOOD LOLOLASUGHN");
-	});
-
-	_node.__defineGetter__("something", function() {
-		return "SOMETHINGLOLOLOLOL";
-	});
-
-	return _node;
+	return node;
 },
 
 /**
@@ -160,6 +157,19 @@ DomElementCollection = function(elementList) {
 	return domElementArray;
 },
 
+_domPropHandlers = {
+	"textContent": { "get": function() {
+		return this.textContent;
+	}, "set": function(val) {
+		this.innerText = val;
+		return this.textContent = val;
+	}},
+	"children": { "get": function() {
+		console.log("getting children");
+	}, "set": function(val) {
+		console.log("setting children");
+	}},
+},
 _domFunctions = {
 	"create": function(el, attrArray, value) {
 		return "CREATED ELEMENT";
