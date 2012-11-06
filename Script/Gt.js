@@ -686,6 +686,9 @@ error = function(message, obj) {
  * Returns a string representation of the type of the passed in object.
  */
 typeOf = function(obj) {
+	if(typeof obj === "undefined") { 
+		return "undefined";
+	}
 	return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
 },
 /**
@@ -791,12 +794,48 @@ ready = function(callback, page) {
 },
 
 /**
+ * Converts a query string to an object mapping keys and values from a given
+ * string, or the current window's URI string if none is given.
+ * @param {string} [queryString] String to convert.
+ * @return {object} KVP of given queryString.
+ */
+params = function(queryString) {
+	var result = {},
+		key,
+		value,
+		arr = [],
+		arrLen,
+		i = 0;
+	if(!queryString) {
+		queryString = window.location.search;
+	}
+	if(queryString[0] === "?") {
+		queryString = queryString.substring(1);
+	}
+
+	arr = queryString.split("&");
+	arrLen = arr.length;
+	for(; i < arrLen; i++) {
+		key = arr[i];
+		value = "";
+		if(arr[i].indexOf("=") > 0) {
+			key = arr[i].substring(0, arr[i].indexOf("="));
+			value = arr[i].substring(arr[i].indexOf("=") + 1);
+		}
+		result[key] = value;
+	}
+
+	return result;
+},
+
+/**
  * Used to perform asynchronous HTTP requests. Automatically parses the response
- * by converting to JSON wherever possible. For connection pooling, the GT.http
+ * by converting to JSON wherever possible. For connection pooling, the GT.Http
  * object is instantiated with `new`.
  *
  */
-http = function() {
+Http = function() {
+	var httpParent = this;
 	/**
 	 * @param {string} uri The HTTP URI to connect to with or without query 
 	 * string parameters. For HTTP GET and DELETE methods, the data parameter
@@ -819,17 +858,19 @@ http = function() {
 			method = "GET",
 			data = null,
 			callback = callback,
+			obj = {},
 			objStr = "",
 			xhr,
 			qsCharacter = "?";
-
-		GT.http.active ++;
 
 		if(GT.typeOf(arguments[0]) !== "string") {
 			throw new GT.error("Invalid URI specified to http.execute.", uri);
 		}
 		// Allow for lazy parameters:
-		if(GT.typeOf(arguments[1]) === "function") {
+		if(GT.typeOf(arguments[1]) === "string") {
+			method = arguments[1];
+		}
+		else if(GT.typeOf(arguments[1]) === "function") {
 			callback = arguments[1];
 		}
 		else if(GT.typeOf(arguments[1]) === "object") {
@@ -879,18 +920,22 @@ http = function() {
 			objStr = uri.substring(uri.indexOf("?") + 1);
 			uri = uri.substring(0, uri.indexOf("?"));
 		}
+		if(GT.typeOf(data) === "string") {
+			obj = GT.params(data);
+		}
+		else {
+			obj = data;
+		}
 
 		if(method === "GET"
 		|| method === "DELETE") {
 			if(GT.typeOf(data) !== "string") {
-				data = objStr;
+				obj = objStr;
 			}
 		}
+		
+		console.log("obj: ", obj);
 
-		if(method === "POST") {
-			xhr.setRequestHeader(
-				"Content-Type", "application/x-www-form-urlencoded");
-		}
 		if(method === "POST"
 		|| method === "PUT") {
 			xhr.open(method, uri, true);
@@ -903,26 +948,67 @@ http = function() {
 			xhr.open(method, uri + qsCharacter + objStr, true);
 		}
 
-		// Allow multiple callbacks to be passed as an object.
-		if("progress" in callback) {
-			xhr.addEventListener("progress", callback.progress);
-		}
-		if("error" in callback) {
-			xhr.addEventListener("error", callback.error);
+		if(method === "POST") {
+			xhr.setRequestHeader(
+				"Content-Type", "application/x-www-form-urlencoded");
 		}
 
+		// Allow multiple callbacks to be passed as an object.
+		if(GT.typeOf(callback) === "object") {
+			if("progress" in callback) {
+				xhr.addEventListener("progress", callback.progress);
+			}
+			if("error" in callback) {
+				xhr.addEventListener("error", callback.error);
+			}			
+		}
+
+		// Check readyState, for legacy browsers (avoiding early callbacks).
 		xhr.onreadystatechange = function() {
 			var response;
 			if(xhr.readyState === 4) {
-				// TODO: COMPLETE!
+				GT.Http.active --;
+				response = xhr.response || xhr.responseText;
+
+				// Quick and dirty JSON detection (skipping real detection 
+				// first for efficiency).
+				if(response[0] === "{" || response[0] === "[") {
+					// Perform real JSON detection (slower).
+					try {
+						response = JSON.parse(response);
+					}
+					catch(e) {}
+				}
+
+				if(GT.typeOf(callback) === "function") {
+					callback.call(new GT.Http.Xhr(xhr), response);
+				}
+				else if(GT.typeOf(callback) === "object") {
+					if("load" in callback) {
+						callback.load.call(new GT.Http.Xhr(xhr), response);
+					}
+				}
 			}
 		};
 
+		GT.Http.active ++;
+
+		if(method === "POST"
+		|| method === "PUT") {
+			xhr.send(objStr);
+		}
+		else {
+			xhr.send();
+		}
 	};
 
 	return {
 		"execute": execute
 	}
+},
+Xhr = function(xhr) {
+	xhr.response = xhr.response || xhr.responseText;
+	return xhr;
 },
 
 /**
@@ -974,13 +1060,15 @@ GT.error = error;
 GT.typeOf = typeOf;
 GT.instanceOf = instanceOf;
 GT.merge = merge;
+GT.params = params;
 
 GT.dom = dom;
 GT.dom.element = DomElement;
 GT.dom.elementCollection = DomElementCollection;
 
-GT.http = http;
-GT.http.active = 0;
+GT.Http = Http;
+GT.Http.Xhr = Xhr;
+GT.Http.active = 0;
 
 // Extend GT.dom capabilities.
 GT.merge(GT.dom, _domFunctions);
