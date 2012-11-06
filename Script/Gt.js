@@ -184,12 +184,18 @@ _domPropHandlers = {
 	//	return this.setAttribute("href", val);
 	//}},
 
+	"classList": { "get": function() {
+		return;
+	}, "set": function(val) {
+		return;
+	}},
+
 	// Test:
 	"madeUpProperty": { "get": function() {
 		return "this is made up";
 	}, "set": function(val) {
 		return;
-	}}
+	}},
 },
 
 /**
@@ -223,24 +229,6 @@ _domElementFunctions = {
 			}
 			callback.call(that, e);
 		});
-	},
-	"addClass": function(className) {
-		var classRegExp = new RegExp("(^| )" + className + "( |$)");
-		if(!classRegExp.test(this.className)) {
-			this.className = (this.className + " " + className).trim();
-		}
-		return this;
-	},
-	"removeClass": function(className) {
-		var classRegExp = new RegExp("(^| )" + className + "( |$)");
-		if(classRegExp.test(this.className)) {
-			this.className = this.className.replace(classRegExp, " ").trim();
-		}
-		return this;
-	},
-	"toggleClass": function(className) {
-	},
-	"hasClass": function(className) {
 	},
 
 	"appendChild": function(child) {
