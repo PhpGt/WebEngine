@@ -177,15 +177,45 @@ _domPropHandlers = {
 		console.log("setting children");
 	}},
 
-	// Attributes:
-	//"href": { "get": function() {
-	//	return "TWAT!";//this.getAttribute("href");
-	//}, "set": function(val) {
-	//	return this.setAttribute("href", val);
-	//}},
-
 	"classList": { "get": function() {
-		return;
+		var that = this;
+		return function() {
+			var _classList = that.className.split(" ");
+
+			_classList.contains = function(className) {
+				return _classList.indexOf(className) >= 0;
+			};
+			_classList.add = function(className) {
+				var classRegExp = new RegExp("(^| )" + className + "( |$)");
+				if(!classRegExp.test(that.className)) {
+					that.className = (
+						that.className + " " + className).trim();
+				}
+				return className;
+			};
+			_classList.remove = function(className) {
+				var classRegExp = new RegExp("(^| )" + className + "( |$)");
+				if(classRegExp.test(that.className)) {
+					that.className = that.className.replace(
+						classRegExp, " ").trim();
+				}
+				return className;
+			};
+			_classList.toggle = function(className) {
+				if(_classList.contains(className)) {
+					_classList.remove(className);
+				}
+				else {
+					_classList.add(className);
+				}
+				return className;
+			};
+			_classList.item = function(index) {
+				return _classList[index];
+			};
+			
+			return _classList;
+		}();
 	}, "set": function(val) {
 		return;
 	}},
@@ -846,8 +876,8 @@ http = function() {
 		method = method.toUpperCase();
 
 		if(uri.indexOf("?") >= 0) {
-			objStr = url.substring(url.indexOf("?") + 1);
-			url = url.substring(0, url.indexOf("?"));
+			objStr = uri.substring(uri.indexOf("?") + 1);
+			uri = uri.substring(0, uri.indexOf("?"));
 		}
 
 		if(method === "GET"
@@ -863,14 +893,14 @@ http = function() {
 		}
 		if(method === "POST"
 		|| method === "PUT") {
-			xhr.open(method, url, true);
+			xhr.open(method, uri, true);
 		}
 		else {
 			// TODO: This check seems obsolete - tidy.
 			if(uri.indexOf("?") >= 0) {
 				qsCharacter = "&";
 			}
-			xhr.open(method, url + qsCharacter + objStr, true);
+			xhr.open(method, uri + qsCharacter + objStr, true);
 		}
 
 		// Allow multiple callbacks to be passed as an object.
