@@ -90,7 +90,8 @@ a * {
  ******************************************************************************/
 
 .hidden {
-   opacity: 0;
+   visibility: hidden;
+   display: none;
 }
 
 html, body.gtapp {
@@ -121,6 +122,7 @@ body.gtapp pre {
 body.gtapp > header {
    position: relative;
    height: 64px;
+   z-index: 100;
 }
 body.gtapp > header:not(.undiscovered) {
    border: 1px solid rgba(0, 0, 0, 0.2);
@@ -173,10 +175,12 @@ body.gtapp > header > div.centrePanel {
    top: 0;
    left: 256px;
    right: 256px;
+   height: 50px;
    padding: 4px 0;
+   text-align: center;
 }
 body.gtapp > header > div.centrePanel > div.quickList {
-   margin: 2px 64px;
+   margin: 2px 0;
    height: 50px;
    border: 1px solid rgba(0, 0, 0, 0.0);
    border-radius: 4px;
@@ -185,12 +189,96 @@ body.gtapp > header > div.centrePanel > div.quickList {
 }
 body.gtapp > header > div.centrePanel > div.quickList:hover {
 }
+body.gtapp > header > div.centrePanel input#tb_search {
+	display: block;
+	width: 100%;
+	max-width: 640px;
+	height: 48px;
+	margin: 0 auto;
+	box-shadow: none !important;
+	font-size: 16px;
+}
+body.gtapp > header > div.centrePanel input#tb_search:focus {
+   box-shadow: inset rgba(255, 255, 255, 0.6) 0 3px 3px, 
+      inset rgba(0, 0, 0, 0.2) 0 -1px 1px,
+      /* inner shadow */ 
+      rgba(0, 0, 0, 0.6) 0 1px 1px,
+      /* outer shadow */
+      rgba(0, 0, 0, 0.2) 0 2px 10px,
+      /* colour border */
+      #8dbefc 0 0 0 4px !important;
+}
 body.gtapp > header > div.centrePanel > button {
    position: absolute;
    top: 13px;
    right: 0;
    min-width: 0;
    width: 38px;
+}
+body.gtapp > header > div.centrePanel ul#searchResults {
+   position: absolute;
+   left: 0;
+   right: 0;
+   max-width: 640px;
+   margin: 0 auto;
+   z-index: 10;
+   background: #fff;
+   height: 512px;
+   overflow-y: auto;
+   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+}
+body.gtapp > header > div.centrePanel ul#searchResults li {
+   position: relative;
+   height: 32px;
+   overflow: hidden;
+   text-align: left;
+   background: #fdfdfd;
+}
+body.gtapp > header > div.centrePanel ul#searchResults li:nth-child(even) {
+   background: #f8f8f8;
+}
+body.gtapp > header > div.centrePanel ul#searchResults li.selected {
+   background: #8DBEFC;  
+}
+body.gtapp > header > div.centrePanel ul#searchResults li h1 {
+   display: inline-block;
+   font-weight: normal;
+   padding: 8px;
+   width: 40%;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+body.gtapp > header > div.centrePanel ul#searchResults li h2 {
+   display: inline-block;
+   font-weight: normal;
+   margin-left: 16px;
+   width: 80px;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+body.gtapp > header > div.centrePanel ul#searchResults li span {
+   display: inline-block;
+   font-weight: normal;
+   width: 80px;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+body.gtapp > header > div.centrePanel ul#searchResults li a.select {
+   position: absolute;
+   display: block;
+   left: 0;
+   right: 0;
+   top: 0;
+   bottom: 0;
+   text-align: right;
+   padding-right: 16px;
+   text-decoration: none;
+   line-height: 28px;
+   color: #000;
+   font-weight: bold;
 }
 body.gtapp > header > div.actionButtons {
    float: right;
@@ -228,14 +316,15 @@ body.gtapp > aside {
    top: 0;
    left: 0;
    width: 300px;
-   z-index: 100;
+}
+
+body.gtapp.noSidebar > aside {
+   display: none;
+   visibility: hidden;
 }
 
 body.gtapp > aside > nav {
-   margin-top: 58px;
-}
-body.gtapp > aside > nav.alignTop {
-   margin-top: 3px;
+   margin-top: 70px;
 }
 
 body.gtapp > aside > nav > ul {
@@ -330,22 +419,53 @@ body.gtapp > aside > nav > ul li i {
 body.gtapp div#main {
    position: absolute;
    top: 68px;
-   left: 0;
+   left: 320px;
    right: 0;
    bottom: 26px;
 }
-body.gtapp div.noSidebar#main {
-   left: 0; 
+
+body.gtapp.noSidebar div#main {
+   left: 0;
 }
 
 body.gtapp div#main h1 {
    font-size: 32px;
    font-weight: normal;
-   /*margin-bottom: 32px;*/
 }
 
 body.gtapp div#main p {
    margin-bottom: 16px;
+}
+
+body.gtapp div#main section.small {
+	background: #fff;
+	margin: 64px 20%;
+	box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+body.gtapp div#main section > h1 {
+	background: rgba(0, 0, 0, 0.6);
+	color: #fff;
+	font-size: 24px;
+	padding: 8px;
+}
+body.gtapp div#main section p {
+	padding: 8px;
+}
+body.gtapp div#main section p:last-child {
+	margin-bottom: 0;
+}
+body.gtapp div#main section > form {
+	padding: 8px;
+}
+body.gtapp div#main section div.buttons {
+	text-align: right;
+}
+
+body.gtapp div#main > h1 {
+   margin-top: 8px;
 }
 
 body.gtapp button,
@@ -391,6 +511,9 @@ body.gtapp a.button.focus {
       rgba(0, 0, 0, 0.2) 0 2px 10px,
       /* colour border */
       #8dbefc 0 0 0 4px !important;
+}
+body.gtapp a:focus {
+   text-decoration: underline !important;
 }
 body.gtapp button:hover,
 body.gtapp a.button:hover {
@@ -505,6 +628,21 @@ body.gtapp button.dropdown div.menu::after {
 body.gtapp button.dropdown div.menu * {
    z-index: 1010;
 }
+body.gtapp button.dropdown div.menu ul {
+
+}
+body.gtapp button.dropdown div.menu ul li {
+   
+}
+body.gtapp button.dropdown div.menu ul li a {
+   display: block;
+   padding: 8px;
+   color: #000;
+   text-decoration: none;
+}
+body.gtapp button.dropdown div.menu ul li a:hover {
+   background: #fff;
+}
 body.gtapp button.lesser {
    background: transparent;
    box-shadow: none;
@@ -575,7 +713,7 @@ body.gtapp div#user:hover button.avatar::after {
    opacity: 1;
 }
 
-body.gtapp input {
+body.gtapp input:not([type="file"]) {
    border: 1px solid rgba(0, 0, 0, 0.2);
    border-radius: 2px;
    padding: 4px;

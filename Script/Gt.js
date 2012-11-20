@@ -24,6 +24,7 @@
 ;(function() {
 var _readyQueue = [],		// Stores a list of callbacks to invoke on DOMReady.
 	_templates = {},		// KVP of ttemplated DOM Elements.
+	_activeXhr = 0,
 /**
  * This function represents the function that is attached to the window as 
  * window.GT, and also acts as a shorthand function for many of the features
@@ -701,6 +702,13 @@ _invokeLoadQueue = function() {
 
 },
 
+querySelector = function() {
+	return document.querySelector.apply(document, arguments);
+},
+querySelectorAll = function() {
+	return document.querySelectorAll.apply(document, arguments);
+},
+
 /**
  * Creates an exception object with an optional object to report to the console.
  *
@@ -854,186 +862,172 @@ params = function(queryString) {
 
 /**
  * Used to perform asynchronous HTTP requests. Automatically parses the response
- * by converting to JSON wherever possible. For connection pooling, the GT.Http
- * object is instantiated with `new`.
- *
+ * by converting to JSON wherever possible. 
+ * Pass no parameters to obtain the current number of active requests.
  */
-Http = function() {
-	var httpParent = this;
-	/**
-	 * @param {string} uri The HTTP URI to connect to with or without query 
-	 * string parameters. For HTTP GET and DELETE methods, the data parameter
-	 * will be converted to a query string as these methods do not allow data
-	 * in the body.
-	 * @param {string} [method] Defaults to GET, can be either GET, POST, PUT
-	 * or DELETE.
-	 * @param {object|string} [data] The key-value-pair object to place in the 
-	 * request body. Optionally, a querystring style string can be used. When
-	 * data is passed in on GET or DELETE methods, the keys are moved to the
-	 * querystring, as they do not allow data in the request body. If there is 
-	 * already a querystring, an exception is thrown.
-	 * @param {function} [callback] The callback to invoke when the HTTP request
-	 * gets a response. The callback is passed two parameters: `responseData`,
-	 * either a string containing the response or an object when JSON was
-	 * returned, and `xhr`, a reference to the XMLHttpRequest object used.
-	 */
-	var execute = function(uri, /* method, data, */ callback) {
-		var uri = uri,
-			method = "GET",
-			data = null,
-			callback = callback,
-			obj = {},
-			objStr = "",
-			xhr,
-			qsCharacter = "?";
+http = function(uri, /* method, data, */ callback) {
+	var uri = uri,
+		method = "GET",
+		data = null,
+		callback = callback,
+		obj = {},
+		objStr = "",
+		xhr,
+		qsCharacter = "?",
+		prop;
+	if(arguments.length === 0) {
+		return _activeXhr;
+	}
 
-		if(GT.typeOf(arguments[0]) !== "string") {
-			throw new GT.error("Invalid URI specified to http.execute.", uri);
-		}
-		// Allow for lazy parameters:
-		if(GT.typeOf(arguments[1]) === "string") {
-			method = arguments[1];
-		}
-		else if(GT.typeOf(arguments[1]) === "function") {
+	if(GT.typeOf(arguments[0]) !== "string") {
+		throw new GT.error("Invalid URI specified to xhr.", uri);
+	}
+	// Allow for lazy parameters:
+	if(GT.typeOf(arguments[1]) === "string") {
+		method = arguments[1];
+	}
+	else if(GT.typeOf(arguments[1]) === "function") {
+		callback = arguments[1];
+	}
+	else if(GT.typeOf(arguments[1]) === "object") {
+		if("error" in arguments[1]
+		|| "progress" in arguments[1]
+		|| "load" in arguments[1]) {
 			callback = arguments[1];
 		}
-		else if(GT.typeOf(arguments[1]) === "object") {
-			if("error" in arguments[1]
-			|| "progress" in arguments[1]
-			|| "load" in arguments[1]) {
-				callback = arguments[1];
-			}
-			else {
-				data = arguments[1];
-			}
+		else {
+			data = arguments[1];
 		}
-		if(GT.typeOf(arguments[2]) === "function") {
+	}
+	if(GT.typeOf(arguments[2]) === "function") {
+		callback = arguments[2];
+	}
+	else if(GT.typeOf(arguments[2]) === "object") {
+		if("error" in arguments[2]
+		|| "progress" in arguments[2]
+		|| "load" in arguments[2]) {
 			callback = arguments[2];
 		}
-		else if(GT.typeOf(arguments[2]) === "object") {
-			if("error" in arguments[2]
-			|| "progress" in arguments[2]
-			|| "load" in arguments[2]) {
-				callback = arguments[2];
-			}
-			else {
-				data = arguments[2];
-			}
-		}
-		if(GT.typeOf(arguments[3]) === "function"
-		|| GT.typeOf(arguments[3]) === "object") {
-			callback = arguments[3];
-		}
-		else if(arguments[3]) {
-			throw new GT.error("Invalid http.execute arguments.", arguments);
-		}
-
-		if(window.XMLHttpRequest) {
-			xhr = new XMLHttpRequest();
-		}
-		else if(window.ActiveXObject) {
-			xhr = new ActiveXObject("Microsoft.XMLHTTP");
-		}
 		else {
-			throw new GT.error("XMLHttpRequest cannot be created.");
+			data = arguments[2];
 		}
+	}
+	if(GT.typeOf(arguments[3]) === "function"
+	|| GT.typeOf(arguments[3]) === "object") {
+		callback = arguments[3];
+	}
+	else if(arguments[3]) {
+		throw new GT.error("Invalid xhr arguments.", arguments);
+	}
 
-		method = method.toUpperCase();
+	if(window.XMLHttpRequest) {
+		xhr = new XMLHttpRequest();
+	}
+	else if(window.ActiveXObject) {
+		xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else {
+		throw new GT.error("XMLHttpRequest cannot be created.");
+	}
 
+	method = method.toUpperCase();
+
+	if(uri.indexOf("?") >= 0) {
+		objStr = uri.substring(uri.indexOf("?") + 1);
+		uri = uri.substring(0, uri.indexOf("?"));
+	}
+	if(GT.typeOf(data) === "string") {
+		obj = GT.params(data);
+	}
+	else {
+		obj = data;
+	}
+
+	if(method === "GET"
+	|| method === "DELETE") {
+		if(GT.typeOf(data) !== "string") {
+			for(prop in data) {
+				if(!data.hasOwnProperty(prop)) {
+					continue;
+				}
+				if(objStr.length > 0) {
+					objStr += "&";
+				}
+				objStr += encodeURIComponent(prop);
+				objStr += "=";
+				objStr += encodeURIComponent(data[prop]);
+			}
+			obj = objStr;
+		}
+	}
+
+	if(method === "POST"
+	|| method === "PUT") {
+		xhr.open(method, uri, true);
+	}
+	else {
+		// TODO: This check seems obsolete - tidy.
 		if(uri.indexOf("?") >= 0) {
-			objStr = uri.substring(uri.indexOf("?") + 1);
-			uri = uri.substring(0, uri.indexOf("?"));
+			qsCharacter = "&";
 		}
-		if(GT.typeOf(data) === "string") {
-			obj = GT.params(data);
-		}
-		else {
-			obj = data;
-		}
+		xhr.open(method, uri + qsCharacter + objStr, true);
+	}
 
-		if(method === "GET"
-		|| method === "DELETE") {
-			if(GT.typeOf(data) !== "string") {
-				obj = objStr;
-			}
-		}
-		
-		console.log("obj: ", obj);
+	if(method === "POST") {
+		xhr.setRequestHeader(
+			"Content-Type", "application/x-www-form-urlencoded");
+	}
 
-		if(method === "POST"
-		|| method === "PUT") {
-			xhr.open(method, uri, true);
+	// Allow multiple callbacks to be passed as an object.
+	if(GT.typeOf(callback) === "object") {
+		if("progress" in callback) {
+			xhr.addEventListener("progress", callback.progress);
 		}
-		else {
-			// TODO: This check seems obsolete - tidy.
-			if(uri.indexOf("?") >= 0) {
-				qsCharacter = "&";
-			}
-			xhr.open(method, uri + qsCharacter + objStr, true);
-		}
+		if("error" in callback) {
+			xhr.addEventListener("error", callback.error);
+		}			
+	}
 
-		if(method === "POST") {
-			xhr.setRequestHeader(
-				"Content-Type", "application/x-www-form-urlencoded");
-		}
+	// Check readyState, for legacy browsers (avoiding early callbacks).
+	xhr.onreadystatechange = function() {
+		var response;
+		if(xhr.readyState === 4) {
+			_activeXhr --;
+			response = xhr.response || xhr.responseText;
 
-		// Allow multiple callbacks to be passed as an object.
-		if(GT.typeOf(callback) === "object") {
-			if("progress" in callback) {
-				xhr.addEventListener("progress", callback.progress);
-			}
-			if("error" in callback) {
-				xhr.addEventListener("error", callback.error);
-			}			
-		}
-
-		// Check readyState, for legacy browsers (avoiding early callbacks).
-		xhr.onreadystatechange = function() {
-			var response;
-			if(xhr.readyState === 4) {
-				GT.Http.active --;
-				response = xhr.response || xhr.responseText;
-
-				// Quick and dirty JSON detection (skipping real detection 
-				// first for efficiency).
-				if(response[0] === "{" || response[0] === "[") {
-					// Perform real JSON detection (slower).
-					try {
-						response = JSON.parse(response);
-					}
-					catch(e) {}
+			// Quick and dirty JSON detection (skipping real detection 
+			// first for efficiency).
+			if(response[0] === "{" || response[0] === "[") {
+				// Perform real JSON detection (slower).
+				try {
+					response = JSON.parse(response);
 				}
+				catch(e) {}
+			}
 
-				if(GT.typeOf(callback) === "function") {
-					callback.call(new GT.Http.Xhr(xhr), response);
-				}
-				else if(GT.typeOf(callback) === "object") {
-					if("load" in callback) {
-						callback.load.call(new GT.Http.Xhr(xhr), response);
-					}
+			if(GT.typeOf(callback) === "function") {
+				callback.call(xhr, response);
+			}
+			else if(GT.typeOf(callback) === "object") {
+				if("load" in callback) {
+					callback.load.call(xhr, response);
 				}
 			}
-		};
-
-		GT.Http.active ++;
-
-		if(method === "POST"
-		|| method === "PUT") {
-			xhr.send(objStr);
-		}
-		else {
-			xhr.send();
 		}
 	};
 
-	return {
-		"execute": execute
+	_activeXhr ++;
+
+	if(method === "POST"
+	|| method === "PUT") {
+		xhr.send(objStr);
 	}
-},
-Xhr = function(xhr) {
-	xhr.response = xhr.response || xhr.responseText;
+	else {
+		xhr.send();
+	}
+
 	return xhr;
-},
+};
 
 /**
  * Used as a shorthand function to interact with PHP.Gt's public HTTP APIs.
@@ -1069,6 +1063,96 @@ template = function(name) {
 
 tool = function() {
 
+},
+
+ui = function() {
+
+},
+ui.dropdownMenu = function(button, name, contents, e) {
+	var menu,
+		name = name || "",
+		contents = contents || null,
+		childLen = button.children.length,
+		i = 0,
+		btnStyle, btnWidth,
+		helperClass = "gt-dropdownWidthHelper",
+		helperRand,
+		newStyle;
+
+	if(e) {
+		if(e.target !== button) {
+			return;
+		}
+	}
+	for(0; i < childLen; i++) {
+		if(button.children[i].classList.contains("menu")) {
+			menu = button.children[i];
+		}
+	}
+
+	if(!menu) {
+		menu = document.createElement("div");
+		menu.classList.add("menu", name);
+		if(contents) {
+			menu.appendChild(contents);
+		}
+		button.appendChild(menu);
+		button.classList.add("active");
+
+		// Ensure the psedo-element gets the correct width of the clicked button
+		if(button.classList.contains(helperClass)) {
+			helperRand = ("-" + (Math.random() * 1000)).replace(".", "_");
+			button.classList.add(helperClass + helperRand);
+			btnStyle = getComputedStyle(button);
+			btnWidth = (parseInt(btnStyle.width, 10) - 2) + "px";
+			newStyle = document.createElement("style");
+			newStyle.type = "text/css";
+			newStyle.innerText = "button." + helperClass + helperRand
+				+ " div.menu::after { width: " + btnWidth + " !important; }"
+			document.head.appendChild(newStyle);
+		}
+
+		var cancelClick = function(e) {
+			return;
+
+			// TODO: When GT DOM wrapper is made, this will be a piece of cake.
+			if(GT(e.target).hasParent(menu)) {
+				return;
+			}
+			menu.remove();
+			button.classList.remove("active");
+			window.removeEventListener("mousedown", arguments.callee);
+		};
+
+		// Add listener to click off the dropdown menu.
+		window.addEventListener("mousedown", cancelClick);
+	}
+	else {
+		menu.parentElement.removeChild(menu);
+		button.classList.remove("active");
+	}
+},
+/**
+ * Provides linear interpolation between two points with optional smoothing.
+ */
+ui.lerp = function(start, end, scalar, smoothing) {
+	var interpolant;
+	if(smoothing === true) {
+		scalar = GT.ui.smooth(scalar);
+	}
+	else if(typeof smoothing === "function") {
+		scalar = smoothing(scalar);
+	}
+	interpolant = (end - start) * scalar;
+
+	return interpolant;
+},
+
+/**
+ * Converts a scalar into a smoothed scalar.
+ */
+ui.smooth = function(scalar) {
+	return (-Math.cos(Math.PI * scalar) + 1) / 2;
 };
 
 // Attach the GT object to the window, exposing the namespace as a global.
@@ -1093,20 +1177,18 @@ GT.dom = dom;
 GT.dom.element = DomElement;
 GT.dom.elementCollection = DomElementCollection;
 
-GT.Http = Http;
-GT.Http.Xhr = Xhr;
-GT.Http.active = 0;
-
 // Extend GT.dom capabilities.
 GT.merge(GT.dom, _domFunctions);
 
 // Export globals:
 window.go = readyAdd;
 window.api = "TODO";
-window.qs = "TODO";
-window.qsa = "TODO";
+window.qs = querySelector;
+window.qsa = querySelectorAll;
 window.template = template;
 window.tool = "TODO";
+window.http = http;
+window.ui = ui;
 
 // GT is now ready, attach the ready listener to the DOM.
 _readyListen();
