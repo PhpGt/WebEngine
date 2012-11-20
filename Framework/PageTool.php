@@ -11,16 +11,26 @@
  * Common tools are provided with PHP.Gt, but application specific tools can
  * be used to keep the PageCode clean.
  */
+protected $name = null;
 protected $_api = null;
 protected $_dom = null;
 protected $_template = null;
 protected $_tool = null;
 
 public function __construct($api, $dom, $template, $tool) {
+	$className = get_class();
+	$this->_name = substr($className, 0, strrpos($className, "_PageTool"));
 	$this->_api = $api;
 	$this->_dom = $dom;
 	$this->_template = $template;
 	$this->_tool = $tool;
+}
+
+/**
+ * Calls an API key on the internal API of the current PageTool.
+ */
+public function query($queryName, $params = array()) {
+	return $this->_api[$this->_name]->$queryName($params);
 }
 
 /**

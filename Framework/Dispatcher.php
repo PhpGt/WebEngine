@@ -59,7 +59,6 @@ public function __construct($response, $config) {
 	$templateWrapper = new TemplateWrapper($templateArray);
 
 	$apiWrapper = new ApiWrapper($dal);
-	$apiToolWrapper = new ApiWrapper($dal, true);
 	$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
 	// Allows the PageCode objects to have access to the important

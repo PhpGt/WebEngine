@@ -41,7 +41,7 @@ public function offsetGet($offset) {
 					require_once($path . $fileName);
 					if(class_exists($className)) {
 						$this->_pageToolObjects[$offset] = new $className(
-							$this->_api,
+							new ApiWrapper($this->_api, $offset),
 							$this->_dom,
 							$this->_template,
 							$this

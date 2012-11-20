@@ -3,13 +3,20 @@
  * TODO: Docs.
  */
 
-private $_dal = null;
 private $_apiElObjects = array();	// Cache of APIs used in this request.
 private $_tool = false;
 
-public function __construct($dal, $tool = false) {
-	$this->_dal = $dal;
+public $dal = null;
+
+public function __construct($dalOrApiWrapper, $tool = false) {
+	if($dalOrApiWrapper instanceof Dal) {
+		$this->dal = $dalOrApiWrapper;
+	}
+	else {
+		$this->dal = $dalOrApiWrapper->dal;
+	}
 	$this->_tool = $tool;
+	$this->dal->setTool($tool);
 }
 
 /**
@@ -29,7 +36,7 @@ public function offsetGet($offset) {
 
 	if(!$this->offsetExists($offset)) {
 		$this->_apiElObjects[$offset] = 
-			new ApiEl($offset, $this->_dal, $this->_tool);
+			new ApiEl($offset, $this->dal, $this->_tool);
 	}
 
 	return $this->_apiElObjects[$offset];

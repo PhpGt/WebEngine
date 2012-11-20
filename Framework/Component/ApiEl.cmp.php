@@ -16,14 +16,20 @@ private $_dal = null;
  * @param String $name The name of the table collection.
  * @param Dal $dal The current DAL object.
  */
-public function __construct($name, $dal) {
+public function __construct($name, $dal, $tool) {
 	$this->_apiName = $name;
 	$className = $name . "_Api";
 	
 	$apiFileArray = array(
 		APPROOT . DS . "Api" . DS . $name . ".api.php",
-		GTROOT  . DS . "Api" . DS . $name . ".api.php"
+		GTROOT  . DS . "Api" . DS . $name . ".api.php",
 	);
+	if(!empty($tool)) {
+		$apiFileArray[] = APPROOT . DS . "PageTool" . DS . $tool 
+							. DS . "Api" . DS . $name . ".api.php";
+		$apiFileArray[] = GTROOT . DS . "PageTool" . DS . $tool 
+							. DS . "Api" . DS . $name . ".api.php";
+	}
 	foreach ($apiFileArray as $apiFile) {
 		if(file_exists($apiFile)) {
 			require_once($apiFile);
@@ -35,7 +41,7 @@ public function __construct($name, $dal) {
 		$this->_apiObject = new $className();
 	}
 	else {
-		$this->_apiObject = new Api();
+		$this->_apiObject = new Api($tool);
 	}
 
 	$this->_dal = $dal;

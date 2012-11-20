@@ -18,7 +18,13 @@ private $_dalResult		= null;
 private $_affectedRows	= null;
 private $_lastInsertId	= null;
 
+private $_tool 			= null;
+
 protected $externalMethods = array();
+
+public function __construct($tool = null) {
+	$this->_tool = $tool;
+}
 
 /**
  * Called by the dispatcher when a JSON request is made to an API. This
@@ -35,7 +41,7 @@ public function apiCall($dal) {
 
 	// Check to see if there is a defined method of this API's method name.
 	if(method_exists($this, $this->_methodName)) {
-		$dalEl = new DalEl($dal, $this->_apiName);
+		$dalEl = new DalEl($dal, $this->_apiName, $this->_tool);
 		$params = array_merge(
 			array($this->_methodParams),
 			array($dal),

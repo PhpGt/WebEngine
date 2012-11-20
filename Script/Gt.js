@@ -3,7 +3,7 @@
  * templated elements and PageTools' JavaScript functions using simple syntax.
  *
  * GT is developed by Greg Bowler / PHP.Gt team.
- * Documentation: http://php.gt/Docs/ClientSide/GtJs.html
+ * Documentation: http://php.gt/GtJs.html
  *
  * Provided as standard:
  * GT.api("Name") - manipulate the application's API.
@@ -23,6 +23,7 @@
  */
 ;(function() {
 var _readyQueue = [],		// Stores a list of callbacks to invoke on DOMReady.
+	_templates = {},		// KVP of ttemplated DOM Elements.
 /**
  * This function represents the function that is attached to the window as 
  * window.GT, and also acts as a shorthand function for many of the features
@@ -40,13 +41,13 @@ var _readyQueue = [],		// Stores a list of callbacks to invoke on DOMReady.
  */
 _GT = function() {
 	if(GT.typeOf(arguments[0]) === "function") {
-		return _readyAdd(arguments[0], arguments[1]);
+		return readyAdd(arguments[0], arguments[1]);
 	}
 	if(GT.typeOf(arguments[0]) === "string") {
 		return dom(arguments[0], arguments[1]);
 	}
 	if(GT.instanceOf(arguments[0], GT.baseType("NodeList"))
-	|| GT.instanceOf(arguments[0], GT.baseType("Node")) ){
+	|| GT.instanceOf(arguments[0], GT.baseType("Node")) ) {
 		console.log("Returning a GT.dom.element");
 		return;
 	}
@@ -451,6 +452,8 @@ _domElementAccessorES5 = function() {
 	}
 },
 
+
+
 /**
  * To allow certain JavaScript features to be usable across all mainstream
  * browsers, shims are functions that are attached to particular objects' 
@@ -550,7 +553,6 @@ _addShims = function() {
 },
 
 /**
- * Internal function.
  * Adds a callback function to the DOM ready queue, stored as an array in
  * _readyQueue. Callbacks will only be added to the readyQueue if the given page
  * matches the current URL. The page match can either be a string or a RegExp.
@@ -558,7 +560,7 @@ _addShims = function() {
  * @param {string|RegExp} [page] The URL to match in order to add to the queue.
  * @return {bool} True if the callback was added.
  */
-_readyAdd = function(callback, page) {
+readyAdd = function(callback, page) {
 	var pathname = window.location.pathname;
 
 	if(page) {
@@ -644,7 +646,41 @@ _readyListen = function() {
  * The template list object is exposed by the GT.template function.
  */
 _templateScrape = function() {
+	var toScrape, toScrapeLength,
+		tmplDiv = document.getElementById("PhpGt_Template_Elements"),
+		tmplDivNodeCount,
+		tmpl,
+		name,
+		i;
 
+	if(tmplDiv) {
+		tmplDivNodeCount = tmplDiv.children.length;
+		// 
+		for(i = 0; i < tmplDivNodeCount; i++) {
+			tmpl = tmplDiv.children[i];
+			name = tmpl.getAttribute("data-template");
+			tmpl.removeAttribute("data-template");
+			_templates[name] = tmpl;
+		}
+		// Remove the template div from the DOM.
+		tmplDiv.parentNode.removeChild(tmplDiv);
+	}
+
+	// If Gt.js is being used without PHP.Gt, the original template
+	// elements will still be present in the DOM - scrape them here.
+	toScrape = GT("[data-template]");
+	toScrapeLength = toScrape.length;
+
+	if(toScrape && toScrapeLength > 0) {
+		for(i = 0; i < toScrapeLength; i++) {
+			tmpl = toScrape[i];
+			name = tmpl.getAttribute("data-template");
+			tmpl.removeAttribute("data-template");
+			_templates[name] = tmpl.cloneNode(true);
+			tmpl.parentNode.removeChild(tmpl);
+		}
+
+	}
 },
 
 /**
@@ -778,18 +814,6 @@ merge = function(target, obj1, obj2, objN) {
  * @return {Object} The created namespace object.
  */
 namespace = function() {
-
-},
-
-/**
- * Adds a callback to the load queue to be invoked on the DOM ready event.
- * If a page is given, callbacks will only be added to the queue if the current
- * window.location.href matches the given string or regular expression.
- *
- * @param {function} callback The callback to invoke on DOM ready.
- * @param {string|RegExp} [page] The match to make in order to add the callback.
- */
-ready = function(callback, page) {
 
 },
 
@@ -1040,7 +1064,7 @@ dom = function(selector, context) {
  * Obtains a cloned reference to a template element.
  */
 template = function(name) {
-
+	return _templates[name].cloneNode(true);
 },
 
 tool = function() {
@@ -1057,10 +1081,13 @@ _domElementAccessorES5();
 
 // Build the GT object to expose public methods.
 GT.error = error;
+GT.namespace = namespace;
 GT.typeOf = typeOf;
 GT.instanceOf = instanceOf;
 GT.merge = merge;
 GT.params = params;
+GT.ready = readyAdd;
+GT.template = template;
 
 GT.dom = dom;
 GT.dom.element = DomElement;
@@ -1073,8 +1100,19 @@ GT.Http.active = 0;
 // Extend GT.dom capabilities.
 GT.merge(GT.dom, _domFunctions);
 
+// Export globals:
+window.go = readyAdd;
+window.api = "TODO";
+window.qs = "TODO";
+window.qsa = "TODO";
+window.template = template;
+window.tool = "TODO";
+
 // GT is now ready, attach the ready listener to the DOM.
 _readyListen();
+
+// Attach any required internal functions to the DOM Ready event.
+readyAdd(_templateScrape);
 return;
 
 })();

@@ -2,12 +2,14 @@
 /**
  * TODO: Docs.
  */
-private $_dal = null;
-private $_tableName = null;
+private $_dal		= null;
+private $_tableName	= null;
+private $_tool		= null;
 
-public function __construct($dal, $tableName) {
+public function __construct($dal, $tableName, $tool = null) {
 	$this->_dal = $dal;
 	$this->_tableName = $tableName;
+	$this->_tool = $tool;
 }
 
 public function __call($name, $args) {
@@ -23,6 +25,12 @@ public function __call($name, $args) {
 		APPROOT . DS . "Database" . DS . $this->_tableName . DS,
 		GTROOT  . DS . "Database" . DS . $this->_tableName . DS
 	);
+	if(!empty($this->_tool)) {
+		$pathArray[] = APPROOT . DS . "PageTool" . DS . $this->_tool
+			. DS . "Database" . DS;
+		$pathArray[] = GTROOT . DS . "PageTool" . DS . $this->_tool
+			. DS . "Database" . DS;
+	}
 	$fileName = ucfirst($name) . ".sql";
 
 	$sql = null;
