@@ -455,7 +455,13 @@ public function hasClass($className) {
 }
 
 /**
- * TODO: Docs.
+ * Perform a str_replace on an element's attribute, without having to handle the
+ * string multiple times.
+ * @param string $attr The attribute of the current element to act as the 
+ * haystack.
+ * @param string $substr The needle to search for.
+ * @param string $replacement The string to replace with.
+ * @return bool True on success, false on failure.
  */
 public function injectAttribute($attr, $substr, $replacement) {
 	if(!$this->node->hasAttribute($attr)) {
