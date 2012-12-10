@@ -3,15 +3,19 @@ v0.0.3
 Not yet released
 
 * Major improvements with client side code.
+* SCSS (preprocessed CSS files) supported natively.
 * Http class for easy OOP interface to cURL.
 * Cache handler allows bi-directional cache access from anywhere.
+* GT.js and GTUI.css files extraced into separate repositories.
 * dbtouch files are 'touched' only when each database table changes.
 * Public webroot directories are now named 'www'. Not backwards compatible!
 * Vimeo PageTool for interacting with the Vimeo API.
 * Database connection is not opened until it is used.
 * Various improvements to the efficiency of the DAL.
+* DOM interaction more supportive of W3C standards.
 * User PageTool allows white-listed domains.
 * PageView _Header and _Footer files can be ignored using ignore comments.
+* Many changes with the FileOrganiser and client-side Injector classes.
 
 v0.0.2
 ------
