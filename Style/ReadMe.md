@@ -15,7 +15,6 @@ git clone --recursive http://github.com/g105b/PHP.Gt
 ... or if you already have the repo, and want to grab the submodules:
 
 ```shell
-git clone http://github.com/g105b/PHP.Gt
 cd PHP.Gt
 git submodule update --init
 ```
