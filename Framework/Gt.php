@@ -36,7 +36,7 @@ public function __construct() {
 	$response      = new Response($request);
 
 	// Execute the page lifecycle from the Dispatcher.
-	new Dispatcher($response, $config);
+	return new Dispatcher($response, $config);
 }
 
 }?>

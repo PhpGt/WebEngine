@@ -4,19 +4,6 @@
  * of the FileOrganiser to copy the required files into the webroot when
  * required. The files may need to be minified and compiled before they are
  * copied.
- *
- * TODO: Implement these steps.
- * Steps made in this file:
- * 1) Loop over all files within Style and Script directories of APPROOT and
- * GTROOT, making a list of all files to be copied.
- * 2) For each .js and .css file, check the filemtime against the public
- * files of the same name, or the compiled Script.js/Style.css file. Remove file
- * from copy list if not changed.
- * 3) For each .scss file, check the filemtime against the public files of
- * the same name, with .css extension, or the compiled Style.css file, and
- * pre-process if necessary. Remove file from copy list if not changed.
- * 4) If there are files in the copy list (there is a change), empty the public
- * www directory and either copy the files or create a compiled file.
  */
 public function __construct($config) {
 	// For production sites, any un-compiled scripts that exist in the

@@ -152,8 +152,8 @@ $toLoad["Required"] = array(
 	GTROOT.DS."Framework" . DS . "Autoloader.php",
 	"File Organiser class" =>
 	GTROOT.DS."Framework" . DS . "FileOrganiser.php",
-	"Injector class" =>
-	GTROOT.DS."Framework" . DS . "Injector.php",
+	"Client side compiler class" =>
+	GTROOT.DS."Framework" . DS . "ClientSideCompiler.php",
 	"Request class" =>
 	GTROOT.DS."Framework" . DS . "Request.php",
 	"Response class" =>

@@ -51,8 +51,8 @@ public function __construct($response, $config) {
 	// of the Asset, Style, Script directories to be accessible through
 	// the web root.
 	$isCompiled = $config["App"]->isClientCompiled();
-	$injector  = new Injector($dom, $isCompiled);
-	$organiser = new FileOrganiser($config["App"]);
+	$clientSideCompiler = new ClientSideCompiler($dom, $isCompiled);
+	$fileOrganiser = new FileOrganiser($config["App"]);
 
 	// Create the wrapper classes for easy access to components.
 	$templateArray = $dom->template();

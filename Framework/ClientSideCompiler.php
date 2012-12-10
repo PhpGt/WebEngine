@@ -1,14 +1,65 @@
-<?php class Injector {
+<?php class ClientSideCompiler {
 /**
 * When client side compilation is enabled, the Injector object manipulates
 * the DOM's head element by removing all link and script elements and replacing
 * them with the compiled/minified versions.
+* TODO: Implement these steps.
+* Steps made in this file:
+* 1) Loop over all files within Style and Script directories of APPROOT and
+* GTROOT, making a list of all files to be copied.
+* 2) For each .js and .css file, check the filemtime against the public
+* files of the same name, or the compiled Script.js/Style.css file. Remove file
+* from copy list if not changed.
+* 3) For each .scss file, check the filemtime against the public files of
+* the same name, with .css extension, or the compiled Style.css file, and
+* pre-process if necessary. Remove file from copy list if not changed.
+* 4) If there are files in the copy list (there is a change), empty the public
+* www directory and either copy the files or create a compiled file.
 */
 public function __construct($dom, $isCompiled) {
+	// Ensure all .scss files are pre-processed before anything else.
+	$this->preprocess($dom);
+
 	if($isCompiled) {
-		$this->injectStyleSheets($dom);
-		$this->injectJavaScript($dom);
+		$this->compileStyleSheets($dom);
+		$this->compileJavaScript($dom);
 	}
+}
+
+/**
+ * Pre-processes any .scss stylesheets into .css files, ready for optional
+ * compilation, and handling by the FileOrganiser class.
+ */
+private function preprocess($dom) {
+	$styleLinkArray = $dom["head > link[rel='stylesheet']"];
+	foreach($styleLinkArray as $styleLink) {
+		// Only care about .scss files.
+		if(!preg_match("/\.scss$/i", $styleLink->href)) {
+			continue;
+		}
+		$pathArray = array(
+			APPROOT . DS . "Style" . DS,
+			GTROOT . DS . "Style" . DS
+		);
+		$filePath = str_replace("/", DS, $styleLink->href);
+		foreach($pathArray as $path) {
+			if(!file_exists($path . $filePath)) {
+				continue;
+			}
+			if(!$this->sassParse($path . $filePath)) {
+				die("Error parsing SASS file.");
+			}
+			$styleLink->href .= ".css";
+			break;
+		}
+	}
+}
+
+private function sassParse($filePath) {
+	$sassParser = new SassParser_Utility($filePath);
+	$parsedString = $sassParser->parse();
+
+	return file_put_contents($filePath . ".css", $parsedString) >= 0;
 }
 
 /**
