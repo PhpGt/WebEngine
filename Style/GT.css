@@ -1,0 +1,120 @@
+/**
+ * @version 0.0.1
+ * @link http://PHP.Gt/Docs/GTcss.html
+ * @copyright Copyright (c) 2012 Bright Flair Ltd. (http://brightflair.com)
+ * @license http://PHP.Gt/License.html (Apache V2.0)
+ * 
+ * Stylesheet normalisation and UI library. Included by default in PHP.Gt 
+ * projects. This library can be used as a stand-alone UI library, too.
+ *
+ * To get full user interface elements, the GT.css.js JavaScript file is
+ * required (also included by default in PHP.Gt projects).
+ *
+ * GT.css offers the following features:
+ *  - Stylesheet normalisation: a common reset style across all mainstream
+ *    browsers. Legacy browsers require a HTML5 shim to render HTML5 tags
+ *    properly. Apart from that, all browsers will be given the same starting
+ *    point by including this library (all font sizes consistent, margins and
+ *    padding removed from all elements, etc).
+ *  - Vanilla element styling: By using particular class names on elements, they
+ *    can be styled consistently across browsers with a simple vanilla styling.
+ *    (TODO).
+ *  - Whole app styling: Use the GTAPP class on the body tag to automatically 
+ *    style the whole application using this library's styles. (TODO).
+ *  - Improved user interface elements using simple JavaScript, that doesn't
+ *    have any external dependencies. (TODO).
+ */
+
+/*******************************************************************************
+ * NORMALISATION 
+ ******************************************************************************/
+* {
+	font-size: 16px;
+	font-family: sans-serif;
+}
+html {
+	min-height: 100%;
+}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li, menu,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+:focus {
+	outline: 0;
+}
+
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+header, footer, section, article, aside {
+	display: block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+}
+
+body * {
+	cursor: default;
+}
+
+input, textarea, pre, .textSelect {
+	cursor: text;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	-o-user-select: text;
+	user-select: text;
+}
+a, button, input[type='button'], input[type='submit'], 
+input[type="checkbox"], input[type="radio"],
+select,
+a * {
+	cursor: pointer;
+}
+
+/*******************************************************************************
+ * VANILLA
+ ******************************************************************************/
+/* TODO */
+
+/*******************************************************************************
+ * GTUI APPLICATION
+ ******************************************************************************/
+/* TODO */
