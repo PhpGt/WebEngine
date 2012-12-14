@@ -624,7 +624,19 @@ public function __set($key, $value) {
 }
 
 public function __toString() {
-	return "DomEl({$this->_tagName}) [.{$this->_class}#{$this->_id}]";
+	$classArray = explode(" ", $this->_class);
+	$domClass = "";
+	$domId = $this->_id;
+	foreach ($domClass as $class) {
+		if(trim($class) == "") {
+			continue;
+		}
+		$domClass .= "." . $class;
+	}
+	if(!empty($domId)) {
+		$domId = "#" . $domId;
+	}
+	return "DomEl({$this->_tagName}) [.{$domClass}#{$domId}]";
 }
 
 }?>
