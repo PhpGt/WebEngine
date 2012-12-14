@@ -602,6 +602,7 @@ public function __set($key, $value) {
 		$nodeValueTags = array("h1", "h2", "h3", "h4", "h5", "h6",
 			"p", "span", "a", "label", "textarea", "pre", "time");
 		if(in_array($tag, $nodeValueTags)) {
+			$value = htmlentities($value);
 			$this->node->nodeValue = $value;
 			break;
 		}
