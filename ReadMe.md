@@ -26,9 +26,7 @@ Tests
 -----
 Each feature of [PHP.Gt](http://github.com/g105b/PHP.Gt) has a test to ensure it works in all conditions, and also to detect when other features cause bugs or other problems.
 
----PHP.Gt does not use PHPUnit!---
-
-All tests are stored in a separate repository, which can be treated as a normal PHP.Gt project. More details are on the Github repository: https://github.com/g105b/UnitTests-PHP.Gt
+PHP.Gt chooses PHPUnit as the testing framework because of its large and active community, and how it uses the commonly understood testing architectures xUnit and TAP which provide atomic, isolated, automated and uniform tests.
 
 Community, getting help & feedback.
 -----------------------------------
