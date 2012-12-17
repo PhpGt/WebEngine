@@ -115,6 +115,7 @@ private function displayError($code, $description = "") {
 }
 
 private function checkDirFile() {
+	die("nibx!");
 	$dirList = explode("/", DIR);
 	$lastDir = array_pop($dirList);
 	$path = APPROOT . DS . "PageView";
@@ -132,6 +133,7 @@ private function checkDirFile() {
 	$dh = opendir($path);
 	while(false !== ($name = readdir($dh)) ) {
 		if(strtolower($name) === strtolower($lastDir . ".html")) {
+			var_dump($name);die();
 			$url .= DS . $name;
 			throw new HttpError(301, array("Location" => $url));
 		}
@@ -139,85 +141,71 @@ private function checkDirFile() {
 	closedir($dh);
 }
 
+/**
+ * Checks each directory and the current requested file in the URI against the
+ * actual directory structure within the PageView directory.
+ * Each entry is compared, and any inconsistencies in case are fixed, and then
+ * 301 forwarded to the correct URI. 
+ * @return bool True if case is correct. Will never return false, as the script
+ * ends early, sending 301 headers.
+ */
 private function checkCase() {
+	$pvPath = APPROOT . DS . "PageView" . DS;
+	// Obtain array of each directory name.
 	$dirList = explode("/", DIR);
-	if(FILE === "Index") {
-		$lastDir = array_pop($dirList);
-	}
+	$origDirList = $dirList;
 
-	$path = APPROOT . DS . "PageView";
-	$originalPath = $path;
+	$cwd = $pvPath;
 
-	foreach($dirList as $dir) {
-		if(empty($dir)) {
-			continue;
-		}
+	$file = FILE;
+	$origFile = $file;
 
-		if(!is_dir($path)) {
-			continue;
-		}
-
-		$dh = opendir($path);
-		while(false !== ($name = readdir($dh)) ) {
-			if(strtolower($dir) == strtolower($name)) {
-				$originalDir = $dir;
-				$dir = $name;
+	// Recursively move down the directories, looking for incorrect case.
+	foreach($dirList as $key => &$dir) {
+		if(is_dir($cwd)) {
+			// Find the actual path of the dir, compare cases.
+			$dh = opendir($cwd);
+			while(false !== ($entry = readdir($dh)) ) {
+				if(strtolower($entry) === strtolower($dir)) {
+					if($entry !== $dir) {
+						$dir = $entry;
+					}
+				}
 			}
+			closedir($dh);
 		}
-		closedir($dh);
 
-		$path .= DS . $dir;
-		$originalPath .= DS . $originalDir;
+		$cwd .=  $dir . DS;
 	}
 
-	$fileName = FILE . "." . EXT;
-	// Kill filename if it is an implied filename from root directory.
-	if(FILE === "Index") {
-		$uri = $_SERVER["REQUEST_URI"];
-		if(!strstr($uri, "Index.html")) {
-			$fileName = $lastDir;
-		}
-	}
+	// At this point, $dirList holds a correctly-cased array of directories.
+	// Now the file may be fixed:
 
-	// Replace directory separator with forward slash for URL.
-	$url = str_replace(DS, "/", $path);
-	// Remove APPROOT/PageView/ from beginning of path.
-	$url = substr(
-		$url, 
-		stripos($url, "PageView") + strlen("PageView")
-	);
-	// Add hostname to beginning of path.
-	$url = "http"
-		. (empty($_SERVER["HTTPS"]) ? "" : "s")
-		. "://"
-		. $_SERVER["HTTP_HOST"]
-		. $url . "/";
-
-	if($path !== $originalPath) {
-		//var_dump($url, $fileName);die();
-		// Add fileName to the path
-		$url .= $fileName;
-
-		// Redirect to new path.
-		throw new HttpError(301, array("Location" => $url));
-	}
-
-	// At this point, the directory path is either the correct case, or
-	// there isn't a correct alternative to the one supplied.
-	$dh = opendir($path);
-	if($dh === false) {
-		return;
-	}
-	while(false !== ($name = readdir($dh)) ) {
-		if(strtolower($name) == strtolower($fileName)
-		&& ($name != $fileName)) {
-			// Add fileName to the path
-			$url .= $name;
-			// Redirect to new path.
-			throw new HttpError(301, array("Location" => $url));
+	$dh = opendir($cwd);
+	while(false !== ($entry = readdir($dh)) ) {
+		$fn = substr($entry, 0, strrpos($entry, "."));
+		if(strtolower($fn) === strtolower($file)) {
+			$file = $fn;
 		}
 	}
 	closedir($dh);
+
+	// Compare the original directory array and file with the new.
+	// If different, forward them.
+	$diff = array_diff($dirList, $origDirList);
+	if(!empty($diff)
+	&& $file !== $origFile) {
+		$fwd = "/" . implode("/", $dirList);
+		$fwd .= "/" . $file;
+		$fwd .= "." . EXT;
+
+		http_response_code(301);
+		header("Location: $fwd");
+		exit;
+	}
+
+	// At this point, there are no case fixes necessary.
+	return true;
 }
 
 }?>

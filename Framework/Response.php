@@ -214,6 +214,27 @@ private function bufferPageView($fileName = null) {
 			APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html",
 			APPROOT . DS . "PageView" . DS . BASEDIR . DS . FILE . ".html"
 		);
+
+		// Ensure there is only ever one URI that can be used to access a
+		// particular page.
+		// TODO: Final fix for URL case matching feature.... hangs on directory
+		// style pages that have Index.html inside.
+		if(FILE === "Index"
+		&& substr($_SERVER["REQUEST_URI"],
+		strrpos($_SERVER["REQUEST_URI"], "/") + 1) !== "Index." . EXT) {
+			$pathInfo = pathinfo($_SERVER["REQUEST_URI"]);
+			$fwd = "/";
+			$fwd .= $pathInfo["dirname"];
+
+			$fwd .= $pathInfo["basename"];
+			$fwd .= "/" . FILE . "." . EXT;
+
+			$fwd = str_replace("//", "/", $fwd);
+
+			http_response_code(302);
+			header("Location: $fwd");
+			exit;
+		}
 	}
 	else {
 		// Strip any underscores, as these are added automatically.

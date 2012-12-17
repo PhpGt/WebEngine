@@ -39,15 +39,11 @@ if(empty($pathInfo["extension"]) ) {
 	}
 }
 
+$fileName = "Index";
 if(!empty($pathInfo["filename"])) {
 	if(!empty($pathInfo["extension"])) {
 		$fileName = trim($pathInfo["filename"]);
 	}
-}
-if(empty($fileName)) {
-	header("HTTP/1.1 301 Moved Permanently");
-	header("Location: Index.html");
-	exit;
 }
 
 $extension = (isset($pathInfo["extension"]) )
@@ -60,7 +56,7 @@ if(empty($extension) && $fileName == "Index") {
 // Redirect incorrectly requested extensions to always use .html.
 if($extension == "htm" || (strtolower($extension) != $extension &&
 (strtolower($extension) == "htm" || strtolower($extension) == "html") )) {
-	header("HTTP/1.1 301 Moved Permanently");
+	http_response_code(301);
 	header("Location: $fileName.html");
 	exit;
 }

@@ -2,6 +2,7 @@ v0.0.3
 ------
 Not yet released
 
+* Translatable content, language switchable in URL.
 * PHPUnit tests are implemented within repository.
 * Major improvements with client side code.
 * SCSS (preprocessed CSS files) supported natively.
