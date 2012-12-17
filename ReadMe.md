@@ -22,6 +22,14 @@ System Requirements
 -------------------
 PHP.Gt requires PHP version 5.4 at least to run. By version 1, PHP.Gt shall be webserver/OS agnostic, but as of now has only been tested on Lighttpd within Debian based systems.
 
+Tests
+-----
+Each feature of [PHP.Gt](http://github.com/g105b/PHP.Gt) has a test to ensure it works in all conditions, and also to detect when other features cause bugs or other problems.
+
+---PHP.Gt does not use PHPUnit!---
+
+All tests are stored in a separate repository, which can be treated as a normal PHP.Gt project. More details are on the Github repository: https://github.com/g105b/UnitTests-PHP.Gt
+
 Community, getting help & feedback.
 -----------------------------------
 There are a number of ways to get help with your PHP.Gt development.

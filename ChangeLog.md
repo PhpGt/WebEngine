@@ -2,6 +2,7 @@ v0.0.3
 ------
 Not yet released
 
+* PHPUnit tests are implemented within repository.
 * Major improvements with client side code.
 * SCSS (preprocessed CSS files) supported natively.
 * Http class for easy OOP interface to cURL.

@@ -8,7 +8,7 @@
 private $_domDoc = null;
 private $_templateAttribute = null;
 
-public function __construct($html) {
+public function __construct($html = "<!doctype html>") {
 	// If converting encoding costs too much time, use a simpler method
 	// by prepending '<?xml encoding="UTF-8">' to $html.
 	$html = mb_convert_encoding($html, "HTML-ENTITIES", "utf-8");

@@ -602,6 +602,7 @@ public function __set($key, $value) {
 		$nodeValueTags = array("h1", "h2", "h3", "h4", "h5", "h6",
 			"p", "span", "a", "label", "textarea", "pre", "time");
 		if(in_array($tag, $nodeValueTags)) {
+			$value = htmlentities($value);
 			$this->node->nodeValue = $value;
 			break;
 		}
@@ -624,7 +625,19 @@ public function __set($key, $value) {
 }
 
 public function __toString() {
-	return "DomEl({$this->_tagName}) [.{$this->_class}#{$this->_id}]";
+	$classArray = explode(" ", $this->_class);
+	$domClass = "";
+	$domId = $this->_id;
+	foreach ($domClass as $class) {
+		if(trim($class) == "") {
+			continue;
+		}
+		$domClass .= "." . $class;
+	}
+	if(!empty($domId)) {
+		$domId = "#" . $domId;
+	}
+	return "DomEl({$this->_tagName}) [.{$domClass}#{$domId}]";
 }
 
 }?>

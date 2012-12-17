@@ -21,7 +21,7 @@ private $_errorCodeMessage = array(
 public function __construct(
 $code, $data = null, Exception $previous = null) {
 	// On 404 errors, check case recursively.
-	if($code === 404) { 
+	if($code === 404) {
 		// If correct cased URL found, checkCase will throw 301 error,
 		// script will end here.
 		$this->checkCase();
@@ -205,8 +205,12 @@ private function checkCase() {
 	// At this point, the directory path is either the correct case, or
 	// there isn't a correct alternative to the one supplied.
 	$dh = opendir($path);
+	if($dh === false) {
+		return;
+	}
 	while(false !== ($name = readdir($dh)) ) {
-		if(strtolower($name) == strtolower($fileName)) {
+		if(strtolower($name) == strtolower($fileName)
+		&& ($name != $fileName)) {
 			// Add fileName to the path
 			$url .= $name;
 			// Redirect to new path.
