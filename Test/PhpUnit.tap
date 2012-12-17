@@ -1,0 +1,3 @@
+TAP version 13
+ok 1 - DomTest::testDomIsDom
+1..1

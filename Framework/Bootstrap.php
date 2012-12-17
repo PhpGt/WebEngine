@@ -142,7 +142,7 @@ $toLoad["Required"] = array(
 	"DOM Element component" =>
 	GTROOT.DS."Framework" . DS . "Component" . DS . "DomEl.cmp.php",
 	"DOM Element Collection component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.cmp.php",
 	"Error component" => 
 	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.cmp.php",
 	"Cache component" =>
