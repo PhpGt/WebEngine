@@ -39,13 +39,16 @@ if(empty($pathInfo["extension"]) ) {
 	}
 }
 
-$fileName = "Index";
 if(!empty($pathInfo["filename"])) {
 	if(!empty($pathInfo["extension"])) {
 		$fileName = trim($pathInfo["filename"]);
 	}
 }
-
+if(empty($fileName)) {
+	header("HTTP/1.1 301 Moved Permanently");
+	header("Location: Index.html");
+	exit;
+}
 
 $extension = (isset($pathInfo["extension"]) )
 	? trim($pathInfo["extension"])
