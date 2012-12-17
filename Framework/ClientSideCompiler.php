@@ -29,6 +29,8 @@ public function __construct($dom, $isCompiled) {
 /**
  * Pre-processes any .scss stylesheets into .css files, ready for optional
  * compilation, and handling by the FileOrganiser class.
+ * After running this function, all .scss files are converted into .scss.css
+ * representations of the original, preserving white-space and comments.
  */
 private function preprocess($dom) {
 	$styleLinkArray = $dom["head > link[rel='stylesheet']"];
