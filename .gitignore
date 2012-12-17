@@ -3,3 +3,6 @@ www/*
 Cache
 Upload
 PHP.Gt.sublime-*
+Test/PhpUnit-JUnit.xml
+Test/PhpUnit.json
+Test/PhpUnit.tap

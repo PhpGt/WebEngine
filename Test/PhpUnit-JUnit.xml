@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/DomTest.php" tests="1" assertions="1" failures="0" errors="0" time="0.003140">
-    <testcase name="testDomIsDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/DomTest.php" line="14" assertions="1" time="0.003140"/>
+  <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/DomTest.php" tests="1" assertions="1" failures="0" errors="0" time="0.003003">
+    <testcase name="testDomIsDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/DomTest.php" line="14" assertions="1" time="0.003003"/>
   </testsuite>
 </testsuites>
