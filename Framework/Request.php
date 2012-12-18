@@ -17,6 +17,22 @@ public function __construct($config) {
 	$this->contentType = "text/html";
 	session_start();
 
+	// Allow language selection through special URI syntax.
+	$bd = BASEDIR;
+	if(substr($bd, 0, 1) === "_") {
+		$lang = substr($bd, 1);
+		
+		// Save the language in session for output to html metadata, and for
+		// use in apps.
+		$_SESSION["PhpGt_Lang"] = ["Code" => $lang];
+		$uri = $_SERVER["REQUEST_URI"];
+		$uri = str_replace("_{$lang}/", "", $uri);
+
+		http_response_code(302);
+		header("Location: $uri");
+		exit;
+	}
+
 	// Useful for faking slow connections on AJAX calls.
 	if(isset($_GET["FakeSlow"])) {
 		$seconds = empty($_GET["FakeSlow"])

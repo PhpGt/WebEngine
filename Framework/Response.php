@@ -169,6 +169,20 @@ public function includeDom($dom) {
 }
 
 /**
+ * Adds required metadata according to current session, such as currently 
+ * selected language by user.
+ * @param Dom $dom The current active Dom.
+ */
+public function addMetaData($dom) {
+	if(isset($_SESSION["PhpGt_Lang"])) {
+		$dom["head"]->prepend("meta", [
+			"HTTP-EQUIV" => "Content-Language",
+			"Content" => $_SESSION["PhpGt_Lang"]["Code"]
+		]);
+	}
+}
+
+/**
  * Returns the current contents of the output buffer.
  * @return string The output buffer.
  */

@@ -46,6 +46,7 @@ public function __construct($response, $config) {
 	// PageViews from <include> tags. 
 	$dom = new Dom($response->getBuffer());
 	$response->includeDom($dom);
+	$response->addMetaData($dom);
 
 	// Compile and inject <script> and <link> tags, organise the contents
 	// of the Asset, Style, Script directories to be accessible through
