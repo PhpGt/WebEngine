@@ -21,10 +21,16 @@ public function __construct($config) {
 	$bd = BASEDIR;
 	if(substr($bd, 0, 1) === "_") {
 		$lang = substr($bd, 1);
-		
-		// Save the language in session for output to html metadata, and for
-		// use in apps.
-		$_SESSION["PhpGt_Lang"] = ["Code" => $lang];
+
+		if(strlen($lang) > 0) {
+			// Save the language in session for output to html metadata, and for
+			// use in apps.
+			$_SESSION["PhpGt_Lang"] = ["Code" => $lang];
+		}
+		else {
+			unset($_SESSION["PhpGt_Lang"]);
+		}
+
 		$uri = $_SERVER["REQUEST_URI"];
 		$uri = str_replace("_{$lang}/", "", $uri);
 
