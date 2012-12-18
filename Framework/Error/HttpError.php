@@ -188,7 +188,7 @@ private function checkCase() {
 
 		$fwd = preg_replace("/\/+/", "/", $fwd);
 
-		http_response_code(302);
+		http_response_code(301);
 		header("Location: $fwd");
 		exit;
 	}

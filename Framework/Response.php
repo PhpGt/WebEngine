@@ -220,9 +220,8 @@ private function bufferPageView($fileName = null) {
 		}
 
 		// Ensure there is only ever one URI that can be used to access a
-		// particular page.
-		// TODO: Final fix for URL case matching feature.... hangs on directory
-		// style pages that have Index.html inside.
+		// particular page by forwarding requests to the Index.html within a
+		// directory.
 		if(FILE === "Index"
 		&& substr($_SERVER["REQUEST_URI"],
 		strrpos($_SERVER["REQUEST_URI"], "/") + 1) !== "Index." . EXT) {
@@ -235,9 +234,13 @@ private function bufferPageView($fileName = null) {
 
 			$fwd = preg_replace("/\/+/", "/", $fwd);
 
-			http_response_code(302);
-			header("Location: $fwd");
-			exit;
+			// Only perform the redirect if the Index.html file exists.
+			$pageViewFile = APPROOT . DS . "PageView" . $fwd;
+			if(file_exists($pageViewFile)) {
+				http_response_code(301);
+				header("Location: $fwd");
+				exit;
+			}
 		}
 	}
 	else {
