@@ -114,31 +114,14 @@ private function displayError($code, $description = "") {
 	}
 }
 
+/**
+ * If a directory is requested that doesn't exist, before throwing a 404 PHP.Gt
+ * checks to see if there is actually an html file of that name.
+ * @return bool False if there is no file found. Will never return true, as the
+ * script ends early, sending 301 headers.
+ */
 private function checkDirFile() {
-	die("nibx!");
-	$dirList = explode("/", DIR);
-	$lastDir = array_pop($dirList);
-	$path = APPROOT . DS . "PageView";
-	$url = "";
-
-	foreach ($dirList as $dir) {
-		$path .= DS . $dir;
-		$url .= DS . $dir;
-	}
-
-	if(!is_dir($path)) {
-		return;
-	}
-
-	$dh = opendir($path);
-	while(false !== ($name = readdir($dh)) ) {
-		if(strtolower($name) === strtolower($lastDir . ".html")) {
-			var_dump($name);die();
-			$url .= DS . $name;
-			throw new HttpError(301, array("Location" => $url));
-		}
-	}
-	closedir($dh);
+	
 }
 
 /**
@@ -169,6 +152,7 @@ private function checkCase() {
 				if(strtolower($entry) === strtolower($dir)) {
 					if($entry !== $dir) {
 						$dir = $entry;
+						break;
 					}
 				}
 			}
@@ -180,12 +164,15 @@ private function checkCase() {
 
 	// At this point, $dirList holds a correctly-cased array of directories.
 	// Now the file may be fixed:
-
+	if(!is_dir($cwd)) {
+		return false;
+	}
 	$dh = opendir($cwd);
 	while(false !== ($entry = readdir($dh)) ) {
 		$fn = substr($entry, 0, strrpos($entry, "."));
 		if(strtolower($fn) === strtolower($file)) {
 			$file = $fn;
+			break;
 		}
 	}
 	closedir($dh);
@@ -194,12 +181,14 @@ private function checkCase() {
 	// If different, forward them.
 	$diff = array_diff($dirList, $origDirList);
 	if(!empty($diff)
-	&& $file !== $origFile) {
+	|| $file !== $origFile) {
 		$fwd = "/" . implode("/", $dirList);
 		$fwd .= "/" . $file;
 		$fwd .= "." . EXT;
 
-		http_response_code(301);
+		$fwd = preg_replace("/\/+/", "/", $fwd);
+
+		http_response_code(302);
 		header("Location: $fwd");
 		exit;
 	}

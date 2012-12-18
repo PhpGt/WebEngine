@@ -211,9 +211,13 @@ private function bufferPageView($fileName = null) {
 		// Request path is absolute, only one array element needed, with
 		// direct reference to DIR and FILE.
 		$fileArray = array(
-			APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html",
-			APPROOT . DS . "PageView" . DS . BASEDIR . DS . FILE . ".html"
+			APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html"
 		);
+
+		if(DIR === BASEDIR) {
+			$fileArray[] =
+				APPROOT . DS . "PageView" . DS . BASEDIR . DS . FILE . ".html";
+		}
 
 		// Ensure there is only ever one URI that can be used to access a
 		// particular page.
@@ -226,10 +230,10 @@ private function bufferPageView($fileName = null) {
 			$fwd = "/";
 			$fwd .= $pathInfo["dirname"];
 
-			$fwd .= $pathInfo["basename"];
+			$fwd .= "/" . $pathInfo["basename"];
 			$fwd .= "/" . FILE . "." . EXT;
 
-			$fwd = str_replace("//", "/", $fwd);
+			$fwd = preg_replace("/\/+/", "/", $fwd);
 
 			http_response_code(302);
 			header("Location: $fwd");

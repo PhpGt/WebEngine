@@ -32,6 +32,7 @@ if($dh = opendir($utilityDir)) {
 			break;
 		}
 	}
+	closedir($dh);
 }
 
 }?>
