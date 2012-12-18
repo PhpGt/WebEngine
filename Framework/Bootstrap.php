@@ -121,31 +121,31 @@ $toLoad["Required"] = array(
 	GTROOT.DS."Framework" . DS . "Error" . DS . "HttpError.php",
 
 	"API component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Api.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Api.php",
 	"API wrapper component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiWrapper.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiWrapper.php",
 	"API element component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiEl.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiEl.php",
 	"Template wrapper component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "TemplateWrapper.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "TemplateWrapper.php",
 	"PageTool wrapper component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "PageToolWrapper.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "PageToolWrapper.php",
 	"DAL component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Dal.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Dal.php",
 	"DAL element component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DalEl.cmp.php", 
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DalEl.php", 
 	"DAL result component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DalResult.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DalResult.php",
 	"DOM component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Dom.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Dom.php",
 	"DOM Element component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DomEl.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DomEl.php",
 	"DOM Element Collection component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.php",
 	"Error component" => 
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.php",
 	"Cache component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Cache.cmp.php",
+	GTROOT.DS."Framework" . DS . "Component" . DS . "Cache.php",
 
 	"Autoloader" =>
 	GTROOT.DS."Framework" . DS . "Autoloader.php",
