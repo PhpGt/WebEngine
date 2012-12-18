@@ -15,8 +15,6 @@ protected $_isClientCompiled = false;
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
 protected $_directoryUrls = false;
-//"Europe/London" may be preferred. UTC is GMT ignoring any daylight saving.
-protected $_timezone = "UTC";
 private $_reserved = array("PhpGt", "Gt", "g105b", "admin");
 
 public function __construct() { }
@@ -27,10 +25,6 @@ public function isCached() {
 
 public function getReserved() {
 	return $this->_reserved;
-}
-
-public function getTimezone() {
-	return $this->_timezone;
 }
 
 public function isClientCompiled() {
