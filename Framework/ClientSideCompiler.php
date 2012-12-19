@@ -65,8 +65,8 @@ private function compileStyleSheets($dom) {
 	$css = "";
 	$lastModify = 0;
 	$styleList = $dom["head > link[rel='stylesheet']"];
-	foreach($styleList as $style) { 
-		$pubUri = $styleLink->href;
+	foreach($styleList as $style) {
+		$pubUri = $style->href;
 		$filePathArray = array(
 			APPROOT . "/Style/" . $pubUri,
 			GTROOT  . "/Style/" . $pubUri,
@@ -76,6 +76,17 @@ private function compileStyleSheets($dom) {
 			if(!file_exists($filePath)) {
 				continue;
 			}
+
+			// Check to see if file is .scss, so the actual preprocessed CSS can
+			// be used instead.
+			// $scssEnd = ".scss";
+			// if(substr_compare(
+			// $filePath, 
+			// $scssEnd, 
+			// strlen($scssEnd) - strlen($scssEnd), 
+			// strlen($scssEnd)) === 0) {
+			// 	$filePath .= ".css";
+			// }
 			$css .= file_get_contents($filePath);
 			$fmtime = filemtime($filePath);
 			if($fmtime > $lastModify) {
@@ -86,11 +97,13 @@ private function compileStyleSheets($dom) {
 		}
 	}
 
-	$pubMinUri = "/Script.min.js";
+	$pubMinUri = "/Style.min.css";
 
 	// Ensure that compilation only occurs when there are modified styles.
-	if(filemtime(APPROOT . "/Script" . $pubMinUri) >= $lastModify) {
-		return 0;
+	if(file_exists(APPROOT . "/Script" . $pubMinUri)) {
+		if(filemtime(APPROOT . "/Script" . $pubMinUri) >= $lastModify) {
+			return 0;
+		}
 	}
 
 	$cssCompiler = new StyleSheetCompiler_Utility($css);
@@ -101,9 +114,9 @@ private function compileStyleSheets($dom) {
 	}
 
 	$styleList->remove();
-	$styleNew = $dom->create("style", ["href" => $pubMinUri, 
+	$styleNew = $dom->create("link", ["href" => $pubMinUri, 
 		"rel" => "stylesheet"]);
-	$dom["head"]->append($scriptNew);
+	$dom["head"]->append($styleNew);
 
 	return $styleList->length;
 }
@@ -119,6 +132,10 @@ private function compileJavaScript($dom) {
 	$lastModify = 0;
 	$scriptList = $dom["head > script"];
 	foreach($scriptList as $script) {
+		if(!$script->hasAttribute("src")) {
+			$scriptList->removeElement($script);
+			continue;
+		}
 		$pubUri = $script->src;
 		$filePathArray = array(
 			APPROOT . "/Script/" . $pubUri,
@@ -141,6 +158,10 @@ private function compileJavaScript($dom) {
 
 	$pubMinUri = "/Script.min.js";
 
+	$scriptList->remove();
+	$scriptNew = $dom->create("script", ["src" => $pubMinUri]);
+	$dom["head"]->append($scriptNew);
+
 	// Ensure that compilation only occurs when there are modified scripts.
 	if(filemtime(APPROOT . "/Script" . $pubMinUri) >= $lastModify) {
 		return 0;
@@ -152,10 +173,6 @@ private function compileJavaScript($dom) {
 	if(false === file_put_contents(APPROOT . "/Script" . $pubMinUri, $js)) {
 		return false;
 	}
-
-	$scriptList->remove();
-	$scriptNew = $dom->create("script", ["src" => $pubMinUri]);
-	$dom["head"]->append($scriptNew);
 
 	return $scriptList->length;
 }

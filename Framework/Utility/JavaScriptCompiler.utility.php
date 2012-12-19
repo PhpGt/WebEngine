@@ -26,7 +26,7 @@ public function __construct($javaScript) {
 }
 
 public function output() {
-return $this->_script;
+	return $this->_script;
 }
 
 }?>

@@ -10,7 +10,7 @@ public function __construct($css) {
 }
 
 public function output() {
-	return $this->_script;
+	return $this->_css;
 }
 
 }?>

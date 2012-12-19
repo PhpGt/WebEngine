@@ -68,6 +68,11 @@ public function next() {
 	++$this->_index;
 }
 
+public function removeElement($element) {
+	$key = array_search($element, $this->_elArray);
+	unset($this->_elArray[$key]);
+}
+
 /**
 * Calls the given function on each DomEl in the stored element array.
 *

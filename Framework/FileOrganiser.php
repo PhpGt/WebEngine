@@ -11,19 +11,20 @@ public function __construct($config) {
 		return;
 	}
 
-	die("CHANGED!");
 	$this->removePublicFiles();
 	$this->copyFilesToPublic($config);
 }
 
 /**
  * Checks to see if any source files have changed since the last public copy.
+ * @param string $dir Optional. The directory to check. Defaults to /www.
  * @return bool True if there are changes, false if there are no changes.
  */
-private function changedFiles() {
+private function changedFiles($dir = "/www") {
+	$dir = APPROOT . $dir;
 	$sourceChanged = false;
 
-	$wwwMTime = $this->recursiveMTime(APPROOT . "/www");
+	$wwwMTime = $this->recursiveMTime("/www");
 	$searchDirArray = array(
 		"Script",
 		"Style",
@@ -70,116 +71,86 @@ private function recursiveMTime($dir) {
 	return $timestamp;
 }
 
+/**
+ * Deletes all files within the www directory, apart from the vital Index.php.
+ * This function is recursive, so will remove all Assets and files within Style.
+ */
 private function removePublicFiles() {
 	$dir = APPROOT . DS . "www" . DS;
-	$fileArray = scanDir($dir);
-	foreach ($fileArray as $file) {
-		$pattern = "/.*(\.css|\.js)$/i";
-		$match = array();
-		if(preg_match($pattern, $file, $match) == 0) {
+	if(!is_dir($dir)) {
+		// TODO: Throw proper error here.
+		die("ERROR: Public web root is not a directory.");
+	}
+
+	$iterator = new RecursiveDirectoryIterator($dir,
+		RecursiveIteratorIterator::CHILD_FIRST
+		| FilesystemIterator::SKIP_DOTS
+		| FilesystemIterator::UNIX_PATHS);
+	$fileList = new RecursiveIteratorIterator($iterator, 
+		RecursiveIteratorIterator::CHILD_FIRST);
+	foreach ($fileList as $key => $value) {
+		if($value->getFilename() === "Index.php") {
 			continue;
 		}
-		$fileToDelete = $dir . $match[0];
-
-		// Don't delete the compiled files.
-		$skipFiles = array(
-			"Script.js",
-			"Style.css"
-		);
-		// Don't delete CSS files describing fonts.
-		// ... Find the names of font files first.
-		$fontDirArray = array(
-			APPROOT . DS . "Style" . DS . "Font" . DS,
-			GTROOT  . DS . "Style" . DS . "Font" . DS
-		);
-		foreach ($fontDirArray as $fontDir) {
-			if(!is_dir($fontDir)) {
-				continue;
-			}
-
-			$dh = opendir($fontDir);
-			while(false !== ($fileName = readdir($dh)) )  {
-				if(pathinfo($fontDir . $fileName,
-				PATHINFO_EXTENSION) == "css") {
-					// Add CSS files for fonts to the skipFiles array.
-					$skipFiles[] = $fileName;
-				}
-			}
-			closedir($dh);
+		if(is_dir($key)) {
+			rmdir($key);
+			continue;
 		}
-
-		foreach ($skipFiles as $skipFile) {
-			if(strstr($fileToDelete, $skipFile)) {
-				continue 2;
-			}
-		}
-
-		unlink($fileToDelete);
+		unlink($key);
 	}
 }
 
 private function copyFilesToPublic($config) {
-	// The order is vital here: some applications will overwrite the GT
-	// files with their own, in which case they will be copied *over* the
-	// originals in the public directory.
-
-	$webroot = APPROOT . DS . "www" . DS;
-
+	// The order of copying is vital here; some applications can overwrite the
+	// files supplied by GT with their own, in whicch case the application's
+	// version of the file will be preferred.
+	
+	$wwwDir = APPROOT . DS . "www";
 	$copyDirArray = array(
-		GTROOT  . DS . "Style" . DS . "Img"  . DS =>
-			"Style" . DS . "Img",
-		GTROOT  . DS . "Style" . DS . "Font" . DS =>
-			"Style" . DS . "Font",
-		APPROOT . DS . "Style" . DS . "Img"  . DS =>
-			"Style" . DS . "Img",
-		APPROOT . DS . "Style" . DS . "Font" . DS =>
-			"Style" . DS . "Font",
-		APPROOT . DS . "Asset" . DS =>
-			"Asset"
+		GTROOT  . "/Style/Img/"		=> $wwwDir . "/Style/Img/",
+		GTROOT  . "/Style/Font/"	=> $wwwDir . "/Font/",
+		APPROOT . "/Style/Img"		=> $wwwDir . "/Style/Img/",
+		APPROOT . "/Style/Font/"	=> $wwwDir . "/Font/",
+		APPROOT . "/Asset/"			=> $wwwDir . "/Asset/",
 	);
-
-	$copyNonProductionDirArray = array(
-		GTROOT  . DS . "Script" . DS =>
-			"",
-		GTROOT  . DS . "Style"  . DS =>
-			"",
-		APPROOT . DS . "Script" . DS =>
-			"",
-		APPROOT . DS . "Style"  . DS =>
-			""
-	);
-
+	
 	foreach ($copyDirArray as $source => $dest) {
-		$dest = $webroot . $dest;
-		$this->copyFiles($source, $dest, true);
+		$this->copyFiles($source, $dest);
 	}
 
-	if(!$config->isClientCompiled() ) {
-		foreach($copyNonProductionDirArray as $source => $dest) {
-			$dest = $webroot . $dest;
-			$this->copyFiles($source, $dest, true);
+	if($config->isClientCompiled()) {
+		if(file_exists(APPROOT . "/Script/Script.min.js")) {
+			copy(APPROOT . "/Script/Script.min.js", 
+				APPROOT . "/www/Script.min.js");
+		}
+		if(file_exists(APPROOT . "/Style/Style.min.css")) {
+			copy(APPROOT . "/Style/Style.min.css", 
+				APPROOT . "/www/Style.min.css");	
 		}
 	}
+	else {
+		$this->copyFiles(GTROOT . "/Script/", APPROOT . "/www");
+		$this->copyFiles(GTROOT . "/Style/", APPROOT . "/www");
+		$this->copyFiles(APPROOT . "/Script/", APPROOT . "/www");
+		$this->copyFiles(APPROOT . "/Style/", APPROOT . "/www");
+	}
+
+	return;
 }
 
-private function copyFiles($source, $dest, $recursive) {
+private function copyFiles($source, $dest, $recursive = true) {
 	if(!is_dir($source)) {
 		return;
 	}
 
 	$dh = opendir($source);
-	@mkdir($dest, 0777, true);
+	@mkdir($dest, 0775, true);
 
 	while(false !== ($name = readdir($dh)) ) {
 		if($name[0] == ".") {
 			continue;
 		}
 
-		// ALPHATODO:
-		// TODO: There are a couple of errors surpressed here. A better
-		// solution would be to detect if the directories are already
-		// created, but this solution is here for the time being because
-		// sometimes you *want* things to be overwritten.
 		if(is_dir($source . DS . $name)) {
 			if(!$recursive) {
 				continue;
@@ -187,23 +158,14 @@ private function copyFiles($source, $dest, $recursive) {
 			if(is_dir($dest . DS . $name)) {
 				continue;
 			}
-			mkdir($dest . DS . $name, 0777, true);
+			mkdir($dest . DS . $name, 0775, true);
 			$this->copyFiles(
 				$source . DS . $name,
 				$dest . DS . $name,
 				true);
 		}
 		else {
-			// TODO: File permissions are not getting set correctly.
 			copy($source . DS . $name, $dest . DS . $name);
-			$own = posix_getpwuid(fileOwner($source . DS . $name));
-			
-			// TODO: Had to surpress errors/warnings here after pulling 
-			// repo on another workstation.
-			@chmod($dest . DS . $name, 0777);
-			shell_exec("chown "
-				. $own["name"] . " "
-				. $dest . DS . $name);
 		}
 	}
 }
