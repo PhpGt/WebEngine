@@ -6,13 +6,68 @@
  * copied.
  */
 public function __construct($config) {
-	// For production sites, any un-compiled scripts that exist in the
-	// web root should be removed.
-	if($config->isClientCompiled()) {
-		$this->removePublicFiles();
+	// Don't do anything if there are no changes in the source directories.
+	if(!$this->changedFiles()) {
+		return;
 	}
 
+	die("CHANGED!");
+	$this->removePublicFiles();
 	$this->copyFilesToPublic($config);
+}
+
+/**
+ * Checks to see if any source files have changed since the last public copy.
+ * @return bool True if there are changes, false if there are no changes.
+ */
+private function changedFiles() {
+	$sourceChanged = false;
+
+	$wwwMTime = $this->recursiveMTime(APPROOT . "/www");
+	$searchDirArray = array(
+		"Script",
+		"Style",
+	);
+	foreach ($searchDirArray as $searchDir) {
+		$searchDir = APPROOT . DS . $searchDir;
+		$dirMTime = $this->recursiveMTime($searchDir);
+		if($dirMTime > $wwwMTime) {
+			$sourceChanged = true;
+		}
+	}
+
+	return $sourceChanged;
+}
+
+/**
+ * Gets the latest modified file's timestamp in a directory structure, 
+ * recursively.
+ * @param  string $dir The absolute directory path to search.
+ * @return int         Timestamp of the latest modified file, or 0 if no files.
+ */
+private function recursiveMTime($dir) {
+	$timestamp = 0;
+	if(!is_dir($dir)) {
+		return 0;
+	}
+
+	$iterator = new RecursiveDirectoryIterator($dir,
+		RecursiveIteratorIterator::CHILD_FIRST
+		| FilesystemIterator::SKIP_DOTS
+		| FilesystemIterator::UNIX_PATHS);
+	
+	$fileList = new RecursiveIteratorIterator(
+		$iterator, RecursiveIteratorIterator::SELF_FIRST);
+	foreach ($fileList as $key => $value) {
+		if(!is_file($key)) {
+			continue;
+		}
+		if($value->getMTime() > $timestamp) {
+			$timestamp = $value->getMTime();
+		}
+	}
+	
+	return $timestamp;
 }
 
 private function removePublicFiles() {
