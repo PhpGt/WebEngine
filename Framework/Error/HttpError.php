@@ -28,15 +28,16 @@ $code, $data = null, Exception $previous = null) {
 		$this->checkDirFile();
 	}
 
-	if(array_key_exists($code, $this->_errorCodeMessage)) {
-		$message = $this->_errorCodeMessage[$code];
+	$message = $data;
+	if(is_null($message)
+	|| empty($_SESSION["PhpGt_Development"])) {
+		if(array_key_exists($code, $this->_errorCodeMessage)) {
+			$message = $this->_errorCodeMessage[$code];
+		}		
 	}
 	
-	$this->sendHeaders($code, $message);
-	if(is_array($data)) {
-		$this->sendHeaders($data);
-	}
-	$this->displayError($code, $data);
+	http_response_code($code);
+	$this->displayError($code, $message);
 	exit;
 }
 
@@ -63,7 +64,7 @@ private function sendHeaders() {
 	}
 }
 
-private function displayError($code, $description = "") {
+private function displayError($code, $message = "") {
 	$fileName = $code . ".html";
 	$pathArray = array(
 		APPROOT . DS . "PageView" . DS . DIR . DS,
@@ -83,24 +84,54 @@ private function displayError($code, $description = "") {
 				$dom = new DomDocument("1.0", "utf-8");
 				libxml_use_internal_errors(true);
 				if(!$dom->loadHTML($html)) {
-					die("FATAL ERROR: Failed to load errorpage."
-						. "655034494:53");
+					die("FATAL ERROR: Failed to load errorpage.");
 				}
 				$codeNode = $dom->getElementById("errorCode");
 				$msgNode = $dom->getElementById("errorMessage");
 				$tsNode = $dom->getElementById("timestamp");
 				$ipNode = $dom->getElementById("ipAddress");
+				$traceNode = $dom->getElementById("trace");
+				$headNode = $dom->getElementsByTagName("head")->item(0);
+				$titleNode = $headNode->getElementsByTagName("title");
+				if($titleNode->length > 0) {
+					if(strlen($titleNode->item(0)->nodeValue) === 0) {
+						$titleNode->item(0)->nodeValue = "Error " . $code;
+					}
+				}
 				if(!is_null($codeNode)) {
 					$codeNode->nodeValue = $code;
 				}
 				if(!is_null($msgNode)) {
-					$msgNode->nodeValue = $code;
+					$msgNode->nodeValue = $message;
 				}
 				if(!is_null($tsNode)) {
 					$tsNode->nodeValue = time();
 				}
 				if(!is_null($ipNode)) {
 					$ipNode->nodeValue = $_SERVER["REMOTE_ADDR"];
+				}
+				if(!is_null($traceNode)) {
+					if(!empty($_SESSION["PhpGt_Development"])) {
+						if(function_exists("xdebug_get_function_stack")) {
+							$stack = array_reverse(xdebug_get_function_stack());
+							foreach ($stack as $stackI) {
+								$pre = $dom->createElement("pre");
+								$m = "";
+								if(isset($stackI["class"])) {
+									$m .= "Class: " . $stackI["class"] . "\n";
+								}
+								if(isset($stackI["function"])) {
+									$m .= "Function: "
+										. $stackI["function"] . "\n";
+								}
+								$m .= "Line: " . $stackI["line"] . "\n";
+								$m .= "File: " . $stackI["file"] . "\n\n";
+								
+								$pre->nodeValue = $m;
+								$traceNode->appendChild($pre);
+							}
+						}
+					}
 				}
 
 				ob_clean();

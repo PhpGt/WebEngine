@@ -9,7 +9,7 @@
 // When an application is set to production mode, errors will be less
 // verbose and less debugging information is available.
 protected $_isProduction = false;
-protected $_isCached = true;
+protected $_isCached = false;
 protected $_isClientCompiled = false;
 
 // When true, URLs are converted into directory style, dropping the need

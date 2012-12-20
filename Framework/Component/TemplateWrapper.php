@@ -23,6 +23,8 @@ public function offsetGet($offset) {
 		return $domEl->cloneNode(true);
 	}
 
+	throw new GtError("Trying to access non-existent template element $offset");
+
 	// TODO: Throw error here.
 	return null;
 }
@@ -30,7 +32,7 @@ public function offsetGet($offset) {
 public function offsetSet($offset, $value) {
 	if(!$this->offsetExists($offset)) {
 		// TODO: Throw proper error.
-		die("ERROR: Trying to set a non-existant template element.");
+		die("ERROR: Trying to set a non-existent template element.");
 	}
 	$this->_templateArray[$offset] = $value;
 

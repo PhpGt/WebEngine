@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Error 404</title>
+	<title></title>
 	<style>
 	* {
 		font-family: "Ubuntu", "Arial", sans-serif;
@@ -24,6 +24,17 @@
 		padding: 32px 10%;
 		color: #888;
 	}
+	div#trace {
+		text-align: right;
+		margin: 0 10%;
+		padding-right: 32px;
+		max-height: 256px;
+		overflow-y: auto;
+	}
+	pre {
+		font-family: monospace;
+		color: #888;
+	}
 	a {
 		color: #666;
 		text-decoration: none;
@@ -35,10 +46,12 @@
 </head>
 <body>
 
-<h1>404</h1>
-<p>
-	The requested page can not be found.
+<h1 id="errorCode">Error</h1>
+<p id="errorMessage">
+	An error has occurred.
 </p>
+<div id="trace">
+</div>
 <p>
 	<a href="javascript:history.go(-1);">Click here to go back</a>
 </p>

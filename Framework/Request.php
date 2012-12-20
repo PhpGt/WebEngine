@@ -17,6 +17,15 @@ public function __construct($config) {
 	$this->contentType = "text/html";
 	session_start();
 
+	if($config["App"]->isProduction()) {
+		if(isset($_SESSION["PhpGt_Development"])) {
+			unset($_SESSION["PhpGt_Development"]);
+		}
+	}
+	else {
+		$_SESSION["PhpGt_Development"] = true;
+	}
+
 	// Allow language selection through special URI syntax.
 	$bd = BASEDIR;
 	if(substr($bd, 0, 1) === "_") {

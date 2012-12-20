@@ -117,6 +117,8 @@ $toLoad["Required"] = array(
 	"Shared security config" =>
 	GTROOT.DS."Config" . DS . "Security.cfg.php",
 
+	"Gt Error Exception" =>
+	GTROOT.DS."Framework" . DS . "Error" . DS . "GtError.php",
 	"Http Error Exception" =>
 	GTROOT.DS."Framework" . DS . "Error" . DS . "HttpError.php",
 
