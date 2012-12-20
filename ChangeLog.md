@@ -1,7 +1,14 @@
-v0.0.3
+v0.1.0
 ------
 Not yet released
 
+* 
+
+v0.0.3
+------
+20 Dec 2012
+
+* Error handling implemented with exceptions.
 * Translatable content, language switchable in URL.
 * PHPUnit tests are implemented within repository.
 * Major improvements with client side code.

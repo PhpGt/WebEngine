@@ -1,8 +1,9 @@
 www/*
 !www/*.php
-Cache
-Upload
+Cache/
+Upload/
 PHP.Gt.sublime-*
 Test/PhpUnit-JUnit.xml
 Test/PhpUnit.json
 Test/PhpUnit.tap
+*.scss.css
