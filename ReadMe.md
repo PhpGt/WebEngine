@@ -42,9 +42,9 @@ The open source codebase is available on Github: http://github.com/g105b/PHP.Gt
 
 This software is covered by the Apache License. Like any free software license, the Apache License allows you the freedom to use the software for any purpose, to distribute it, to modify it, and to distribute modified versions of the software, under the terms of the license. *For full licensing details, please see the License.md file.* Any distributions of PHP.Gt must include a readable version of the NOTICE file.
 
-Versions
---------
-Version numbers are given in the following format:
+Version numbers
+---------------
+Version numbers are specified in [git tags](http://git-scm.com/book/en/Git-Basics-Tagging) given in the following format:
 
 > vRelease.Beta.Alpha
 
@@ -65,3 +65,21 @@ Between alpha versions, any point of the codebase can become unstable.
 Between beta versions, only pre-defined areas of the codebase can become unstable, and no beta release should break functionality out of this area.
 
 **Public versions** are finalised, finished and fully tested collections of beta updates. Public versions can only increment when there are **no known bugs** - future releases should not be fixes of public versions, but new features or improvements. 
+
+Branches
+--------
+As master is the default branch, code is committed into master as regularly as possible, leaving unmerged branches open for as little time as possible.
+
+Bug fixes, new features and code improvements are done on separate branches, whose names should show the issue number with a descriptive name in the following format:
+
+> Bugfix|Feature|Improvement-ShortName-issueNum
+
+For example, a new feature allowing URLs to be typed in binary, with issue number #123:
+
+> Feature-BinaryURL-123
+
+Forking & Pull Requests
+-----------------------
+When implementing new features or fixing bugs through Github using pull requests, your code will be committed to your own fork, which acts as the branch.
+
+When your code is ready to be added to the PHP.Gt repository, a pull request should be raised, and your code will be added to a new branch using the above naming convention, and merged into master after tests have been completed.
