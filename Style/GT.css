@@ -55,7 +55,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 body {
 	line-height: 1;
 }
-ol, ul {
+ol, ul, menu {
 	list-style: none;
 }
 blockquote, q {
@@ -105,7 +105,7 @@ input, textarea, pre, .textSelect {
 a, button, input[type='button'], input[type='submit'], 
 input[type="checkbox"], input[type="radio"],
 select,
-a * {
+a *, button * {
 	cursor: pointer;
 }
 
