@@ -4,5 +4,4 @@ values
 	('User'),
 	('Moderator'),
 	('Administrator'),
-	('Super Administrator'),
-	('PHP.Gt Administrator');
+	('Super Administrator');
