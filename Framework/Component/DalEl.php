@@ -130,12 +130,17 @@ private function query($sqlFile, $paramArray = array()) {
  * caching system to defer connecting to the database if nothing has changed.
  */
 private function touchCache() {
-	$cacheDir = APPROOT . DS . "Cache" . DS . "Database";
+	$cacheDir = APPROOT . DS . "Cache";
 	$cacheFile = $this->_tableName . ".dbtouch";
 
 	if(!is_dir($cacheDir)) {
 		mkdir($cacheDir, 0777, true);
 	}
+	$cacheDir .=  DS . "Database";
+	if(!is_dir($cacheDir)) {
+		mkdir($cacheDir, 0777, true);
+	}
+	
 	touch($cacheDir . DS . $cacheFile);
 
 	// In some situations i.e. unit testing, a cache miss is directly followed
