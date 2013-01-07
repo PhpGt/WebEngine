@@ -15,7 +15,7 @@ protected $_isClientCompiled = false;
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
 protected $_directoryUrls = false;
-private $_reserved = array("PhpGt", "Gt", "g105b", "admin");
+private $_reserved = array("admin");
 
 public function __construct() { }
 
