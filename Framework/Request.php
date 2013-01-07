@@ -14,6 +14,7 @@ public $contentType;
 public $pageCodeStop = false;
 
 public function __construct($config) {
+	date_default_timezone_set($config->getTimezone());
 	$this->contentType = "text/html";
 	session_start();
 

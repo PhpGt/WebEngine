@@ -11,6 +11,7 @@
 protected $_isProduction = false;
 protected $_isCached = false;
 protected $_isClientCompiled = false;
+protected $_timezone = "UTC";
 
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
@@ -25,6 +26,10 @@ public function isCached() {
 
 public function getReserved() {
 	return $this->_reserved;
+}
+
+public function getTimezone() {
+	return $this->_timezone;
 }
 
 public function isClientCompiled() {
