@@ -140,7 +140,21 @@ public function offsetGet($offset) {
 	return $this->result[$offset];
 }
 
-public function offsetSet($offset, $value) {}
+public function offsetSet($offset, $value) {
+	throw new HttpError(500, 
+		"Can't use offsetSet on a DalResult, use setData method instead.");
+}
+
+public function setData($key, $value, $all = false) {
+	if($all) {
+		$this->storeResult(true);
+	}
+	for($i = 0; $i < count($this->result); $i++) {
+		$this->result[$i][$key] = $value;
+	}
+	return;
+}
+
 public function offsetUnset($offset) {}
 // End: ArrayAccess --------------------------------------------------------
 

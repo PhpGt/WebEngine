@@ -1,16 +1,10 @@
 select
 	*,
-	(select `Name`
-		from `User_Type`
-		where `User_Type`.`Id` = `Fk_User_Type`
-	) as `L_User_Type`,
-	`Fk_User_Department`,
-	(select `Name`
-		from `User_Department`
-		where `User_Department`.`Id` = `Fk_User_Department`
-	) as `L_User_Department`,
+	`User_Type`.`Name` as `User_Type_Name`,
 	(select concat(`FirstName`, " ", `LastName`)
 	) as `FullName`
 from `User`
+inner join `User_Type`
+	on (`User_Type`.`Id` = `User`.`Fk_User_Type`)
 where `Uuid` = :Uuid
 limit 1;

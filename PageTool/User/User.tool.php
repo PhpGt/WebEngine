@@ -119,11 +119,27 @@ public function unAuth($forwardTo = "/") {
  * usual users in terms of database storage and returned values.
  * If the UUID doesn't exist in the database, a new anonymous user will be
  * created.
- * @param  string $uuid The UUID to use, taken from the tracking cookie.
+ * @param  string $uuid Optional UUID to use, if not provided it is taken from
+ * the tracking cookie.
  * @return array        The user details, authenticated or anonymous.
  */
-public function getUser($uuid) {
-	// TODO.
+public function getUser($uuid = null) {
+	// Ensure there is a UUID tracking cookie set.
+	if(is_null($uuid)) {
+		$uuid = $this->track();
+	}
+
+	// Ensure there is a related user in the database.
+	$db = $this->_api["User"];
+	$dbUser = $db->getByUuid(["Uuid" => $uuid]);
+	if(!$dbUser->hasResult) {
+		$result = $db->addAnon(["Uuid" => $uuid]);
+		$dbUser = $db->getById(["Id" => $result->lastInsertId]);
+	}
+
+	$isAuth = $dbUser["User_Type_Name"] !== "Anon";
+	$dbUser->setData("Authenticated", $isAuth);
+	return $dbUser;
 }
 
 /**
