@@ -124,14 +124,20 @@ public function unAuth($forwardTo = "/") {
  * @return array        The user details, authenticated or anonymous.
  */
 public function getUser($uuid = null) {
+	$this->checkOpenId();
 	// Ensure there is a UUID tracking cookie set.
 	if(is_null($uuid)) {
 		$uuid = $this->track();
 	}
 
+	if($this->checkAuth()) {
+		return $_SESSION["PhpGt_User"];
+	}
+	
 	// Ensure there is a related user in the database.
 	$db = $this->_api["User"];
 	$dbUser = $db->getByUuid(["Uuid" => $uuid]);
+	// TODO: dbUser isn't instantiated after deployment... automate this!
 	if(!$dbUser->hasResult) {
 		$result = $db->addAnon(["Uuid" => $uuid]);
 		$dbUser = $db->getById(["Id" => $result->lastInsertId]);
@@ -139,6 +145,7 @@ public function getUser($uuid = null) {
 
 	$isAuth = $dbUser["User_Type_Name"] !== "Anon";
 	$dbUser->setData("Authenticated", $isAuth);
+
 	return $dbUser;
 }
 
@@ -252,13 +259,7 @@ public function checkAuth() {
 	
 	// The openid_identity variable is sent by an OpenId provider on
 	// successful authentication.
-	if(isset($_GET["openid_identity"])) {
-		$this->auth();
-		if(isset($_GET["openid_return_to"])) {
-			header("Location: " . $_GET["openid_return_to"]);
-			exit;
-		}
-	}
+	$this->checkOpenId();
 	
 	// User auth through OpenId or saved cookie is stored in the session.
 	if(isset($_SESSION["PhpGt_User.tool_AuthData"])) {
@@ -266,17 +267,33 @@ public function checkAuth() {
 		// User has authenticated, need to match to database.
 		// The database user may not exist and need creating.
 		$dbUser = $this->_api["User"]->get(["Username" => $username]);
-		if(is_null($dbUser) || $dbUser->hasResult) {
+		if($dbUser->hasResult) {
 			// Already exists - use this user.
 			$userId = $dbUser["Id"];
 		}
 		else {
-			// Doesn't already exist - create and use new user.
-			$newDbUser = $this->_api["User"]->addEmpty(array(
-				"Username" => $username,
-				"Uuid" => hash("sha512", $username)
+			// Authenticated user doesn't already exist, but there may be an
+			// anonymous user in the database. Create authenticated user, and
+			// merge with existing if possible.
+			$anonDbUser = $this->_api["User"]->getByUuid(array(
+				"Uuid" => $this->uuid
 			));
-			$userId = $newDbUser->lastInsertId;
+			if($anonDbUser->hasResult) {
+				// Upgrade the anon user to full-fledged user.
+				$userId = $anonDbUser->id;
+				$this->_api["User"]->anonIdentify(array(
+					"Uuid" => $this->uuid,
+					"Username" => $anonDbUser["Username"]
+				));
+			}
+			else {
+				// Create a new fresh user, generating new UUID.
+				$newDbUser = $this->_api["User"]->addEmpty(array(
+					"Username" => $username,
+					"Uuid" => $this->generateSalt()
+				));
+				$userId = $newDbUser->lastInsertId;
+			}
 		}
 	}
 	else {
@@ -351,6 +368,19 @@ public function checkAuth() {
 		return false;
 	}
 	return $_SESSION["PhpGt_User"];
+}
+
+/**
+ * Checks if there is any openId data in the querystring.
+ */
+private function checkOpenId() {
+	if(isset($_GET["openid_identity"])) {
+		$this->auth();
+		if(isset($_GET["openid_return_to"])) {
+			header("Location: " . $_GET["openid_return_to"]);
+			exit;
+		}
+	}
 }
 
 /**

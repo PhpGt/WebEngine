@@ -2,10 +2,10 @@ create table if not exists `User` (
 	`Id`					int			not null	auto_increment	primary key,
 	`Uuid`					varchar(128)null,
 	`Fk_User_Type`			int			not null	default 1,
-	`Fk_User_Department`	int			null		default null,
 	`Username`				varchar(32)	not null,
 	`Hash`					varchar(32) null		default null,
 	`Dt_Created`			datetime	not null,
+	`Dt_Identified`			datetime	null,
 	`Dt_Deleted`			datetime	null		default null,
 	`FirstName`				varchar(32)	null		default null,
 	`LastName`				varchar(32)	null		default null,
@@ -16,15 +16,9 @@ create table if not exists `User` (
 	`Gravatar`				varchar(32)	null		default null,
 	unique index `Username_Unique` (`Username` asc),
 	index `Fk_User__User_Type` (`Fk_User_Type` asc),
-	index `Fk_User__User_Department` (`Fk_User_Department` asc),
 	constraint `Fk_User__User_Type`
 		foreign key (`Fk_User_Type`)
 		references `User_Type` (`Id`)
-		on delete restrict
-		on update cascade,
-	constraint `Fk_User__User_Department`
-		foreign key (`Fk_User_Department`)
-		references `User_Department` (`Id`)
 		on delete restrict
 		on update cascade
 )

@@ -27,18 +27,16 @@ public function __construct($identity = "Google") {
 			exit;
 		}
 		else if($this->_openId->mode === "cancel") {
-			// TODO: Do something when the user cancels authentication.
-			die("ERROR: User canceled auth!");
+			throw new HttpError(403, "User cancelled OpenId authentication");
+			exit;
 		}
 		else {
 			if($this->_openId->validate()) {
 				$this->_attributes = $this->_openId->getAttributes();
 			}
 			else {
-				// TODO: Do something on false validation.
-				var_dump($this->_openId->getAttributes());
-				var_dump($this->_openId);
-				die("ERROR: OpenId validation failed...");
+				throw new HttpError(403, "OpenId validation failed");
+				exit;
 			}
 		}
 	}

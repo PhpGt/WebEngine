@@ -1,5 +1,4 @@
 insert into User (
-	Fk_User_Department,
 	Username,
 	Uuid,
 	Dt_Created,
@@ -11,7 +10,6 @@ insert into User (
 	TelephoneMobile
 )
 values (
-	:Fk_User_Department,
 	:Username,
 	:Uuid,
 	now(),
