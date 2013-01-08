@@ -110,7 +110,7 @@ public function getUser($uuid = null) {
 public function track() {
 	if(empty($_COOKIE["PhpGt_Track"])) {
 		$anonId = $this->generateSalt();
-		$expires = strtotime("+52 weeks");
+		$expires = strtotime("+105 weeks");
 		if(setcookie("PhpGt_Track", $anonId, $expires, "/") === false) {
 			throw new HttpError(500,
 				"Error generating tracking cookie in User PageTool.");
@@ -241,204 +241,214 @@ private function checkOpenId() {
  * @return array        The user details.
  */
 private function userSession($input) {
-	// TODO!
+	if(is_int($input)) {
+		$dbUser = $this->_api["User"]->getById(["Id" => $input]);
+	}
+	else if(is_string($input)) {
+		$dbUser = $this->_api["User"]->getByUuid(["Uuid" => $input]);
+	}
+	if($dbUser->hasResult) {
+		if(empty($_SESSION["PhpGt_User"])) {
+			$_SESSION["PhpGt_User"] = array();
+		}
+		$_SESSION["PhpGt_User"]["Id"] = $dbUser["Id"];
+		$_SESSION["PhpGt_User"]["Uuid"] = $dbUser["Uuid"];
+		$_SESSION["PhpGt_User"]["Username"] = $dbUser["Username"];
+		$_SESSION["PhpGt_User"]["FirstName"] = $dbUser["FirstName"];
+		$_SESSION["PhpGt_User"]["LastName"] = $dbUser["LastName"];
+
+		return $_SESSION["PhpGt_User"];
+	}
+
+	return null;
 }
 
-// /**
-//  * Begins the authentication process using the given provider. Valid providers
-//  * are OAuth providers including: "Google", "Facebook", "MyOpenId".
-//  * @param  string $method The authentication provider.
-//  * @return bool           True if the user successfully authenticates.
-//  */
-// public function auth($method = "Google") {
-// 	$oid = new OpenId_Utility($method);
-// 	$username = $oid->getData();
-// 	// TODO: If not in white list, display plain white PHP.Gt message
-// 	// on error 403 page. Provide mechanism to use different account.
-// 	if(!$this->checkWhiteList($username) 
-// 	|| empty($username)) {
-// 		$this->unAuth();
-// 		return false;
-// 	}
-// 	$this->setAuthData($username);
-// 	return true;
-// }
+/**
+ * Begins the authentication process using the given provider. Valid providers
+ * are OAuth providers including: "Google", "Facebook", "MyOpenId".
+ * @param  string $method The authentication provider.
+ * @return bool           True if the user successfully authenticates.
+ */
+public function auth($method = "Google") {
+	$oid = new OpenId_Utility($method);
+	$username = $oid->getData();
+	// TODO: If not in white list, display plain white PHP.Gt message
+	// on error 403 page. Provide mechanism to use different account.
+	if(!$this->checkWhiteList($username) 
+	|| empty($username)) {
+		$this->unAuth();
+		return false;
+	}
+	$this->setAuthData($username);
+	return true;
+}
 
-// /**
-//  * Unauthenticates any logged in user and removes any cookies set.
-//  * @param  string $forwardTo Where to forward the user after unauthenticating.
-//  */
-// public function unAuth($forwardTo = "/") {
-// 	unset($_SESSION["PhpGt_User.tool_AuthData"]);
-// 	unset($_SESSION["PhpGt_User"]);
-// 	$this->deleteCookies();
-// 	header("Location: " . $forwardTo);
-// 	return;
-// }
+/**
+ * Unauthenticates any logged in user and removes any cookies set.
+ * @param  string $forwardTo Where to forward the user after unauthenticating.
+ */
+public function unAuth($forwardTo = "/") {
+	unset($_SESSION["PhpGt_User.tool_AuthData"]);
+	unset($_SESSION["PhpGt_User"]);
+	$this->deleteCookies();
+	header("Location: " . $forwardTo);
+	return;
+}
 
+/**
+ * Applications can set white lists of domains to allow logging in through
+ * OAuth/OpenID. Email addresses outside of this list will not be allowed
+ * access to the application.
+ *
+ * @param Array|string An array of domains, regular expression that matches 
+ * multiple domains, or a single domain to add to the white list.
+ */
+public function addWhiteList($whiteList) {
+	$whiteListArray = array();
 
+	if(is_array($whiteList)) {
+		$whiteListArray = $whiteList;
+	}
+	else if(is_string($whiteList)) {
+		// A single domain provided.
+		$whiteListArray[] = $whiteList;
+	}
 
-// /**
-//  * Applications can set white lists of domains to allow logging in through
-//  * OAuth/OpenID. Email addresses outside of this list will not be allowed
-//  * access to the application.
-//  *
-//  * @param Array|string An array of domains, regular expression that matches 
-//  * multiple domains, or a single domain to add to the white list.
-//  */
-// public function addWhiteList($whiteList) {
-// 	$whiteListArray = array();
+	$this->_domainWhiteList = array_merge(
+		$this->_domainWhiteList, $whiteListArray);
+}
 
-// 	if(is_array($whiteList)) {
-// 		$whiteListArray = $whiteList;
-// 	}
-// 	else if(is_string($whiteList)) {
-// 		// A single domain provided.
-// 		$whiteListArray[] = $whiteList;
-// 	}
+/**
+ * Checks to see if the given username is allowed to authenticate to the 
+ * application according to the optional whitelist.
+ * @param  string $username Full username (email)
+ * @return bool             True if the given username fits the optional 
+ * whitelist parameters.
+ */
+public function checkWhiteList($username) {
+	// If there is no whitelist, allow all.
+	if(empty($this->_domainWhiteList)) {
+		$this->addWhiteList("*");
+	}
 
-// 	$this->_domainWhiteList = array_merge(
-// 		$this->_domainWhiteList, $whiteListArray);
-// }
+	$result = false;
 
-// /**
-//  * Checks to see if the given username is allowed to authenticate to the 
-//  * application according to the optional whitelist.
-//  * @param  string $username Full username (email)
-//  * @return bool             True if the given username fits the optional 
-//  * whitelist parameters.
-//  */
-// public function checkWhiteList($username) {
-// 	// If there is no whitelist, allow all.
-// 	if(empty($this->_domainWhiteList)) {
-// 		$this->addWhiteList("*");
-// 	}
+	foreach ($this->_domainWhiteList as $white) {
+		if (preg_match("/^\/.*\/[a-zA-Z]?$/", $white)) {
+			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
+			// false on error - note !==).
+			if(preg_match($white, $username) > 0) {
+				$result = true;
+			}
+		}
+		else if(is_string($white)) {
+			if(fnmatch($white, $username)) {
+				$result = true;
+			}
+		}
+	}
+	return $result;
+}
 
-// 	$result = false;
+/**
+ * FakeAuth allows development to continue while offline. Using openId
+ * requires an internet connection, so adding a special button in
+ * development releases allows users to authenticate (with no real 
+ * authentication happening). Simply pass a username to this function to
+ * fully authenticate the username as if it were authenticated with OpenId.
+ *
+ * @param string $username The username to authenticate.
+ * @return bool True on success (which will allways occur).
+ */
+public function fakeAuth($username) {
+	$this->setAuthData($username);
+	return true;
+}
 
-// 	foreach ($this->_domainWhiteList as $white) {
-// 		if (preg_match("/^\/.*\/[a-zA-Z]?$/", $white)) {
-// 			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
-// 			// false on error - note !==).
-// 			if(preg_match($white, $username) > 0) {
-// 				$result = true;
-// 			}
-// 		}
-// 		else if(is_string($white)) {
-// 			if(fnmatch($white, $username)) {
-// 				$result = true;
-// 			}
-// 		}
-// 	}
-// 	return $result;
-// }
+/**
+ * Used internally after a successful authentication to store the details in a
+ * server-side session.
+ */
+private function setAuthData($username) {
+	$_SESSION["PhpGt_User.tool_AuthData"] = $username;
 
-// /**
-//  * FakeAuth allows development to continue while offline. Using openId
-//  * requires an internet connection, so adding a special button in
-//  * development releases allows users to authenticate (with no real 
-//  * authentication happening). Simply pass a username to this function to
-//  * fully authenticate the username as if it were authenticated with OpenId.
-//  *
-//  * @param string $username The username to authenticate.
-//  * @return bool True on success (which will allways occur).
-//  */
-// public function fakeAuth($username) {
-// 	$this->setAuthData($username);
-// 	return true;
-// }
+	$uuid = hash("sha512", $username);
+	$userSalt = $this->generateSalt();
+	$expires = strtotime("+105 weeks");
+	setcookie(
+		"PhpGt_Login[0]",
+		$uuid,
+		$expires,
+		"/");
+	setcookie(
+		"PhpGt_Login[1]",
+		$userSalt,
+		$expires,
+		"/");
+	setcookie(
+		"PhpGt_Login[2]",
+		hash("sha512", $uuid . $userSalt . APPSALT),
+		$expires,
+		"/");
+}
 
-// /**
-//  * Used internally after a successful authentication to store the details in a
-//  * server-side session.
-//  */
-// private function setAuthData($username) {
-// 	$_SESSION["PhpGt_User.tool_AuthData"] = $username;
+/**
+ * Attempts to retrieve extra data from the database associated to the current
+ * user Id, for using with the __get magic method.
+ */
+private function checkNames() {
+	if(empty($_SESSION["PhpGt_User"]["FirstName"])
+	|| empty($_SESSION["PhpGt_User"]["LastName"])) {
+		if(empty($_SESSION["PhpGt_User"]["Id"])) {
+			throw new HttpError(500, "User PageTool error finding User Id.");
+		}
+		$user = $this->_api["User"]->getById(
+			["Id" => $_SESSION["PhpGt_User"]["Id"]]);
 
-// 	$uuid = hash("sha512", $username);
-// 	$userSalt = $this->generateSalt();
-// 	$expires = strtotime("+2 weeks");
-// 	setcookie(
-// 		"PhpGt_Login[0]",
-// 		$uuid,
-// 		$expires,
-// 		"/");
-// 	setcookie(
-// 		"PhpGt_Login[1]",
-// 		$userSalt,
-// 		$expires,
-// 		"/");
-// 	setcookie(
-// 		"PhpGt_Login[2]",
-// 		hash("sha512", $uuid . $userSalt . APPSALT),
-// 		$expires,
-// 		"/");
-// }
+		$_SESSION["PhpGt_User"]["FirstName"] = $user["FirstName"];
+		$_SESSION["PhpGt_User"]["LastName"] = $user["LastName"];
+	}
+}
 
-// *
-//  * Checks the current session for authentication data. This may be
-//  * authentication with OpenId or using a simple username/password stored
-//  * in the User database table.
-//  * @return mixed False if there is no authentication data, or an associative
-//  * array containing all known attributes about the user.
+/**
+ * Every time there is user activity, refresh the cookies to keep them alive.
+ */
+private function refreshCookies() {
+	$expires = strtotime("+105 weeks");
+	setcookie(
+		"PhpGt_Login[0]",
+		$_COOKIE["PhpGt_Login"][0],
+		$expires,
+		"/");
+	setcookie(
+		"PhpGt_Login[1]",
+		$_COOKIE["PhpGt_Login"][1],
+		$expires,
+		"/");
+	setcookie(
+		"PhpGt_Login[2]",
+		$_COOKIE["PhpGt_Login"][2],
+		$expires,
+		"/");
+}
 
-// /**
-//  * Attempts to retrieve extra data from the database associated to the current
-//  * user Id, for using with the __get magic method.
-//  */
-// private function checkNames() {
-// 	if(empty($_SESSION["PhpGt_User"]["FirstName"])
-// 	|| empty($_SESSION["PhpGt_User"]["LastName"])) {
-// 		if(empty($_SESSION["PhpGt_User"]["Id"])) {
-// 			throw new HttpError(500, "User PageTool error finding User Id.");
-// 		}
-// 		$user = $this->_api["User"]->getById(
-// 			["Id" => $_SESSION["PhpGt_User"]["Id"]]);
+/**
+ * Unsets all cookies used by the PageTool.
+ */
+private function deleteCookies() {
+	setcookie("PhpGt_Login[0]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
+	unset($_COOKIE["PhpGt_Login"]);
+}
 
-// 		$_SESSION["PhpGt_User"]["FirstName"] = $user["FirstName"];
-// 		$_SESSION["PhpGt_User"]["LastName"] = $user["LastName"];
-// 	}
-// }
-
-// /**
-//  * Every time there is user activity, refresh the cookies to keep them alive.
-//  */
-// private function refreshCookies() {
-// 	$expires = strtotime("+52 weeks");
-// 	setcookie(
-// 		"PhpGt_Login[0]",
-// 		$_COOKIE["PhpGt_Login"][0],
-// 		$expires,
-// 		"/");
-// 	setcookie(
-// 		"PhpGt_Login[1]",
-// 		$_COOKIE["PhpGt_Login"][1],
-// 		$expires,
-// 		"/");
-// 	setcookie(
-// 		"PhpGt_Login[2]",
-// 		$_COOKIE["PhpGt_Login"][2],
-// 		$expires,
-// 		"/");
-// }
-
-// /**
-//  * Unsets all cookies used by the PageTool.
-//  */
-// private function deleteCookies() {
-// 	setcookie("PhpGt_Login[0]", "deleted", 0, "/");
-// 	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
-// 	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
-// 	unset($_COOKIE["PhpGt_Login"]);
-// }
-
-// /**
-//  * Creates a UUID for tracking anonymous users.
-//  * @return string The UUID.
-//  */
-// private function generateSalt() {
-// 	// TODO: A real salt function.
-// 	return hash("sha512", rand(0, 10000));
-// }
+/**
+ * Creates a UUID for tracking anonymous users.
+ * @return string The UUID.
+ */
+private function generateSalt() {
+	// TODO: A real salt function.
+	return hash("sha512", rand(0, 10000));
+}
 
 }?>

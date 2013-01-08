@@ -13,7 +13,7 @@ private $_identities = array(
  */
 public function __construct($identity = "Google") {
 	require_once(GTROOT . DS . "Framework" . DS . "Utility" 
-		. DS . "OpenId" . DS . "OpenId.php");
+		. DS . "OpenId" . DS . "openid.php");
 	$identityStr = $this->getIdentityString($identity);
 	$domain = $_SERVER['HTTP_HOST'];
 
@@ -35,6 +35,7 @@ public function __construct($identity = "Google") {
 				$this->_attributes = $this->_openId->getAttributes();
 			}
 			else {
+				var_dump($this->_openId);die();
 				throw new HttpError(403, "OpenId validation failed");
 				exit;
 			}
