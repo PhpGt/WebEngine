@@ -225,11 +225,18 @@ public function checkAuth() {
  */
 private function checkOpenId() {
 	if(isset($_GET["openid_identity"])) {
-		$this->auth();
 		if(isset($_GET["openid_return_to"])) {
-			header("Location: " . $_GET["openid_return_to"]);
+			// Remove any potential ?Authenticate=OpenIdProvider from URI.
+			$returnTo = preg_replace(
+				"/(?<=[\?|&])Authenticate=\w+&?/i",
+				"",
+				$_GET["openid_return_to"]
+			);
+
+			header("Location: " . $returnTo);
 			exit;
 		}
+		$this->auth();
 	}
 }
 
@@ -247,6 +254,10 @@ private function userSession($input) {
 	else if(is_string($input)) {
 		$dbUser = $this->_api["User"]->getByUuid(["Uuid" => $input]);
 	}
+	else {
+		$dbUser = $input;
+	}
+
 	if($dbUser->hasResult) {
 		if(empty($_SESSION["PhpGt_User"])) {
 			$_SESSION["PhpGt_User"] = array();
