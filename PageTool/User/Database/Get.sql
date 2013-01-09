@@ -1,5 +1,6 @@
 select
 	*,
+	`User`.`Id`,
 	`User_Type`.`Name` as `User_Type_Name`,
 	(select concat(`FirstName`, " ", `LastName`)
 	) as `FullName`

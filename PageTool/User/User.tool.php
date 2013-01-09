@@ -79,6 +79,7 @@ public function getUser($uuid = null) {
 	// If user is authenticated already, return early with the authenticated
 	// user detains in an array.
 	if($this->checkAuth()) {
+		$this->setActive();
 		return $_SESSION["PhpGt_User"];
 	}
 	
@@ -101,6 +102,8 @@ public function getUser($uuid = null) {
 			"Authenticated" => false
 		);
 	}
+
+	$this->setActive($dbUser["Id"]);
 
 	// Return the array, or array-like-object representing the user.
 	return $dbUser;
@@ -457,6 +460,13 @@ private function deleteCookies() {
 	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
 	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
 	unset($_COOKIE["PhpGt_Login"]);
+}
+
+private function setActive($id = null) {
+	if(is_null($id)) {
+		$id = $_SESSION["PhpGt_User"]["Id"];
+	}
+	$this->_api["User"]->setActive(["Id" => $id]);
 }
 
 /**

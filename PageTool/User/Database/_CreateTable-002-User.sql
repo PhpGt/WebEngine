@@ -7,6 +7,8 @@ create table if not exists `User` (
 	`Dt_Created`			datetime	not null,
 	`Dt_Identified`			datetime	null,
 	`Dt_Deleted`			datetime	null		default null,
+	`Dt_LastActive`			datetime	null,
+	`ActivityCount`			int unsigned not null	default 0,
 	`FirstName`				varchar(32)	null		default null,
 	`LastName`				varchar(32)	null		default null,
 	`Email`					varchar(64)	null		default null,
