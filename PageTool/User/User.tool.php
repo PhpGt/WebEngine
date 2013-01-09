@@ -20,6 +20,9 @@ public function go($api, $dom, $template, $tool) {}
 
 public function __get($name) {
 	switch($name) {
+	case "authenticated":
+		return !empty($_SESSION["PhpGt_User"]["Username"]);
+		break;
 	case "id":
 		return $_SESSION["PhpGt_User"]["Id"];
 		break;
@@ -150,12 +153,15 @@ public function checkAuth() {
 			// Authenticated user doesn't exist in database, but there may be
 			// an anonymous user in the database with same UUID.
 			$anonDbUser = $this->_api["User"]->getByUuid(
-				["Uuid" => $this->uuid]);
+				["Uuid" => $_COOKIE["PhpGt_Track"]]);
 			if($anonDbUser->hasResult) {
 				// Upgrade the anon user to full user.
 				$this->_api["User"]->anonIdentify([
-					"Uuid" => $this->uuid,
-					"Username" => $anonDbUser["Username"]
+					// TODO: Possibly provide the 'new' uuid here to change in
+					// the database.
+					"Uuid" => $_COOKIE["PhpGt_Track"],
+					"NewUuid" => $this->uuid,
+					"Username" => $username
 				]);
 				return $this->userSession($this->uuid);
 			}
