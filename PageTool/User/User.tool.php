@@ -19,16 +19,19 @@ private $_domainWhiteList = array();
 public function go($api, $dom, $template, $tool) {}
 
 public function __get($name) {
+	if(empty($_SESSION["PhpGt_User"])) {
+		$user = $this->getUser();
+	}
 	switch($name) {
 	case "authenticated":
-		return !empty($_SESSION["PhpGt_User"]["Username"]);
+		return !empty($user["Username"]);
 		break;
 	case "id":
-		return $_SESSION["PhpGt_User"]["Id"];
+		return $user["Id"];
 		break;
 	case "username":
 	case "userName":
-		return $_SESSION["PhpGt_User"]["Username"];
+		return $user["Username"];
 		break;
 	case "uuid":
 		return empty($_COOKIE["PhpGt_Login"])
@@ -38,12 +41,12 @@ public function __get($name) {
 	case "firstName":
 	case "firstname":
 		$this->checkNames();
-		return $_SESSION["PhpGt_User"]["FirstName"];
+		return $user["FirstName"];
 		break;
 	case "lastName":
 	case "lastname":
 		$this->checkNames();
-		return $_SESSION["PhpGt_User"]["LastName"];
+		return $user["LastName"];
 		break;
 	case "fullName":
 	case "fullname":
