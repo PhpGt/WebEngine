@@ -24,5 +24,5 @@ create table if not exists `User` (
 		on delete restrict
 		on update cascade
 )
-COMMENT = "Hash is stored if password needed, otherwise null for OpenId"
+COMMENT = ""
 ENGINE = InnoDB;

@@ -70,6 +70,9 @@ public function setTool($toolName) {
 		$this->_tool = ucfirst($toolName);
 		return true;
 	}
+	else {
+		$this->_tool = null;
+	}
 	return false;
 }
 
@@ -275,11 +278,15 @@ public function createTableAndDependencies($tableName) {
 				GTROOT  . DS . "Database" . DS . ucfirst($tableName),
 				APPROOT . DS . "Database" . DS . ucfirst($tableName)
 			);
+
 			if(!empty($this->_tool)) {
 				$sqlPathArray[] = GTROOT . DS . "PageTool" . DS . $this->_tool
 					. DS . "Database";
 				$sqlPathArray[] = APPROOT . DS . "PageTool" . DS . $this->_tool
 					. DS . "Database";
+				// Finished using the special tool files - remove the reference
+				// so future tables don't re-deploy tool.
+				$this->_tool = null;
 			}
 
 			foreach ($sqlPathArray as $sqlPath) {
