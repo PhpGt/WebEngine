@@ -277,8 +277,6 @@ private function userSession($input) {
 		$_SESSION["PhpGt_User"]["Id"] = $dbUser["Id"];
 		$_SESSION["PhpGt_User"]["Uuid"] = $dbUser["Uuid"];
 		$_SESSION["PhpGt_User"]["Username"] = $dbUser["Username"];
-		$_SESSION["PhpGt_User"]["FirstName"] = $dbUser["FirstName"];
-		$_SESSION["PhpGt_User"]["LastName"] = $dbUser["LastName"];
 
 		return $_SESSION["PhpGt_User"];
 	}
