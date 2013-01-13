@@ -114,17 +114,20 @@ public function getUser($uuid = null) {
 
 /**
  * Checks for a tracking cookie, and if it doesn't exist, creates one.
+ * @param  $force Optional. Pass in a new uuid to track with.
  * @return string The tracking UUID.
  */
-public function track() {
-	if(empty($_COOKIE["PhpGt_Track"])) {
-		$anonId = $this->generateSalt();
+public function track($forceUuid = null) {
+	if(empty($_COOKIE["PhpGt_Track"]) || !is_null($forceUuid)) {
+		$uuid = is_null($forceUuid)
+			? $this->generateSalt()
+			: $forceUuid;
 		$expires = strtotime("+105 weeks");
-		if(setcookie("PhpGt_Track", $anonId, $expires, "/") === false) {
+		if(setcookie("PhpGt_Track", $uuid, $expires, "/") === false) {
 			throw new HttpError(500,
 				"Error generating tracking cookie in User PageTool.");
 		}
-		return $anonId;
+		return $uuid;
 	}
 
 	return $_COOKIE["PhpGt_Track"];
@@ -162,11 +165,13 @@ public function checkAuth() {
 				["Uuid" => $_COOKIE["PhpGt_Track"]]);
 			if($anonDbUser->hasResult) {
 				// Upgrade the anon user to full user.
+				$this->track($_COOKIE["PhpGt_Login"][0]);
+
 				$this->_api["User"]->anonIdentify([
 					// TODO: Possibly provide the 'new' uuid here to change in
 					// the database.
 					"Uuid" => $_COOKIE["PhpGt_Track"],
-					"NewUuid" => $this->uuid,
+					"NewUuid" => $_COOKIE["PhpGt_Login"][0],
 					"Username" => $username
 				]);
 				return $this->userSession($this->uuid);
