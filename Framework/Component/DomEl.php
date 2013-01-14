@@ -193,15 +193,15 @@ public function after($toAdd) {
  * Appends multiple elements to this element, taking values from the
  * array passed in. This element will have however many indeces are in the
  * array appended elements.
- * @param mixed $array The array of data to compute, or an enumerable 
+ * @param mixed $data The array of data to compute, or an enumerable 
  * object.
  * @param mixed $element The element to create and append for each item in
  * the array.
  * @param array $attrArray A key-value-pair of attribute names and array 
  * keys. Each key will be created as an attribute on the new element,
- * the attribute's value will be the value stored in $array's index that
+ * the attribute's value will be the value stored in $data's index that
  * matches the value of the $attrArray key.
- * @param string $textKey The index of each $array element to use as the
+ * @param string $textKey The index of each $data element to use as the
  * node to append's text value.
  */
 public function appendArray($data, $element,
