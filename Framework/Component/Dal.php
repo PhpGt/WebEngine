@@ -234,8 +234,7 @@ public function fixError($input) {
 		break;
 	default:
 		$this->_dbDeploy->error = "Error in SQL.";
-		// TODO: Throw proper error at this point.
-		die("PDO error: " . $message);
+		throw new HttpError(500, $message);
 		break;
 	}
 }
