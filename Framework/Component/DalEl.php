@@ -77,7 +77,7 @@ private function query($sqlFile, $paramArray = array()) {
 
 	// Limit and offset params must be treated differently. This means that
 	// a limitation in the SQL is that the parameters must be called
-	// :Limit and :Offset (upper-case first letters).
+	// :Limit and :offset (upper-case first letters).
 	if(array_key_exists(":Limit", $paramArray)) {
 		$stmt->bindValue(":Limit", $paramArray[":Limit"], PDO::PARAM_INT);
 		unset($paramArray[":Limit"]);

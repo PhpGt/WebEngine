@@ -186,6 +186,8 @@ public function fixError($input) {
 	$this->_dbDeploy->tablesDeployed = array();
 	$this->_dbDeploy->tablesFailed = array();
 	$this->_dbDeploy->tablesSkipped = array();
+
+	$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");
 	
 	switch($data["Type"]) {
 	case "NO_TABLE":
@@ -237,6 +239,8 @@ public function fixError($input) {
 		throw new HttpError(500, $message);
 		break;
 	}
+
+	$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 1;");
 }
 
 /**
