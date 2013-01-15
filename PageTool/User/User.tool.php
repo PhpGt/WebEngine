@@ -430,12 +430,17 @@ private function refreshCookies() {
  * Unsets all cookies used by the PageTool.
  */
 private function deleteCookies() {
-	setcookie("PhpGt_Track", "deleted", 0, "/");
+	// Rather than deleting the UUID cookie (which will take 2 requests), set
+	// it to a new UUID, so that the user can start to be anonymously tracked
+	// straight away.
+	// Time expired is set to 1 second after EPOCH (otherwise, 0 sets the cookie
+	// to a session expiration).
+	setcookie("PhpGt_Track", "deleted", 1, "/");
 	unset($_COOKIE["PhpGt_Track"]);
 	
-	setcookie("PhpGt_Login[0]", "deleted", 0, "/");
-	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
-	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
+	setcookie("PhpGt_Login[0]", "deleted", 1, "/");
+	setcookie("PhpGt_Login[1]", "deleted", 1, "/");
+	setcookie("PhpGt_Login[2]", "deleted", 1, "/");
 	unset($_COOKIE["PhpGt_Login"]);
 }
 
