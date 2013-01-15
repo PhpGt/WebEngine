@@ -1,11 +1,11 @@
 # Creates a new user with only a username, with no other attributes.
 insert into User (
-	Username,
-	Uuid,
-	Dt_Created
+	username,
+	uuid,
+	dateTimeCreated
 )
 values (
-	:Username,
-	:Uuid,
+	:username,
+	:uuid,
 	now()
 );

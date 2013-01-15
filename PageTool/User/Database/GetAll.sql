@@ -1,7 +1,7 @@
 select
 	*,
-	`User`.`Id`,
-	`User_Type`.`Name` as `User_Type_Name`
+	`User`.`ID`,
+	`User_Type`.`name` as `User_Type__name`
 from `User`
 inner join `User_Type`
-	on (`User_Type`.`Id` = `User`.`Fk_User_Type`);
+	on (`User_Type`.`ID` = `User`.`FK_User_Type`);

@@ -1,22 +1,10 @@
 insert into User (
-	Username,
-	Uuid,
-	Dt_Created,
-	FirstName,
-	LastName,
-	Email,
-	JobTitle,
-	Telephone,
-	TelephoneMobile
+	username,
+	uuid,
+	dateTimeCreated
 )
 values (
-	:Username,
-	:Uuid,
-	now(),
-	:FirstName,
-	:LastName,
-	:Email,
-	:JobTitle,
-	:Telephone,
-	:TelephoneMobile
+	:username,
+	:uuid,
+	now()
 );

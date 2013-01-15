@@ -19,6 +19,8 @@ protected $_driver = "mysql";
 
 // The creation order of PHP.Gt tables (some may rely on others in foreign
 // key constraints, for example).
+// TODO: Include the order of Tools' sql here somehow - possibly with a 2d 
+// array...
 private $_sharedCreationOrder = array(
 	"User",
 	"Content",

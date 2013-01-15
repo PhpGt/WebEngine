@@ -1,13 +1,13 @@
 # Upgrades an anonymous user to a regular user by associating a username and
 # incrementing the user's type id.
 update User
-set Username = :Username,
-	Dt_Identified = now(),
-	Uuid = :NewUuid,
-	Fk_User_Type = (
-		select User_Type.Id
+set username = :username,
+	dateTimeIdentified = now(),
+	uuid = :newUuid,
+	FK_User_Type = (
+		select User_Type.ID
 		from User_Type
-		where User_Type.Name = "User"
+		where User_Type.name = "User"
 	)
-where Uuid = :Uuid
+where uuid = :uuid
 limit 1;

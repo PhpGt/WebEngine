@@ -1,5 +1,5 @@
 update User
-set Dt_LastActive = now(),
-	ActivityCount = ActivityCount + 1
-where Id = :Id
+set dateTimeLastActive = now(),
+	activityCount = activityCount + 1
+where ID = :ID
 limit 1;

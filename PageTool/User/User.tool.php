@@ -24,41 +24,22 @@ public function __get($name) {
 	}
 	switch($name) {
 	case "authenticated":
-		return !empty($user["Username"]);
+		return !empty($user["username"]);
 		break;
 	case "id":
-		return $user["Id"];
+		return $user["ID"];
 		break;
 	case "username":
 	case "userName":
-		return $user["Username"];
+		return $user["username"];
 		break;
 	case "uuid":
 		return empty($_COOKIE["PhpGt_Login"])
 			? $_COOKIE["PhpGt_Track"]
 			: $_COOKIE["PhpGt_Login"][0];
 		break;
-	case "firstName":
-	case "firstname":
-		$this->checkNames();
-		return $user["FirstName"];
-		break;
-	case "lastName":
-	case "lastname":
-		$this->checkNames();
-		return $user["LastName"];
-		break;
-	case "fullName":
-	case "fullname":
-		$this->checkNames();
-		return $this->firstName . " " . $this->lastName;
-		break;
 	default:
-		// If non-standard property is requested, check in database for
-		// the field.
-		$name = ucfirst($name);
-		$dbUser = $this->_api["User"]->getById(["Id" => $this->id]);
-		return $dbUser[$name];
+		return null;
 		break;
 	}
 }
@@ -89,24 +70,24 @@ public function getUser($uuid = null) {
 	// Ensure there is a related user in the database.
 	// If a user doesn't exist, create one.
 	$db = $this->_api["User"];
-	$dbUser = $db->getByUuid(["Uuid" => $uuid]);
+	$dbUser = $db->getByUuid(["uuid" => $uuid]);
 
 	if($dbUser->hasResult) {
-		$isAuth = $dbUser["User_Type_Name"] !== "Anon";
-		$dbUser->setData("Authenticated", $isAuth);
+		$isAuth = $dbUser["User_Type__name"] !== "Anon";
+		$dbUser->setData("authenticated", $isAuth);
 	}
 	else {
-		$result = $db->addAnon(["Uuid" => $uuid]);
+		$result = $db->addAnon(["uuid" => $uuid]);
 		// Build an array that matches what is stored in the database.
 		$dbUser = array(
-			"Id" => $result->lastInsertId,
-			"Uuid" => $uuid,
-			"User_Type_Name" => "Anon",
-			"Authenticated" => false
+			"ID" => $result->lastInsertId,
+			"uuid" => $uuid,
+			"User_Type__name" => "Anon",
+			"authenticated" => false
 		);
 	}
 
-	$this->setActive($dbUser["Id"]);
+	$this->setActive($dbUser["ID"]);
 
 	// Return the array, or array-like-object representing the user.
 	return $dbUser;
@@ -153,7 +134,7 @@ public function checkAuth() {
 
 		// User has authenticated in some way, and a username is known.
 		// Need to match to a database user, which may not exist yet.
-		$dbUser = $this->_api["User"]->get(["Username" => $username]);
+		$dbUser = $this->_api["User"]->get(["username" => $username]);
 		if($dbUser->hasResult) {
 			// User already stored in database.
 			return $this->userSession($dbUser);
@@ -162,7 +143,7 @@ public function checkAuth() {
 			// Authenticated user doesn't exist in database, but there may be
 			// an anonymous user in the database with same UUID.
 			$anonDbUser = $this->_api["User"]->getByUuid(
-				["Uuid" => $_COOKIE["PhpGt_Track"]]);
+				["uuid" => $_COOKIE["PhpGt_Track"]]);
 			if($anonDbUser->hasResult) {
 				// Upgrade the anon user to full user.
 				$this->track($_COOKIE["PhpGt_Login"][0]);
@@ -170,17 +151,17 @@ public function checkAuth() {
 				$this->_api["User"]->anonIdentify([
 					// TODO: Possibly provide the 'new' uuid here to change in
 					// the database.
-					"Uuid" => $_COOKIE["PhpGt_Track"],
-					"NewUuid" => $_COOKIE["PhpGt_Login"][0],
-					"Username" => $username
+					"uuid" => $_COOKIE["PhpGt_Track"],
+					"newUuid" => $_COOKIE["PhpGt_Login"][0],
+					"username" => $username
 				]);
 				return $this->userSession($this->uuid);
 			}
 			else {
 				// Create a new fresh user with current UUID.
 				$newDbUser = $this->_api["User"]->addEmpty([
-					"Username" => $username,
-					"Uuid" => $this->uuid
+					"username" => $username,
+					"uuid" => $this->uuid
 				]);
 				return $this->userSession($newDbUser->lastInsertId);
 			}
@@ -206,7 +187,7 @@ public function checkAuth() {
 
 			// Find the user from their UUID, ready to match against.
 			$dbUser = $this->_api["User"]->getByUuid([
-				"Uuid" => $userHash
+				"uuid" => $userHash
 			]);
 			if($dbUser->hasResult) {
 				// There is a user in the database, but the cookies need
@@ -266,10 +247,10 @@ private function checkOpenId() {
  */
 private function userSession($input) {
 	if(is_int($input)) {
-		$dbUser = $this->_api["User"]->getById(["Id" => $input]);
+		$dbUser = $this->_api["User"]->getById(["ID" => $input]);
 	}
 	else if(is_string($input)) {
-		$dbUser = $this->_api["User"]->getByUuid(["Uuid" => $input]);
+		$dbUser = $this->_api["User"]->getByUuid(["uuid" => $input]);
 	}
 	else {
 		$dbUser = $input;
@@ -279,9 +260,9 @@ private function userSession($input) {
 		if(empty($_SESSION["PhpGt_User"])) {
 			$_SESSION["PhpGt_User"] = array();
 		}
-		$_SESSION["PhpGt_User"]["Id"] = $dbUser["Id"];
-		$_SESSION["PhpGt_User"]["Uuid"] = $dbUser["Uuid"];
-		$_SESSION["PhpGt_User"]["Username"] = $dbUser["Username"];
+		$_SESSION["PhpGt_User"]["ID"] = $dbUser["id"];
+		$_SESSION["PhpGt_User"]["uuid"] = $dbUser["uuid"];
+		$_SESSION["PhpGt_User"]["username"] = $dbUser["username"];
 
 		return $_SESSION["PhpGt_User"];
 	}
@@ -419,24 +400,6 @@ private function setAuthData($username) {
 }
 
 /**
- * Attempts to retrieve extra data from the database associated to the current
- * user Id, for using with the __get magic method.
- */
-private function checkNames() {
-	if(empty($_SESSION["PhpGt_User"]["FirstName"])
-	|| empty($_SESSION["PhpGt_User"]["LastName"])) {
-		if(empty($_SESSION["PhpGt_User"]["Id"])) {
-			throw new HttpError(500, "User PageTool error finding User Id.");
-		}
-		$user = $this->_api["User"]->getById(
-			["Id" => $_SESSION["PhpGt_User"]["Id"]]);
-
-		$_SESSION["PhpGt_User"]["FirstName"] = $user["FirstName"];
-		$_SESSION["PhpGt_User"]["LastName"] = $user["LastName"];
-	}
-}
-
-/**
  * Every time there is user activity, refresh the cookies to keep them alive.
  */
 private function refreshCookies() {
@@ -470,9 +433,9 @@ private function deleteCookies() {
 
 private function setActive($id = null) {
 	if(is_null($id)) {
-		$id = $_SESSION["PhpGt_User"]["Id"];
+		$id = $_SESSION["PhpGt_User"]["ID"];
 	}
-	$this->_api["User"]->setActive(["Id" => $id]);
+	$this->_api["User"]->setActive(["ID" => $id]);
 }
 
 /**

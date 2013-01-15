@@ -1,4 +1,4 @@
-insert into `User_Type` (`Name`)
+insert into `User_Type` (`name`)
 values
 	('Anon'),
 	('User'),
