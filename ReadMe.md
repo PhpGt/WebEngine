@@ -2,6 +2,8 @@
 =======================
 A lightweight application development toolkit aimed at automating deployment, streamlining development and respecting web technologies.
 
+[Head over to the Github Wiki for documentation](https://github.com/g105b/PHP.Gt/wiki)
+
 Updates in Alpha3
 -----------------
 For a full list of updates, see the ChangeLog.md file.
