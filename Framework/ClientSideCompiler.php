@@ -48,6 +48,10 @@ private function preprocess($dom) {
 	}
 }
 
+// TODO: Issue #62 and #64 - Don't preprocess the sass files to the Style
+// direcotry. Instead, output to the www directory... but two extra things must
+// be done to achieve this: the compiler must work within the www directory,
+// and the FileOrganiser must ignore .scss files. 
 private function sassParse($filePath) {
 	$sassParser = new SassParser_Utility($filePath);
 	$parsedString = $sassParser->parse();
