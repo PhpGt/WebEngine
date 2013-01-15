@@ -22,8 +22,13 @@ public function __get($name) {
 	if(empty($_SESSION["PhpGt_User"])) {
 		$user = $this->getUser();
 	}
+	else {
+		$user = $_SESSION["PhpGt_User"];
+	}
+
 	switch($name) {
 	case "authenticated":
+	case "isAuthenticated":
 		return !empty($user["username"]);
 		break;
 	case "id":
@@ -260,7 +265,7 @@ private function userSession($input) {
 		if(empty($_SESSION["PhpGt_User"])) {
 			$_SESSION["PhpGt_User"] = array();
 		}
-		$_SESSION["PhpGt_User"]["ID"] = $dbUser["id"];
+		$_SESSION["PhpGt_User"]["ID"] = $dbUser["ID"];
 		$_SESSION["PhpGt_User"]["uuid"] = $dbUser["uuid"];
 		$_SESSION["PhpGt_User"]["username"] = $dbUser["username"];
 
@@ -425,6 +430,9 @@ private function refreshCookies() {
  * Unsets all cookies used by the PageTool.
  */
 private function deleteCookies() {
+	setcookie("PhpGt_Track", "deleted", 0, "/");
+	unset($_COOKIE["PhpGt_Track"]);
+	
 	setcookie("PhpGt_Login[0]", "deleted", 0, "/");
 	setcookie("PhpGt_Login[1]", "deleted", 0, "/");
 	setcookie("PhpGt_Login[2]", "deleted", 0, "/");
