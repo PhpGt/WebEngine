@@ -187,7 +187,9 @@ public function fixError($input) {
 	$this->_dbDeploy->tablesFailed = array();
 	$this->_dbDeploy->tablesSkipped = array();
 
-	$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");
+	if(!is_null($this->_dbh)) {
+		$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");		
+	}
 	
 	switch($data["Type"]) {
 	case "NO_TABLE":
