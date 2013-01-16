@@ -43,6 +43,8 @@ public function __get($key) {
 		break;
 	case "lastInsertId":
 	case "insertId":
+	case "lastInsertID":
+	case "insertID":
 		return $this->_insertId;
 		break;
 	case "hasRows":
