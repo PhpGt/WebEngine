@@ -42,6 +42,7 @@ public function __construct() {
 	$this->_pass = isset($this->_pass)
 		? $this->_pass
 		: "Gt_" . APPNAME . "_Pass";
+	//$this->_pass = md5(APPSALT . $this->_pass);
 }
 
 public function getCreationOrder() {
