@@ -155,9 +155,9 @@ public function checkAuth() {
 				// Upgrade the anon user to full user.
 				$this->track($_COOKIE["PhpGt_Login"][0]);
 
+				var_dump($_COOKIE);die();
+
 				$this->_api["User"]->anonIdentify([
-					// TODO: Possibly provide the 'new' uuid here to change in
-					// the database.
 					"uuid" => $_COOKIE["PhpGt_Track"],
 					"newUuid" => $_COOKIE["PhpGt_Login"][0],
 					"username" => $username

@@ -38,9 +38,8 @@ public function __construct($dom, $elArray = array()) {
 			}
 		}
 		else {
-			var_dump($elArray);
-			// TODO: Proper error logging and output.
-			die("Error creating DomElCollection.");
+			throw new HttpError(500, "Error creating DomElCollection.");
+			exit;
 		}
 	}
 

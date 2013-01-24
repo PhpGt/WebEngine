@@ -182,7 +182,6 @@ private function checkValidDatabase() {
 		}
 		if(isset($_SESSION["PhpGt_Cache"]["Database"][$this->_reference])) {
 			$sessionT = $_SESSION["PhpGt_Cache"]["Database"][$this->_reference];
-			//var_dump($sessionT > $timeStamps["TableDir"]);die();
 			if($sessionT <= $timeStamps["TableDir"]) {
 				return true;
 			}
