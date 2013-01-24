@@ -166,9 +166,12 @@ public function checkAuth() {
 			}
 			else {
 				// Create a new fresh user with current UUID.
+				$uuid = empty($_COOKIE["PhpGt_Login"])
+					? $_COOKIE["PhpGt_Track"]
+					: $_COOKIE["PhpGt_Login"][0];
 				$newDbUser = $this->_api["User"]->addEmpty([
 					"username" => $username,
-					"uuid" => $this->uuid
+					"uuid" => $uuid
 				]);
 				return $this->userSession($newDbUser->lastInsertId);
 			}
@@ -389,6 +392,7 @@ private function setAuthData($username) {
 	$uuid = hash("sha512", $username);
 	$userSalt = $this->generateSalt();
 	$expires = strtotime("+105 weeks");
+	$hash = hash("sha512", $uuid . $userSalt . APPSALT);
 	setcookie(
 		"PhpGt_Login[0]",
 		$uuid,
@@ -401,9 +405,14 @@ private function setAuthData($username) {
 		"/");
 	setcookie(
 		"PhpGt_Login[2]",
-		hash("sha512", $uuid . $userSalt . APPSALT),
+		$hash,
 		$expires,
 		"/");
+
+	$_COOKIE["PhpGt_Login"] = array();
+	$_COOKIE["PhpGt_Login"][0] = $uuid;
+	$_COOKIE["PhpGt_Login"][1] = $userSalt;
+	$_COOKIE["PhpGt_Login"][2] = $hash;
 }
 
 /**
