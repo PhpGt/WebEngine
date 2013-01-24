@@ -113,6 +113,8 @@ public function track($forceUuid = null) {
 			throw new HttpError(500,
 				"Error generating tracking cookie in User PageTool.");
 		}
+		$_COOKIE["PhpGt_Track"] = $uuid;
+		$cookie = $_COOKIE["PhpGt_Track"];
 		return $uuid;
 	}
 
