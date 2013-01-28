@@ -43,7 +43,7 @@ public function __construct($dom, $elArray = array()) {
 		}
 	}
 
-	$this->_elArray= $elArray;
+	$this->_elArray = $elArray;
 	$this->_index = 0;
 }
 
@@ -265,8 +265,10 @@ public function offsetGet($index) {
 		if(is_string($index)) {
 			$subElements = array();
 			foreach ($this->_elArray as $element) {
-				$subElements[] = $element[$index];
+				$arrayOfMatches = $element[$index]->getElArray(); 
+				$subElements = array_merge($subElements, $arrayOfMatches);
 			}
+			
 			$result = new DomElCollection($this->_dom, $subElements);
 
 			return $result;
