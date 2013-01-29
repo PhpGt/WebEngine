@@ -10,6 +10,9 @@
 */
 // Directory is in Web root of current application...
 // Move one directory up to get the "app root".
+if(!defined("DS")) {
+	define("DS", DIRECTORY_SEPARATOR);
+}
 chdir("..");
 $cwd = substr(getcwd(), strrpos(getcwd(), "/") + 1);
 // Get the requested path, remove initial slash and any query strings.
