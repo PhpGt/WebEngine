@@ -17,7 +17,6 @@ private $_dbh = null;
 private $_dalElArray = array();
 private $_createdTableCache = array();
 private $_dbDeploy = null;
-private $_tool = null;
 
 /**
  * Only ever called internally. Stores the required settings for when the
@@ -65,17 +64,6 @@ public function connect() {
 	}
 }
 
-public function setTool($toolName) {
-	if(is_string($toolName)) {
-		$this->_tool = ucfirst($toolName);
-		return true;
-	}
-	else {
-		$this->_tool = null;
-	}
-	return false;
-}
-
 /**
  * The Dal object implements ArrayAccess, so that each created DalElement
  * can be cached into an associative array. This means that during a single
@@ -93,8 +81,7 @@ public function offsetExists($offset) {
 
 	$this->_dalElArray[$offset] = new DalEl(
 		$this,
-		$offset,
-		$this->_tool
+		$offset
 	);
 
 	return true;
@@ -281,18 +268,11 @@ public function createTableAndDependencies($tableName) {
 			// Attempt to find creating script for given table.
 			$sqlPathArray = array(
 				GTROOT  . DS . "Database" . DS . ucfirst($tableName),
-				APPROOT . DS . "Database" . DS . ucfirst($tableName)
+				APPROOT . DS . "Database" . DS . ucfirst($tableName),
+				// Check PageTools:
+				GTROOT  . "/PageTool/" . ucfirst($tableName) . "/Database",
+				APPROOT . "/PageTool/" . ucfirst($tableName) . "/Database",
 			);
-
-			if(!empty($this->_tool)) {
-				$sqlPathArray[] = GTROOT . DS . "PageTool" . DS . $this->_tool
-					. DS . "Database";
-				$sqlPathArray[] = APPROOT . DS . "PageTool" . DS . $this->_tool
-					. DS . "Database";
-				// Finished using the special tool files - remove the reference
-				// so future tables don't re-deploy tool.
-				$this->_tool = null;
-			}
 
 			foreach ($sqlPathArray as $sqlPath) {
 				if(!is_dir($sqlPath)) {

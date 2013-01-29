@@ -18,12 +18,11 @@ private $_dalResult		= null;
 private $_affectedRows	= null;
 private $_lastInsertId	= null;
 
-private $_tool 			= null;
+private $_isTool		= false;
 
 protected $externalMethods = array();
 
-public function __construct($tool = null) {
-	$this->_tool = $tool;
+public function __construct() {
 }
 
 /**
@@ -41,14 +40,14 @@ public function apiCall($dal) {
 
 	// Check to see if there is a defined method of this API's method name.
 	if(method_exists($this, $this->_methodName)) {
-		$dalEl = new DalEl($dal, $this->_apiName, $this->_tool);
+		$dalEl = new DalEl($dal, $this->_apiName, $this->_isTool);
 		$params = array_merge(
 			array($this->_methodParams),
 			array($dal),
 			array($dalEl)
 		);
 
-		// The DalResult object comes from the DalElement's query function.
+		// The DalResult object comes from the DalEl's query function.
 		try {
 			$this->_dalResult = call_user_func_array(
 				array($this, $this->_methodName),
@@ -80,6 +79,9 @@ public function apiCall($dal) {
 		// contained within the externalMethods array (if not json, allow
 		// anyway as in that case it will be being called internally).
 		$dalElement = $dal[$this->_apiName];
+		if($this->_isTool) {
+			$dalElement->setTool();
+		}
 
 		try {
 			$this->_dalResult = call_user_func_array(
@@ -136,6 +138,10 @@ public function execute() {
 		$this->_methodParams);
 	
 	return !is_null($this->_result);
+}
+
+public function setTool() {
+	$this->_isTool = true;
 }
 
 public function getDalResult() {

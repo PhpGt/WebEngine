@@ -4,19 +4,16 @@
  */
 
 private $_apiElObjects = array();	// Cache of APIs used in this request.
-private $_tool = false;
 
 public $dal = null;
 
-public function __construct($dalOrApiWrapper, $tool = false) {
+public function __construct($dalOrApiWrapper) {
 	if($dalOrApiWrapper instanceof Dal) {
 		$this->dal = $dalOrApiWrapper;
 	}
 	else {
 		$this->dal = $dalOrApiWrapper->dal;
 	}
-	$this->_tool = $tool;
-	$this->dal->setTool($tool);
 }
 
 /**
@@ -32,11 +29,16 @@ public function offsetExists($offset) {
 }
 
 public function offsetGet($offset) {
-	$offset = ucfirst($offset);
+	if($offset instanceof PageTool) {
+		$offset = get_class($offset);
+	}
+	else {
+		$offset = ucfirst($offset);
+	}
 
 	if(!$this->offsetExists($offset)) {
 		$this->_apiElObjects[$offset] = 
-			new ApiEl($offset, $this->dal, $this->_tool);
+			new ApiEl($offset, $this->dal);
 	}
 
 	return $this->_apiElObjects[$offset];

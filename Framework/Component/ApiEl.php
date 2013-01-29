@@ -10,13 +10,20 @@ private $_apiName;
 private $_apiObject = null;
 private $_dal = null;
 
+private $_isTool = false;
+
 /**
  * Called by the ApiWrapper when accessed as an array. 
  *
  * @param String $name The name of the table collection.
  * @param Dal $dal The current DAL object.
  */
-public function __construct($name, $dal, $tool) {
+public function __construct($name, $dal) {
+	if(strstr($name, "_PageTool")) {
+		$name = substr($name, 0, strrpos($name, "_"));
+		$this->_isTool = true;
+	}
+
 	$this->_apiName = $name;
 	$className = $name . "_Api";
 	
@@ -24,12 +31,15 @@ public function __construct($name, $dal, $tool) {
 		APPROOT . DS . "Api" . DS . $name . ".api.php",
 		GTROOT  . DS . "Api" . DS . $name . ".api.php",
 	);
-	if(!empty($tool)) {
-		$apiFileArray[] = APPROOT . DS . "PageTool" . DS . $tool 
-							. DS . "Api" . DS . $name . ".api.php";
-		$apiFileArray[] = GTROOT . DS . "PageTool" . DS . $tool 
-							. DS . "Api" . DS . $name . ".api.php";
+
+	if($this->_isTool) {
+		$toolApiFileArray = array(
+			APPROOT . "/PageTool/$name/Api/$name.api.php",
+			GTROOT  . "/PageTool/$name/Api/$name.api.php"
+		);
+		$apiFileArray = array_merge($toolApiFileArray, $apiFileArray);
 	}
+
 	foreach ($apiFileArray as $apiFile) {
 		if(file_exists($apiFile)) {
 			require_once($apiFile);
@@ -41,7 +51,7 @@ public function __construct($name, $dal, $tool) {
 		$this->_apiObject = new $className();
 	}
 	else {
-		$this->_apiObject = new Api($tool);
+		$this->_apiObject = new Api();
 	}
 
 	$this->_dal = $dal;
@@ -57,6 +67,10 @@ public function __call($methodName, $params) {
 	$this->_apiObject->setApiName($this->_apiName);
 	$this->_apiObject->setMethodName($methodName);
 	$this->_apiObject->setMethodParams($params);
+	
+	if($this->_isTool) {
+		$this->_apiObject->setTool();
+	}
 	
 	if(call_user_func_array(
 		array($this->_apiObject, "apiCall"),

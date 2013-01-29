@@ -4,12 +4,12 @@
  */
 private $_dal		= null;
 private $_tableName	= null;
-private $_tool		= null;
+private $_isTool	= false;
 
-public function __construct($dal, $tableName, $tool = null) {
+public function __construct($dal, $tableName, $isTool = false) {
 	$this->_dal = $dal;
 	$this->_tableName = $tableName;
-	$this->_tool = $tool;
+	$this->_isTool = $isTool;
 }
 
 public function __call($name, $args) {
@@ -25,13 +25,15 @@ public function __call($name, $args) {
 		APPROOT . DS . "Database" . DS . $this->_tableName . DS,
 		GTROOT  . DS . "Database" . DS . $this->_tableName . DS
 	);
-	if(!empty($this->_tool)) {
-		$pathArray[] = APPROOT . DS . "PageTool" . DS . $this->_tool
-			. DS . "Database" . DS;
-		$pathArray[] = GTROOT . DS . "PageTool" . DS . $this->_tool
-			. DS . "Database" . DS;
-	}
 	$fileName = ucfirst($name) . ".sql";
+
+	if($this->_isTool) {
+		$toolPathArray = array(
+			APPROOT . "/PageTool/{$this->_tableName}/Database/",
+			GTROOT  . "/PageTool/{$this->_tableName}/Database/"
+		);
+		$pathArray = array_merge($toolPathArray, $pathArray);
+	}
 
 	$sql = null;
 	foreach($pathArray as $path) {
@@ -44,6 +46,10 @@ public function __call($name, $args) {
 	// TODO: Throw proper error.
 	die("Error: No SQL found for $this->_tableName called $name.");
 	return false;
+}
+
+public function setTool() {
+	$this->_isTool = true;
 }
 
 private function query($sqlFile, $paramArray = array()) {		
