@@ -1,27 +1,25 @@
-create table if not exists `Blog_Article` (
-	`Id`					int			not null	auto_increment	primary key,
-	`Fk_Blog`				int			not null	default 1,
-	`Fk_User`				int			null,
-	`Title`					varchar(128)not null,
-	`Dt_Created`			datetime	not null,
-	`Dt_Publish`			datetime	not null,
-	`Dt_Publish_End`		datetime	null,
-	`Content`				text		not null,
-	`Is_Private`			bool		null,
-	`Is_Featured`			bool		null,
-	
-	index `Fk_Blog_Article__Blog` (`Fk_Blog` asc),
-	index `Fk_Blog_Article__User` (`Fk_User` asc),
-	constraint `Fk_Blog_Article__Blog`
-		foreign key (`Fk_Blog`)
-		references `Blog` (`Id`)
-		on delete cascade
-		on update cascade,
-	constraint `Fk_Blog_Article__User`
-		foreign key (`Fk_User`)
-		references `User` (`Id`)
-		on delete cascade
-		on update cascade
-)
-COMMENT = ""
+CREATE  TABLE IF NOT EXISTS `Blog_Article` (
+  `ID` INT NOT NULL AUTO_INCREMENT ,
+  `FK_Blog` INT NOT NULL ,
+  `FK_User` INT NOT NULL ,
+  `title` VARCHAR(128) NOT NULL ,
+  `dateTimeCreated` DATETIME NOT NULL ,
+  `dateTimePublish` DATETIME NOT NULL ,
+  `dateTimePublishEnd` DATETIME NULL ,
+  `content` TEXT NOT NULL ,
+  `isPrivate` TINYINT(1) NULL ,
+  `isFeatured` TINYINT(1) NULL ,
+  PRIMARY KEY (`ID`) ,
+  INDEX `INDEX_FK_Blog` (`FK_Blog` ASC) ,
+  INDEX `INDEX_FK_User` (`FK_User` ASC) ,
+  CONSTRAINT `FK_Blog_Article__Blog`
+    FOREIGN KEY (`FK_Blog` )
+    REFERENCES `Blog` (`ID` )
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_Blog_Article__User`
+    FOREIGN KEY (`FK_User` )
+    REFERENCES `User` (`ID` )
+    ON DELETE cascade
+    ON UPDATE cascade)
 ENGINE = InnoDB;

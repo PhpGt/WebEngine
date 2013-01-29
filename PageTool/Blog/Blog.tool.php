@@ -1,6 +1,5 @@
 <?php class Blog_PageTool extends PageTool {
 /**
- * TODO: Docs.
  * You know ... a web log!
  */
 private $_name = "Blog";
@@ -15,7 +14,7 @@ public function go($api, $dom, $template, $tool) {
 		throw new HttpError(400);
 	}
 
-	$blog = $api["Blog"]->getById(array("Id" => $blogId));
+	$blog = $api[$this]->getById(array("Id" => $blogId));
 	$blogUrl = $this->getUrl($blog);
 	if($blogUrl !== $_SERVER["REQUEST_URI"]) {
 		var_dump($blogUrl, $_SERVER["REQUEST_URI"]);die();
@@ -36,7 +35,7 @@ public function go($api, $dom, $template, $tool) {
 }
 
 public function output($blog, $domEl) {
-	$blogApi = $this->_api["Blog"];
+	$blogApi = $this->_api[$this];
 	$dom = $this->_dom;
 	$template = $this->_template;
 
@@ -151,7 +150,7 @@ public function getPreview($blogObj) {
 }
 
 public function outputLatest($output) {
-	$blog = $this->_api["Blog"]->getLatest();
+	$blog = $this->_api[$this]->getLatest();
 
 	$output["h1"]->text = $blog["Title"];
 	$output["p.date"]->text = date("jS F Y",

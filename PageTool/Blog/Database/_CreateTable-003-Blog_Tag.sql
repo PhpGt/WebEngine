@@ -1,7 +1,6 @@
-create table if not exists `Blog_Tag` (
-	`Id`					int			not null	auto_increment	primary key,
-	`Name`					varchar(32)	not null,
-	unique index `Name_Unique` (`Name` ASC)
-)
-COMMENT = ""
+CREATE  TABLE IF NOT EXISTS `Blog_Tag` (
+  `ID` INT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) NOT NULL ,
+  PRIMARY KEY (`ID`) ,
+  UNIQUE INDEX `UNIQUE_name` (`name` ASC) )
 ENGINE = InnoDB;

@@ -1,9 +1,9 @@
-create table if not exists `Blog` (
-	`Id`					int			not null	auto_increment	primary key,
-	`Name`					varchar(32)	not null	default "Blog",
-	`AutoPublishComments`	bool		null,
-	`PreviewLength`			int			not null	default 100,
-	unique index `Name_Unique` (`Name` ASC)
-)
-COMMENT = "Holds settings for blog, allows multiple blogs per site."
-ENGINE = InnoDB;
+CREATE  TABLE IF NOT EXISTS `Blog` (
+  `ID` INT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) NOT NULL DEFAULT "Blog" ,
+  `autoPublishComments` TINYINT(1) NULL ,
+  `previewLength` INT NOT NULL DEFAULT 100 ,
+  PRIMARY KEY (`ID`) ,
+  UNIQUE INDEX `UNIQUE_name` (`name` ASC) )
+ENGINE = InnoDB
+COMMENT = 'Holds settings for blog, allows multiple blogs per site.';
