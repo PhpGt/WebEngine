@@ -15,7 +15,7 @@ public function __construct() {
 	$this->_domain = isset($this->_domain)
 		? $this->_domain
 		: $_SERVER["HTTP_HOST"];
-	define("APPSALT", $this->_salt);
+	define("APPSALT", hash("sha512", $this->_salt));
 }
 
 public function getDomain() {

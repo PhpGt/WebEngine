@@ -1,5 +1,6 @@
 select
 	User.ID,
+	User.uuid,
 	User.username,
 	User.dateTimeIdentified,
 	User.dateTimeLastActive,

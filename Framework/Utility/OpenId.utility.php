@@ -20,13 +20,14 @@ public function __construct($identity = "Google") {
 	try {
 		$this->_openId = new LightOpenID($domain);
 		$this->_openId->required = array("contact/email");
+		$mode = $this->_openId->mode;
 
-		if(!$this->_openId->mode) {
+		if(!$mode) {
 			$this->_openId->identity = $identityStr;
 			header("Location: " . $this->_openId->authUrl());
 			exit;
 		}
-		else if($this->_openId->mode === "cancel") {
+		else if($mode === "cancel") {
 			throw new HttpError(403, "User cancelled OpenId authentication");
 			exit;
 		}
@@ -35,7 +36,6 @@ public function __construct($identity = "Google") {
 				$this->_attributes = $this->_openId->getAttributes();
 			}
 			else {
-				var_dump($this->_openId);die();
 				throw new HttpError(403, "OpenId validation failed");
 				exit;
 			}

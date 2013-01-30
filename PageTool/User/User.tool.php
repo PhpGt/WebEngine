@@ -14,8 +14,6 @@
  * simply anonymous. This is a less-strict version of checkAuth().
  */
 
-private $_domainWhiteList = array();
-
 public function go($api, $dom, $template, $tool) {}
 
 public function __get($name) {
@@ -43,6 +41,10 @@ public function __get($name) {
 			? $_COOKIE["PhpGt_Track"]
 			: $_COOKIE["PhpGt_Login"][0];
 		break;
+	case "orphanedID":
+		return empty($user["orphanedID"])
+			? null
+			: $user["orphanedID"];
 	default:
 		return null;
 		break;
@@ -80,6 +82,7 @@ public function getUser($uuid = null) {
 	if($dbUser->hasResult) {
 		$isIdentified = $dbUser["User_Type__name"] !== "Anon";
 		$dbUser->setData("isIdentified", $isIdentified);
+		$dbUser = $dbUser->result[0];
 	}
 	else {
 		$result = $db->addAnon(["uuid" => $uuid]);
@@ -144,7 +147,7 @@ public function checkAuth() {
 		$dbUser = $this->_api[$this]->get(["username" => $username]);
 		if($dbUser->hasResult) {
 			// User already stored in database.
-			return $this->userSession($dbUser);
+			return $this->userSession($dbUser, $_COOKIE["PhpGt_Track"]);
 		}
 		else {
 			// Authenticated user doesn't exist in database, but there may be
@@ -153,14 +156,15 @@ public function checkAuth() {
 				["uuid" => $_COOKIE["PhpGt_Track"]]);
 			if($anonDbUser->hasResult) {
 				// Upgrade the anon user to full user.
-				$this->track($_COOKIE["PhpGt_Login"][0]);
+				$oldUuid = $_COOKIE["PhpGt_Track"];
+				$uuid = $this->track($_COOKIE["PhpGt_Login"][0]);
 
 				$this->_api[$this]->anonIdentify([
-					"uuid" => $_COOKIE["PhpGt_Track"],
-					"newUuid" => $_COOKIE["PhpGt_Login"][0],
+					"uuid" => $oldUuid,
+					"newUuid" => $uuid,
 					"username" => $username
 				]);
-				return $this->userSession($this->uuid);
+				return $this->userSession($uuid);
 			}
 			else {
 				// Create a new fresh user with current UUID.
@@ -231,6 +235,7 @@ public function checkAuth() {
  */
 private function checkOpenId() {
 	if(isset($_GET["openid_identity"])) {
+		$this->auth();
 		if(isset($_GET["openid_return_to"])) {
 			// Remove any potential ?Authenticate=OpenIdProvider from URI.
 			$returnTo = preg_replace(
@@ -242,7 +247,6 @@ private function checkOpenId() {
 			header("Location: " . $returnTo);
 			exit;
 		}
-		$this->auth();
 	}
 }
 
@@ -251,9 +255,12 @@ private function checkOpenId() {
  * as a string, an ID as an integer, or a DbResult object to extract values
  * from.
  * @param  int|string|DbResult $input The user data to store in the session.
+ * @param  string              $anonUuid If a user has identified, the UUID of 
+ * the anonymous user can be passed here, which will be set on the user session
+ * object, allowing app developers to merge user accounts if required.
  * @return array        The user details.
  */
-private function userSession($input) {
+private function userSession($input, $anonUuid = null) {
 	if(is_int($input)) {
 		$dbUser = $this->_api[$this]->getById(["ID" => $input]);
 	}
@@ -272,6 +279,13 @@ private function userSession($input) {
 		$_SESSION["PhpGt_User"]["uuid"] = $dbUser["uuid"];
 		$_SESSION["PhpGt_User"]["username"] = $dbUser["username"];
 
+		if (!is_null($anonUuid)) {
+			$anonDb = $this->_api[$this]->getByUuid(["uuid" => $anonUuid]);
+			if($anonDb->hasResult) {
+				$_SESSION["PhpGt_User"]["orphanedID"] = $anonDb["ID"];
+			}
+		}
+
 		return $_SESSION["PhpGt_User"];
 	}
 
@@ -287,11 +301,12 @@ private function userSession($input) {
 public function auth($method = "Google") {
 	$oid = new OpenId_Utility($method);
 	$username = $oid->getData();
-	// TODO: If not in white list, display plain white PHP.Gt message
-	// on error 403 page. Provide mechanism to use different account.
+
 	if(!$this->checkWhiteList($username) 
 	|| empty($username)) {
-		$this->unAuth();
+		//$this->unAuth();
+		throw new HttpError(403, 
+			"The supplied account is not authorised for this application.");
 		return false;
 	}
 	$this->setAuthData($username);
@@ -329,8 +344,14 @@ public function addWhiteList($whiteList) {
 		$whiteListArray[] = $whiteList;
 	}
 
-	$this->_domainWhiteList = array_merge(
-		$this->_domainWhiteList, $whiteListArray);
+	if(isset($_SESSION["PhpGt_User.tool_whiteList"])) {
+		$_SESSION["PhpGt_User.tool_whiteList"] = array_merge(
+			$_SESSION["PhpGt_User.tool_whiteList"], 
+			$whiteListArray);
+	}
+	else {
+		$_SESSION["PhpGt_User.tool_whiteList"] = $whiteListArray;
+	}
 }
 
 /**
@@ -342,22 +363,23 @@ public function addWhiteList($whiteList) {
  */
 public function checkWhiteList($username) {
 	// If there is no whitelist, allow all.
-	if(empty($this->_domainWhiteList)) {
+	if(empty($_SESSION["PhpGt_User.tool_whiteList"])) {
 		$this->addWhiteList("*");
 	}
 
+	$whiteList = $_SESSION["PhpGt_User.tool_whiteList"];
 	$result = false;
 
-	foreach ($this->_domainWhiteList as $white) {
-		if (preg_match("/^\/.*\/[a-zA-Z]?$/", $white)) {
+	foreach ($whiteList as $w) {
+		if (preg_match("/^\/.*\/[a-zA-Z]*$/", $w)) {
 			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
 			// false on error - note !==).
-			if(preg_match($white, $username) > 0) {
+			if(preg_match($w, $username) > 0) {
 				$result = true;
 			}
 		}
-		else if(is_string($white)) {
-			if(fnmatch($white, $username)) {
+		else if(is_string($w)) {
+			if(fnmatch($w, $username)) {
 				$result = true;
 			}
 		}
@@ -453,6 +475,11 @@ private function deleteCookies() {
 	unset($_COOKIE["PhpGt_Login"]);
 }
 
+/**
+ * Increments the activity indicator in the user table, and sets the last
+ * active dateTime to now().
+ * @param int $id The ID of the user, or leave blank for the current user.
+ */
 private function setActive($id = null) {
 	if(is_null($id)) {
 		$id = $_SESSION["PhpGt_User"]["ID"];
@@ -465,8 +492,7 @@ private function setActive($id = null) {
  * @return string The UUID.
  */
 private function generateSalt() {
-	// TODO: A real salt function.
-	return hash("sha512", rand(0, 10000));
+	return hash("sha512", uniqid(APPSALT, true));
 }
 
 }?>

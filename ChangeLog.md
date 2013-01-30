@@ -2,6 +2,7 @@ v0.1.0
 ------
 Not yet released
 
+* Major improvements and bugfixes in User PageTool.
 * User PageTool implemented to allow OAuth authentication and anonymous users.
 
 v0.0.3
