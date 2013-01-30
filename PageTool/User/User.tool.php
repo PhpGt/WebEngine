@@ -74,7 +74,7 @@ public function getUser($uuid = null) {
 	
 	// Ensure there is a related user in the database.
 	// If a user doesn't exist, create one.
-	$db = $this->_api["User"];
+	$db = $this->_api[$this];
 	$dbUser = $db->getByUuid(["uuid" => $uuid]);
 
 	if($dbUser->hasResult) {
@@ -141,7 +141,7 @@ public function checkAuth() {
 
 		// User has authenticated in some way, and a username is known.
 		// Need to match to a database user, which may not exist yet.
-		$dbUser = $this->_api["User"]->get(["username" => $username]);
+		$dbUser = $this->_api[$this]->get(["username" => $username]);
 		if($dbUser->hasResult) {
 			// User already stored in database.
 			return $this->userSession($dbUser);
@@ -149,15 +149,13 @@ public function checkAuth() {
 		else {
 			// Authenticated user doesn't exist in database, but there may be
 			// an anonymous user in the database with same UUID.
-			$anonDbUser = $this->_api["User"]->getByUuid(
+			$anonDbUser = $this->_api[$this]->getByUuid(
 				["uuid" => $_COOKIE["PhpGt_Track"]]);
 			if($anonDbUser->hasResult) {
 				// Upgrade the anon user to full user.
 				$this->track($_COOKIE["PhpGt_Login"][0]);
 
-				var_dump($_COOKIE);die();
-
-				$this->_api["User"]->anonIdentify([
+				$this->_api[$this]->anonIdentify([
 					"uuid" => $_COOKIE["PhpGt_Track"],
 					"newUuid" => $_COOKIE["PhpGt_Login"][0],
 					"username" => $username
@@ -169,7 +167,7 @@ public function checkAuth() {
 				$uuid = empty($_COOKIE["PhpGt_Login"])
 					? $_COOKIE["PhpGt_Track"]
 					: $_COOKIE["PhpGt_Login"][0];
-				$newDbUser = $this->_api["User"]->addEmpty([
+				$newDbUser = $this->_api[$this]->addEmpty([
 					"username" => $username,
 					"uuid" => $uuid
 				]);
@@ -196,7 +194,7 @@ public function checkAuth() {
 			$authHash = $_COOKIE["PhpGt_Login"][2];
 
 			// Find the user from their UUID, ready to match against.
-			$dbUser = $this->_api["User"]->getByUuid([
+			$dbUser = $this->_api[$this]->getByUuid([
 				"uuid" => $userHash
 			]);
 			if($dbUser->hasResult) {
@@ -257,10 +255,10 @@ private function checkOpenId() {
  */
 private function userSession($input) {
 	if(is_int($input)) {
-		$dbUser = $this->_api["User"]->getById(["ID" => $input]);
+		$dbUser = $this->_api[$this]->getById(["ID" => $input]);
 	}
 	else if(is_string($input)) {
-		$dbUser = $this->_api["User"]->getByUuid(["uuid" => $input]);
+		$dbUser = $this->_api[$this]->getByUuid(["uuid" => $input]);
 	}
 	else {
 		$dbUser = $input;
@@ -459,7 +457,7 @@ private function setActive($id = null) {
 	if(is_null($id)) {
 		$id = $_SESSION["PhpGt_User"]["ID"];
 	}
-	$this->_api["User"]->setActive(["ID" => $id]);
+	$this->_api[$this]->setActive(["ID" => $id]);
 }
 
 /**

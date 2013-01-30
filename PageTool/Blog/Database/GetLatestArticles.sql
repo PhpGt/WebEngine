@@ -6,8 +6,8 @@ select
 	Blog_Article.content,
 	-- If there is a <hr>, break the preview on it, otherwise use the Blog's
 	-- default preview length.
-	if(instr(Blog_Article.content, "<hr>") > 0,
-		substring_index(Blog_Article.content, "<hr>", 1),
+	if(instr(Blog_Article.content, "<hr") > 0,
+		substring_index(Blog_Article.content, "<hr", 1),
 		concat(substring(Blog_Article.content from 1 for Blog.previewLength),
 			"...")
 	)as preview,

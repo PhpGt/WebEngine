@@ -97,6 +97,7 @@ public function output($article, $domEl) {
 	$domArticle["header > p.date time"]->text = 
 		$dtPublish->format($this->_dtFormat);
 	$domArticle["header > p.date time"]->datetime = $article["dateTimePublish"];
+	$domArticle["header > p.comments a"]->href = $url . "#Comments";
 	$domArticle["header > p.comments span"]->text = 
 		$article["num_Blog_Article_Comment"];
 
