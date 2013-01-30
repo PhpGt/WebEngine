@@ -14,6 +14,8 @@
  * simply anonymous. This is a less-strict version of checkAuth().
  */
 
+private $_whiteList = array();
+
 public function go($api, $dom, $template, $tool) {}
 
 public function __get($name) {
@@ -344,16 +346,16 @@ public function addWhiteList($whiteList) {
 		$whiteListArray[] = $whiteList;
 	}
 
-	if(isset($_SESSION["PhpGt_User.tool_whiteList"])) {
-		$_SESSION["PhpGt_User.tool_whiteList"] = array_merge(
-			$_SESSION["PhpGt_User.tool_whiteList"], 
-			$whiteListArray);
-		$_SESSION["PhpGt_User.tool_whiteList"] = array_unique(
-			$_SESSION["PhpGt_User.tool_whiteList"]);
+	// The session persists... this should be stored as a private.
+	if(!empty($this->_whiteList)) {
+		$this->_whiteList = array_merge($this->_whiteList, $whiteListArray);
+		$this->_whiteList = array_unique($this->_whiteList);
 	}
 	else {
-		$_SESSION["PhpGt_User.tool_whiteList"] = $whiteListArray;
+		$this->_whiteList = $whiteListArray;
 	}
+
+	$_SESSION["PhpGt_User.tool_AuthWhiteList"] = $this->_whiteList;
 }
 
 /**
@@ -365,11 +367,11 @@ public function addWhiteList($whiteList) {
  */
 public function checkWhiteList($username) {
 	// If there is no whitelist, allow all.
-	if(empty($_SESSION["PhpGt_User.tool_whiteList"])) {
+	if(empty($_SESSION["PhpGt_User.tool_AuthWhiteList"])) {
 		$this->addWhiteList("*");
 	}
 
-	$whiteList = $_SESSION["PhpGt_User.tool_whiteList"];
+	$whiteList = $this->_whiteList;
 	$result = false;
 
 	foreach ($whiteList as $w) {
