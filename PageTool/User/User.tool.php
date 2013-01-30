@@ -348,6 +348,8 @@ public function addWhiteList($whiteList) {
 		$_SESSION["PhpGt_User.tool_whiteList"] = array_merge(
 			$_SESSION["PhpGt_User.tool_whiteList"], 
 			$whiteListArray);
+		$_SESSION["PhpGt_User.tool_whiteList"] = array_unique(
+			$_SESSION["PhpGt_User.tool_whiteList"]);
 	}
 	else {
 		$_SESSION["PhpGt_User.tool_whiteList"] = $whiteListArray;
