@@ -57,7 +57,7 @@ public function __get($name) {
  * created.
  * @param  string $uuid Optional UUID to use, if not provided it is taken from
  * the tracking cookie.
- * @return array        The user details, authenticated or anonymous.
+ * @return array        The user details, identified or anonymous.
  */
 public function getUser($uuid = null) {
 	// Ensure there is a UUID tracking cookie set.
@@ -78,8 +78,8 @@ public function getUser($uuid = null) {
 	$dbUser = $db->getByUuid(["uuid" => $uuid]);
 
 	if($dbUser->hasResult) {
-		$isAuth = $dbUser["User_Type__name"] !== "Anon";
-		$dbUser->setData("authenticated", $isAuth);
+		$isIdentified = $dbUser["User_Type__name"] !== "Anon";
+		$dbUser->setData("isIdentified", $isIdentified);
 	}
 	else {
 		$result = $db->addAnon(["uuid" => $uuid]);
@@ -88,7 +88,7 @@ public function getUser($uuid = null) {
 			"ID" => $result->lastInsertId,
 			"uuid" => $uuid,
 			"User_Type__name" => "Anon",
-			"authenticated" => false
+			"isIdentified" => false
 		);
 	}
 
