@@ -134,10 +134,11 @@ public function track($forceUuid = null) {
  * authenticated.
  */
 public function checkAuth() {
-	// The openid_identity variable is sent by an OpenId provider on 
-	// successful authentication.
-	$this->checkOpenId();
-
+	// Tidy up the OAuth request, if set.
+	if(isset($_GET["openid_identity"])) {
+		$this->auth();
+		exit;
+	}
 	// The PhpGt_User.tool_AuthData session key is used for OAuth, cookie or 
 	// other login mechanisms to store an authenticated username, for full
 	// authentication in this function.
@@ -233,26 +234,6 @@ public function checkAuth() {
 }
 
 /**
- * Checks if there is any openId data in the querystring.
- */
-private function checkOpenId() {
-	if(isset($_GET["openid_identity"])) {
-		$this->auth();
-		if(isset($_GET["openid_return_to"])) {
-			// Remove any potential ?Authenticate=OpenIdProvider from URI.
-			$returnTo = preg_replace(
-				"/(?<=[\?|&])Authenticate=\w+&?/i",
-				"",
-				$_GET["openid_return_to"]
-			);
-
-			header("Location: " . $returnTo);
-			exit;
-		}
-	}
-}
-
-/**
  * Creates the User session for internal use by this tool. Can accept a UUID
  * as a string, an ID as an integer, or a DbResult object to extract values
  * from.
@@ -300,19 +281,44 @@ private function userSession($input, $anonUuid = null) {
  * @param  string $method The authentication provider.
  * @return bool           True if the user successfully authenticates.
  */
-public function auth($method = "Google") {
+public function auth($method = "Google", $forwardTo = null) {
+	if(is_null($forwardTo)) {
+		if(empty($_SESSION["PhpGt_User.tool_ForwardTo"])) {
+			$_SESSION["PhpGt_User.tool_ForwardTo"] = $_SERVER["HTTP_REFERER"];
+		}
+	}
+
 	$oid = new OpenId_Utility($method);
 	$username = $oid->getData();
 
 	if(!$this->checkWhiteList($username) 
 	|| empty($username)) {
 		//$this->unAuth();
+		var_dump($_SESSION);die();
 		throw new HttpError(403, 
 			"The supplied account is not authorised for this application.");
 		return false;
 	}
 	$this->setAuthData($username);
+
+	$this->authComplete();
+
 	return true;
+}
+
+/**
+ * [authComplete description]
+ * @return [type] [description]
+ */
+private function authComplete() {
+	if(!empty($_SESSION["PhpGt_User.tool_ForwardTo"])) {
+		$forwardTo = $_SESSION["PhpGt_User.tool_ForwardTo"];
+		unset($_SESSION["PhpGt_User.tool_ForwardTo"]);
+		header("Location: $forwardTo");
+		exit;
+	};
+
+	return;
 }
 
 /**
@@ -366,6 +372,7 @@ public function addWhiteList($whiteList) {
  * whitelist parameters.
  */
 public function checkWhiteList($username) {
+	return true;
 	// If there is no whitelist, allow all.
 	if(empty($_SESSION["PhpGt_User.tool_AuthWhiteList"])) {
 		$this->addWhiteList("*");
