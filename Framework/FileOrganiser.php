@@ -72,7 +72,7 @@ private function recursiveMTime($dir) {
 }
 
 /**
- * Deletes all files within the www directory, apart from the vital Index.php.
+ * Deletes all files within the www directory, apart from the vital Go.php.
  * This function is recursive, so will remove all Assets and files within Style.
  */
 private function removePublicFiles() {
@@ -89,7 +89,7 @@ private function removePublicFiles() {
 	$fileList = new RecursiveIteratorIterator($iterator, 
 		RecursiveIteratorIterator::CHILD_FIRST);
 	foreach ($fileList as $key => $value) {
-		if($value->getFilename() === "Index.php") {
+		if(strstr($value->getFilename(), ".php")) {
 			continue;
 		}
 		if(is_dir($key)) {
