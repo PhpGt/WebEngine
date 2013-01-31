@@ -84,7 +84,6 @@ public function getArticleList($limit = 10) {
  * @return DomEl        The container where the article has been placed.
  */
 public function output($article, $domEl) {
-	$dom = $this->_dom;
 	$template = $this->_template;
 
 	$url = $this->getUrl($article);
@@ -169,41 +168,6 @@ public function getTagUrl($tagObj) {
 	$url .= urlencode($name);
 	$url .= ".html";
 	return $url;
-}
-
-/**
- * Simply returns the blog's preview field and ensures a word isn't
- * sliced in two.
- */
-public function getPreview($blogObj) {
-	die("getting preview!!!");
-	return;
-
-
-	$preview = strip_tags($blogObj["Content"]);
-
-	$trimmed = (strlen($preview) > $blogObj["PreviewLength"]);
-
-	$preview = substr($preview, 0, $blogObj["PreviewLength"]);
-	$preview = substr($preview, 0, strrpos($preview, " "));
-
-	if($trimmed) {
-		$preview .= " ...";
-	}
-	return $preview;
-}
-
-public function outputLatest($output) {
-	die("outputting latest...");
-	return;
-
-	$blog = $this->_api[$this]->getLatest();
-
-	$output["h1"]->text = $blog["Title"];
-	$output["p.date"]->text = date("jS F Y",
-		strtotime($blog["Dt_Publish"]));
-	$output["p.blogPreview"]->text = $this->getPreview($blog);
-	$output["a"]->href = $this->getUrl($blog);
 }
 
 }?>
