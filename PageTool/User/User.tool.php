@@ -266,6 +266,7 @@ private function userSession($input, $anonUuid = null) {
 			$anonDb = $this->_api[$this]->getByUuid(["uuid" => $anonUuid]);
 			if($anonDb->hasResult) {
 				$_SESSION["PhpGt_User"]["orphanedID"] = $anonDb["ID"];
+				$this->mergeOrphan();
 			}
 		}
 
@@ -511,6 +512,22 @@ private function setActive($id = null) {
  */
 private function generateSalt() {
 	return hash("sha512", uniqid(APPSALT, true));
+}
+
+/**
+ * Merges two records in the User table. The record for the current user in 
+ * session is kept, and the orphaned user record is dropped.
+ * @return  bool True on successful merge, false if there is no orphan record.
+ */
+public function mergeOrphan() {
+	$user = $_SESSION["PhpGt_User"];
+	if(empty($user["orphanedID"])) {
+		return false;
+	}
+
+	$dbResult = $this->_api[$this]->mergeOrphan($user);
+
+	return $dbResult->affectedRows > 0;
 }
 
 }?>

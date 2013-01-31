@@ -2,6 +2,7 @@ create table if not exists `User` (
 	`ID`					int			not null	auto_increment	primary key,
 	`uuid`					varchar(128)null,
 	`FK_User_Type`			int			not null	default 1,
+	`FK_User__orphanedBy`	int			null,
 	`username`				varchar(32)	null,
 	`dateTimeCreated`		datetime	not null,
 	`dateTimeIdentified`	datetime	null,
@@ -9,11 +10,17 @@ create table if not exists `User` (
 	`dateTimeLastActive`	datetime	null,
 	`activityCount`			int unsigned not null	default 0,
 	unique index `UNIQUE_username` (`username` asc),
-	index `FK_User__User_Type` (`FK_User_Type` asc),
-	constraint `FK_User__User_Type`
+	index `INDEX_FK_User_Type` (`FK_User_Type` asc),
+	index `INDEX_FK_User__orphanedBy` (`FK_User__orphanedBy` asc),
+	constraint `INDEX_FK_User_Type`
 		foreign key (`FK_User_Type`)
 		references `User_Type` (`ID`)
 		on delete restrict
+		on update cascade,
+	constraint `INDEX_FK_User__orphanedBy`
+		foreign key (`FK_User__orphanedBy`)
+		references `User` (`ID`)
+		on delete set null
 		on update cascade
 )
 COMMENT = ""
