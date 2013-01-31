@@ -284,7 +284,14 @@ private function userSession($input, $anonUuid = null) {
 public function auth($method = "Google", $forwardTo = null) {
 	if(is_null($forwardTo)) {
 		if(empty($_SESSION["PhpGt_User.tool_ForwardTo"])) {
-			$_SESSION["PhpGt_User.tool_ForwardTo"] = $_SERVER["HTTP_REFERER"];
+			if(empty($_SERVER["HTTP_REFERER"])) {
+				$forwardTo = "/";
+			}
+			else {
+				$forwardTo = $_SERVER["HTTP_REFERER"];
+			}
+			
+			$_SESSION["PhpGt_User.tool_ForwardTo"] = $forwardTo;
 		}
 	}
 
