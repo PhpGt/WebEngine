@@ -49,14 +49,6 @@ public function go($api, $dom, $template, $tool) {
 }
 
 /**
- * Call this function to start using clientside functionality introduced by the
- * tool.
- */
-public function clientSide() {
-	die("scripts!!!");
-}
-
-/**
  * Gets Blog User details from the database linked to the supplied User account.
  * Creates a new Blog User if one doesn't exist.
  * @param  array 	$user 	The current user details

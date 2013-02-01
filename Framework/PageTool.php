@@ -11,14 +11,14 @@
  * Common tools are provided with PHP.Gt, but application specific tools can
  * be used to keep the PageCode clean.
  */
-protected $name = null;
+protected $_name = null;
 protected $_api = null;
 protected $_dom = null;
 protected $_template = null;
 protected $_tool = null;
 
 public function __construct($api, $dom, $template, $tool) {
-	$className = get_class();
+	$className = get_called_class();
 	$this->_name = substr($className, 0, strrpos($className, "_PageTool"));
 	$this->_api = $api;
 	$this->_dom = $dom;
@@ -27,10 +27,68 @@ public function __construct($api, $dom, $template, $tool) {
 }
 
 /**
- * Calls an API key on the internal API of the current PageTool.
+ * Injects any client side files used by the current tool into the DOM.
  */
-public function query($queryName, $params = array()) {
-	return $this->_api[$this->_name]->$queryName($params);
+public function clientSide() {
+	$scriptDirArray = array(
+		APPROOT . "/PageTool/{$this->_name}/Script/",
+		GTROOT  . "/PageTool/{$this->_name}/Script/"
+	);
+	$styleDirArray = array(
+		APPROOT . "/PageTool/{$this->_name}/Style/",
+		GTROOT  . "/PageTool/{$this->_name}/Style/"
+	);
+
+	$domHead = $this->_dom["html > head"];
+	$ptDir = "PageTool/{$this->_name}/";
+	$wwwDir = APPROOT . "/www/$ptDir";
+
+	foreach ($scriptDirArray as $scriptDir) {
+		if(!is_dir($scriptDir)) {
+			continue;
+		}
+
+		$dir = dir($scriptDir);
+		while(false !== ($file = $dir->read()) ) {
+			if($file[0] == ".") {
+				continue;
+			}
+			$fullPath = $scriptDir . $file;
+			$scriptDir = $wwwDir . "Script";
+			$dest =  $scriptDir . "/$file";
+			if(!is_dir($scriptDir)) {
+				mkdir($scriptDir, 0775, true);
+			}
+			copy($fullPath, $wwwDir . "Script/$file");
+			$domHead->append("script", [
+				"src" => "/{$ptDir}Script/$file"
+			]);
+		}
+	}
+
+	foreach ($styleDirArray as $styleDir) {
+		if(!is_dir($styleDir)) {
+			continue;
+		}
+
+		$dir = dir($styleDir);
+		while(false !== ($file = $dir->read()) ) {
+			if($file[0] == ".") {
+				continue;
+			}
+			$fullPath = $styleDir . $file;
+			$styleDir = $wwwDir . "Style";
+			$dest = $styleDir . "Style/$file";
+			if(!is_dir($styleDir)) {
+				mkdir($styleDir, 0775, true);
+			}
+			copy($fullPath, $dest);
+			$domHead->append("link", [
+				"rel" => "stylesheet", 
+				"href" => "/{$ptDir}Style/$file"
+			]);
+		}
+	}
 }
 
 /**
