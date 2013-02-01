@@ -148,6 +148,8 @@ public function prepend($toAdd) {
 
 		$this->node->insertBefore($elNode, $this->node->firstChild);
 	}
+
+	return $toAdd;
 }
 
 /**
