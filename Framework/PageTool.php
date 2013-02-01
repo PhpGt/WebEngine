@@ -78,11 +78,22 @@ public function clientSide() {
 			}
 			$fullPath = $styleDir . $file;
 			$styleDir = $wwwDir . "Style";
-			$dest = $styleDir . "Style/$file";
+			$dest = $styleDir . "/$file";
 			if(!is_dir($styleDir)) {
 				mkdir($styleDir, 0775, true);
 			}
-			copy($fullPath, $dest);
+			$fileContents = file_get_contents($fullPath);
+
+			if(pathinfo($fullPath, PATHINFO_EXTENSION) == "scss") {
+				$dest = preg_replace("/\.scss$/", ".css", $dest);
+				$file = preg_replace("/\.scss$/", ".css", $file);
+				$sassParser = new SassParser_Utility($fullPath);
+				$fileContents = $sassParser->parse();
+			}
+
+			if(false === file_put_contents($dest, $fileContents)) {
+				die("OOPS!!!");
+			}
 			$domHead->append("link", [
 				"rel" => "stylesheet", 
 				"href" => "/{$ptDir}Style/$file"

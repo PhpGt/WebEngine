@@ -361,7 +361,13 @@ template = function(name) {
  * @return {object}      The tool's object namespace.
  */
 tool = function(name) {
-	throw "Not yet implemented tool " + name;
+	if(window.Tool
+	&& window.Tool[name]) {
+		return window.Tool[name];
+	}
+	else {
+		throw "No tool code found for " + name;
+	}
 },
 
 /**
