@@ -49,6 +49,21 @@ public function go($api, $dom, $template, $tool) {
 }
 
 /**
+ * Gets Blog User details from the database linked to the supplied User account.
+ * @param  array 	$user 	The current user details
+ * @return array|null       null if there is no linked Blog User, an array of
+ * Blog_User details if there is a linked Blog User.
+ */
+public function getBlogUser($user) {
+	$dbResult = $this->_api[$this]->getBlogUserByUserID($user);
+	if($dbResult->hasResult) {
+		return $dbResult->result[0];
+	}
+
+	return null;
+}
+
+/**
  * Gets an associative array containing all article's details.
  * @param  int $ID ID of the article to select.
  * @return array     Associative array containing all article's details, or null
