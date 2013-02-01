@@ -4,6 +4,7 @@
  */
 private $_openId = null;
 private $_attributes = null;
+private $_defaultIdentity = "Google";
 private $_identities = array(
 	"Google" => "https://www.google.com/accounts/o8/id"
 );
@@ -11,9 +12,14 @@ private $_identities = array(
 /**
  * TODO: Docs.
  */
-public function __construct($identity = "Google") {
+public function __construct($identity = "") {
 	require_once(GTROOT . DS . "Framework" . DS . "Utility" 
 		. DS . "OpenId" . DS . "openid.php");
+
+	if(empty($identity)) {
+		$identity = $this->_defaultIdentity;
+	}
+
 	$identityStr = $this->getIdentityString($identity);
 	$domain = $_SERVER['HTTP_HOST'];
 
