@@ -1,0 +1,15 @@
+CREATE  TABLE IF NOT EXISTS `Blog_User` (
+  `ID` INT NOT NULL AUTO_INCREMENT ,
+  `FK_User` INT NOT NULL ,
+  `isAuthor` TINYINT(1) NULL ,
+  `FullName` VARCHAR(32) NULL ,
+  `Website` VARCHAR(128) NULL ,
+  `Email` VARCHAR(45) NULL ,
+  PRIMARY KEY (`ID`) ,
+  INDEX `INDEX_FK_Blog_User__User` (`FK_User` ASC) ,
+  CONSTRAINT `FK_Blog_User__User`
+    FOREIGN KEY (`FK_User` )
+    REFERENCES `User` (`ID` )
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
