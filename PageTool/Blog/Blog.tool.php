@@ -49,18 +49,28 @@ public function go($api, $dom, $template, $tool) {
 }
 
 /**
+ * Call this function to start using clientside functionality introduced by the
+ * tool.
+ */
+public function clientSide() {
+	die("scripts!!!");
+}
+
+/**
  * Gets Blog User details from the database linked to the supplied User account.
+ * Creates a new Blog User if one doesn't exist.
  * @param  array 	$user 	The current user details
- * @return array|null       null if there is no linked Blog User, an array of
- * Blog_User details if there is a linked Blog User.
+ * @return array 			An array of Blog_User details.
  */
 public function getBlogUser($user) {
-	$dbResult = $this->_api[$this]->getBlogUserByUserID($user);
-	if($dbResult->hasResult) {
-		return $dbResult->result[0];
-	}
+	do {
+		$dbResult = $this->_api[$this]->getBlogUserByUserID($user);
+		if(!$dbResult->hasResult) {
+			$this->_api[$this]->createBlogUser($user);
+		}
+	} while(!$dbResult->hasResult);
 
-	return null;
+	return $dbResult->result[0];
 }
 
 /**
@@ -143,11 +153,17 @@ public function output($article, $domEl) {
 }
 
 /**
- * Sets the name of the blog, that is used in the generation of URLs.
+ * Sets the name of the blog, that is used in the generation of URLs. Ensures
+ * there is a blog of that name in the database.
  * @param string $name The name of the blog.
  */
 public function setName($name) {
 	$this->_blogName = $name;
+
+	$dbResult = $this->_api[$this]->getBlogByName(["name" => $name]);
+	if(!$dbResult->hasResult) {
+		$this->_api[$this]->create(["name" => $name]);
+	}
 }
 
 /**
