@@ -8,7 +8,7 @@ private $_elements = null;
 public function go($api, $dom, $template, $tool) {
 	$this->_elements = $dom["*[@data-editable]"];
 	foreach ($this->_elements as $element) {
-		$content = $api["Content"]->get(array("Name" => $element->id));
+		$content = $api[$this]->get(array("Name" => $element->id));
 		if(empty($content["L_Type"])) {
 			continue;
 		}
