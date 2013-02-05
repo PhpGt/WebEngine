@@ -8,30 +8,38 @@ private $_navElements;
 public function go($api, $dom, $template, $tool) {
 	$this->_navElements = $dom["body nav"];
 
+	$target = strtok($_SERVER['REQUEST_URI'], '?');
+	$target = strtok($target, '#');
+	$target = str_replace("/", "\/", $target);
+
 	foreach($this->_navElements as $nav) {
 		$navLiTags = $nav["ul li, ol li"];
+
 		foreach($navLiTags as $li) {
-			$dir = DIR;
-			if(strstr($dir, "/")) {
-				$dir = substr($dir, 0, strpos($dir, "/"));
-			}
+			// $dir = DIR;
+			// if(strstr($dir, "/")) {
+			// 	$dir = substr($dir, 0, strpos($dir, "/"));
+			// }
 
-			$toMatch = strlen($dir) > 0
-				? $dir
-				: FILE;
-			$pattern = "/" . $toMatch . "/";
+			// $toMatch = strlen($dir) > 0
+			// 	? $dir
+			// 	: FILE;
+			// $pattern = "/" . $toMatch . "/";
 
-			if (strstr(DIR, "/")) {
-				//var_dump($pattern, FILE);die();
-			}
+			// if (strstr(DIR, "/")) {
+			// 	// var_dump($pattern, FILE);die();
+			// }
 
-			if(FILE === "Index") {
-				// Match "Index" with "/".
-				$pattern = "/^" . DIR . "\/$|Index/";
-			}
+			// if(FILE === "Index") {
+			// 	// Match "Index" with "/".
+			// 	$pattern = "/^" . DIR . "\/$|Index/";
+			// }
 
 			if($li->hasAttribute("data-selected-pattern")) {
 				$pattern = $li->getAttribute("data-selected-pattern");
+
+			} else {
+				$pattern = "/$target/";
 			}
 			
 			// Match the current URL with the anchor's href.
