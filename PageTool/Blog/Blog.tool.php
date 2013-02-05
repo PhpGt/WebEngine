@@ -48,6 +48,48 @@ public function go($api, $dom, $template, $tool) {
 	$this->output($blog, $container);
 }
 
+public function clientSide() {
+	// Ensure that Font Awesome is loaded, for the iconset.
+	$fontAwesomeExists = false;
+
+	$linkList = $this->_dom["head link"];
+	foreach ($linkList as $link) {
+		$href = $link->getAttribute("href");
+		if(preg_match("/\/Font\/FontAwesome\.css/i", $href)) {
+			$fontAwesomeExists = true;
+		}
+	}
+
+	if(!$fontAwesomeExists) {
+		$publicDir = APPROOT . "/www/Font/";
+		if(!is_dir($publicDir)) {
+			mkdir($publicDir, 0775, true);
+		}
+		$dir = dir(GTROOT . "/Style/Font");
+		while(false != ($file = $dir->read()) ) {
+			if($file[0] == ".") {
+				continue;
+			}
+			if(!strstr($file, "fontawesome")) {
+				continue;
+			}
+			copy($dir->path . "/$file", $publicDir . $file);
+		}
+		$dir->close();
+		// copy(GTROOT . "/Style/Font/FontAwesome.css", 
+		// 	$publicDir . "FontAwesome.css");
+		$link = $this->_dom->create(
+			"link", [
+			"href" => "/Font/FontAwesome.css",
+			"rel" => "stylesheet"
+		]);
+		$this->_dom["head"]->append($link);
+	}
+
+	// TODO : Complete checking for font awesome.
+	parent::clientSide();
+}
+
 /**
  * Gets Blog User details from the database linked to the supplied User account.
  * Creates a new Blog User if one doesn't exist.

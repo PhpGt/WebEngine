@@ -80,8 +80,7 @@ _helpers = {
 		 * @return HTMLElement A reference to the removed item.
 		 */
 		"remove": function() {
-			this.parentNode.removeChild(this);
-			return this;
+			return this.parentNode.removeChild(this);
 		},
 		/**
 		 * Replaces the current element with the provided element.
