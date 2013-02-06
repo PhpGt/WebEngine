@@ -95,7 +95,8 @@ public function offsetExists($selector) {
 * @param DOMNode|DomEl $contextNode Optional. The sub-node to query.
 * @return array An array of matching DomEl objects.
 */
-public function offsetGet($selector, $contextNode = null) {
+public function offsetGet($selector, $contextNode = null, 
+$overrideXpath = false) {
 	if(!is_null($contextNode)) {
 		if($contextNode instanceof DomEl) {
 			$contextNode = $contextNode->node;
@@ -103,7 +104,9 @@ public function offsetGet($selector, $contextNode = null) {
 	}
 
 	// Working with an XQuery to CSS convertion utility:
-	$xQuery = new CssXpath_Utility($selector);
+	$xQuery = $overrideXpath
+		? $selector
+		: new CssXpath_Utility($selector);
 	$xpath = new DOMXPath($this->_domDoc);
 
 	// Remove double slash if a context is given.

@@ -68,6 +68,10 @@ public function offsetUnset($selector) {
 	// TODO: Throw error when trying to unset an element.
 }
 
+public function xpath($query) {
+	return $this->_dom->offsetGet($query, $this->node, true);
+}
+
 /**
  * Internal function, converts a given input of either a DOMElement, DomEl,
  * DomElCollection or a string into an array of DomElements.
