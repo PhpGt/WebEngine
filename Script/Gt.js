@@ -323,8 +323,9 @@ namespace = function(name, fn) {
 	return currentRef;
 },
 
-api = function(name) {
-	throw "Not yet implemented API";
+api = function(name, method, properties, callback) {
+	throw "Not implemented API yet";
+	return apiObj;
 },
 
 /**
@@ -367,6 +368,10 @@ tool = function(name) {
 	else {
 		throw "No tool code found for " + name;
 	}
+},
+
+http = function(url, method, properties) {
+	throw "Not implemented HTTP yet";
 },
 
 /**
@@ -530,6 +535,7 @@ window.api = api;
 window.dom = dom;
 window.template = template;
 window.tool = tool;
+window.http = http;
 
 // Invoke functions to start.
 go(_templateLoad);
