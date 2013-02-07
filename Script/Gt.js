@@ -213,9 +213,6 @@ _nodeListHelpers = {
 			"querySelectorAll",
 			"qs",
 			"qsa",
-			"removeAttribute",
-			"removeAttributeNS",
-			"removeAttributeNode",
 			"removeChild",
 			"replaceChild",
 			"scrollIntoView",
@@ -232,6 +229,9 @@ _nodeListHelpers = {
 			"dispatchEvent",
 			"normalise",
 			"remove",
+			"removeAttribute",
+			"removeAttributeNS",
+			"removeAttributeNode",
 			"removeEventListener",
 			"replace"
 		]
