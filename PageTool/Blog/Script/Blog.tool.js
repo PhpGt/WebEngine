@@ -12,6 +12,7 @@ Tool.Blog.edit = function() {
 		editText = this.textContent,
 		editCallback = arguments.callee;
 
+	dom("article header h1 a").setAttribute("contenteditable", true);
 	dom(".content").setAttribute("contenteditable", true);
 
 	this.textContent = "Save changes";
@@ -32,26 +33,42 @@ Tool.Blog.edit = function() {
 Tool.Blog.createEditTools = function() {
 	var container = document.createElement("div"),
 		buttons = [
-			{"action": "save", "icon": "icon-ok"}, 
-			{"action": "cancel", "icon": "icon-remove"}, 
+			{"title": "Save",
+				"action": "save", "icon": "icon-ok"}, 
+			{"title": "Cancel",
+				"action": "cancel", "icon": "icon-remove"}, 
 			{"spacer": true},
-			{"cmd": "bold",	"icon": "icon-bold"},
-			{"cmd": "italic", "icon": "icon-italic"},
-			{"cmd": "underline", "icon": "icon-underline"},
-			{"cmd": "strikeThrough", "icon": "icon-strikethrough"},
+			{"title": "Bold",
+				"cmd": "bold",	"icon": "icon-bold"},
+			{"title": "Italic",
+				"cmd": "italic", "icon": "icon-italic"},
+			{"title": "Underline",
+				"cmd": "underline", "icon": "icon-underline"},
+			{"title": "Strikethrough",
+				"cmd": "strikeThrough", "icon": "icon-strikethrough"},
 			{"spacer": true},
-			{"cmd": "formatBlock", "value": "H1"},
-			{"cmd": "formatBlock", "value": "H2"},
-			{"cmd": "formatBlock", "value": "H3"},
-			{"cmd": "formatBlock", "value": "P"},
+			{"title": "Heading 1",
+				"cmd": "formatBlock", "value": "H1"},
+			{"title": "Heading 2",
+				"cmd": "formatBlock", "value": "H2"},
+			{"title": "Heading 3",
+				"cmd": "formatBlock", "value": "H3"},
+			{"title": "Paragraph",
+				"cmd": "formatBlock", "value": "P"},
 			{"spacer": true},
-			{"cmd": "insertUnorderedList", "icon": "icon-list-ul"},
-			{"cmd": "insertOrderedList", "icon": "icon-list-ol"},
-			{"cmd": "createLink", "icon": "icon-link", "prompt": "Link URL?"},
-			{"cmd": "insertImage","icon":"icon-picture","prompt": "Image URL?"},
+			{"title": "Bullet list",
+				"cmd": "insertUnorderedList", "icon": "icon-list-ul"},
+			{"title": "Numeric list",
+				"cmd": "insertOrderedList", "icon": "icon-list-ol"},
+			{"title": "Link", "prompt": "Link URL?",
+				"cmd": "createLink", "icon": "icon-link"},
+			{"title": "Image", "prompt": "Image URL?",
+				"cmd": "insertImage","icon":"icon-picture"},
 			{"spacer": true},
-			{"cmd": "insertHorizontalRule", "icon":"icon-minus"},
-			{"cmd": "removeFormat", "icon":"icon-remove-sign"},
+			{"title": "Preview break",
+				"cmd": "insertHorizontalRule", "icon":"icon-minus"},
+			{"title": "Remove all formatting",
+				"cmd": "removeFormat", "icon":"icon-remove-sign"},
 
 		], i, btn, icon;
 	container.id = "tool_blog_edit";
@@ -76,12 +93,33 @@ Tool.Blog.createEditTools = function() {
 				if(c_button.prompt) {
 					arg = prompt(c_button.prompt);
 				}
-				document.execCommand(cmd, false, arg);
+				if(cmd) {
+					document.execCommand(cmd, false, arg);					
+				}
+				else {
+					Tool.Blog.editAction[c_button.action]();
+				}
 			});
 		})(buttons[i], btn);
+
+		btn.setAttribute("title", buttons[i].title);
 		btn.appendChild(icon);
 		container.appendChild(btn);
 	}
 
 	return container;
+};
+
+Tool.Blog.editAction = {
+	"save": function() {
+		api("Blog", "save", {
+			"title": dom("article > header h1 a").textContent,
+			"content": dom("article > div.content").innerHTML,
+		}, function() {
+			alert("Save complete.");
+		});
+	},
+	"cancel": function(e) {
+		alert("Cancelled");
+	},
 };
