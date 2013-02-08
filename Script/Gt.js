@@ -370,8 +370,40 @@ tool = function(name) {
 	}
 },
 
-http = function(url, method, properties) {
-	throw "Not implemented HTTP yet";
+/**
+ * Provides shorthand to XMLHttpRequest functionality. 
+ * @param  {string} url 		The URL to request.
+ * @param  {string} method 		Optional. The HTTP method to use. Defaults to
+ * GET. Possible values: GET, POST, PUT, DELETE, HEAD.
+ * @param  {object} properties 	Key-value-pairs to send in the request. The
+ * values will be placed in the URL or body where necessary for the given 
+ * method, or merged with existing query parameters if required.
+ * @param  {function} callback	A function to invoke when response is made. The
+ * function will be invoked in the context of the XMLHttpRequest object, so
+ * `this` will can be used to get status code, etc.
+ * @return {XMLHttpRequest}     The actual XMLHttpRequest object used in the 
+ * request.
+ */
+http = function(url /*, [method], [properties], [callback] */) {
+	var method, properties, callback, arg_i,
+		xhr = new XMLHttpRequest();
+
+	for(arg_i = 1; arg_i < arguments.length; arg_i++) {
+		if(typeof arguments[arg_i] == "string") {
+
+		}
+		else if(typeof arguments[arg_i] == "object") {
+
+		}
+		else if(typeof arguments[arg_i] == "function") {
+
+		}
+		else {
+			
+		}
+	}
+
+	return xhr;
 },
 
 /**
