@@ -431,47 +431,24 @@ http = function(url /*, [method], [properties], [callback], [xhr] */) {
 				continue;
 			}
 			// Append to the querystring.
-			url = [
-				url,			// Original URL.
+			url += [
 				qsChar,			// Query string character (? or &).
 				prop,			// Key.
 				"=",			// =
 				properties[prop]// Value.
 			].join("");			// Build string.
 			qsChar = "&";
-			
 		}
 
 		// Reset the properties object, so it isn't added to the
 		// request body.
 		properties = {};
 	}
-	else {
-		if(url.indexOf("?") >= 0) {
-			queryString = url.substring(url.indexOf("?") + 1);
-			qsArray = queryString.split("&");
-			for(prop = 0; prop < qsArray.length; prop++) {
-				qsArrayEl = qsArray[prop].split("=");
-				qsProperties[qsArrayEl[0]] = qsArrayEl[1] || null;
-			}
-			// Properties must be in the request body. Merge the
-			// properties object with those of the query string.
-			for(prop in qsProperties) {
-				if(!qsProperties.hasOwnProperty(prop)) {
-					continue;
-				}
-				properties[prop] = qsProperties[prop];
-			}
-
-			url = url.substring(0, url.indexOf("?"));
-		}
-	}
 
 	if(callback) {
 		xhr.addEventListener("readystatechange", function() {
 			if(this.readyState === 4) {
-				data = null; // TODO: Parse JSON here.
-				callback.call(xhr, data);
+				callback.call(xhr);
 			}
 		});
 	}
