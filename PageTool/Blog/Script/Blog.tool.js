@@ -23,6 +23,7 @@ Tool.Blog.edit = function() {
 		this.textContent = editText;
 		this.removeEventListener("click", arguments.callee);
 		this.addEventListener("click", editCallback);
+		dom("[contenteditable]").removeAttribute("contenteditable");
 		alert("Saved!");
 	});
 
