@@ -294,6 +294,13 @@ _addNodeListHelpers = function() {
 },
 
 /**
+ * Stores configuration options for quick access.
+ */
+Gt = {
+	"version": 			"0.0.1",
+},
+
+/**
  * Initialises a namespace with root node attached to the global window object.
  * Used for keeping code out of global scope or extending functions through
  * multiple files.
@@ -453,6 +460,7 @@ http = function(url /*, [method], [properties], [callback], [xhr] */) {
 		});
 	}
 
+	xhr.setRequestHeader("Gt.js", Gt.version);
 	xhr.open(method, url, true);
 	xhr.send(properties);
 	return xhr;
@@ -613,6 +621,7 @@ go = function(cbOrNs, pageOrCb /*, page */) {
 };
 
 // Expose required functions globally.
+window.Gt = Gt;
 window.go = go;
 window.namespace = namespace;
 window.api = api;
