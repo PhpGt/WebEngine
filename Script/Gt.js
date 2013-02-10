@@ -381,28 +381,103 @@ tool = function(name) {
  * @param  {function} callback	A function to invoke when response is made. The
  * function will be invoked in the context of the XMLHttpRequest object, so
  * `this` will can be used to get status code, etc.
+ * @param {XMLHttpRequest} xhr An existing XMLHttpRequest object to use.
  * @return {XMLHttpRequest}     The actual XMLHttpRequest object used in the 
  * request.
  */
-http = function(url /*, [method], [properties], [callback] */) {
-	var method, properties, callback, arg_i,
-		xhr = new XMLHttpRequest();
+http = function(url /*, [method], [properties], [callback], [xhr] */) {
+	var method, properties, callback, xhr, arg_i, data,
+		queryString, qsChar, qsArray, qsArrayEl, qsProperties, prop;
 
 	for(arg_i = 1; arg_i < arguments.length; arg_i++) {
 		if(typeof arguments[arg_i] == "string") {
-
+			method = arguments[arg_i].toLowerCase();
 		}
 		else if(typeof arguments[arg_i] == "object") {
-
+			if(arguments[arg_i] instanceof XMLHttpRequest) {
+				xhr = arguments[arg_i]
+			}
+			else {
+				properties = arguments[arg_i];				
+			}
 		}
 		else if(typeof arguments[arg_i] == "function") {
-
+			callback = arguments[arg_i];
 		}
 		else {
-			
+			throw new TypeError("http method passed invalid parameters");
 		}
 	}
 
+	if(!method) {
+		method = "get";
+	}
+	if(!properties) {
+		properties = {};
+	}
+	if(!xhr) {
+		xhr = new XMLHttpRequest();
+	}
+
+	qsProperties = {};
+	if(method == "get" || method == "delete") {
+		// Properties must be in the query string. 
+		qsChar = "?";
+		if(url.indexOf("?") >= 0) {
+			qsChar = "&";
+		}
+		for(prop in properties) {
+			if(!properties.hasOwnProperty(prop)) {
+				continue;
+			}
+			// Append to the querystring.
+			url = [
+				url,			// Original URL.
+				qsChar,			// Query string character (? or &).
+				prop,			// Key.
+				"=",			// =
+				properties[prop]// Value.
+			].join("");			// Build string.
+			qsChar = "&";
+			
+		}
+
+		// Reset the properties object, so it isn't added to the
+		// request body.
+		properties = {};
+	}
+	else {
+		if(url.indexOf("?") >= 0) {
+			queryString = url.substring(url.indexOf("?") + 1);
+			qsArray = queryString.split("&");
+			for(prop = 0; prop < qsArray.length; prop++) {
+				qsArrayEl = qsArray[prop].split("=");
+				qsProperties[qsArrayEl[0]] = qsArrayEl[1] || null;
+			}
+			// Properties must be in the request body. Merge the
+			// properties object with those of the query string.
+			for(prop in qsProperties) {
+				if(!qsProperties.hasOwnProperty(prop)) {
+					continue;
+				}
+				properties[prop] = qsProperties[prop];
+			}
+
+			url = url.substring(0, url.indexOf("?"));
+		}
+	}
+
+	if(callback) {
+		xhr.addEventListener("readystatechange", function() {
+			if(this.readyState === 4) {
+				data = null; // TODO: Parse JSON here.
+				callback.call(xhr, data);
+			}
+		});
+	}
+
+	xhr.open(method, url, true);
+	xhr.send(properties);
 	return xhr;
 },
 
