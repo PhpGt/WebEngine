@@ -460,8 +460,8 @@ http = function(url /*, [method], [properties], [callback], [xhr] */) {
 		});
 	}
 
-	xhr.setRequestHeader("Gt.js", Gt.version);
 	xhr.open(method, url, true);
+	xhr.setRequestHeader("Gtjs", Gt.version);
 	xhr.send(properties);
 	return xhr;
 },
