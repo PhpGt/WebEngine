@@ -1,8 +1,11 @@
 /**
- * GT.js JavaScript library to complement PHP.Gt.
- * Project is hosted on Github: http://github.com/g105b/GT.js
+ * Gt.js JavaScript library to complement PHP.Gt.
+ * Project is hosted on Github: http://github.com/g105b/Gt.js
  *
- * There are two purposes of the GT.js library. First is to normalise browser's
+ * Version 0.0.1
+ * Commit x
+ *
+ * There are two purposes of the Gt.js library. First is to normalise browser's
  * behaviour using a collection of shims. The shims attempt 100% ECMAScript5/6
  * coverage and DOM 4 implementation. Supports Chrome, Firefox, Opera,
  * Safari, IE9+. Shims taken from:
