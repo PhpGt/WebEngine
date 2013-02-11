@@ -3,7 +3,7 @@
  * Project is hosted on Github: http://github.com/g105b/Gt.js
  *
  * Version 0.0.1
- * Commit x
+ * Commit fc3fe07e4970ad82080a58d197589e9cf878ec41
  *
  * There are two purposes of the Gt.js library. First is to normalise browser's
  * behaviour using a collection of shims. The shims attempt 100% ECMAScript5/6
@@ -28,19 +28,32 @@
  * Initialises the given namespace and extends with the given function. The
  * function is not automatically invoked.
  *
- * http(url, [method], [data], [callback])
+ * http(url, [method], [data], [callback], [xhr])
  * Performs an asynchronous HTTP request to given url. Method is one of GET,
- * POST, PUT or DELETE. Data is an object or querystring that will be added to
- * the correct area of the request, depending on method selected. Callback
- * will be invoked in context of the browser's actual XMLHttpRequest object, 
- * passing in the response data as its only parameter. Response data type is
- * intelligently guessed. Raw response data can be accessed through 
- * this.response.
+ * POST, PUT, DELETE, HEAD or OPTIONS. Data is an object or querystring that
+ * will be added to the correct area of the request, depending on method
+ * selected. Callback will be invoked in context of the browser's actual
+ * XMLHttpRequest object. Response data can be accessed through this.response.
  *
+ * api(name)
+ * A shorthand method to creating an http call, passing the correct parameters
+ * to the server for the given api, and can also be extended to provide
+ * supplementary IO.
+ *
+ * dom(selector)
+ * A shorthand to document.querySelectorAll(). Note that Gt.js extends the
+ * functionality of the returned NodeList object, so that methods and properties
+ * of each DOMNode can be invoked/accessed via the NodeList itself. Example:
+ * dom("body > p").addClass("root"); // adds "root" to all root paragraphs.
+ * 
  * template(name)
  * Any elements with data-template attributes will be extracted from the DOM
  * and are clonable using this function. The extraction of elements will be done
  * server-side if running through PHP.Gt, but this function will still work.
+ *
+ * tool(name)
+ * Access tool-specific methods that have been provided by PHP.Gt. Documentation
+ * for these methods is within the tools' code.
  *
  * For short-hand coding, querySelector() and querySelectorAll() functions are
  * shortened to qs() and qsa().
