@@ -175,7 +175,7 @@ public function fixError($input) {
 	$this->_dbDeploy->tablesSkipped = array();
 
 	if(!is_null($this->_dbh)) {
-		$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");		
+		//$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");
 	}
 	
 	switch($data["Type"]) {
@@ -229,7 +229,7 @@ public function fixError($input) {
 		break;
 	}
 
-	$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 1;");
+	//$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 1;");
 }
 
 /**

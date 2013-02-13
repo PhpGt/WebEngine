@@ -106,12 +106,9 @@ private function query($sqlFile, $paramArray = array()) {
 	while($tries <= 1) {
 		try {
 			$result = $stmt->execute();
-			// Find out the number of affected rows (SQL for portability).
-			$rowCountStmt = $this->_dal->prepare(
-				"select row_count() as RowCount");
-			$rowCountStmt->execute();
-			$rowCountResult = $rowCountStmt->fetch();
-			if($rowCountResult[0] > 0) {
+			// Find out the number of affected rows.
+			$rowCount = $stmt->rowCount();
+			if($rowCount > 0) {
 				$this->touchCache();
 			}
 			return new DalResult(

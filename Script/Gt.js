@@ -80,6 +80,24 @@ _templateMap = {},
 _helpers = {
 	"HTMLElement": {
 		/**
+		 * Reverse-searches up the DOM tree for a given selector, returns the
+		 * first match. The match is a usual CSS selector, so to select an
+		 * element further up the tree, use a more specific CSS selector.
+		 * @param  {string} selector CSS selector to match upon.
+		 * @return {HTMLElement}          The first matching element, or null.
+		 */
+		"parent": function(selector) {
+			var currentElement = this.parentElement;
+			do {
+				currentElement = currentElement.parentElement;
+				if(currentElement.matches(selector)) {
+					return currentElement;
+				}
+			}while(currentElement);
+			
+			return null;
+		},
+		/**
 		 * Short-hand function to querySelector.
 		 */
 		"qs": function(selector, context) {
@@ -225,6 +243,7 @@ _nodeListHelpers = {
 			"requestFullScreen",
 			"mozRequestFullScreen",
 			"webkitRequestFullScreen",
+			"parent",
 			"querySelector",
 			"querySelectorAll",
 			"qs",
@@ -478,7 +497,12 @@ http = function(url /*, [method], [properties], [callback], [xhr] */) {
 
 	xhr.open(method, url, true);
 	xhr.setRequestHeader("Gtjs", Gt.version);
-	xhr.send(properties);
+	if(method == "post" || method == "put") {
+		xhr.send(properties);
+	}
+	else {
+		xhr.send();
+	}
 	return xhr;
 },
 
