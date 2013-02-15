@@ -427,13 +427,23 @@ tool = function(name) {
  * @return {XMLHttpRequest}     The actual XMLHttpRequest object used in the 
  * request.
  */
-http = function(url /*, [method], [properties], [callback], [xhr] */) {
-	var method, properties, callback, xhr, arg_i, data,
+http = function(url /*,[method],[properties],[callback],[xhr],[responseType]*/){
+	var method, responseType, properties, callback, xhr, arg_i, data,
 		queryString, qsChar, qsArray, qsArrayEl, qsProperties, prop;
 
 	for(arg_i = 1; arg_i < arguments.length; arg_i++) {
 		if(typeof arguments[arg_i] == "string") {
-			method = arguments[arg_i].toLowerCase();
+			arguments[arg_i] = arguments[arg_i].toLowerCase();
+			if(arguments[arg_i] == "text"
+			|| arguments[arg_i] == "arraybuffer"
+			|| arguments[arg_i] == "blob"
+			|| arguments[arg_i] == "document"
+			|| arguments[arg_i] == "json") {
+				responseType = arguments[arg_i];
+			}
+			else {
+				method = arguments[arg_i];
+			}
 		}
 		else if(typeof arguments[arg_i] == "object") {
 			if(arguments[arg_i] instanceof XMLHttpRequest) {
@@ -497,6 +507,9 @@ http = function(url /*, [method], [properties], [callback], [xhr] */) {
 
 	xhr.open(method, url, true);
 	xhr.setRequestHeader("Gtjs", Gt.version);
+	if(responseType) {
+		xhr.responseType = responseType;
+	}
 	if(method == "post" || method == "put") {
 		xhr.send(properties);
 	}
