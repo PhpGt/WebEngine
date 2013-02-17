@@ -53,6 +53,12 @@ private function preprocess($dom) {
 // be done to achieve this: the compiler must work within the www directory,
 // and the FileOrganiser must ignore .scss files. 
 private function sassParse($filePath) {
+	// Return early if original file hasn't changed since the preprocessed file.
+	if(file_exists($filePath . ".css")) {
+		if(filemtime($filePath) <= filemtime($filePath . ".css")) {
+			return true;
+		}
+	}
 	$sassParser = new SassParser_Utility($filePath);
 	$parsedString = $sassParser->parse();
 
