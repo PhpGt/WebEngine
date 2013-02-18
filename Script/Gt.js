@@ -78,7 +78,18 @@ _templateMap = {},
 // These functions are not shims, but useful helpers intended to speed up
 // development.
 _helpers = {
-	"HTMLElement": {
+	"Node": {
+		/**
+		 * There is no insertAfter function in JavaScript, but it can be
+		 * achieved by using insertBefore and nextSibling, which is wrapped in
+		 * this function.
+		 * @param  {Node} newEl The element to insert.
+		 * @param  {Node} refEl The reference element to insert after.
+		 * @return {Node}       The inserted node.
+		 */
+		"insertAfter": function(newEl, refEl) {
+			return this.insertBefore(newEl, refEl.nextSibling);
+		},
 		/**
 		 * Reverse-searches up the DOM tree for a given selector, returns the
 		 * first match. The match is a usual CSS selector, so to select an
@@ -87,7 +98,7 @@ _helpers = {
 		 * @return {HTMLElement}          The first matching element, or null.
 		 */
 		"parent": function(selector) {
-			var currentElement = this.parentElement;
+			var currentElement = this;
 			do {
 				currentElement = currentElement.parentElement;
 				if(currentElement.matches(selector)) {
