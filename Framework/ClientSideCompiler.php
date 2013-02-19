@@ -53,12 +53,37 @@ private function preprocess($dom) {
 // be done to achieve this: the compiler must work within the www directory,
 // and the FileOrganiser must ignore .scss files. 
 private function sassParse($filePath) {
-	// Return early if original file hasn't changed since the preprocessed file.
 	if(file_exists($filePath . ".css")) {
-		if(filemtime($filePath) <= filemtime($filePath . ".css")) {
+		$needToPreProcess = false;
+		// If any source file has been modified since the last pre-processing,
+		// we need to pre-process again, otherwise the pre-processing can be
+		// skipped completely for this file.
+		$dir = dirname($filePath);
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($dir));
+		foreach ($iterator as $path) {
+			// Only check files.
+			if($path->isDir()) {
+				continue;
+			}
+
+			// Only check .scss files (source files).
+			$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+			if($extension != "scss") {
+				continue;
+			}
+
+			// Check the pre-processed file's modified time.
+			if(filemtime($path) > filemtime($filePath . ".css")) {
+				$needToPreProcess = true;
+				break;
+			}
+		}
+		if(!$needToPreProcess) {
 			return true;
 		}
 	}
+
 	$sassParser = new SassParser_Utility($filePath);
 	$parsedString = $sassParser->parse();
 
