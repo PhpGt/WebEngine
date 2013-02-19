@@ -302,6 +302,9 @@ _addNodeListHelpers = function() {
 				if(helperType === "properties") {
 					Object.defineProperty(NodeList.prototype, c_fnName, {
 						"get": function() {
+							if(this.length == 0) {
+								return null;
+							}
 							return this.item(0)[c_fnName];
 						},
 						"set": function(val) {
