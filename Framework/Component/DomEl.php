@@ -499,7 +499,7 @@ public function __call($name, $args = array()) {
 		return $result;
 	}
 	else {
-		return false;
+		throw new HttpError(500, __CLASS__ . "::$name method doesn't exist");
 	}
 }
 
