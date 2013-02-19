@@ -242,6 +242,7 @@ _nodeListHelpers = {
 			"hasAttributeNS",
 			"hasAttributes",
 			"hasChildNodes",
+			"insertAfter",
 			"insertBefore",
 			"isDefaultNamespace",
 			"isEqualNode",
