@@ -9,6 +9,7 @@ grant
 	select,
 	show view, 
 	trigger, 
-	update 
+	update,
+	execute
 on :DatabaseTable
 to :UserServer;
