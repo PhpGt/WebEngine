@@ -25,6 +25,9 @@ public function __construct($html = "<!doctype html>") {
 			$html = substr($html, 0, $ignoreFooterPos);
 		}
 	}
+
+	$html = $this->includeHtml($html);
+
 	$this->_domDoc = new DomDocument("1.0", "utf-8");
 	libxml_use_internal_errors(true);
 	if(!$this->_domDoc->loadHTML($html) ) {
@@ -48,6 +51,43 @@ public function __construct($html = "<!doctype html>") {
 		}
 		$bodyTag->setAttribute("id", strtolower($pathId));
 	}
+}
+
+/**
+ * Allows plain text to be included in from other areas of the PageView 
+ * directory structure.
+ * @param  string $html The original HTML.
+ * @return string       The newly injected HTML.
+ */
+private function includeHtml($html) {
+	$includeRegex = "/@include\((.+)\)/"; // U is ungreedy.
+	$matches = array();
+
+	if(0 === preg_match_all($includeRegex, $html, $matches)) {
+		return $html;
+	}
+
+	$includeFile = $matches[1][0];
+	$path = APPROOT . "/PageView";
+	if($includeFile[0] == "/") {
+		$path .= $includeFile;
+	}
+	else {
+		if(DIR == "") {
+			$path .= "/" . $includeFile;
+		}
+		else {
+			$path .= "/" . DIR . "/" . $includeFile;			
+		}
+	}
+
+	if(!is_file($path)) {
+		throw new HttpError(500, "@include($path) file not found.");
+	}
+	$replacement = file_get_contents($path);
+
+	$html = preg_replace($includeRegex, $replacement, $html);
+	return $html;
 }
 
 /**
