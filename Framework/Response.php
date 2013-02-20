@@ -125,50 +125,6 @@ public function executePageTools($pageToolArray, $api, $dom, $template) {
 }
 
 /**
- * Provides a mechanism for server-side includes. This means PageViews can be
- * split up into multiple .html files and included where required using
- * <include> tags.
- *
- * @param Dom $dom The current Dom object.
- * @return int Number of successful files included.
- */
-public function includeDom($dom) {
-	$success = 0;
-	$includes = $dom->getElementsByTagName("include");
-	if($includes->length == 0) {
-		return false;
-	}
-
-	foreach ($includes as $inc) {
-		if($inc->hasAttribute("href")) {
-			$href = $inc->getAttribute("href");
-
-			$fileArray = array(
-				APPROOT . DS . "PageView" . DS . DIR . DS . $href,
-				APPROOT . DS . "PageView" . DS . BASEDIR . DS . $href
-			);
-			foreach($fileArray as $file) {
-				if(file_exists($file)) {
-					$html = file_get_contents($file);
-					$tempDom = new DOMDocument("1.0", "utf-8");
-					$tempDom->loadHTML($html);
-					$root = $tempDom->documentElement;
-					$imported = $dom->importNode($root, true);
-
-					$inc->before($imported);
-					$inc->remove();
-
-					$success ++;
-					break;
-				}
-			}
-		}
-	}
-
-	return $success;
-}
-
-/**
  * Adds required metadata according to current session, such as currently 
  * selected language by user.
  * @param Dom $dom The current active Dom.
