@@ -98,12 +98,12 @@ _helpers = {
 		 * @return {HTMLElement}          The first matching element, or null.
 		 */
 		"parent": function(selector) {
-			var currentElement = this;
+			var currentElement = this.parentElement;
 			do {
-				currentElement = currentElement.parentElement;
 				if(currentElement.matches(selector)) {
 					return currentElement;
 				}
+				currentElement = currentElement.parentElement;
 			}while(currentElement);
 			
 			return null;
