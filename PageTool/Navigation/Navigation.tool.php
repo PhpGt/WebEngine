@@ -11,6 +11,7 @@ public function go($api, $dom, $template, $tool) {
 	$target = strtok($_SERVER['REQUEST_URI'], '?');
 	$target = strtok($target, '#');
 	$target = str_replace("/", "\/", $target);
+	$target = str_replace(".", "\.", $target);
 
 	foreach($this->_navElements as $nav) {
 		$navLiTags = $nav["ul li, ol li"];
@@ -26,7 +27,8 @@ public function go($api, $dom, $template, $tool) {
 			
 			// Match the current URL with the anchor's href.
 			$href = $li["a"]->getAttribute("href");
-			if(preg_match($pattern, $href) > 0) {
+			if(preg_match($pattern, $href) > 0
+			|| ($href === "/" && $target === "\/Index\.html") ) {
 				$li->addClass("selected");
 				if($li->hasClass("tree")) {
 					$li->addClass("open");
