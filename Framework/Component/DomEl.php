@@ -68,6 +68,10 @@ public function offsetUnset($selector) {
 	// TODO: Throw error when trying to unset an element.
 }
 
+public function css($selector) {
+	return $this->offsetGet($selector);
+}
+
 public function xpath($query) {
 	return $this->_dom->offsetGet($query, $this->node, true);
 }
