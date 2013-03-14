@@ -13,6 +13,8 @@ private $_class;
 private $_id;
 private $_contents;
 
+public $classList;
+
 public function __construct(
 $dom,
 $element,
@@ -50,6 +52,8 @@ $value      = null) {
 		$this->_tagName = "TEXTNODE";
 	}
 	$this->_contents = $this->node->nodeValue;
+
+	$this->classList = new DomElClassList($this);
 }
 
 public function offsetExists($selector) {
@@ -123,7 +127,7 @@ private function obtainElementArray($input) {
 * TODO: Docs.
 * @return DomEl The appended element.
 */
-public function append($toAdd) {
+public function appendChild($child) {
 	$elementArray = call_user_func_array(
 		array($this, "obtainElementArray"), 
 		func_get_args());
@@ -137,13 +141,19 @@ public function append($toAdd) {
 		$this->node->appendChild($elNode);
 	}
 
-	return $toAdd;
+	return $child;
+}
+/**
+ * Synonym for appendChild.
+ */
+public function append() {
+	return call_user_func_array([$this, "appendChild"], func_get_args());
 }
 
 /**
  * TODO: Docs.
  */
-public function prepend($toAdd) {
+public function prependChild($child) {
 	$elementArray = call_user_func_array(
 		array($this, "obtainElementArray"), 
 		func_get_args());
@@ -157,13 +167,20 @@ public function prepend($toAdd) {
 		$this->node->insertBefore($elNode, $this->node->firstChild);
 	}
 
-	return $toAdd;
+	return $child;
 }
 
 /**
- * TODO: Docs.
+ * Synonym for prependChild.
  */
-public function before($toAdd) {
+public function prepend() {
+	return call_user_func_array([$this, "prependChild"], func_get_args());
+}
+
+/**
+ * Inserts the specified node(s) before a the current node.
+ */
+public function appendChildBefore($newElement /*, $newElement2, ... */) {
 	$elementArray = call_user_func_array(
 		array($this, "obtainElementArray"), 
 		func_get_args());
@@ -176,9 +193,20 @@ public function before($toAdd) {
 
 		$this->node->parentNode->insertBefore($elNode, $this->node);
 	}
+
+	return new DomElCollection($elementArray);
+}
+/**
+ * Synonym for appendChildBefore
+ */
+public function before() {
+	return call_user_func_array([$this, "appendChildBefore"], func_get_args());
 }
 
-public function after($toAdd) {
+/**
+ * Inserts the specified node(s) after the current node.
+ */
+public function appendChildAfter($newElement /*, $newElement2, ... */) {
 	$elementArray = call_user_func_array(
 		array($this, "obtainElementArray"), 
 		func_get_args());
@@ -197,6 +225,15 @@ public function after($toAdd) {
 			$this->node->parentNode->appendChild($elNode);
 		}
 	}
+
+	return new DomElCollection($elementArray);
+}
+
+/**
+ * Synonym for appendChildAfter.
+ */
+public function after() {
+	return call_user_func_array([$this, "appendChildAfter"], func_get_args());
 }
 
 /**
@@ -250,8 +287,9 @@ $attrArray = array(), $textKey = null) {
 }
 
 /**
-* TODO: Docs.
-*/
+ * Removes the current element from the DOM. Element can still exist as a
+ * reference, to be added again later.
+ */
 public function remove() {
 	if(is_null($this->node->parentNode)) {
 		// TODO: How can this ever be possible? (It is ... but doesn't seem to
@@ -261,19 +299,22 @@ public function remove() {
 		var_dump($this->node->tagName);die();
 	}
 	$this->node->parentNode->removeChild($this->node);
+
+	return $this;
 }
 
 /**
- * TODO: Docs.
+ * Empties the current element of any children.
  */
 public function removeChildren() {
 	while($this->node->hasChildNodes()) {
 		$this->node->removeChild($this->node->lastChild);
 	}
+	return $this;
 }
 
 /**
- * TODO: Docs.
+ * Replaces the current element with another.
  */
 public function replace($replaceWith) {
 	$element = null;
@@ -313,155 +354,40 @@ public function replace($replaceWith) {
 }
 
 /**
- * TODO: Docs.
- */
-public function insertBefore($toInsert) {
-	return $this->insert($toInsert, "before");
-}
-
-/**
- * TODO: Docs.
- */
-public function insertAfter($toInsert) {
-	return $this->insert($toInsert, "after");
-}
-
-/**
- * TODO: Docs.
- */
-private function insert($toInsert, $direction) {
-	$elementArray = array();
-
-	if(is_array($toInsert) || $toInsert instanceof DomElCollection) {
-		$elementArray = $toInsert;
-	}
-	else if(is_string($toInsert)) {
-		$attrArray = null;
-		$value = null;
-		$args = func_get_args();
-		if(isset($args[1])) {
-			$attrArray = $args[1];
-		}
-		if(isset($args[2])) {
-			$value = $args[2];
-		}
-
-		$elementArray[] = new DomEl(
-			$this->_dom,
-			$toInsert,
-			$attrArray,
-			$value
-		);
-	}
-	else {
-		$elementArray[] = $toInsert;
-	}
-
-	foreach($elementArray as $element) {
-		$elNode = $element;
-		if($element instanceof DomEl) {
-			$elNode = $element->node;
-		}
-
-		if(strtolower($direction) == "before") {
-			$inserted = $this->node->parentNode->insertBefore(
-				$elNode, $this->node);
-		}
-		else {
-			$nextSibling = $this->node->nextSibling;
-			if(is_null($nextSibling)) {
-				$this->node->parentNode->appendChild($elNode);
-			}
-			else {
-				$this->node->parentNode->insertBefore(
-					$elNode, $nextSibling);
-			}
-		}
-	}
-}
-
-/**
- * TODO: Docs.
+ * Returns a duplicate of the node on which this method was called. By default
+ * all children of the node will also be cloned. Pass false as the only param
+ * to only clone the root element.
  */
 public function cloneNode($deep = true) {
 	return new DomEl($this->_dom, $this->node->cloneNode($deep));
 }
 
 /**
- * TODO: Docs.
+ * Synonym for classList->add.
  */
 public function addClass($className) {
-	$stringArray = array();
-
-	if(is_array($className)) {
-		$stringArray = $className;
-	}
-	else {
-		$stringArray = array($className);
-	}
-
-	$currentClass = $this->node->getAttribute("class");
-
-	foreach($stringArray as $string) {
-		if(!$this->hasClass($string)) {
-			$currentClass .= " " . $string;
-		}
-	}
-
-	$this->node->setAttribute("class", $currentClass);
+	return $this->classList->add($className);
 }
 
 /**
- * TODO: Docs.
+ * Synonym for classList->remove.
  */
 public function removeClass($className) {
-	$stringArray = array();
-
-	if(is_array($className)) {
-		$stringArray = $className;
-	}
-	else {
-		$stringArray = array($className);
-	}
-
-	$currentClass = $this->node->getAttribute("class");
-
-	foreach($stringArray as $string) {
-		// Remove any occurence of the string, with optional spaces.
-		$currentClass = preg_replace(
-			"/\b" . $string . "\b/",
-			"",
-			$currentClass);
-	}
-
-	$this->node->setAttribute("class", $currentClass);
+	return $this->classList->remove($className);
 }
 
 /**
- * TODO: Docs.
+ * Synonym for classList->contains.
  */
 public function hasClass($className) {
-	if(!$this->node instanceof DOMElement) {
-		return false;
-	}
-	$stringArray = array();
+	return $this->classList->contains($className);
+}
 
-	if(is_array($className)) {
-		$stringArray = $className;
-	}
-	else {
-		$stringArray = array($className);
-	}
-
-	$currentClass = $this->node->getAttribute("class");
-
-	foreach($stringArray as $string) {
-		if(preg_match("/\b" . $string . "\b/", $currentClass)) {
-			return true;
-		}
-	}
-
-	return false;
+/**
+ * Synonym for classList->toggle.
+ */
+public function toggleClass($className) {
+	return $this->classList->toggle($className);
 }
 
 /**
@@ -484,7 +410,7 @@ public function injectAttribute($attr, $substr, $replacement) {
 }
 
 /**
-* TODO: Docs.
+* Allows underlying DOMNode methods to be called on the DomEl object.
 */
 public function __call($name, $args = array()) {
 	if(method_exists($this->node, $name)) {
@@ -496,9 +422,7 @@ public function __call($name, $args = array()) {
 			);
 		}
 		catch(Exception $e) {
-			// TODO: Throw proper error.
-			var_dump(xdebug_get_function_stack());
-			var_dump($name, $args);die();
+			throw new HttpError(500, null, $e);
 		}
 		return $result;
 	}
@@ -508,8 +432,8 @@ public function __call($name, $args = array()) {
 }
 
 /**
-* TODO: Docs.
-*/
+ * Wrapper to underlying DOMNode properties.
+ */
 public function __get($key) {
 	switch($key) {
 	case "innerHTML":
@@ -526,6 +450,7 @@ public function __get($key) {
 		return html_entity_decode($innerHtml);
 		break;
 	case "innerText":
+	case "textContent":
 	case "text":
 		return $this->node->nodeValue;
 		break;
@@ -550,8 +475,8 @@ public function __get($key) {
 }
 
 /**
-* TODO: Docs.
-*/
+ * Wrapper to underlying DOMNode properties.
+ */
 public function __set($key, $value) {
 	switch($key) {
 	case "innerHTML":

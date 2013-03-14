@@ -204,11 +204,14 @@ public function getDomDoc() {
 * @param string $value Optional. The initial text value of the element.
 * @return DomEl The newly created DomEl object.
 */
-public function create(
-$el,
-$attrArray  = null,
-$value      = null) {
+public function createElement($el, $attrArray = null, $value = null) {
 	return new DomEl($this, $el, $attrArray, $value);
+}
+/**
+ * Synonym for createElement.
+ */
+public function create() {
+	return call_user_func_array([$this, "createElement"], func_get_args());
 }
 
 /**
