@@ -3,7 +3,7 @@ protected $gateway;
 protected $endpoint = '/nvp';
 
 public function __construct(PaypalGateway $gateway) {
-	require_once(dirname(__FILE__) . DS . "PayPalGateway.class.php");
+	require_once(dirname(__FILE__) . "/PayPalGateway.class.php");
 	$this->gateway = $gateway;
 }
 

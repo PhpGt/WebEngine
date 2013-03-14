@@ -52,7 +52,7 @@ public function __construct($config) {
 			"Forward" => $_GET["DbDeploy"]
 		);
 		require(
-			GTROOT . DS . "Framework" . DS . "Reserved" . DS . "Gt.html");
+			GTROOT . "/Framework/Reserved/Gt.html");
 		exit;
 	}
 	else if(isset($_GET["CheckSql"])) {
@@ -87,14 +87,14 @@ private function getSqlArray($dbConfig) {
 		":DatabaseTable" 	=> "`" . $dbConfig["DbName"] . "`.*"
 	);
 
-	$dbPath = GTROOT . DS . "Database";
+	$dbPath = GTROOT . "/Database";
 	$fileArray = scandir($dbPath);
 	foreach($fileArray as $file) {
 		if(strpos($file, "_CreateDatabase") !== 0) {
 			continue;
 		}
 
-		$sql = file_get_contents($dbPath . DS . $file);
+		$sql = file_get_contents($dbPath . "/" . $file);
 
 		foreach ($replacements as $key => $value) {
 			$sql = str_replace($key, $value, $sql);

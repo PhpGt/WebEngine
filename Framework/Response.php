@@ -92,8 +92,8 @@ public function dispatch($name, $parameter = null) {
  */
 public function executePageTools($pageToolArray, $api, $dom, $template) {
 	$toolPathArray = array(
-		APPROOT . DS . "PageTool",
-		GTROOT . DS . "PageTool"
+		APPROOT . "/PageTool",
+		GTROOT  . "/PageTool"
 	);
 	if(empty($pageToolArray)) {
 		return;
@@ -107,8 +107,8 @@ public function executePageTools($pageToolArray, $api, $dom, $template) {
 				continue;
 			}
 			
-			if(file_exists($path . DS . $tool . DS . $toolFile)) {
-				require_once($path . DS . $tool . DS . $toolFile);
+			if(file_exists(  "$path/$tool/$toolFile")) {
+				require_once("$path/$tool/$toolFile");
 			}
 			else {
 				continue;
@@ -181,12 +181,12 @@ private function bufferPageView($fileName = null) {
 		// Request path is absolute, only one array element needed, with
 		// direct reference to DIR and FILE.
 		$fileArray = array(
-			APPROOT . DS . "PageView" . DS . DIR . DS . FILE . ".html"
+			APPROOT . "/PageView/" . DIR . "/" . FILE . ".html"
 		);
 
 		if(DIR === BASEDIR) {
 			$fileArray[] =
-				APPROOT . DS . "PageView" . DS . BASEDIR . DS . FILE . ".html";
+				APPROOT . "/PageView/" . "/" . BASEDIR . "/" . FILE . ".html";
 		}
 
 		// Ensure there is only ever one URI that can be used to access a
@@ -205,7 +205,7 @@ private function bufferPageView($fileName = null) {
 			$fwd = preg_replace("/\/+/", "/", $fwd);
 
 			// Only perform the redirect if the Index.html file exists.
-			$pageViewFile = APPROOT . DS . "PageView" . $fwd;
+			$pageViewFile = APPROOT . "/PageView" . $fwd;
 			if(file_exists($pageViewFile)) {
 				http_response_code(301);
 				header("Location: $fwd");
@@ -220,14 +220,10 @@ private function bufferPageView($fileName = null) {
 
 		// List of PageView locations in priority order.
 		$fileArray = array(
-			APPROOT . DS . "PageView" 
-				. DS . DIR . DS . "_{$fileName}.html",
-			APPROOT . DS . "PageView" 
-				. DS . FILE . DS . "_{$fileName}.html",
-			APPROOT . DS . "PageView" 
-				. DS . BASEDIR . DS . "_{$fileName}.html",
-			APPROOT . DS . "PageView" 
-				. DS . "_{$fileName}.html"
+			APPROOT . "/PageView/" . DIR     . "/_{$fileName}.html",
+			APPROOT . "/PageView/" . FILE    . "/_{$fileName}.html",
+			APPROOT . "/PageView/" . BASEDIR . "/_{$fileName}.html",
+			APPROOT . "/PageView/" . "_{$fileName}.html"
 		);
 	}
 
@@ -266,12 +262,11 @@ private function bufferPageView($fileName = null) {
 */
 private function findDynamicPageView() {
 	$found = false;
-	$lookPath = DIR . DS . FILE;
+	$lookPath = DIR . "/" . FILE;
 	while($found === false) {
 		// Find position of last slash in requested page.
-		$lastSlash = strrpos($lookPath, DS);
-		$dynamicFile = APPROOT . DS . "PageView" . DS 
-		. $lookPath . DS . "_Dynamic.html";
+		$lastSlash = strrpos($lookPath, "/");
+		$dynamicFile = APPROOT . "/PageView/" . $lookPath . "/_Dynamic.html";
 
 		// If found, stop looking.
 		if(file_exists($dynamicFile)) {

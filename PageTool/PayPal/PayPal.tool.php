@@ -11,8 +11,8 @@ private $_gateway;
  * Username, password, API signature, [Optional] Sandbox.
  */
 public function go($api, $dom, $template, $tool) {
-	require_once(dirname(__FILE__) . DS . "PayPal.class.php");
-	require_once(dirname(__FILE__) . DS . "PayPal_ExpressCheckout.class.php");
+	require_once(dirname(__FILE__) . "/PayPal.class.php");
+	require_once(dirname(__FILE__) . "/PayPal_ExpressCheckout.class.php");
 	
 	$this->_apiUsername  = func_get_arg(4);
 	$this->_apiPassword  = func_get_arg(5);
