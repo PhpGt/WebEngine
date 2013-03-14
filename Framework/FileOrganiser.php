@@ -5,6 +5,12 @@
  * required. The files may need to be minified and compiled before they are
  * copied.
  */
+
+private $_skipExtensions = array(
+	"scss",
+	"md",
+);
+
 public function __construct($config) {
 	// Don't do anything if there are no changes in the source directories.
 	if(!$this->changedFiles()) {
@@ -148,6 +154,10 @@ private function copyFiles($source, $dest, $recursive = true) {
 
 	while(false !== ($name = readdir($dh)) ) {
 		if($name[0] == ".") {
+			continue;
+		}
+		$ext = pathinfo($name, PATHINFO_EXTENSION);
+		if(in_array($ext, $this->_skipExtensions)) {
 			continue;
 		}
 
