@@ -8,11 +8,12 @@
  * There are two purposes of the Gt.js library. First is to normalise browser's
  * behaviour using a collection of shims. The shims attempt 100% ECMAScript5/6
  * coverage and DOM 4 implementation. Supports Chrome, Firefox, Opera,
- * Safari, IE9+. Shims taken from:
+ * Safari, IE8+. Shims taken from:
  * https://github.com/termi/ES5-DOM-SHIM
  *
- * Browser support is IE9+, Google Chrom[e|ium], Mozilla Firefox 3.6+,
- * Opera 11+.
+ * Browser support is IE8+, Google Chrom[e|ium], Mozilla Firefox 3.6+,
+ * Opera 11+. To support IE8, a conditional comment must be used to load
+ * Gt-IE8.js.
  *
  * On top of the browser normalisation, helper functions are added to global
  * scope and to DOM objects:
