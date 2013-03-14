@@ -137,7 +137,16 @@ public function __set($key, $value) {
  */
 public function appendToAttribute($attr, $str) {
 	foreach ($this->_elArray as $el) {
-		$el->$attr .= $str;
+		$attrValue = $el->getAttribute($attr);
+
+		if($el->hasAttribute($attr)) {
+			$attrValue = $attrValue . $str;
+		}
+		else {
+			$attrValue = $str;
+		}
+
+		$el->setAttribute($attr, $attrValue);
 	}
 }
 
