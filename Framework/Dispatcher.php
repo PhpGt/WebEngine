@@ -68,7 +68,8 @@ public function __construct($response, $config) {
 		$apiWrapper,
 		$dom,
 		$templateWrapper,
-		$toolWrapper);
+		$toolWrapper,
+		$config["App"]);
 
 	// Dispatch the all important "go" event, that is the entry point to
 	// each PageCode, and has access to all required components.
