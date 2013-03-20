@@ -43,7 +43,7 @@ Community, getting help & feedback.
 There are a number of ways to get help with your PHP.Gt development.
 
 * [Ask and answer technical questions on Stack Overflow](http://stackoverflow.com/questions/tagged/phpgt"). For formal, technical queries, tag your question with "phpgt" and someone will answer you as soon as possible.
-* [Join or start a discussion on Google Plus](https://plus.google.com/s/%23phpgt"). Use the hashtag #phpgt to alert the developers, and you will get some responses coming your way in no time.
+* [Join or start a discussion on Google Plus](https://plus.google.com/u/0/communities/100081733478029883187). For general discussion, showcasing your work and the latest news.
 * [Receive full technical support with managed hosting packages](http://php.gt/Hosting.html). Full technical support packages are provided with the managed hosting offered by Bright Flair.
 
 Licensing
