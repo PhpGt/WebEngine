@@ -41,6 +41,22 @@ public function __construct($response, $config) {
 	}
 
 	// Start building the objects used across the PageCodes...
+	
+	$apiWrapper = new ApiWrapper($dal);
+	$emptyObject = new EmptyObject();
+	
+	if($response->mtimeView === false) {
+		// There is no PageView! Allow PageCode's go function to be invoked,
+		// but there's no need to pass in any Dom, Template or Tool.
+		$response->dispatch(
+			"go",
+			$apiWrapper,
+			$emptyObject,
+			$emptyObject,
+			$emptyObject);
+		throw new HttpError(404);
+	}
+
 
 	// Load the DOM from the current buffer, include any externally linked
 	// PageViews from <include> tags. 
@@ -58,7 +74,6 @@ public function __construct($response, $config) {
 	$templateArray = $dom->template();
 	$templateWrapper = new TemplateWrapper($templateArray);
 
-	$apiWrapper = new ApiWrapper($dal);
 	$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
 	// Allows the PageCode objects to have access to the important

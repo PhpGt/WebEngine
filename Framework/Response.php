@@ -10,8 +10,8 @@ private $_buffer = "";
 private $_api = null;
 private $_pageCode = null;
 private $_pageCodeCommon = array();
-
 private $_pageCodeStop;
+public  $mtimeView;
 
 public function __construct($request) {
 	header("Content-Type: {$request->contentType}; charset=utf-8");
@@ -29,8 +29,11 @@ public function __construct($request) {
 	// Buffer current PageView and optional header/footer.
 	$mtimeHeader = $this->bufferPageView("Header");
 	$mtimeView = $this->bufferPageView();
+	$this->mtimeView = $mtimeView;
 	if($mtimeView === false) {
-		throw new HttpError(404);
+		// There will be a 404 error thrown after potential PageCode is invoked.
+		ob_clean();
+		return;
 	}
 	$mtimeFooter = $this->bufferPageView("Footer");
 

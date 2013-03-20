@@ -171,6 +171,8 @@ $toLoad["Required"] = array(
 	"PageCode class" =>
 	GTROOT.DS."Framework" . DS . "PageCode.php",
 
+	"Empty object" =>
+	GTROOT.DS."Framework" . DS . "EmptyObject.php",
 	"Main PHP.Gt object" =>
 	GTROOT.DS."Framework" . DS . "Gt.php"
 );
