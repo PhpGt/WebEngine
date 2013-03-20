@@ -13,8 +13,7 @@ private $_identities = array(
  * TODO: Docs.
  */
 public function __construct($identity = "") {
-	require_once(GTROOT . DS . "Framework" . DS . "Utility" 
-		. DS . "OpenId" . DS . "openid.php");
+	require_once(GTROOT . "/Framework/Utility/OpenId/openid.php");
 
 	if(empty($identity)) {
 		$identity = $this->_defaultIdentity;

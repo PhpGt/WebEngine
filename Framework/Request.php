@@ -67,8 +67,8 @@ public function __construct($config) {
 		$className = $apiName . "_Api";
 		$fileName  = $apiName . ".api.php";
 		$apiPathArray = array(
-			APPROOT . DS . "Api" . DS,
-			GTROOT  . DS . "Api" . DS
+			APPROOT . "/Api/",
+			GTROOT  . "/Api/",
 		);
 		foreach ($apiPathArray as $path) {
 			if(file_exists($path . $fileName)) {
@@ -120,12 +120,12 @@ public function __construct($config) {
 		// directory tree and look for and execute higher PageCodes.
 		$pcClassSuffix = "_PageCode";
 		$pcDirArray = array();
-		$pcBaseDir = APPROOT . DS . "PageCode" . DS;
+		$pcBaseDir = APPROOT . "/PageCode/";
 		$filePathArray = explode("/", DIR);
 		for($i = 0; $i < count($filePathArray); $i++) {
 			$prefix = "";
 			foreach ($pcDirArray as $pcDir) {
-				$prefix .= $pcDir . DS;
+				$prefix .= $pcDir . "/";
 			}
 
 			$pcDirArray[] = $prefix . $filePathArray[$i];
@@ -145,7 +145,7 @@ public function __construct($config) {
 		$pcDirArray = array_reverse($pcDirArray);
 
 		foreach ($pcDirArray as $pcDir) {
-			$pcCommonPath  = APPROOT . DS . "PageCode" . DS . $pcDir . DS;
+			$pcCommonPath  = APPROOT . "/PageCode/" . $pcDir . "/";
 			$pcCommonFile  = "_Common.php";
 			$pcCommonClass = str_replace("/", "_", $pcDir) 
 				. "_Common";
@@ -164,7 +164,7 @@ public function __construct($config) {
 		}
 
 		//  for and load the page's specific PageCode.
-		$pageCodeFile  = APPROOT . DS . "PageCode" . DS . FILEPATH . ".php";
+		$pageCodeFile  = APPROOT . "/PageCode/" . FILEPATH . ".php";
 		$pageCodeClass = FILECLASS;
 		if(file_exists($pageCodeFile)) {
 			require($pageCodeFile);
@@ -195,8 +195,8 @@ public function __construct($config) {
 		$reservedName = BASEDIR == ""
 		? FILE
 		: BASEDIR;
-		$reservedFile = GTROOT . DS . "Framework" . DS 
-			. "Reserved" . DS . ucfirst($reservedName) . ".php";
+		$reservedFile = GTROOT . "/Framework/Reserved/" 
+			. ucfirst($reservedName) . ".php";
 		if(file_exists($reservedFile)) {
 			require($reservedFile);
 			$reservedClassName = $reservedName . "_Reserved";
