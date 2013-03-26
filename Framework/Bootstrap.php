@@ -237,5 +237,5 @@ if(isset($_GET["DebugBootstrap"])) {
 	exit;
 }
 
-$gt = new Gt();
+return new Gt();
 ?>
