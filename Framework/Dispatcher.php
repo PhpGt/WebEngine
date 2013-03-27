@@ -102,7 +102,7 @@ public function __construct($response, $config) {
 		$toolWrapper);
 
 	$dom->templateOutput($templateWrapper);
-	$dom->flush();
+	return $dom->flush();
 }
 
 }?>
