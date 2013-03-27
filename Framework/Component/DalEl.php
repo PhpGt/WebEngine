@@ -105,6 +105,7 @@ private function query($sqlFile, $paramArray = array()) {
 	$tries = 0;
 	while($tries <= 1) {
 		try {
+			$stmt->closeCursor();
 			$result = $stmt->execute();
 			// Find out the number of affected rows.
 			$rowCount = $stmt->rowCount();
