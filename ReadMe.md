@@ -93,3 +93,5 @@ Forking & Pull Requests
 When implementing new features or fixing bugs through Github using pull requests, your code will be committed to your own fork, which acts as the branch.
 
 When your code is ready to be added to the PHP.Gt repository, a pull request should be raised, and your code will be added to a new branch using the above naming convention, and merged into master after tests have been completed.
+
+Lastly, the PHP.Gt team accept contributions in patch format, which can be created using the [`git format-patch` command](http://git-scm.com/docs/git-format-patch).
