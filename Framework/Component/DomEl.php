@@ -512,6 +512,7 @@ public function __set($key, $value) {
 		$tempDom = null;
 		break;
 	case "innerText":
+	case "textContent":
 	case "text":
 		$value = htmlentities($value);//, ENT_COMPAT | ENT_HTML401, "UTF-8", true);
 		$this->node->nodeValue = $value;
