@@ -6,7 +6,7 @@ A lightweight application development toolkit aimed at automating deployment, st
 
 Updates in Alpha3
 -----------------
-For a full list of updates, see the ChangeLog.md file.
+For a full list of updates, see the [ChangeLog.md](ChangeLog.md) file.
 
 In order of importance: 
 
