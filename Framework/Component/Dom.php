@@ -1,10 +1,15 @@
 <?php class Dom implements ArrayAccess {
 /**
-* Dom is a wrapper to PHP's native DOMDocument which adds many features to
-* boost development efficiency. The most notable feature is allowing
-* manipulation via CSS selectors.
-*/
-
+ * The first purpose of the `Dom` object is automatic parsing of the PageView 
+ * files. When the object is constructed, it takes the raw HTML string loaded 
+ * from the PageView(s) and constructs a native `DomDocument` to represent.
+ *
+ * This is the object that is actually passed into all `go()` method calls as 
+ * the `$dom` object, and can be treated as a native PHP `DOMDocument` with 
+ * extended methods and properties. The class doesn't _actually_ inherit from 
+ * the `DOMDocument` class, instead it exposes the properties and methods of 
+ * the underlying object through magic methods (`_call`, `_get` and `_set`).
+ */
 private $_domDoc = null;
 private $_templateAttribute = null;
 
@@ -118,6 +123,19 @@ public function __call($name, $args) {
 } 
 
 /**
+ * Allows automatic property mapping to the DOMDocument node.
+ */
+public function __get($name) {
+	return $this->_domDoc->$name;
+}
+/**
+ * Allows automatic property mapping to the DOMDocument node.
+ */
+public function __set($name, $value) {
+	return $this->_domDoc->$name = $value;
+}
+
+/**
 * Checks to see if a given CSS selector exists matches any DOM Elements.
 * Can be used via isset() or empty().
 * @param string $selector CSS selector to check.
@@ -129,11 +147,11 @@ public function offsetExists($selector) {
 }
 
 /**
-* Returns an array of Dom elements (type DomEl) that match the 
+* Returns a list of Dom elements (type DomEl) that match the 
 * provided CSS selector.
 * @param string $selector CSS selector to match.
 * @param DOMNode|DomEl $contextNode Optional. The sub-node to query.
-* @return array An array of matching DomEl objects.
+* @return DomElCollection A list of matching DomEl objects.
 */
 public function offsetGet($selector, $contextNode = null, 
 $overrideXpath = false) {
