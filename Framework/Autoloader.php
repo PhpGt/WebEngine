@@ -9,8 +9,6 @@
 * objects, and new features can be introduced.
 */
 
-// ALPHA TODO: Before first beta version, remove the dependency to the old
-// Utility directory.
 $classDirArray = array(
 	APPROOT . "/Class/$className",
 	GTROOT  . "/Class/$className", 
@@ -24,25 +22,12 @@ foreach ($classDirArray as $classDir) {
 	$fileNameArray = array($className . ".class.php");
 	$fileNameArray[] = str_replace("_", ".", $fileNameArray[0]);
 
-
 	foreach($fileNameArray as $fileName) {
 		if(file_exists("$classDir/$fileName")) {
 			require_once("$classDir/$fileName");
 			return;
 		}		
 	}
-}
-
-$utilityDir = GTROOT . "/Framework/Utility/";
-$fileName = str_replace("_", ".", $className . ".php");
-if($dh = opendir($utilityDir)) {
-	while(false !== ($file = readdir($dh)) ) {
-		if(stristr($file, $fileName)) {
-			require_once($utilityDir . $file);
-			break;
-		}
-	}
-	closedir($dh);
 }
 
 }?>

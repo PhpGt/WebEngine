@@ -296,7 +296,7 @@ public function auth($method = "Google", $forwardTo = null) {
 		}
 	}
 
-	$oid = new OpenId_Utility($method);
+	$oid = new OpenId($method);
 	$username = $oid->getData();
 
 	if(!$this->checkWhiteList($username) 
