@@ -114,76 +114,76 @@ define("FILECLASS", $fileClass);
 $toLoad = array();
 $toLoad["Required"] = array(
 	"Shared application config" => 
-	GTROOT.DS."Config" . DS . "App.cfg.php",
-	"Shared database config" =>
-	GTROOT.DS."Config" . DS . "Database.cfg.php",
-	"Shared security config" =>
-	GTROOT.DS."Config" . DS . "Security.cfg.php",
+		GTROOT."/Config/App.cfg.php",
+	"Shared database config" => 
+		GTROOT."/Config/Database.cfg.php",
+	"Shared security config" =>	
+		GTROOT."/Config/Security.cfg.php",
 
-	"Gt Error Exception" =>
-	GTROOT.DS."Framework" . DS . "Error" . DS . "GtError.php",
-	"Http Error Exception" =>
-	GTROOT.DS."Framework" . DS . "Error" . DS . "HttpError.php",
+	"Gt Error Exception" => 
+		GTROOT."/Framework/Error/GtError.php",
+	"Http Error Exception" => 
+		GTROOT."/Framework/Error/HttpError.php",
 
-	"API component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Api.php",
-	"API wrapper component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiWrapper.php",
-	"API element component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "ApiEl.php",
-	"Template wrapper component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "TemplateWrapper.php",
+	"API component" => 
+		GTROOT."/Framework/Component/Api.php",
+	"API wrapper component" => 
+		GTROOT."/Framework/Component/ApiWrapper.php",
+	"API element component" => 
+		GTROOT."/Framework/Component/ApiEl.php",
+	"Template wrapper component" => 
+		GTROOT."Framework/Component/TemplateWrapper.php",
 	"PageTool wrapper component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "PageToolWrapper.php",
+		GTROOT."/Framework/Component/PageToolWrapper.php",
 	"DAL component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Dal.php",
+		GTROOT."/Framework/Component/Dal.php",
 	"DAL element component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DalEl.php", 
+		GTROOT."/Framework/Component/DalEl.php", 
 	"DAL result component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DalResult.php",
+		GTROOT."/Framework/Component/DalResult.php",
 	"DOM component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Dom.php",
+		GTROOT."/Framework/Component/Dom.php",
 	"DOM Element component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DomEl.php",
+		GTROOT."/Framework/Component/DomEl.php",
 	"DOM Element Collection component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElCollection.php",
+		GTROOT."/Framework/Component/DomElCollection.php",
 	"DOM Element ClassList component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "DomElClassList.php",
+		GTROOT."/Framework/Component/DomElClassList.php",
 	"Error component" => 
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Error.php",
+		GTROOT."/Framework/Component/Error.php",
 	"Cache component" =>
-	GTROOT.DS."Framework" . DS . "Component" . DS . "Cache.php",
+		GTROOT."/Framework/Component/Cache.php",
 
 	"Autoloader" =>
-	GTROOT.DS."Framework" . DS . "Autoloader.php",
+		GTROOT."/Framework/Autoloader.php",
 	"File Organiser class" =>
-	GTROOT.DS."Framework" . DS . "FileOrganiser.php",
+		GTROOT."/Framework/FileOrganiser.php",
 	"Client side compiler class" =>
-	GTROOT.DS."Framework" . DS . "ClientSideCompiler.php",
+		GTROOT."/Framework/ClientSideCompiler.php",
 	"Request class" =>
-	GTROOT.DS."Framework" . DS . "Request.php",
+		GTROOT."/Framework/Request.php",
 	"Response class" =>
-	GTROOT.DS."Framework" . DS . "Response.php",
+		GTROOT."/Framework/Response.php",
 	"Dispatcher class" =>
-	GTROOT.DS."Framework" . DS . "Dispatcher.php",
+		GTROOT."/Framework/Dispatcher.php",
 	"PageTool class" =>
-	GTROOT.DS."Framework" . DS . "PageTool.php",
+		GTROOT."/Framework/PageTool.php",
 	"PageCode class" =>
-	GTROOT.DS."Framework" . DS . "PageCode.php",
+		GTROOT."/Framework/PageCode.php",
 
 	"Empty object" =>
-	GTROOT.DS."Framework" . DS . "EmptyObject.php",
+		GTROOT."/Framework/EmptyObject.php",
 	"Main PHP.Gt object" =>
-	GTROOT.DS."Framework" . DS . "Gt.php"
+		GTROOT."/Framework/Gt.php"
 );
 
 $toLoad["Optional"] = array(
 	"Application-specific application config" =>
-		APPROOT.DS."Config" . DS . "App.cfg.php",
+		APPROOT."/Config/App.cfg.php",
 	"Application-specific database config" => 
-		APPROOT.DS."Config" . DS . "Database.cfg.php",
+		APPROOT."/Config/Database.cfg.php",
 	"Application-specific security config" => 
-		APPROOT.DS."Config" . DS . "Security.cfg.php",
+		APPROOT."/Config/Security.cfg.php",
 );
 
 foreach($toLoad as $requirement => $loadArray) {
