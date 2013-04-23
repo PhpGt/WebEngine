@@ -133,11 +133,12 @@ public function executePageTools($pageToolArray, $api, $dom, $template) {
  * @param Dom $dom The current active Dom.
  */
 public function addMetaData($dom) {
-	if(isset($_SESSION["PhpGt_Lang"])) {
+	if(isset($_COOKIE["Lang"])) {
 		$dom["head"]->prepend("meta", [
 			"HTTP-EQUIV" => "Content-Language",
-			"Content" => $_SESSION["PhpGt_Lang"]["Code"]
+			"Content" => $_COOKIE["Lang"],
 		]);
+		$dom["html"]->setAttribute("lang", $_COOKIE["Lang"]);
 	}
 }
 

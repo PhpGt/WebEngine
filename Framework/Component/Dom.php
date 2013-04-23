@@ -41,7 +41,7 @@ public function __construct($html = "<!doctype html>") {
 		die("Error loading HTML into Dom");
 	}
 
-	// Check for the "lang" attribute.
+	// Check for the "lang" attribute if it is not set in a cookie.
 	$htmlTag = $this->getElementsByTagName("html");
 	if($htmlTag->hasAttribute("lang")) {
 		$this->_defaultLanguage = $htmlTag->getAttribute("lang");
@@ -65,6 +65,10 @@ public function __construct($html = "<!doctype html>") {
 	}
 }
 
+/**
+ * Removes any elements from the DOM that have a data-lang attribute that
+ * doesn't match the cookie's lang value or the HTML's default lang. 
+ */
 public function languageScrape($attr = "data-lang") {
 	$xpath = new DOMXPath($this->_domDoc);
 	$domNodeList = $xpath->query("//*[@$attr]");
@@ -72,7 +76,18 @@ public function languageScrape($attr = "data-lang") {
 
 	for($i = 0; $i < $domNodeListLength; $i++) {
 		$item = $domNodeList->item($i);
-		$itemLang = $item->getAttribute($attr);	
+		$itemLang = $item->getAttribute($attr);
+		// Remove non-matching elements.
+		if(empty($_COOKIE["Lang"])) {
+			if(!fnmatch($this->_defaultLanguage, $itemLang)) {
+				$item->parentNode->removeChild($item);
+			}			
+		}
+		else {
+			if($itemLang != $_COOKIE["Lang"]) {
+				$item->parentNode->removeChild($item);
+			}
+		}
 	}
 }
 

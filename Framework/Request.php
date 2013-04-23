@@ -34,12 +34,18 @@ public function __construct($config) {
 		$lang = substr($bd, 1);
 
 		if(strlen($lang) > 0) {
-			// Save the language in session for output to html metadata, and for
+			// Save the language in cookie for output to html metadata, and for
 			// use in apps.
-			$_SESSION["PhpGt_Lang"] = ["Code" => $lang];
+			setcookie(
+				"Lang",
+				$lang, 
+				time() + (60 * 60 * 24 * 30 * 12), 
+				"/");
+			$_COOKIE["Lang"] = $lang;
 		}
 		else {
-			unset($_SESSION["PhpGt_Lang"]);
+			setcookie("Lang", null, 1, "/");
+			unset($_COOKIE["Lang"]);
 		}
 
 		$uri = $_SERVER["REQUEST_URI"];
