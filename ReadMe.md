@@ -82,11 +82,11 @@ As master is the default branch, code is committed into master as regularly as p
 
 Bug fixes, new features and code improvements are done on separate branches, whose names should show the issue number with a descriptive name in the following format:
 
-> Bugfix|Feature|Improvement-ShortName-issueNum
+> issueNum-ShortName-Bug|Feature|Improvement
 
 For example, a new feature allowing URLs to be typed in binary, with issue number #123:
 
-> Feature-BinaryURL-123
+> 123-BinaryURL-Feature
 
 Forking & Pull Requests
 -----------------------
