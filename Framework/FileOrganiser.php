@@ -6,9 +6,10 @@
  * copied.
  */
 
-private $_skipExtensions = array(
-	"scss",
-	"md",
+// List of wildcards to skip.
+private $_skipWc = array(
+	"*.scss", 
+	"ReadMe.md", 
 );
 
 public function __construct($config) {
@@ -110,11 +111,7 @@ private function copyFilesToPublic($config) {
 	// The order of copying is vital here; some applications can overwrite the
 	// files supplied by GT with their own, in whicch case the application's
 	// version of the file will be preferred.
-	
-	$skipWc = array(
-		"*.scss", 
-		"ReadMe.md", 
-	);
+
 	$wwwDir = APPROOT . DS . "www";
 	$copyDirArray = array(
 		GTROOT  . "/Style/Img/"		=> $wwwDir . "/Style/Img/",
@@ -125,7 +122,7 @@ private function copyFilesToPublic($config) {
 	);
 	
 	foreach ($copyDirArray as $source => $dest) {
-		$this->copyFiles($source, $dest, $skipWc);
+		$this->copyFiles($source, $dest);
 	}
 
 	if($config->isClientCompiled()) {
@@ -139,10 +136,10 @@ private function copyFilesToPublic($config) {
 		}
 	}
 	else {
-		$this->copyFiles(GTROOT  . "/Script/", APPROOT . "/www", $skipWc);
-		$this->copyFiles(GTROOT  . "/Style/", APPROOT . "/www",  $skipWc);
-		$this->copyFiles(APPROOT . "/Script/", APPROOT . "/www", $skipWc);
-		$this->copyFiles(APPROOT . "/Style/", APPROOT . "/www",  $skipWc);
+		$this->copyFiles(GTROOT  . "/Script/", APPROOT . "/www");
+		$this->copyFiles(GTROOT  . "/Style/",  APPROOT . "/www");
+		$this->copyFiles(APPROOT . "/Script/", APPROOT . "/www");
+		$this->copyFiles(APPROOT . "/Style/",  APPROOT . "/www");
 	}
 
 	return;
@@ -153,11 +150,10 @@ private function copyFilesToPublic($config) {
  * file extensions.
  * @param  string  $source    Source directory to copy from.
  * @param  string  $dest      Destination directory to copy to.
- * @param  array   $skipWc   Optional. List of extensions to skip.
  * @param  boolean $recursive Optional. Whether to perform a deep copy. Defaults
  * to true.
  */
-private function copyFiles($source, $dest, $skipWc = [], $recursive = true) {
+private function copyFiles($source, $dest, $recursive = true) {
 	if(!is_dir($source)) {
 		return;
 	}
@@ -169,8 +165,15 @@ private function copyFiles($source, $dest, $skipWc = [], $recursive = true) {
 		if($name[0] == ".") {
 			continue;
 		}
-		$ext = pathinfo($name, PATHINFO_EXTENSION);
-		if(in_array($ext, $this->_skipExtensions)) {
+
+		$skip = false;
+		foreach ($this->_skipWc as $skipWc) {
+			if(fnmatch($skipWc, $name)) {
+				$skip = true;
+				break;
+			}
+		}
+		if($skip) {
 			continue;
 		}
 
