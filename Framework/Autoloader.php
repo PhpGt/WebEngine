@@ -12,13 +12,13 @@
 // ALPHA TODO: Before first beta version, remove the dependency to the old
 // Utility directory.
 $classDirArray = array(
-	APPROOT .DS . "Class" . DS . $className,
-	GTROOT . DS . "Class" . DS . $className 
+	APPROOT . "/Class/$className",
+	GTROOT  . "/Class/$className", 
 );
 if(strstr($className, "_")) {
 	$splitClassName = substr($className, 0, strpos($className, "_"));
-	$classDirArray[] = APPROOT . DS . "Class" . DS . $splitClassName;
-	$classDirArray[] = GTROOT . DS . "Class" . DS . $splitClassName;
+	$classDirArray[] = APPROOT . "/Class/$splitClassName";
+	$classDirArray[] = GTROOT  . "/Class/$splitClassName";
 }
 foreach ($classDirArray as $classDir) {
 	$fileNameArray = array($className . ".class.php");
@@ -26,14 +26,14 @@ foreach ($classDirArray as $classDir) {
 
 
 	foreach($fileNameArray as $fileName) {
-		if(file_exists($classDir . DS . $fileName)) {
-			require_once($classDir . DS . $fileName);
+		if(file_exists("$classDir/$fileName")) {
+			require_once("$classDir/$fileName");
 			return;
 		}		
 	}
 }
 
-$utilityDir = GTROOT . DS . "Framework" . DS . "Utility" . DS;
+$utilityDir = GTROOT . "/Framework/Utility/";
 $fileName = str_replace("_", ".", $className . ".php");
 if($dh = opendir($utilityDir)) {
 	while(false !== ($file = readdir($dh)) ) {
