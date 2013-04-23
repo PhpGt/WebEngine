@@ -31,15 +31,14 @@ private function preprocess($dom) {
 			continue;
 		}
 		$pathArray = array(
-			APPROOT . DS . "Style" . DS,
-			GTROOT . DS . "Style" . DS
+			APPROOT . "/Style/",
+			GTROOT  . "/Style/",
 		);
-		$filePath = str_replace("/", DS, $styleLink->href);
 		foreach($pathArray as $path) {
-			if(!file_exists($path . $filePath)) {
+			if(!file_exists($path . $styleLink->href)) {
 				continue;
 			}
-			if(!$this->sassParse($path . $filePath)) {
+			if(!$this->sassParse($path . $styleLink->href)) {
 				die("Error parsing SASS file.");
 			}
 			$styleLink->href .= ".css";
