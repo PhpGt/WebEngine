@@ -111,6 +111,10 @@ private function copyFilesToPublic($config) {
 	// files supplied by GT with their own, in whicch case the application's
 	// version of the file will be preferred.
 	
+	$skipWc = array(
+		"*.scss", 
+		"ReadMe.md", 
+	);
 	$wwwDir = APPROOT . DS . "www";
 	$copyDirArray = array(
 		GTROOT  . "/Style/Img/"		=> $wwwDir . "/Style/Img/",
@@ -121,7 +125,7 @@ private function copyFilesToPublic($config) {
 	);
 	
 	foreach ($copyDirArray as $source => $dest) {
-		$this->copyFiles($source, $dest);
+		$this->copyFiles($source, $dest, $skipWc);
 	}
 
 	if($config->isClientCompiled()) {
@@ -135,16 +139,25 @@ private function copyFilesToPublic($config) {
 		}
 	}
 	else {
-		$this->copyFiles(GTROOT . "/Script/", APPROOT . "/www");
-		$this->copyFiles(GTROOT . "/Style/", APPROOT . "/www");
-		$this->copyFiles(APPROOT . "/Script/", APPROOT . "/www");
-		$this->copyFiles(APPROOT . "/Style/", APPROOT . "/www");
+		$this->copyFiles(GTROOT  . "/Script/", APPROOT . "/www", $skipWc);
+		$this->copyFiles(GTROOT  . "/Style/", APPROOT . "/www",  $skipWc);
+		$this->copyFiles(APPROOT . "/Script/", APPROOT . "/www", $skipWc);
+		$this->copyFiles(APPROOT . "/Style/", APPROOT . "/www",  $skipWc);
 	}
 
 	return;
 }
 
-private function copyFiles($source, $dest, $recursive = true) {
+/**
+ * Copies the contents of source directory to destination, skipping optional
+ * file extensions.
+ * @param  string  $source    Source directory to copy from.
+ * @param  string  $dest      Destination directory to copy to.
+ * @param  array   $skipWc   Optional. List of extensions to skip.
+ * @param  boolean $recursive Optional. Whether to perform a deep copy. Defaults
+ * to true.
+ */
+private function copyFiles($source, $dest, $skipWc = [], $recursive = true) {
 	if(!is_dir($source)) {
 		return;
 	}
@@ -172,6 +185,7 @@ private function copyFiles($source, $dest, $recursive = true) {
 			$this->copyFiles(
 				$source . DS . $name,
 				$dest . DS . $name,
+				$skipWc,
 				true);
 		}
 		else {
