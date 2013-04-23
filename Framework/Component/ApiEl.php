@@ -28,8 +28,8 @@ public function __construct($name, $dal) {
 	$className = $name . "_Api";
 	
 	$apiFileArray = array(
-		APPROOT . DS . "Api" . DS . $name . ".api.php",
-		GTROOT  . DS . "Api" . DS . $name . ".api.php",
+		APPROOT . "/Api/$name.api.php",
+		GTROOT  . "/Api/$name.api.php",
 	);
 
 	if($this->_isTool) {
