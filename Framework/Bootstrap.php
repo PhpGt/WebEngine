@@ -132,7 +132,7 @@ $toLoad["Required"] = array(
 	"API element component" => 
 		GTROOT."/Framework/Component/ApiEl.php",
 	"Template wrapper component" => 
-		GTROOT."Framework/Component/TemplateWrapper.php",
+		GTROOT."/Framework/Component/TemplateWrapper.php",
 	"PageTool wrapper component" =>
 		GTROOT."/Framework/Component/PageToolWrapper.php",
 	"DAL component" =>
