@@ -12,7 +12,7 @@
  */
 private $_domDoc = null;
 private $_templateAttribute = null;
-private $_defaultLanguage = "en-*";
+private $_defaultLanguage = "en*";
 
 public function __construct($html = "<!doctype html>") {
 	// If converting encoding costs too much time, use a simpler method
@@ -41,6 +41,12 @@ public function __construct($html = "<!doctype html>") {
 		die("Error loading HTML into Dom");
 	}
 
+	// Check for the "lang" attribute.
+	$htmlTag = $this->getElementsByTagName("html");
+	if($htmlTag->hasAttribute("lang")) {
+		$this->_defaultLanguage = $htmlTag->getAttribute("lang");
+	}
+
 	// Add the url and file to the body's id and class attributes.
 	$bodyTag = $this->getElementsByTagName("body");
 
@@ -56,6 +62,17 @@ public function __construct($html = "<!doctype html>") {
 			$bodyTag->addClass(lcfirst($class));
 		}
 		$bodyTag->setAttribute("id", strtolower($pathId));
+	}
+}
+
+public function languageScrape($attr = "data-lang") {
+	$xpath = new DOMXPath($this->_domDoc);
+	$domNodeList = $xpath->query("//*[@$attr]");
+	$domNodeListLength = $domNodeList->length;
+
+	for($i = 0; $i < $domNodeListLength; $i++) {
+		$item = $domNodeList->item($i);
+		$itemLang = $item->getAttribute($attr);	
 	}
 }
 

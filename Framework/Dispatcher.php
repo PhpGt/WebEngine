@@ -70,6 +70,9 @@ public function __construct($response, $config) {
 	$clientSideCompiler = new ClientSideCompiler($dom, $isCompiled);
 	$fileOrganiser = new FileOrganiser($config["App"]);
 
+	// Remove any elements in the incorrect language.
+	$dom->languageScrape();
+
 	// Create the wrapper classes for easy access to components.
 	$templateArray = $dom->template();
 	$templateWrapper = new TemplateWrapper($templateArray);
