@@ -12,6 +12,7 @@
  */
 private $_domDoc = null;
 private $_templateAttribute = null;
+private $_defaultLanguage = "en-*";
 
 public function __construct($html = "<!doctype html>") {
 	// If converting encoding costs too much time, use a simpler method
