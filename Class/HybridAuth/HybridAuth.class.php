@@ -1,73 +1,97 @@
 <?php class HybridAuth {
 
-private $_config = array(
-	"base_url" => "http://localhost/hybridauth-git/hybridauth/", 
+public $config = array(
+	"base_url" => "", // Set to another URL if a specific page deals with auth
+					  // e.g. /Login.html so Login_PageCode performs auth.
 
-	"providers" => array ( 
+	"providers" => array( 
 		// openid providers
-		"OpenID" => array (
+		"OpenID" => array(
 			"enabled" => true
 		),
 
-		"Yahoo" => array ( 
+		"Yahoo" => array( 
 			"enabled" => true,
 			"keys"    => array ( "id" => "", "secret" => "" ),
 		),
 
-		"AOL"  => array ( 
+		"AOL"  => array( 
 			"enabled" => true 
 		),
 
-		"Google" => array ( 
+		"Google" => array( 
 			"enabled" => true,
 			"keys"    => array ( "id" => "", "secret" => "" ), 
 		),
 
-		"Facebook" => array ( 
+		"Facebook" => array( 
 			"enabled" => true,
 			"keys"    => array ( "id" => "", "secret" => "" ), 
 		),
 
-		"Twitter" => array ( 
+		"Twitter" => array( 
 			"enabled" => true,
 			"keys"    => array ( "key" => "", "secret" => "" ) 
 		),
 
 		// windows live
-		"Live" => array ( 
+		"Live" => array( 
 			"enabled" => true,
 			"keys"    => array ( "id" => "", "secret" => "" ) 
 		),
 
-		"MySpace" => array ( 
+		"MySpace" => array( 
 			"enabled" => true,
 			"keys"    => array ( "key" => "", "secret" => "" ) 
 		),
 
-		"LinkedIn" => array ( 
+		"LinkedIn" => array( 
 			"enabled" => true,
 			"keys"    => array ( "key" => "", "secret" => "" ) 
 		),
 
-		"Foursquare" => array (
+		"Foursquare" => array(
 			"enabled" => true,
 			"keys"    => array ( "id" => "", "secret" => "" ) 
 		),
 	),
 
-	// if you want to enable logging, set 'debug_mode' to true then provide a writable file by the web server on "debug_file"
+	// if you want to enable logging, set 'debug_mode' to true then provide a 
+	// writable file by the web server on "debug_file"
 	"debug_mode" => false,
-
 	"debug_file" => "",
 );
 
-private $_hybridAuth = null;
+private $hybridAuth = null;
+private $adapter = null;
+private $profile = null;
 
-public function __construct($provider) {
+public function __construct($providerConfig = array()) {
 	require_once(__DIR__ . "/hybridauth/Hybrid/Auth.php");
+
+	foreach ($providerConfig as $pKey => $pDetails) {
+		if(isset($pDetails["ID"])) {
+			// Lower-case the ID key if supplied in upper-case.
+			$pDetails["id"] = $pDetails["ID"];
+			unset($pDetails["ID"]);
+		}
+		$this->config["providers"][$pKey] = array(
+			"enabled" => true,
+			"keys" => $pDetails,
+		);
+
+
+		if(isset($_GET["hauth_start"])) {
+			die("Auth time!");
+			// TODO: Complete auth process.
+		}
+	}
+}
+
+public function auth($provider) {
 	try {
-		$this->hybridAuth = new Hybrid_Auth($this->_config);
-		$this->adapter = $this->_hybridAuth->authenticate($provider);
+		$this->hybridAuth = new Hybrid_Auth($this->config);
+		$this->adapter = $this->hybridAuth->authenticate($provider);
 		$this->profile = $adapter->getUserProfile();
 
 		// $profile contains "identifier" property, the UUID to the user, 
