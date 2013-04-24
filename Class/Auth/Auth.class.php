@@ -177,13 +177,26 @@ public function getProfile($provider) {
 	return $this->getConnectedProfile($provider);
 }
 /**
+ * Synonym for getConnectedProfile.
+ */
+public function profile($provider) {
+	return $this->getConnectedProfile($provider);
+}
+/**
  * Returns the profile for the given provider identifier.
  * @param  string $provider    Name of the provider.
  * @return Hybrid_User_Profile Profile for requested provider, or null if the
  * profile is not connected.
  */
 public function getConnectedProfile($provider) {
-	// TODO.
+	try {
+		$adapter = $this->hybridAuth->authenticate($provider);
+		$profile = $adapter->getUserProfile();
+		return $profile;
+	}
+	catch(Exception $e) {
+		return null;
+	}
 }
 
 public function getConnectedProviders() {
@@ -202,9 +215,11 @@ public function isConnectedWith($provider) {
  */
 public function __get($name) {
 	switch($name) {
+	case "accountList":
 	case "accounts":
 	case "authenticated":
 	case "connected":
+	case "connectedAccounts":
 	case "connectedProviders":
 	case "loggedIn":
 		return $this->getConnectedProviders();
@@ -220,7 +235,7 @@ public function __get($name) {
 		foreach ($connectedProviders as $provider) {
 			try {
 				$adapter = $this->hybridAuth->authenticate($provider);
-				$profile = $this->adapter->getUserProfile();
+				$profile = $adapter->getUserProfile();
 				if(isset($profile->$name)) {
 					return $profile->$name;
 				}
