@@ -130,9 +130,9 @@ public function __construct($providerConfig = array()) {
 		|| isset($_GET["hauth_done"])) {
 			Hybrid_Endpoint::process();
 		}
-
-		$this->hybridAuth = new Hybrid_Auth($this->config);
 	}
+	
+	$this->hybridAuth = new Hybrid_Auth($this->config);
 }
 
 /**
