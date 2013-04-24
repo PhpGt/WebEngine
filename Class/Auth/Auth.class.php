@@ -74,13 +74,30 @@ public function __construct($providerConfig = array()) {
 	require_once(__DIR__ . "/hybridauth/Hybrid/Auth.php");
 	require_once(__DIR__ . "/hybridauth/Hybrid/Endpoint.php");
 
-	foreach ($providerConfig as $pKey => $pDetails) {
+	foreach ($providerConfig as $pName => $pDetails) {
 		if(isset($pDetails["ID"])) {
 			// Lower-case the ID key if supplied in upper-case.
 			$pDetails["id"] = $pDetails["ID"];
 			unset($pDetails["ID"]);
 		}
-		$this->config["providers"][$pKey] = array(
+		
+		// Remove the id/key ambiguity.
+		if(isset($pDetails["id"])) {
+			if(!isset($this->config["providers"][$pName]["keys"]["id"])
+			&&  isset($this->config["providers"][$pName]["keys"]["key"])) {
+				$pDetails["key"] = $pDetails["id"];
+				unset($pDetails["id"]);
+			}
+		}
+		if(isset($pDetails["key"])) {
+			if(!isset($this->config["providers"][$pName]["keys"]["key"])
+			&&  isset($this->config["providers"][$pName]["keys"]["id"])) {
+				$pDetails["id"] = $pDetails["key"];
+				unset($pDetails["key"]);
+			}
+		}
+
+		$this->config["providers"][$pName] = array(
 			"enabled" => true,
 			"keys" => $pDetails,
 		);
