@@ -151,7 +151,23 @@ public function authenticate($provider) {
 }
 
 public function logout() {
-	$this->hybridAuth->logoutAllProviders();
+	return $this->hybridAuth->logoutAllProviders();
+}
+
+public function getConnectedProviders() {
+	return $this->hybridAuth->getConnectedProviders();
+}
+
+public function __get($name) {
+	switch($name) {
+	case "accounts":
+	case "authenticated":
+	case "connected":
+	case "connectedProviders":
+	case "loggedIn":
+		return $this->getConnectedProviders();
+		break;
+	}
 }
 
 
