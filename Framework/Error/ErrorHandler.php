@@ -1,7 +1,14 @@
 <?php class ErrorHandler {
 
-public function error($errNo, $errStr, $errFile, $errLine, $errContext) {	
-	
+public static function error($errNo, $errStr, $errFile, $errLine, $errContext) {
+	$data = array(
+		"Number"  => $errNo,
+		"Message" => $errStr,
+		"File"    => $errFile,
+		"Line"    => $errLine,
+		"Context" => $errContext,
+	);
+	throw new HttpError(500, $data);
 }
 
 }?>
