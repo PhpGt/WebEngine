@@ -1,6 +1,30 @@
 <?php class Auth {
 /**
- * http://hybridauth.sourceforge.net/apidoc.html
+ * Auth provides a simple wrapper to the HybridAuth library. To use, pass an
+ * array of provider names with id/secret pairs into the Auth constructor and 
+ * call the login/logout functions when needed.
+ *
+ * When using one (or arbitary) login providers, user profile properties can be
+ * accessed directly from the Auth object.
+ *
+ * Example: 
+ * $providers = array(
+ *     "Google" => ["id" => "1234", "secret" => 5678],
+ *     "Twitter" => ["id" => "1234", "secret" => 5678],
+ * );
+ * $auth = new Auth($providers);
+ * if(isset($_GET["Login"])) {
+ *     // Assume the provider is set in the Login querystring parameter.
+ *     $auth->login($_GET["Login"]);
+ * }
+ *
+ * // Check if authenticated:
+ * if($auth->isAuthenticated) {
+ *     // Do something with their data, like this:
+ *     $message = "Hello, " . $auth->firstName;
+ * }
+ * 
+ * http://hybridauth.sourceforge.net
  */
 
 public $config = array(
