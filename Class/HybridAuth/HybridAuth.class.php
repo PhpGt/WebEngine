@@ -1,8 +1,9 @@
 <?php class HybridAuth {
 
 public $config = array(
-	"base_url" => "", // Set to another URL if a specific page deals with auth
-					  // e.g. /Login.html so Login_PageCode performs auth.
+	"base_url" => "http://test.dev.php.gt",
+					// Set to another URL if a specific page deals with auth
+					// e.g. /Login.html so Login_PageCode performs auth.
 
 	"providers" => array( 
 		// openid providers
@@ -68,6 +69,7 @@ private $profile = null;
 
 public function __construct($providerConfig = array()) {
 	require_once(__DIR__ . "/hybridauth/Hybrid/Auth.php");
+	require_once(__DIR__ . "/hybridauth/Hybrid/Endpoint.php");
 
 	foreach ($providerConfig as $pKey => $pDetails) {
 		if(isset($pDetails["ID"])) {
@@ -81,18 +83,25 @@ public function __construct($providerConfig = array()) {
 		);
 
 
-		if(isset($_GET["hauth_start"])) {
-			die("Auth time!");
-			// TODO: Complete auth process.
+		if(isset($_GET["hauth_start"])
+		|| isset($_GET["hauth_done"])) {
+			Hybrid_Endpoint::process();
 		}
 	}
 }
 
+/**
+ * Synonym for `authenticate` method.
+ */
 public function auth($provider) {
+	return $this->authenticate($provider);
+}
+
+public function authenticate($provider) {
 	try {
 		$this->hybridAuth = new Hybrid_Auth($this->config);
 		$this->adapter = $this->hybridAuth->authenticate($provider);
-		$this->profile = $adapter->getUserProfile();
+		$this->profile = $this->adapter->getUserProfile();
 
 		// $profile contains "identifier" property, the UUID to the user, 
 		// used for storing in the app database.
