@@ -3,8 +3,6 @@ create table if not exists `User` (
 	`uuid`					varchar(128)null,
 	`FK_User_Type`			int			not null	default 1,
 	`FK_User__orphanedBy`	int			null,
-	-- oauth_uuid is a combination of the provider name and provider uid.
-	`oauth_uuid`			varchar(128)null,
 	-- username and password are used as fallback when oauth not used.
 	`username`				varchar(32)	null,
 	-- password should always be a bcrypted password! Not a hashed password!

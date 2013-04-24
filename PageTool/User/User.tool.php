@@ -77,6 +77,7 @@ public function getUser($auth = null) {
 		$isIdentified = $dbUser["User_Type__name"] !== "Anon";
 		$dbUser->setData("isIdentified", $isIdentified);
 		$dbUser = $dbUser->result[0];
+		$dbUser["isIdentified"] = false;
 	}
 	else {
 		$result = $db->addAnon(["uuid" => $uuid]);
@@ -84,8 +85,11 @@ public function getUser($auth = null) {
 		$dbUser = array(
 			"ID" => $result->lastInsertId,
 			"uuid" => $uuid,
+			"username" => null,
+			"dateTimeIdentified" => null,
+			"dateTimeLastActive" => date("Y-m-d H:i:s"),
 			"User_Type__name" => "Anon",
-			"isIdentified" => false
+			"isIdentified" => false,
 		);
 	}
 
