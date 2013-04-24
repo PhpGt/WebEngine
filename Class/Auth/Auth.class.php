@@ -131,7 +131,7 @@ public function __construct($providerConfig = array()) {
 			Hybrid_Endpoint::process();
 		}
 	}
-	
+
 	$this->hybridAuth = new Hybrid_Auth($this->config);
 }
 
@@ -246,6 +246,8 @@ public function __get($name) {
 	case "connectedAccounts":
 	case "connectedProviders":
 	case "loggedIn":
+	case "providerList":
+	case "providers":
 		return $this->getConnectedProviders();
 		break;
 	case "isAuthenticated":

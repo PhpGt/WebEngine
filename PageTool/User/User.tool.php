@@ -111,7 +111,17 @@ public function getUser($auth = null) {
  */
 public function checkAuth($auth) {
 	if(!$auth->isAuthenticated) {
+		// TODO: Add username/password check here (skipping OAuth).
 		return false;
+	}
+
+	// The user is authenticated to at least one OAuth provider.
+	$providerList = $auth->providerList;
+	foreach ($providerList as $provider) {
+		$profile = $auth->getProfile($provider);
+		$uid = $profile->identifier;
+		$oauth_uuid = $provider . $uid;
+		var_dump($oauth_uuid);
 	}
 	var_dump($auth);die("PIGS");
 	return;
