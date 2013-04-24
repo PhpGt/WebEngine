@@ -120,7 +120,6 @@ public function login($provider) {
 
 public function authenticate($provider) {
 	try {
-		//$this->hybridAuth = new Hybrid_Auth($this->config);
 		$this->adapter = $this->hybridAuth->authenticate($provider);
 		$this->profile = $this->adapter->getUserProfile();
 
@@ -171,10 +170,36 @@ public function logout() {
 	return $this->hybridAuth->logoutAllProviders();
 }
 
+/**
+ * Synonym for getConnectedProfile.
+ */
+public function getProfile($provider) {
+	return $this->getConnectedProfile($provider);
+}
+/**
+ * Returns the profile for the given provider identifier.
+ * @param  string $provider    Name of the provider.
+ * @return Hybrid_User_Profile Profile for requested provider, or null if the
+ * profile is not connected.
+ */
+public function getConnectedProfile($provider) {
+	// TODO.
+}
+
 public function getConnectedProviders() {
 	return $this->hybridAuth->getConnectedProviders();
 }
 
+public function isConnectedWith($provider) {
+	return $this->hybridAuth->isConnectedWith($provider);
+}
+
+/**
+ * Allows some wrapper properties to be used for quick data access, but mainly
+ * provides shorthand properties to authenticated data. The developer doesn't 
+ * need to know which provider is used to be able to obtain the user's name, 
+ * for example.
+ */
 public function __get($name) {
 	switch($name) {
 	case "accounts":
@@ -183,6 +208,29 @@ public function __get($name) {
 	case "connectedProviders":
 	case "loggedIn":
 		return $this->getConnectedProviders();
+		break;
+	case "isAuthenticated":
+	case "isConnected":
+	case "isLoggedIn":
+		$connectedProviders = $this->getConnectedProviders();
+		return !empty($connectedProviders);
+		break;
+	default:
+		$connectedProviders = $this->getConnectedProviders();
+		foreach ($connectedProviders as $provider) {
+			try {
+				$adapter = $this->hybridAuth->authenticate($provider);
+				$profile = $this->adapter->getUserProfile();
+				if(isset($profile->$name)) {
+					return $profile->$name;
+				}
+			}
+			catch(Exception $e) {
+				continue;
+			}
+		}
+
+		return null;
 		break;
 	}
 }
