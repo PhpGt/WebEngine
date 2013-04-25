@@ -197,7 +197,7 @@ $overrideXpath = false) {
 	// Working with an XQuery to CSS convertion utility:
 	$xQuery = $overrideXpath
 		? $selector
-		: new CssXpath_Utility($selector);
+		: new Css2Xpath($selector);
 	$xpath = new DOMXPath($this->_domDoc);
 
 	// Remove double slash if a context is given.

@@ -7,7 +7,7 @@ private $_ch;
 public $response = array();
 
 public function __construct() {
-	require_once("Http_Exception.class.php");
+	require_once(__DIR__ . "/Http_Exception.class.php");
 	$this->_ch = curl_init();
 }
 

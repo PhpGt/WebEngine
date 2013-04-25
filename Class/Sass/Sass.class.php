@@ -1,9 +1,9 @@
-<?php final class SassParser_Utility {
+<?php class Sass {
 private $_filePath;
 private $_sassParser;
 
 public function __construct($filePath) {
-	require_once(GTROOT . "/Framework/Utility/Sass/SassParser.php");
+	require_once(__DIR__ . "/SassParser/SassParser.php");
 	$filePath = preg_replace("/\/+/", "/", $filePath);
 	if(!file_exists($filePath)) {
 		return false;

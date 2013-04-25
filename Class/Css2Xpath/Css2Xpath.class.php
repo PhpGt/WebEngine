@@ -1,6 +1,6 @@
-<?php class CssXpath_Utility {
+<?php class Css2Xpath {
 /**
- * CssXpath class utilising Zend Framework 2's utility. Located in
+ * Css2Xpath class utilising Zend Framework 2's utility. Located in
  * /library/Zend/Dom/Css2Xpath.php
  * Taken from commit b8b7bb on 21st Jan 2013.
  */
