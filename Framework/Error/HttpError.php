@@ -67,9 +67,9 @@ private function sendHeaders() {
 private function displayError($code, $message = "") {
 	$fileName = $code . ".html";
 	$pathArray = array(
-		APPROOT . DS . "PageView" . DS . DIR . DS,
-		APPROOT . DS . "PageView" . DS,
-		GTROOT . DS . "Framework" . DS . "Error" . DS 
+		APPROOT . "/PageView/" . DIR . "/",
+		APPROOT . "/PageView/",
+		GTROOT  . "/Framework/Error/",
 	);
 
 	foreach ($pathArray as $path) {
@@ -164,7 +164,7 @@ private function checkDirFile() {
  * ends early, sending 301 headers.
  */
 private function checkCase() {
-	$pvPath = APPROOT . DS . "PageView" . DS;
+	$pvPath = APPROOT . "/PageView/";
 	// Obtain array of each directory name.
 	$dirList = explode("/", DIR);
 	$origDirList = $dirList;
