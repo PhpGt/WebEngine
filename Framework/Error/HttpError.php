@@ -190,7 +190,7 @@ private function checkCase() {
 			closedir($dh);
 		}
 
-		$cwd .=  $dir . DS;
+		$cwd .=  $dir . "/";
 	}
 
 	// At this point, $dirList holds a correctly-cased array of directories.
