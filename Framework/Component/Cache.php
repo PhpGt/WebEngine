@@ -32,7 +32,7 @@ public function __construct($context = null) {
 		}
 	}
 
-	$this->_cacheDir = APPROOT . DS . "Cache" . DS . $this->_type;
+	$this->_cacheDir = APPROOT . "/Cache/$this->_type";
 	if(!is_dir($this->_cacheDir)) {
 		mkdir($this->_cacheDir, 0777, true);
 	}
@@ -47,7 +47,7 @@ public function __call($name, $args) {
 		die("ERROR: Cache context not set.");
 	}
 	$files = $this->getDatabaseFiles();
-	$cacheFile = $files["TableDir"] . DS . $name . ".dbobj";
+	$cacheFile = $files["TableDir"] . "/$name.dbobj";
 
 	if($this->valid) {
 		if(file_exists($cacheFile)) {
@@ -161,8 +161,8 @@ public function invalidate() {
 
 private function getDatabaseFiles() {
 	return array(
-		"TouchFile" => $this->_cacheDir . DS . $this->_reference . ".dbtouch",
-		"TableDir"	=> $this->_cacheDir . DS . $this->_reference . DS . "."
+		"TouchFile" => $this->_cacheDir . "/$this->_reference.dbtouch",
+		"TableDir"	=> $this->_cacheDir . "/$this->_reference/.",
 	);
 }
 /**
@@ -201,7 +201,7 @@ private function setPageCache() {
 }
 
 private function getPageFile() {
-	return $this->_cacheDir . DS . DIR . DS . FILE . "." . EXT;
+	return $this->_cacheDir . "/" . DIR . "/" . FILE . "." . EXT;
 }
 
 private function checkValidPage() {

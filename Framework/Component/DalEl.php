@@ -22,8 +22,8 @@ public function __call($name, $args) {
 
 	// Find the appropriate SQL file, perform SQL using $this->_dal;
 	$pathArray = array(
-		APPROOT . DS . "Database" . DS . $this->_tableName . DS,
-		GTROOT  . DS . "Database" . DS . $this->_tableName . DS
+		APPROOT . "/Database/{$this->_tableName}/",
+		GTROOT  . "/Database/{$this->_tableName}/"
 	);
 	$fileName = ucfirst($name) . ".sql";
 
@@ -134,14 +134,14 @@ private function query($sqlFile, $paramArray = array()) {
  * caching system to defer connecting to the database if nothing has changed.
  */
 private function touchCache() {
-	$cacheDir = APPROOT . DS . "Cache" . DS . "Database";
+	$cacheDir = APPROOT . "/Cache/Database";
 	$cacheFile = $this->_tableName . ".dbtouch";
 
 	if(!is_dir($cacheDir)) {
 		mkdir($cacheDir, 0777, true);
 	}
 	
-	touch($cacheDir . DS . $cacheFile);
+	touch("$cacheDir/$cacheFile");
 
 	// In some situations i.e. unit testing, a cache miss is directly followed
 	// by a cache hit, but the filemtime set by touching the file is only

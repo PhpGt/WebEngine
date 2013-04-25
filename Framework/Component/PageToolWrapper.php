@@ -30,8 +30,8 @@ public function offsetGet($offset) {
 		// Attempt to find and load the required tool.
 		
 		$pathArray = array(
-			APPROOT . DS . "PageTool" . DS . $offset . DS,
-			GTROOT  . DS . "PageTool" . DS . $offset . DS
+			APPROOT . "/PageTool/$offset/",
+			GTROOT  . "/PageTool/$offset/",
 		);
 		$fileName = $offset . ".tool.php";
 		$className = $offset . "_PageTool";

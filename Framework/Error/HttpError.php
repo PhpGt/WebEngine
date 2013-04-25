@@ -28,16 +28,15 @@ $code, $data = null, Exception $previous = null) {
 		$this->checkDirFile();
 	}
 
-	$message = $data;
-	if(is_null($message)
+	if(is_null($data)
 	|| empty($_SESSION["PhpGt_Development"])) {
 		if(array_key_exists($code, $this->_errorCodeMessage)) {
-			$message = $this->_errorCodeMessage[$code];
+			$data = $this->_errorCodeMessage[$code];
 		}		
 	}
 	
 	http_response_code($code);
-	$this->displayError($code, $message);
+	$this->displayError($code, $data);
 	exit;
 }
 
@@ -64,13 +63,41 @@ private function sendHeaders() {
 	}
 }
 
-private function displayError($code, $message = "") {
+private function displayError($code, $data = array("")) {
 	$fileName = $code . ".html";
 	$pathArray = array(
-		APPROOT . DS . "PageView" . DS . DIR . DS,
-		APPROOT . DS . "PageView" . DS,
-		GTROOT . DS . "Framework" . DS . "Error" . DS 
+		APPROOT . "/PageView/" . DIR . "/",
+		APPROOT . "/PageView/",
+		GTROOT  . "/Framework/Error/",
 	);
+
+	$message = "";
+	if(isset($data["Message"])) {
+		$message = $data["Message"];
+	}
+	if(isset($data["Number"])) {
+		$message .= "\nError number: {$data["Number"]}";
+	}
+	if(isset($data["File"])) {
+		$message .= "\nFile: {$data["File"]}";
+	}
+	if(isset($data["Line"])) {
+		$message .= "\nLine: {$data["Line"]}";
+	}
+	if(isset($data["Context"])) {
+		$message .= "\n";
+		foreach($data["Context"] as $contextLine) {
+			$message .= "\n$contextLine";
+		}
+	}
+
+
+	if(count($data) == 1) {
+		$message = $data[0];
+	}
+	if(is_string($data)) {
+		$message = $data;
+	}
 
 	foreach ($pathArray as $path) {
 		if(is_dir($path)) {
@@ -164,7 +191,7 @@ private function checkDirFile() {
  * ends early, sending 301 headers.
  */
 private function checkCase() {
-	$pvPath = APPROOT . DS . "PageView" . DS;
+	$pvPath = APPROOT . "/PageView/";
 	// Obtain array of each directory name.
 	$dirList = explode("/", DIR);
 	$origDirList = $dirList;
@@ -190,7 +217,7 @@ private function checkCase() {
 			closedir($dh);
 		}
 
-		$cwd .=  $dir . DS;
+		$cwd .=  $dir . "/";
 	}
 
 	// At this point, $dirList holds a correctly-cased array of directories.

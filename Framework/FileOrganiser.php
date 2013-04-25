@@ -37,7 +37,7 @@ private function changedFiles($dir = "/www") {
 		"Style",
 	);
 	foreach ($searchDirArray as $searchDir) {
-		$searchDir = APPROOT . DS . $searchDir;
+		$searchDir = APPROOT . "/$searchDir";
 		$dirMTime = $this->recursiveMTime($searchDir);
 		if($dirMTime > $wwwMTime) {
 			$sourceChanged = true;
@@ -83,7 +83,7 @@ private function recursiveMTime($dir) {
  * This function is recursive, so will remove all Assets and files within Style.
  */
 private function removePublicFiles() {
-	$dir = APPROOT . DS . "www" . DS;
+	$dir = APPROOT . "/www/";
 	if(!is_dir($dir)) {
 		// TODO: Throw proper error here.
 		die("ERROR: Public web root is not a directory.");
@@ -112,7 +112,7 @@ private function copyFilesToPublic($config) {
 	// files supplied by GT with their own, in whicch case the application's
 	// version of the file will be preferred.
 
-	$wwwDir = APPROOT . DS . "www";
+	$wwwDir = APPROOT . "/www";
 	$copyDirArray = array(
 		GTROOT  . "/Style/Img/"		=> $wwwDir . "/Style/Img/",
 		GTROOT  . "/Style/Font/"	=> $wwwDir . "/Font/",
@@ -159,7 +159,9 @@ private function copyFiles($source, $dest, $recursive = true) {
 	}
 
 	$dh = opendir($source);
-	@mkdir($dest, 0775, true);
+	if(!is_dir($dest)) {
+		mkdir($dest, 0775, true);
+	}
 
 	while(false !== ($name = readdir($dh)) ) {
 		if($name[0] == ".") {
@@ -177,22 +179,22 @@ private function copyFiles($source, $dest, $recursive = true) {
 			continue;
 		}
 
-		if(is_dir($source . DS . $name)) {
+		if(is_dir("$source/$name")) {
 			if(!$recursive) {
 				continue;
 			}
-			if(is_dir($dest . DS . $name)) {
+			if(is_dir("$dest/$name")) {
 				continue;
 			}
-			mkdir($dest . DS . $name, 0775, true);
+			mkdir("$dest/$name", 0775, true);
 			$this->copyFiles(
-				$source . DS . $name,
-				$dest . DS . $name,
+				"$source/$name",
+				"$dest/$name",
 				$skipWc,
 				true);
 		}
 		else {
-			copy($source . DS . $name, $dest . DS . $name);
+			copy("$source/$name", "$dest/$name");
 		}
 	}
 }

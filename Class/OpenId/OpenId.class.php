@@ -1,6 +1,6 @@
-<?php final class OpenId_Utility {
+<?php class OpenId {
 /**
- * TODO: Docs.
+ * 
  */
 private $_openId = null;
 private $_attributes = null;
@@ -13,7 +13,7 @@ private $_identities = array(
  * TODO: Docs.
  */
 public function __construct($identity = "") {
-	require_once(GTROOT . "/Framework/Utility/OpenId/openid.php");
+	require_once(__DIR__ . "/OpenId/openid.php");
 
 	if(empty($identity)) {
 		$identity = $this->_defaultIdentity;

@@ -87,8 +87,8 @@ public function clientSide() {
 			if(pathinfo($fullPath, PATHINFO_EXTENSION) == "scss") {
 				$dest = preg_replace("/\.scss$/", ".css", $dest);
 				$file = preg_replace("/\.scss$/", ".css", $file);
-				$sassParser = new SassParser_Utility($fullPath);
-				$fileContents = $sassParser->parse();
+				$sass = new Sass($fullPath);
+				$fileContents = $sass->parse();
 			}
 
 			if(false === file_put_contents($dest, $fileContents)) {

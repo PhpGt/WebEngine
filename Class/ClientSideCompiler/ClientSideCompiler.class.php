@@ -1,10 +1,15 @@
-<?php final class JavaScriptCompiler_Utility {
+<?php class JavaScriptCompiler {
 /**
- * TODO: Docs.
+ * 
  */
 private $_script;
+private $_style;
 
-public function __construct($javaScript) {
+public function __construct() {
+}
+
+public function javaScript($javaScript) {
+	// TODO: Use HTTP class for OOP tidyness.
 	$ch = curl_init("http://closure-compiler.appspot.com/compile");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_POST, 1);
@@ -23,10 +28,14 @@ public function __construct($javaScript) {
 	if($curlResult !== false) {
 		$this->_script = $curlResult;
 	}
+
+	return $this->_script;
 }
 
-public function output() {
-	return $this->_script;
+public function styleSheet($styleSheet) {
+	// TODO: Minify the CSS before outputting it.
+	$this->_style = $styleSheet;
+	return $this->_style;
 }
 
 }?>

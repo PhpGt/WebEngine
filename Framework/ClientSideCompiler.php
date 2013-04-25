@@ -83,8 +83,8 @@ private function sassParse($filePath) {
 		}
 	}
 
-	$sassParser = new SassParser_Utility($filePath);
-	$parsedString = $sassParser->parse();
+	$sass = new Sass($filePath);
+	$parsedString = $sass->parse();
 
 	return file_put_contents($filePath . ".css", $parsedString) >= 0;
 }

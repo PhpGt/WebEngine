@@ -197,7 +197,7 @@ $overrideXpath = false) {
 	// Working with an XQuery to CSS convertion utility:
 	$xQuery = $overrideXpath
 		? $selector
-		: new CssXpath_Utility($selector);
+		: new Css2Xpath($selector);
 	$xpath = new DOMXPath($this->_domDoc);
 
 	// Remove double slash if a context is given.
@@ -286,16 +286,15 @@ public function cacheOutput($output) {
 	if(empty($_SESSION["PhpGt_Cache"]["Page"])) {
 		return;
 	}
-	$cacheDir = APPROOT . DS . "Cache" . DS . "Page";
-	$dir = str_replace("/", DS, DIR);
-	$cacheDir .= DS . $dir;
+	$cacheDir = APPROOT . "/Cache/Page";
+	$cacheDir .= "/" . DIR;
 	$cacheFile = FILE . "." . EXT;
 
 	if(!is_dir($cacheDir)) {
 		mkdir($cacheDir, 0777, true);
 	}
 
-	file_put_contents($cacheDir . DS . $cacheFile, $output);
+	file_put_contents("$cacheDir/$cacheFile", $output);
 }
 
 /**
