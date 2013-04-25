@@ -112,7 +112,7 @@ private function copyFilesToPublic($config) {
 	// files supplied by GT with their own, in whicch case the application's
 	// version of the file will be preferred.
 
-	$wwwDir = APPROOT "/www";
+	$wwwDir = APPROOT . "/www";
 	$copyDirArray = array(
 		GTROOT  . "/Style/Img/"		=> $wwwDir . "/Style/Img/",
 		GTROOT  . "/Style/Font/"	=> $wwwDir . "/Font/",
