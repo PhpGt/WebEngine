@@ -111,20 +111,35 @@ public function getUser($auth = null) {
  */
 public function checkAuth($auth) {
 	if(!$auth->isAuthenticated) {
-		// TODO: Add username/password check here (skipping OAuth).
+		// NOTE: It was planned to allow standard username/password storage at
+		// this position, but a better idea for apps that require their own
+		// authorisation is to use a local OAuth server.
 		return false;
 	}
 
 	// The user is authenticated to at least one OAuth provider.
+	// The database will be ckecked for existing user matching OAuth data...
+	// ... if there is no match, one will be stored.
 	$providerList = $auth->providerList;
 	foreach ($providerList as $provider) {
 		$profile = $auth->getProfile($provider);
 		$uid = $profile->identifier;
 		$oauth_uuid = $provider . $uid;
-		var_dump($oauth_uuid);
+
+		$existingOAuthUser = $this->_api[$this]->getByOauthUuid([
+			"oauth_uuid" => $oauth_uuid
+		]);
+		if($existingOAuthUser->hasResult) {
+			// TODO: Build up session object.
+			return true;
+		}
 	}
+
+	// At this point, no OAuth data is found in the database. Create it, store
+	// it to the session and return true.
+	// TODO...
 	var_dump($auth);die("PIGS");
-	return;
+	return true;
 
 	// The PhpGt.User_PageTool.tool_AuthData session key is used for OAuth, cookie or 
 	// other login mechanisms to store an authenticated username, for full
