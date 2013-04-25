@@ -34,9 +34,7 @@ public function __get($name) {
 		return $user["ID"];
 		break;
 	case "uuid":
-		return empty($_COOKIE["PhpGt_Login"])
-			? $_COOKIE["PhpGt.User_PageTool"]
-			: $_COOKIE["PhpGt_Login"][0];
+		return $_COOKIE["PhpGt.User_PageTool"];
 		break;
 	case "orphanedID":
 		return empty($user["orphanedID"])
@@ -254,230 +252,21 @@ private function userSession($input, $anonUuid = null) {
 }
 
 /**
- * Begins the authentication process using the given provider. Valid providers
- * are OAuth providers including: "Google", "Facebook", "MyOpenId".
- * @param  string $method The authentication provider.
- * @return bool           True if the user successfully authenticates.
+ * Synonym for logout.
  */
-public function auth($method = "Google", $forwardTo = null) {
-	die("Use of dead function: auth");
-	if(is_null($forwardTo)) {
-		if(empty($_SESSION["PhpGt.User_PageTool.tool_ForwardTo"])) {
-			if(empty($_SERVER["HTTP_REFERER"])) {
-				$forwardTo = "/";
-			}
-			else {
-				$forwardTo = $_SERVER["HTTP_REFERER"];
-			}
-			
-			$_SESSION["PhpGt.User_PageTool.tool_ForwardTo"] = $forwardTo;
-		}
-	}
-
-	$oid = new OpenId($method);
-	$username = $oid->getData();
-
-	if(!$this->checkWhiteList($username) 
-	|| empty($username)) {
-		//$this->unAuth();
-		var_dump($_SESSION);die();
-		throw new HttpError(403, 
-			"The supplied account is not authorised for this application.");
-		return false;
-	}
-	$this->setAuthData($username);
-
-	$this->authComplete();
-
-	return true;
+public function unAuth($auth = null) {
+	return $this->logout($auth);
 }
-
 /**
- * [authComplete description]
- * @return [type] [description]
+ * Removes the current authorisation cookie and also optionally deauthenticates
+ * the Auth object.
+ * @param  Auth $auth   Authentication object to disconnect all providers.
  */
-private function authComplete() {
-	die("Use of dead function: authComplete");
-	if(!empty($_SESSION["PhpGt.User_PageTool.tool_ForwardTo"])) {
-		$forwardTo = $_SESSION["PhpGt.User_PageTool.tool_ForwardTo"];
-		unset($_SESSION["PhpGt.User_PageTool.tool_ForwardTo"]);
-		header("Location: $forwardTo");
-		exit;
-	};
-
-	return;
-}
-
-/**
- * Unauthenticates any logged in user and removes any cookies set.
- * @param  string $forwardTo Where to forward the user after unauthenticating.
- */
-public function unAuth($forwardTo = "/") {
-	die("Use of dead function: unAuth");
-	unset($_SESSION["PhpGt.User_PageTool.tool_AuthData"]);
-	unset($_SESSION["PhpGt.User_PageTool"]);
+public function logout($auth = null) {
 	$this->deleteCookies();
-	header("Location: " . $forwardTo);
-	return;
-}
-
-/**
- * Applications can set white lists of domains to allow logging in through
- * OAuth/OpenID. Email addresses outside of this list will not be allowed
- * access to the application.
- *
- * @param Array|string An array of domains, regular expression that matches 
- * multiple domains, or a single domain to add to the white list.
- */
-public function addWhiteList($whiteList) {
-	die("Use of dead function: addWhiteList");
-	$whiteListArray = array();
-
-	if(is_array($whiteList)) {
-		$whiteListArray = $whiteList;
+	if(!is_null($auth)) {
+		$auth->logout();
 	}
-	else if(is_string($whiteList)) {
-		// A single domain provided.
-		$whiteListArray[] = $whiteList;
-	}
-
-	// The session persists... this should be stored as a private.
-	if(!empty($this->_whiteList)) {
-		$this->_whiteList = array_merge($this->_whiteList, $whiteListArray);
-		$this->_whiteList = array_unique($this->_whiteList);
-	}
-	else {
-		$this->_whiteList = $whiteListArray;
-	}
-
-	$_SESSION["PhpGt.User_PageTool.tool_AuthWhiteList"] = $this->_whiteList;
-}
-
-/**
- * Checks to see if the given username is allowed to authenticate to the 
- * application according to the optional whitelist.
- * @param  string $username Full username (email)
- * @return bool             True if the given username fits the optional 
- * whitelist parameters.
- */
-public function checkWhiteList($username) {
-	die("Use of dead function: checkWhiteList");
-	return true;
-	// If there is no whitelist, allow all.
-	if(empty($_SESSION["PhpGt.User_PageTool.tool_AuthWhiteList"])) {
-		$this->addWhiteList("*");
-	}
-
-	$whiteList = $this->_whiteList;
-	$result = false;
-
-	foreach ($whiteList as $w) {
-		if (preg_match("/^\/.*\/[a-zA-Z]*$/", $w)) {
-			// Whitelist is a RegEx (preg_match returns 0 on no match, but 
-			// false on error - note !==).
-			if(preg_match($w, $username) > 0) {
-				$result = true;
-			}
-		}
-		else if(is_string($w)) {
-			if(fnmatch($w, $username)) {
-				$result = true;
-			}
-		}
-	}
-	return $result;
-}
-
-/**
- * FakeAuth allows development to continue while offline. Using openId
- * requires an internet connection, so adding a special button in
- * development releases allows users to authenticate (with no real 
- * authentication happening). Simply pass a username to this function to
- * fully authenticate the username as if it were authenticated with OpenId.
- *
- * @param string $username The username to authenticate.
- * @return bool True on success (which will allways occur).
- */
-public function fakeAuth($username) {
-	die("Use of dead function: fakeAuth");
-	$this->setAuthData($username);
-	return true;
-}
-
-/**
- * Used internally after a successful authentication to store the details in a
- * server-side session.
- */
-private function setAuthData($username) {
-	die("Use of dead function: setAuthData");
-	$_SESSION["PhpGt.User_PageTool.tool_AuthData"] = $username;
-
-	$uuid = hash("sha512", $username);
-	$userSalt = $this->generateSalt();
-	$expires = strtotime("+105 weeks");
-	$hash = hash("sha512", $uuid . $userSalt . APPSALT);
-	setcookie(
-		"PhpGt_Login[0]",
-		$uuid,
-		$expires,
-		"/");
-	setcookie(
-		"PhpGt_Login[1]",
-		$userSalt,
-		$expires,
-		"/");
-	setcookie(
-		"PhpGt_Login[2]",
-		$hash,
-		$expires,
-		"/");
-
-	$_COOKIE["PhpGt_Login"] = array();
-	$_COOKIE["PhpGt_Login"][0] = $uuid;
-	$_COOKIE["PhpGt_Login"][1] = $userSalt;
-	$_COOKIE["PhpGt_Login"][2] = $hash;
-}
-
-/**
- * Every time there is user activity, refresh the cookies to keep them alive.
- */
-private function refreshCookies() {
-	die("Use of dead function: refreshCookies");
-	$expires = strtotime("+105 weeks");
-	setcookie(
-		"PhpGt_Login[0]",
-		$_COOKIE["PhpGt_Login"][0],
-		$expires,
-		"/");
-	setcookie(
-		"PhpGt_Login[1]",
-		$_COOKIE["PhpGt_Login"][1],
-		$expires,
-		"/");
-	setcookie(
-		"PhpGt_Login[2]",
-		$_COOKIE["PhpGt_Login"][2],
-		$expires,
-		"/");
-}
-
-/**
- * Unsets all cookies used by the PageTool.
- */
-private function deleteCookies() {
-	die("Use of dead function: deleteCookies");
-	// Rather than deleting the UUID cookie (which will take 2 requests), set
-	// it to a new UUID, so that the user can start to be anonymously tracked
-	// straight away.
-	// Time expired is set to 1 second after EPOCH (otherwise, 0 sets the cookie
-	// to a session expiration).
-	setcookie("PhpGt_User_PageTool", "deleted", 1, "/");
-	unset($_COOKIE["PhpGt_User_PageTool"]);
-	
-	setcookie("PhpGt_Login[0]", "deleted", 1, "/");
-	setcookie("PhpGt_Login[1]", "deleted", 1, "/");
-	setcookie("PhpGt_Login[2]", "deleted", 1, "/");
-	unset($_COOKIE["PhpGt_Login"]);
 }
 
 /**
@@ -487,7 +276,7 @@ private function deleteCookies() {
  */
 private function setActive($id = null) {
 	if(is_null($id)) {
-		$id = $_SESSION["PhpGt_User_PageTool"]["ID"];
+		$id = $_SESSION["PhpGt.User_PageTool"]["ID"];
 	}
 	if(is_null($id)) {
 		return false;
@@ -509,7 +298,7 @@ private function generateSalt() {
  * @return  bool True on successful merge, false if there is no orphan record.
  */
 public function mergeOrphan() {
-	$user = $_SESSION["PhpGt_User_PageTool"];
+	$user = $_SESSION["PhpGt.User_PageTool"];
 	if(empty($user["orphanedID"])) {
 		return false;
 	}
