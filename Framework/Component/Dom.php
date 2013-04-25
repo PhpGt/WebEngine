@@ -253,7 +253,7 @@ public function cacheOutput($output) {
 	if(empty($_SESSION["PhpGt_Cache"]["Page"])) {
 		return;
 	}
-	$cacheDir = APPROOT . DS . "Cache" . DS . "Page";
+	$cacheDir = APPROOT . "/Cache/Page";
 	$dir = str_replace("/", DS, DIR);
 	$cacheDir .= DS . $dir;
 	$cacheFile = FILE . "." . EXT;
@@ -262,7 +262,7 @@ public function cacheOutput($output) {
 		mkdir($cacheDir, 0777, true);
 	}
 
-	file_put_contents($cacheDir . DS . $cacheFile, $output);
+	file_put_contents("$cacheDir/$cacheFile", $output);
 }
 
 /**
