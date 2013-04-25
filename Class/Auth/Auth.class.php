@@ -7,6 +7,10 @@
  * When using one (or arbitary) login providers, user profile properties can be
  * accessed directly from the Auth object.
  *
+ * IMPORTANT: The authentication tokens only last a few minutes. It's your
+ * responsibility to record the authenticated details against the session or
+ * User PageTool's uuid in order to offer persistent login.
+ *
  * Example: 
  * $providers = array(
  *     "Google" => ["id" => "1234", "secret" => 5678],
