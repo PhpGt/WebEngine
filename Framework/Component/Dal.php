@@ -198,7 +198,7 @@ public function fixError($input) {
 	case "NO_DB":
 	case "NO_USER":
 		$dbName = $data["Match"][1];
-		$sqlPath = GTROOT . DS . "Framework";
+		$sqlPath = GTROOT . "/Framework";
 		if(!is_dir($sqlPath)) {
 			// TODO: Throw proper error at this point.
 			die("ERROR: Invalid framework directory structure!");
@@ -267,8 +267,8 @@ public function createTableAndDependencies($tableName) {
 			// There is no table created already.
 			// Attempt to find creating script for given table.
 			$sqlPathArray = array(
-				GTROOT  . DS . "Database" . DS . ucfirst($tableName),
-				APPROOT . DS . "Database" . DS . ucfirst($tableName),
+				GTROOT  . "/Database/" . ucfirst($tableName),
+				APPROOT . "/Database/" . ucfirst($tableName),
 				// Check PageTools:
 				GTROOT  . "/PageTool/" . ucfirst($tableName) . "/Database",
 				APPROOT . "/PageTool/" . ucfirst($tableName) . "/Database",
@@ -285,7 +285,7 @@ public function createTableAndDependencies($tableName) {
 						continue;
 					}
 
-					$sql = file_get_contents($sqlPath . DS . $file);
+					$sql = file_get_contents("$sqlPath/$file");
 
 					// Detect any table references in SQL and attempt
 					// to create them first.
