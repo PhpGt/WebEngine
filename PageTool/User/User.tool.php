@@ -34,7 +34,7 @@ public function __get($name) {
 		return $user["ID"];
 		break;
 	case "uuid":
-		return $_COOKIE["PhpGt.User_PageTool"];
+		return $_COOKIE["PhpGt_User_PageTool"];
 		break;
 	case "orphanedID":
 		return empty($user["orphanedID"])
@@ -263,10 +263,13 @@ public function unAuth($auth = null) {
  * @param  Auth $auth   Authentication object to disconnect all providers.
  */
 public function logout($auth = null) {
-	$this->deleteCookies();
+	$_COOKIE["PhpGt_User_PageTool"] = null;
+	setcookie("PhpGt_User_PageTool", 0, 1, "/");
 	if(!is_null($auth)) {
 		$auth->logout();
 	}
+
+	
 }
 
 /**
