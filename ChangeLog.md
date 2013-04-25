@@ -2,13 +2,19 @@ v0.1.0
 ------
 Not yet released
 
+* Auth class provides wrapper to easy OAuth + social network interaction.
+* Optional PageView when PageCode handles request itself.
 * @include(path/to/file) to provide HTML includes.
 * Introduction of Gt.js client side file v0.0.1.
+* Introduction of Gt.css client side file v0.0.1.
+* Class system fully replaces Utility classes.
 * SCSS files are pre-processed *much* faster.
 * Major improvements and bugfixes in User PageTool.
 * User PageTool implemented to allow OAuth authentication and anonymous users.
 * Blog PageTool initial features.
 * Bugfixes in the DOM classes.
+* Translatable content through data-lang attribute.
+* Selection of web-ready fonts included as standard.
 
 v0.0.3
 ------
