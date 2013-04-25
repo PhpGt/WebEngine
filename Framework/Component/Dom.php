@@ -254,8 +254,7 @@ public function cacheOutput($output) {
 		return;
 	}
 	$cacheDir = APPROOT . "/Cache/Page";
-	$dir = str_replace("/", DS, DIR);
-	$cacheDir .= DS . $dir;
+	$cacheDir .= "/" . DIR;
 	$cacheFile = FILE . "." . EXT;
 
 	if(!is_dir($cacheDir)) {
