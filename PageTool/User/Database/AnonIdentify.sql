@@ -3,7 +3,6 @@
 update User
 set username = :username,
 	dateTimeIdentified = now(),
-	uuid = :newUuid,
 	FK_User_Type = (
 		select User_Type.ID
 		from User_Type

@@ -35,7 +35,7 @@ public function __get($name) {
 		break;
 	case "uuid":
 		return empty($_COOKIE["PhpGt_Login"])
-			? $_COOKIE["PhpGt.User_PageTool.Track"]
+			? $_COOKIE["PhpGt.User_PageTool"]
 			: $_COOKIE["PhpGt_Login"][0];
 		break;
 	case "orphanedID":
@@ -118,128 +118,73 @@ public function checkAuth($auth) {
 	}
 
 	// The user is authenticated to at least one OAuth provider.
-	// The database will be ckecked for existing user matching OAuth data...
+	// The database will be checked for existing user matching OAuth data...
 	// ... if there is no match, one will be stored.
+	$dbUser = null;
 	$providerList = $auth->providerList;
+	$oAuthMissing = array();
 	foreach ($providerList as $provider) {
 		$profile = $auth->getProfile($provider);
 		$uid = $profile->identifier;
 		$oauth_uuid = $provider . $uid;
 
-		$existingOAuthUser = $this->_api[$this]->getByOauthUuid([
-			"oauth_uuid" => $oauth_uuid
+		$existingOAuthUser = $this->_api[$this]->getByOAuthUuid([
+			"oauth_uuid" => $oauth_uuid,
 		]);
 		if($existingOAuthUser->hasResult) {
-			$_SESSION["PhpGt.User_PageTool"] = array(
-				"ID"                => $existingOAuthUser["ID"],
-				"uuid"              => $existingOAuthUser["uuid"],
-				"username"          => $existingOAuthUser["username"],
-				"dateTimeIdentified"=> $existingOAuthUser["dateTimeIdentified"],
-				"dateTimeLastActive"=> date("Y-m-d H:i:s"),
-				"User_Type__name"   => $existingOAuthUser["User_Type__name"],
-				"isIdentified"      => true,
-			);
-			return true;
+			$dbUser = $existingOAuthUser->result[0];
+		}
+		else {
+			// Store the missing OAuth records once the user ID is found.
+			$oAuthMissing[$provider] = $oauth_uuid;
 		}
 	}
 
-	// At this point, no OAuth data is found in the database. Create it, store
-	// it to the session and return true.
-	var_dump($auth);die("PIGS");
+	if(is_null($dbUser)) {
+		// The user doesn't have any OAuth records yet, so we don't have a
+		// reference to the user - get it from the tracking ID.
+		$dbUser = $this->_api[$this]->getByUuid([
+			"uuid" => $this->track(),
+		]);
+		if(!$dbUser->hasResult) {
+			// Impossible situation - there's no user found from UUID.
+			throw new HttpError(500, "User tracking code mismatch!");
+		}
+		// Mark the user as identified.
+		$dbUser = array_merge($dbUser->result[0], [
+			"dateTimeIdentified" => date("Y-m-d H:i:s"),
+		]);
+		$this->_api[$this]->anonIdentify([
+			"username" => null,
+			"uuid" => $this->track(),
+		]);
+
+		// Pull the user out of the database again now it has been updated.
+		$dbUser = $this->_api[$this]->getByUuid([
+			"uuid" => $this->track(),
+		]);
+		$dbUser = $dbUser->result[0];
+	}
+
+	// At this point $dbUser definitely refers to an existing user, but OAuth
+	// records may still be missing... create them!
+	foreach ($oAuthMissing as $provider => $oauth_uuid) {
+		$this->_api[$this]->linkOAuth([
+			"FK_User" => $dbUser["ID"],
+			"oauth_uuid" => $oauth_uuid,
+			"oauth_name" => $provider,
+		]);
+	}
+
+	// Assign the user details to the session object, taking all dbUser fields
+	// and adding extras.
+	$_SESSION["PhpGt.User_PageTool"] = array_merge($dbUser, [
+		"dateTimeLastActive" => date("Y-m-d H:i:s"),
+		"isIdentified" => true,
+		"providerList" => $providerList,
+	]);
+
 	return true;
-
-	// The PhpGt.User_PageTool.tool_AuthData session key is used for OAuth, cookie or 
-	// other login mechanisms to store an authenticated username, for full
-	// authentication in this function.
-	if(isset($_SESSION["PhpGt.User_PageTool.tool_AuthData"])) {
-		$oauth_uuid = $_SESSION["PhpGt.User_PageTool.tool_OAuth_uuid"];
-
-		// User has authenticated in some way, and a username is known.
-		// Need to match to a database user, which may not exist yet.
-		$dbUser = $this->_api[$this]->get(["username" => $username]);
-		if($dbUser->hasResult) {
-			// User already stored in database.
-			return $this->userSession($dbUser, $_COOKIE["PhpGt.User_PageTool.Track"]);
-		}
-		else {
-			// Authenticated user doesn't exist in database, but there may be
-			// an anonymous user in the database with same UUID.
-			$anonDbUser = $this->_api[$this]->getByUuid(
-				["uuid" => $_COOKIE["PhpGt.User_PageTool.Track"]]);
-			if($anonDbUser->hasResult) {
-				// Upgrade the anon user to full user.
-				$oldUuid = $_COOKIE["PhpGt.User_PageTool.Track"];
-				$uuid = $this->track($_COOKIE["PhpGt_Login"][0]);
-
-				$this->_api[$this]->anonIdentify([
-					"uuid" => $oldUuid,
-					"newUuid" => $uuid,
-					"username" => $username
-				]);
-				return $this->userSession($uuid);
-			}
-			else {
-				// Create a new fresh user with current UUID.
-				$uuid = empty($_COOKIE["PhpGt_Login"])
-					? $_COOKIE["PhpGt.User_PageTool.Track"]
-					: $_COOKIE["PhpGt_Login"][0];
-				$newDbUser = $this->_api[$this]->addEmpty([
-					"username" => $username,
-					"uuid" => $uuid
-				]);
-				return $this->userSession($newDbUser->lastInsertId);
-			}
-		}
-
-		// Code can't rech this point - must have returned user object by now.
-	}
-
-	// Cookie information:
-	// Login 0 = sha512 of username (the user's UUID)
-	// Login 1 = sha512 unique salt, generated for this user only
-	// Login 2 = sha512 authentication hash sha(login0.login1.site_salt)
-	// The site salt is stored as a named constant, defined in security config.
-	
-	if(isset($_COOKIE["PhpGt_Login"])) {
-		// There is a login cookie, as described above.
-		if(isset($_COOKIE["PhpGt_Login"][0])
-		&& isset($_COOKIE["PhpGt_Login"][1])
-		&& isset($_COOKIE["PhpGt_Login"][2])) {
-			$userHash = $_COOKIE["PhpGt_Login"][0];
-			$saltHash = $_COOKIE["PhpGt_Login"][1];
-			$authHash = $_COOKIE["PhpGt_Login"][2];
-
-			// Find the user from their UUID, ready to match against.
-			$dbUser = $this->_api[$this]->getByUuid([
-				"uuid" => $userHash
-			]);
-			if($dbUser->hasResult) {
-				// There is a user in the database, but the cookies need
-				// checking for authenticity before logging user in!
-				$authHash_generated = hash("sha512",
-					$userHash . $saltHash . APPSALT);
-				if($authHash === $authHash_generated) {
-					// Success - private salt data matches cookie - log in!
-					return $this->userSession($dbUser);
-				}
-			}
-			else {
-				// There is no user of that UUID - delete any trace of cookies.
-				$this->deleteCookies();
-			}
-		}
-		else {
-			// There are only some cookies stored - kill any trace of cookies.
-			$this->deleteCookies();
-		}
-	}
-
-	// At this point, there is no user logged in, so ensure there is no session
-	// data about any users.
-	if(!empty($_SESSION["PhpGt.User_PageTool"])) {
-		unset($_SESSION["PhpGt.User_PageTool"]);
-	}
-	return false;
 }
 
 /**
@@ -248,20 +193,20 @@ public function checkAuth($auth) {
  * @return string The tracking UUID.
  */
 public function track($forceUuid = null) {
-	if(empty($_COOKIE["PhpGt_User_PageTool_Track"]) || !is_null($forceUuid)) {
+	if(empty($_COOKIE["PhpGt_User_PageTool"]) || !is_null($forceUuid)) {
 		$uuid = is_null($forceUuid)
 			? $this->generateSalt()
 			: $forceUuid;
 		$expires = strtotime("+105 weeks");
-		if(!setcookie("PhpGt.User_PageTool.Track", $uuid, $expires, "/")) {
+		if(!setcookie("PhpGt_User_PageTool", $uuid, $expires, "/")) {
 			throw new HttpError(500,
 				"Error generating tracking cookie in User PageTool.");
 		}
-		$_COOKIE["PhpGt.User_PageTool.Track"] = $uuid;
+		$_COOKIE["PhpGt_User_PageTool"] = $uuid;
 		return $uuid;
 	}
 
-	return $_COOKIE["PhpGt_User_PageTool_Track"];
+	return $_COOKIE["PhpGt_User_PageTool"];
 }
 
 /**
@@ -275,6 +220,7 @@ public function track($forceUuid = null) {
  * @return array        The user details.
  */
 private function userSession($input, $anonUuid = null) {
+	die("Use of dead function: userSession");
 	if(is_int($input)) {
 		$dbUser = $this->_api[$this]->getById(["ID" => $input]);
 	}
@@ -314,6 +260,7 @@ private function userSession($input, $anonUuid = null) {
  * @return bool           True if the user successfully authenticates.
  */
 public function auth($method = "Google", $forwardTo = null) {
+	die("Use of dead function: auth");
 	if(is_null($forwardTo)) {
 		if(empty($_SESSION["PhpGt.User_PageTool.tool_ForwardTo"])) {
 			if(empty($_SERVER["HTTP_REFERER"])) {
@@ -350,6 +297,7 @@ public function auth($method = "Google", $forwardTo = null) {
  * @return [type] [description]
  */
 private function authComplete() {
+	die("Use of dead function: authComplete");
 	if(!empty($_SESSION["PhpGt.User_PageTool.tool_ForwardTo"])) {
 		$forwardTo = $_SESSION["PhpGt.User_PageTool.tool_ForwardTo"];
 		unset($_SESSION["PhpGt.User_PageTool.tool_ForwardTo"]);
@@ -365,6 +313,7 @@ private function authComplete() {
  * @param  string $forwardTo Where to forward the user after unauthenticating.
  */
 public function unAuth($forwardTo = "/") {
+	die("Use of dead function: unAuth");
 	unset($_SESSION["PhpGt.User_PageTool.tool_AuthData"]);
 	unset($_SESSION["PhpGt.User_PageTool"]);
 	$this->deleteCookies();
@@ -381,6 +330,7 @@ public function unAuth($forwardTo = "/") {
  * multiple domains, or a single domain to add to the white list.
  */
 public function addWhiteList($whiteList) {
+	die("Use of dead function: addWhiteList");
 	$whiteListArray = array();
 
 	if(is_array($whiteList)) {
@@ -411,6 +361,7 @@ public function addWhiteList($whiteList) {
  * whitelist parameters.
  */
 public function checkWhiteList($username) {
+	die("Use of dead function: checkWhiteList");
 	return true;
 	// If there is no whitelist, allow all.
 	if(empty($_SESSION["PhpGt.User_PageTool.tool_AuthWhiteList"])) {
@@ -448,6 +399,7 @@ public function checkWhiteList($username) {
  * @return bool True on success (which will allways occur).
  */
 public function fakeAuth($username) {
+	die("Use of dead function: fakeAuth");
 	$this->setAuthData($username);
 	return true;
 }
@@ -457,6 +409,7 @@ public function fakeAuth($username) {
  * server-side session.
  */
 private function setAuthData($username) {
+	die("Use of dead function: setAuthData");
 	$_SESSION["PhpGt.User_PageTool.tool_AuthData"] = $username;
 
 	$uuid = hash("sha512", $username);
@@ -489,6 +442,7 @@ private function setAuthData($username) {
  * Every time there is user activity, refresh the cookies to keep them alive.
  */
 private function refreshCookies() {
+	die("Use of dead function: refreshCookies");
 	$expires = strtotime("+105 weeks");
 	setcookie(
 		"PhpGt_Login[0]",
@@ -511,13 +465,14 @@ private function refreshCookies() {
  * Unsets all cookies used by the PageTool.
  */
 private function deleteCookies() {
+	die("Use of dead function: deleteCookies");
 	// Rather than deleting the UUID cookie (which will take 2 requests), set
 	// it to a new UUID, so that the user can start to be anonymously tracked
 	// straight away.
 	// Time expired is set to 1 second after EPOCH (otherwise, 0 sets the cookie
 	// to a session expiration).
-	setcookie("PhpGt.User_PageTool.Track", "deleted", 1, "/");
-	unset($_COOKIE["PhpGt.User_PageTool.Track"]);
+	setcookie("PhpGt_User_PageTool", "deleted", 1, "/");
+	unset($_COOKIE["PhpGt_User_PageTool"]);
 	
 	setcookie("PhpGt_Login[0]", "deleted", 1, "/");
 	setcookie("PhpGt_Login[1]", "deleted", 1, "/");
@@ -532,7 +487,10 @@ private function deleteCookies() {
  */
 private function setActive($id = null) {
 	if(is_null($id)) {
-		$id = $_SESSION["PhpGt.User_PageTool"]["ID"];
+		$id = $_SESSION["PhpGt_User_PageTool"]["ID"];
+	}
+	if(is_null($id)) {
+		return false;
 	}
 	$this->_api[$this]->setActive(["ID" => $id]);
 }
@@ -551,7 +509,7 @@ private function generateSalt() {
  * @return  bool True on successful merge, false if there is no orphan record.
  */
 public function mergeOrphan() {
-	$user = $_SESSION["PhpGt.User_PageTool"];
+	$user = $_SESSION["PhpGt_User_PageTool"];
 	if(empty($user["orphanedID"])) {
 		return false;
 	}
