@@ -10,6 +10,9 @@
  * is done by the Dispatcher.
  */
 public function __construct() {
+	set_error_handler(array("ErrorHandler", "error"), 
+		E_ALL & E_NOTICE & E_RECOVERABLE_ERROR);
+
 	$baseSuffix = "_Framework";
 	$appConfigClass = "App_Config";
 	$databaseConfigClass = "Database_Config";

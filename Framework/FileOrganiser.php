@@ -159,7 +159,9 @@ private function copyFiles($source, $dest, $recursive = true) {
 	}
 
 	$dh = opendir($source);
-	@mkdir($dest, 0775, true);
+	if(!is_dir($dest)) {
+		mkdir($dest, 0775, true);
+	}
 
 	while(false !== ($name = readdir($dh)) ) {
 		if($name[0] == ".") {

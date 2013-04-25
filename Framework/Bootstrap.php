@@ -120,8 +120,10 @@ $toLoad["Required"] = array(
 	"Shared security config" =>	
 		GTROOT."/Config/Security.cfg.php",
 
-	"Gt Error Exception" => 
-		GTROOT."/Framework/Error/GtError.php",
+	"Error Exception" => 
+		GTROOT."/Framework/Error/Error.php",
+	"Error Handler" => 
+		GTROOT."/Framework/Error/ErrorHandler.php",
 	"Http Error Exception" => 
 		GTROOT."/Framework/Error/HttpError.php",
 
@@ -149,8 +151,6 @@ $toLoad["Required"] = array(
 		GTROOT."/Framework/Component/DomElCollection.php",
 	"DOM Element ClassList component" =>
 		GTROOT."/Framework/Component/DomElClassList.php",
-	"Error component" => 
-		GTROOT."/Framework/Component/Error.php",
 	"Cache component" =>
 		GTROOT."/Framework/Component/Cache.php",
 

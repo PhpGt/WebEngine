@@ -13,6 +13,7 @@ Not yet released
 * User PageTool implemented to allow OAuth authentication and anonymous users.
 * Blog PageTool initial features.
 * Bugfixes in the DOM classes.
+* PHP errors and exceptions handled by PHP.Gt.
 * Translatable content through data-lang attribute.
 * Selection of web-ready fonts included as standard.
 
