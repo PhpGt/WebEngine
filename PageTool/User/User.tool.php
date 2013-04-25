@@ -130,14 +130,21 @@ public function checkAuth($auth) {
 			"oauth_uuid" => $oauth_uuid
 		]);
 		if($existingOAuthUser->hasResult) {
-			// TODO: Build up session object.
+			$_SESSION["PhpGt.User_PageTool"] = array(
+				"ID"                => $existingOAuthUser["ID"],
+				"uuid"              => $existingOAuthUser["uuid"],
+				"username"          => $existingOAuthUser["username"],
+				"dateTimeIdentified"=> $existingOAuthUser["dateTimeIdentified"],
+				"dateTimeLastActive"=> date("Y-m-d H:i:s"),
+				"User_Type__name"   => $existingOAuthUser["User_Type__name"],
+				"isIdentified"      => true,
+			);
 			return true;
 		}
 	}
 
 	// At this point, no OAuth data is found in the database. Create it, store
 	// it to the session and return true.
-	// TODO...
 	var_dump($auth);die("PIGS");
 	return true;
 
