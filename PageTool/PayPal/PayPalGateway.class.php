@@ -30,4 +30,4 @@ public function getGate() {
 		: "https://www.paypal.com/cgi-bin/webscr?";
 }
 	
-}?>
+}#

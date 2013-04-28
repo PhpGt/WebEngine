@@ -54,4 +54,4 @@ public function offsetUnset($offset) {
 	die("What are you unsetting the API for???");
 }
 
-}?>
+}#

@@ -289,4 +289,4 @@ private function findDynamicPageView() {
 	return $found;
 }
 
-}?>
+}#

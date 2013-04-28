@@ -94,4 +94,4 @@ public function showComments($domElement, $width = 470, $numPosts = 2) {
 	$domElement->replace($fbDiv);
 }
 
-}?>
+}#

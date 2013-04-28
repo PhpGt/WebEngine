@@ -38,4 +38,4 @@ public function go($api, $dom, $template, $tool) {
 	}
 }
 
-}?>
+}#

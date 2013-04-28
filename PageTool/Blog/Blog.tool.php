@@ -235,4 +235,4 @@ public function getTagUrl($tagObj) {
 	return $url;
 }
 
-}?>
+}#

@@ -378,4 +378,4 @@ public function mapData($data, $elementSelector = "*", $attr = "name") {
 	return $count;
 }
 
-}?>
+}#

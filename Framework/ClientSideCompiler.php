@@ -211,4 +211,4 @@ private function compileJavaScript($dom) {
 	return $scriptList->length;
 }
 
-}?>
+}#

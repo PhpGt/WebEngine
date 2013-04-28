@@ -199,4 +199,4 @@ private function copyFiles($source, $dest, $recursive = true) {
 	}
 }
 
-}?>
+}#

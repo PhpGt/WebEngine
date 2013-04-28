@@ -108,4 +108,4 @@ public function __construct($response, $config) {
 	return $dom->flush();
 }
 
-}?>
+}#

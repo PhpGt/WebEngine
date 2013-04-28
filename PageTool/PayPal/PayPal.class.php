@@ -74,4 +74,4 @@ protected function runQueryWithParams($data) {
 	return $result;
 }
 
-}?>
+}#

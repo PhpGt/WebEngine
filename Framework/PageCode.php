@@ -54,4 +54,4 @@ protected function stop() {
 	$this->_stop = true;
 }
 
-}?>
+}#

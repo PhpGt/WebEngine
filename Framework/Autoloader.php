@@ -30,4 +30,4 @@ foreach ($classDirArray as $classDir) {
 	}
 }
 
-}?>
+}#

@@ -22,4 +22,4 @@ public function track($trackingCode) {
 	$this->_dom["head"]->append("script", null, $js);
 }
 
-}?>
+}#

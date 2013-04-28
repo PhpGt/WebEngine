@@ -334,4 +334,4 @@ public function createTableAndDependencies($tableName) {
 	);
 }
 
-}?>
+}#

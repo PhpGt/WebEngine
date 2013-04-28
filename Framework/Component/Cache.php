@@ -248,4 +248,4 @@ private function getTimeStampDatabase() {
 	return $timeStamps;
 }
 
-}?>
+}#

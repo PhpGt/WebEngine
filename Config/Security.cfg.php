@@ -31,4 +31,4 @@ public function isAdminAllowed() {
 		|| $this->_allowAllRemoteAdmin;
 }
 
-}?>
+}#

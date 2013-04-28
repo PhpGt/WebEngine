@@ -4,4 +4,4 @@ public function __construct() {
 	die("TODO: Admin.");
 }
 
-}?>
+}#

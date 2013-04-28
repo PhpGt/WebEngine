@@ -65,4 +65,4 @@ public function valid() {
 	return isset($this->_templateArray[$this->_index]);
 }
 
-}?>
+}#

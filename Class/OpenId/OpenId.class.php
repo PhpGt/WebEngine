@@ -79,4 +79,4 @@ public function getData($attr = "contact/email") {
 	}
 }
 
-}?>
+}#

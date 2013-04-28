@@ -82,4 +82,4 @@ public function contains($className1 /*, $className2, ... */) {
 	return $contains;
 }
 
-}?>
+}#

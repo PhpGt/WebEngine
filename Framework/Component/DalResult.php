@@ -181,4 +181,4 @@ private function storeResult($all = false) {
 	}
 }
 
-}?>
+}#

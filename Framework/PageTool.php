@@ -118,4 +118,4 @@ public function clientSide() {
  */
 abstract protected function go($api, $dom, $template, $tool);
 
-}?>
+}#

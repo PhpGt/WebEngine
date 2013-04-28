@@ -15,4 +15,4 @@ public function testDomIsDom() {
 	$this->assertTrue(gettype($dom) === gettype($dom2));
 }
 
-}?>
+}#

@@ -38,4 +38,4 @@ public function styleSheet($styleSheet) {
 	return $this->_style;
 }
 
-}?>
+}#

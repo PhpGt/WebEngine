@@ -1,1 +1,1 @@
-<?php class Http_Exception extends Exception {}?>
+<?php class Http_Exception extends Exception {}#

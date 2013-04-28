@@ -332,4 +332,4 @@ public function offsetUnset($index) {
 	$this->_elArray = array_values($this->_elArray);
 }
 
-}?>
+}#

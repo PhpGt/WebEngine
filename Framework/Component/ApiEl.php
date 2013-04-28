@@ -84,4 +84,4 @@ public function getName() {
 	return $this->_apiName;
 }
 
-}?>
+}#

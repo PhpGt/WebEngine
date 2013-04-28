@@ -17,4 +17,4 @@ public function __toString() {
 	return $this->_xpath;
 }
 
-}?>
+}#

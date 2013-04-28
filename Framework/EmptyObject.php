@@ -27,4 +27,4 @@ public function __get($offset) {
 public function __set($offset, $value) {
 	return true;
 }
-}?>
+}#

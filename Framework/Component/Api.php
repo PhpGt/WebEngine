@@ -164,4 +164,4 @@ public function setMethodParams($array) {
 	$this->_methodParams = $array;
 }
 
-}?>
+}#

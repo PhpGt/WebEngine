@@ -52,4 +52,4 @@ public function __call($name, $arguments) {
 	return $result;
 }
 
-}?>
+}#

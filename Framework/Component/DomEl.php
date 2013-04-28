@@ -576,4 +576,4 @@ public function __toString() {
 	return "DomEl({$this->_tagName}) [.{$domClass}#{$domId}]";
 }
 
-}?>
+}#

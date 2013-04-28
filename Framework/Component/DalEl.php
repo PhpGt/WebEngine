@@ -156,4 +156,4 @@ private function touchCache() {
 	$_SESSION["PhpGt_Cache"]["Database"][$this->_tableName] = microtime(true);
 }
 
-}?>
+}#

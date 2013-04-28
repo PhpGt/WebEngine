@@ -106,4 +106,4 @@ private function getSqlArray($dbConfig) {
 	return $sqlArray;
 }
 
-}?>
+}#

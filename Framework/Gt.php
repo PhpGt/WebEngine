@@ -42,4 +42,4 @@ public function __construct() {
 	return new Dispatcher($response, $config);
 }
 
-}?>
+}#

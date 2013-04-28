@@ -40,4 +40,4 @@ public function isProduction() {
 	return $this->_isProduction;
 }
 
-}?>
+}#

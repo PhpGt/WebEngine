@@ -217,4 +217,4 @@ public function __construct($config) {
 	return;
 }
 
-}?>
+}#

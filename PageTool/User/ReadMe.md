@@ -19,7 +19,7 @@ public function go($api, $dom, $template, $tool) {
 	}
 }
 
-}?>
+}#
 ```
 
 The PageCode within a certain page can be used to perform user actions:
@@ -53,5 +53,5 @@ public function go($api, $dom, $template, $tool) {
 	}
 }
 
-}?>
+}#
 ```

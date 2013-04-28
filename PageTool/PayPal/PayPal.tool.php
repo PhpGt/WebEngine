@@ -51,4 +51,4 @@ public function buyNow($domButton, $itemDetails = array()) {
 	die("HERE!!!");
 }
 
-}?>
+}#

@@ -311,4 +311,4 @@ public function mergeOrphan() {
 	return $dbResult->affectedRows > 0;
 }
 
-}?>
+}#

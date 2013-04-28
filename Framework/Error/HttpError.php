@@ -255,4 +255,4 @@ private function checkCase() {
 	return true;
 }
 
-}?>
+}#
