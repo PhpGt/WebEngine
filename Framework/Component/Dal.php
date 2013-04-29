@@ -15,8 +15,7 @@
 private $_config = null;
 private $_dbh = null;
 private $_dalElArray = array();
-private $_createdTableCache = array();
-private $_dbDeploy = null;
+public $_dbDeploy = null;
 
 /**
  * Only ever called internally. Stores the required settings for when the
@@ -25,6 +24,9 @@ private $_dbDeploy = null;
  */
 public function __construct($config) {
 	$this->_config = $config;
+	if(!isset($_SESSION["DbDeploy_TableCache"])) {
+		$_SESSION["DbDeploy_TableCache"] = array();
+	}
 }
 
 /**
@@ -60,7 +62,7 @@ public function connect() {
 		// TODO: Proper error handling.
 		// In development mode, show help message to how to create database.
 		// Output SQL to create database and all users.
-		$this->fixError($e);
+		$this->autoDeploy($e);
 	}
 }
 
@@ -135,7 +137,7 @@ public function prepare($sql, $config = null) {
  * Usual errors are non-existent table errors, where this method will
  * automatically attempt to create the tables and all dependencies.
  */
-public function fixError($input) {
+public function autoDeploy($input) {
 	$message = "";
 	if($input instanceof PDOException) {
 		$message = $input->getMessage();
@@ -180,20 +182,18 @@ public function fixError($input) {
 	
 	switch($data["Type"]) {
 	case "NO_TABLE":
+		$this->_dbh->query("SET foreign_key_checks = 0");
 		// Function to create given table, but also create any 
 		// tables that are dependant - recursively.
 		$tableName = substr($data["Match"][1],
 			strrpos($data["Match"][1], ".") + 1);
-		if(empty($tableName)) {
-			// TODO: Throw proper error at this point.
-			die("Error: Table cannot be created. $tableName");
-		}
 		if($this->createTableAndDependencies($tableName) === true) {
 			$this->_dbDeploy->tableCollectionsDeployed[] = $tableName;
 		}
 		else {
 			$this->_dbDeploy->tableCollectionsFailed[] = $tableName;
 		}
+		$this->_dbh->query("SET foreign_key_checks = 1");
 		break;
 	case "NO_DB":
 	case "NO_USER":
@@ -249,13 +249,13 @@ public function createTableAndDependencies($tableName) {
 	// find what Table Collection to deploy from any contained table.
 	if(strstr($tableName, "_")) {
 		$baseTable = substr($tableName, 0, strpos($tableName, "_"));
-		if(!in_array($baseTable, $this->_createdTableCache)) {
+		if(!in_array($baseTable, $_SESSION["DbDeploy_TableCache"])) {
 			$this->createTableAndDependencies($baseTable);
 		}
 	}
 
 	// Only proceed if table doesn't already exist.
-	if(!in_array($tableName, $this->_createdTableCache)) {
+	if(!in_array($tableName, $_SESSION["DbDeploy_TableCache"])) {
 		$stmt = $this->_dbh->prepare("
 			select `TABLE_NAME`
 			from `information_schema`.`TABLES`
@@ -286,6 +286,7 @@ public function createTableAndDependencies($tableName) {
 					}
 
 					$sql = file_get_contents("$sqlPath/$file");
+					var_dump($file);
 
 					// Detect any table references in SQL and attempt
 					// to create them first.
@@ -294,10 +295,11 @@ public function createTableAndDependencies($tableName) {
 					preg_match_all($pattern, $sql, $matches);
 
 					foreach ($matches[1] as $dep) {
-						if(!in_array($dep, $this->_createdTableCache)) {
+						if(!in_array(
+						$dep, $_SESSION["DbDeploy_TableCache"])) {
 							// Recursively call this function for each
 							// dependency, ignoring any already completed.
-							$this->_createdTableCache[] = $tableName;
+							$_SESSION["DbDeploy_TableCache"][] = $tableName;
 							$this->createTableAndDependencies($dep);
 						}
 					}
@@ -313,13 +315,13 @@ public function createTableAndDependencies($tableName) {
 					}
 					else {
 						$this->_dbDeploy->tablesDeployed[] = $tableName;
-						$this->_createdTableCache[] = $tableName;
+						$_SESSION["DbDeploy_TableCache"][] = $tableName;
 					}
 				}
 			}
 		}
 		else {
-			$this->_createdTableCache[] = $tableName;
+			$_SESSION["DbDeploy_TableCache"][] = $tableName;
 			$this->_dbDeploy->tablesSkipped[] = $tableName;
 			return;
 		}
@@ -329,7 +331,7 @@ public function createTableAndDependencies($tableName) {
 	// Output the dbDeploy status as JSON into a session cookie.
 	setcookie("PhpGt_DbDeploy",
 		json_encode($this->_dbDeploy), 
-		time() + 60, 
+		0, 
 		"/"
 	);
 }

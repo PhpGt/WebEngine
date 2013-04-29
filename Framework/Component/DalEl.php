@@ -103,7 +103,7 @@ private function query($sqlFile, $paramArray = array()) {
 	// The database may not be deployed yet. It will automatically deploy, but
 	// will need to re-execute the statement once deployed.
 	$tries = 0;
-	while($tries <= 1) {
+	while($tries <= 10) {
 		try {
 			$stmt->closeCursor();
 			$result = $stmt->execute();
@@ -119,7 +119,7 @@ private function query($sqlFile, $paramArray = array()) {
 				$this->_tableName);
 		}
 		catch(PDOException $e) {
-			$this->_dal->fixError($e);
+			$this->_dal->autoDeploy($e);
 		}
 		$tries ++;
 	}

@@ -10,6 +10,9 @@ grant
 	show view, 
 	trigger, 
 	update,
-	execute
+	execute,
+	create routine,
+	alter routine,
+	drop
 on :DatabaseTable
 to :UserServer;
