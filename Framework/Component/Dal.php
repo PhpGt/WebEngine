@@ -176,13 +176,9 @@ public function autoDeploy($input) {
 	$this->_dbDeploy->tablesFailed = array();
 	$this->_dbDeploy->tablesSkipped = array();
 
-	if(!is_null($this->_dbh)) {
-		//$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");
-	}
-	
 	switch($data["Type"]) {
 	case "NO_TABLE":
-		$this->_dbh->query("SET foreign_key_checks = 0");
+		$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");
 		// Function to create given table, but also create any 
 		// tables that are dependant - recursively.
 		$tableName = substr($data["Match"][1],
@@ -228,8 +224,6 @@ public function autoDeploy($input) {
 		throw new HttpError(500, $message);
 		break;
 	}
-
-	//$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 1;");
 }
 
 /**
@@ -243,7 +237,6 @@ public function createTableAndDependencies($tableName) {
 	if(empty($tableName)) {
 		return;
 	}
-
 	// Table Collections should have the name of their base table at the start
 	// of their name, for instance BaseTable_SubTable. This makes it easy to
 	// find what Table Collection to deploy from any contained table.
@@ -255,7 +248,7 @@ public function createTableAndDependencies($tableName) {
 	}
 
 	// Only proceed if table doesn't already exist.
-	if(!in_array($tableName, $_SESSION["DbDeploy_TableCache"])) {
+	//if(!in_array($tableName, $_SESSION["DbDeploy_TableCache"])) {
 		$stmt = $this->_dbh->prepare("
 			select `TABLE_NAME`
 			from `information_schema`.`TABLES`
@@ -286,7 +279,6 @@ public function createTableAndDependencies($tableName) {
 					}
 
 					$sql = file_get_contents("$sqlPath/$file");
-					var_dump($file);
 
 					// Detect any table references in SQL and attempt
 					// to create them first.
@@ -325,7 +317,7 @@ public function createTableAndDependencies($tableName) {
 			$this->_dbDeploy->tablesSkipped[] = $tableName;
 			return;
 		}
-	}
+	//}
 
 	// TODO: Doesn't seem to be setting cookie...
 	// Output the dbDeploy status as JSON into a session cookie.
