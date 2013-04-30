@@ -32,7 +32,7 @@
  */
 
 public $config = array(
-	"base_url" => "http://test.dev.php.gt",
+	"base_url" => "",
 					// Set to another URL if a specific page deals with auth
 					// e.g. /Login.html so Login_PageCode performs auth.
 
@@ -101,6 +101,14 @@ private $profile = null;
 public function __construct($providerConfig = array()) {
 	require_once(__DIR__ . "/hybridauth/Hybrid/Auth.php");
 	require_once(__DIR__ . "/hybridauth/Hybrid/Endpoint.php");
+
+	if(empty($this->config["base_url"])) {
+		$this->config["base_url"] = 
+			"http" . (empty($_SERVER["HTTPS"]) ? "" : "s")
+			. "://"
+			. $_SERVER["SERVER_NAME"]
+			. "/";
+	}
 
 	foreach ($providerConfig as $pName => $pDetails) {
 		if(isset($pDetails["ID"])) {

@@ -149,6 +149,7 @@ public function autoDeploy($input) {
 	// Grab the statement's error message.
 	$patternArray = array(
 		"NO_TABLE" => "/Table '(.*)' doesn't exist/",
+		"NO_PROCEDURE" => "/PROCEDURE (.*) does not exist/",
 		"NO_USER" => "/Access denied for user '(.*)'@/",
 		"NO_DB" => "/Unknown database '(.*)'/"
 	);
@@ -178,6 +179,7 @@ public function autoDeploy($input) {
 
 	switch($data["Type"]) {
 	case "NO_TABLE":
+	case "NO_PROCEDURE":
 		$this->_dbh->query("SET FOREIGN_KEY_CHECKS = 0;");
 		// Function to create given table, but also create any 
 		// tables that are dependant - recursively.
