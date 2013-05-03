@@ -67,7 +67,15 @@ public function next() {
 	++$this->_index;
 }
 
+/**
+ * Removes a DomEl from the collection by index or by reference.
+ * @param int|DomEl $element    Either an integer index or DomEl instance to
+ * remove.
+ */
 public function removeElement($element) {
+	if(is_int($element)) {
+		unset($this->_elArray[$key]);
+	}
 	$key = array_search($element, $this->_elArray);
 	unset($this->_elArray[$key]);
 }
