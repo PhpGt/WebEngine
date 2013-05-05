@@ -23,10 +23,7 @@ public function offsetGet($offset) {
 		return $domEl->cloneNode(true);
 	}
 
-	throw new GtError("Trying to access non-existent template element $offset");
-
-	// TODO: Throw error here.
-	return null;
+	return new EmptyObject();
 }
 
 public function offsetSet($offset, $value) {
