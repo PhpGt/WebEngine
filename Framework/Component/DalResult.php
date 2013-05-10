@@ -143,8 +143,7 @@ public function offsetGet($offset) {
 }
 
 public function offsetSet($offset, $value) {
-	throw new HttpError(500, 
-		"Can't use offsetSet on a DalResult, use setData method instead.");
+	return $this->setData($offset, $value, true);
 }
 
 public function setData($key, $value, $all = false) {
