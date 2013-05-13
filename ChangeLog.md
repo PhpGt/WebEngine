@@ -1,6 +1,12 @@
+v0.1.1
+-------
+Not yet released
+
+* 
+
 v0.1.0
 ------
-Not yet released
+10th May 2013
 
 * Auth class provides wrapper to easy OAuth + social network interaction.
 * Optional PageView when PageCode handles request itself.
