@@ -129,6 +129,9 @@ public function checkAuth($auth) {
 		$existingOAuthUser = $this->_api[$this]->getByOAuthUuid([
 			"oauth_uuid" => $oauth_uuid,
 		]);
+		if(is_null($existingOAuthUser)) {
+			throw new HttpError(500, "User table collection not deployed");
+		}
 		if($existingOAuthUser->hasResult) {
 			$dbUser = $existingOAuthUser->result[0];
 		}

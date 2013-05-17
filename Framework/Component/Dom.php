@@ -59,7 +59,7 @@ public function __construct($html = "<!doctype html>") {
 		$classArray = explode("/", DIR . "/" . FILE);
 
 		foreach($classArray as $class) {
-			$bodyTag->addClass(lcfirst($class));
+			$bodyTag->classList->add(lcfirst($class));
 		}
 		$bodyTag->setAttribute("id", strtolower($pathId));
 	}
