@@ -9,6 +9,12 @@
 * objects, and new features can be introduced.
 */
 
+if(array_key_exists($className, ClassDependencies::$list)) {
+	$relPath = ClassDependencies::$list[$className];
+	require_once(GTROOT . "/Class/$relPath");
+	return;
+}
+
 $classDirArray = array(
 	APPROOT . "/Class/$className",
 	GTROOT  . "/Class/$className", 

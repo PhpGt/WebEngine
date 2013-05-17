@@ -156,6 +156,8 @@ $toLoad["Required"] = array(
 
 	"Autoloader" =>
 		GTROOT."/Framework/Autoloader.php",
+	"ClassDependencies" =>
+		GTROOT."/Class/ClassDependencies.php",
 	"File Organiser class" =>
 		GTROOT."/Framework/FileOrganiser.php",
 	"Client side compiler class" =>
