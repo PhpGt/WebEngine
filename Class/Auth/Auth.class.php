@@ -81,8 +81,8 @@ public $config = array(
 
 	// if you want to enable logging, set 'debug_mode' to true then provide a 
 	// writable file by the web server on "debug_file"
-	"debug_mode" => false,
-	"debug_file" => "",
+	"debug_mode" => true,
+	"debug_file" => "/var/log/lighttpd/hauth.log",
 );
 
 private $hybridAuth = null;
@@ -90,14 +90,6 @@ private $adapter = null;
 private $profile = null;
 
 public function __construct($providerConfig = array()) {
-	// require_once(__DIR__ . "/hybridauth/Hybrid/Auth.php");
-	// require_once(__DIR__ . "/hybridauth/Hybrid/Endpoint.php");
-
-	// if($this->checkCache()) {
-	// 	$this->useCache();
-	// 	return;
-	// }
-
 	if(empty($this->config["base_url"])) {
 		$this->config["base_url"] = 
 			"http" . (empty($_SERVER["HTTPS"]) ? "" : "s")
@@ -144,49 +136,8 @@ public function __construct($providerConfig = array()) {
 		}
 	}
 	$this->hybridAuth = new Hybrid_Auth($this->config);
-	// $this->createCache();
 	return;
 }
-
-// private function createCache() {
-// 	if(isset($_SESSION["PhpGt_Cache"])) {
-// 		$_SESSION["PhpGt_Cache"]["Auth"] = array();
-// 	}
-// 	else {
-// 		$_SESSION["PhpGt_Cache"] = array("Auth" => array());
-// 	}
-// 	$_SESSION["PhpGt_Cache"]["Auth"]["Hybrid_Auth"] = $this->hybridAuth;
-// 	return;
-// }
-
-// /**
-//  * Checks all session variables used in the Auth cache. If any variable is
-//  * missing, the method will return false.
-//  */
-// private function checkCache() {
-// 	return isset($_SESSION["PhpGt_Cache"])
-// 		&& isset($_SESSION["PhpGt_Cache"]["Auth"])
-// 		&& !empty($_SESSION["PhpGt_Cache"]["Auth"]["Hybrid_Auth"])
-// 		&& !empty($_SESSION["PhpGt_Cache"]["Auth"]["Adapter"])
-// 		&& !empty($_SESSION["PhpGt_Cache"]["Auth"]["Profile"]);
-// }
-
-// /**
-//  * Allocates the three member variables with whatever is stored within the
-//  * session cache.
-//  */
-// private function useCache() {
-// 	$this->hybridAuth = $_SESSION["PhpGt_Cache"]["Auth"]["Hybrid_Auth"];
-// 	$this->adapter = $_SESSION["PhpGt_Cache"]["Auth"]["Adapter"];
-// 	$this->profile = $_SESSION["PhpGt_Cache"]["Auth"]["Profile"];
-// 	return;
-// }
-
-// private function setCache() {
-// 	$_SESSION["PhpGt_Cache"]["Auth"]["Hybrid_Auth"] = $this->hybridAuth;
-// 	$_SESSION["PhpGt_Cache"]["Auth"]["Adapter"] = $this->adapter;
-// 	$_SESSION["PhpGt_Cache"]["Auth"]["Profile"] = $this->profile;
-// }
 
 /**
  * Synonym for `authenticate` method.
@@ -196,21 +147,11 @@ public function login($provider) {
 }
 
 public function authenticate($provider) {
-	// if($this->checkCache()) {
-	// 	$this->useCache();
-	// 	return;
-	// }
-
 	try {
-		$this->adapter = $this->hybridAuth->authenticate($provider);
+		$this->adapter = $this->getAdapter($provider);
 		$this->profile = $this->adapter->getUserProfile();
 
-		// $this->setCache();
-
-		// $profile contains "identifier" property, the UUID to the user, 
-		// used for storing in the app database.
-		// Also may contain these properties for identification:
-		// email, firstName, lastName, displayNAme, webSiteURL, profileURL.
+		return $this->hybridAuth->getSessionData();
 	}
 	catch(Exception $e) {
 		switch($e->getCode()) {
@@ -251,18 +192,26 @@ public function authenticate($provider) {
 
 public function logout() {
 	$this->hybridAuth->logoutAllProviders();
-	// $this->setCache();
 	return;
+}
+
+public function getAdapter($provider) {
+	if(isset($_SESSION["PhpGt_Auth_Session"])) {
+		$this->hybridAuth->restoreSessionData($_SESSION["PhpGt_Auth_Session"]);
+		$adapter = $this->hybridAuth->getAdapter($provider);
+		return $adapter;
+	}
+
+	$adapter = $this->hybridAuth->authenticate($provider);
+	$_SESSION["PhpGt_Auth_Session"] = $this->hybridAuth->getSessionData();
+
+	return $adapter;
 }
 
 /**
  * Synonym for getConnectedProfile.
  */
 public function getProfile($provider) {
-	if(is_null($this->adapter)) {
-		$this->login($provider);
-	}
-	
 	return $this->getConnectedProfile($provider);
 }
 /**
@@ -278,16 +227,9 @@ public function profile($provider) {
  * profile is not connected.
  */
 public function getConnectedProfile($provider) {
-	// if($this->checkCache()) {
-	// 	$this->useCache();
-	// 	return $this->profile;
-	// }
-
 	try {
-		$adapter = $this->hybridAuth->authenticate($provider);
+		$adapter = $this->getAdapter($provider);
 		$profile = $adapter->getUserProfile();
-
-		// $this->setCache();
 
 		return $profile;
 	}
@@ -297,18 +239,10 @@ public function getConnectedProfile($provider) {
 }
 
 public function getConnectedProviders() {
-	// if($this->checkCache()) {
-	// 	$this->useCache();
-	// }
-
 	return $this->hybridAuth->getConnectedProviders();
 }
 
 public function isConnectedWith($provider) {
-	// if($this->checkCache()) {
-	// 	$this->useCache();
-	// }
-
 	return $this->hybridAuth->isConnectedWith($provider);
 }
 
@@ -341,7 +275,7 @@ public function __get($name) {
 		$connectedProviders = $this->getConnectedProviders();
 		foreach ($connectedProviders as $provider) {
 			try {
-				$adapter = $this->hybridAuth->authenticate($provider);
+				$adapter = $this->getAdapter($provider);
 				$profile = $adapter->getUserProfile();
 				if(isset($profile->$name)) {
 					return $profile->$name;
