@@ -8,7 +8,6 @@
  * Handled in this class is the connection settings to the MySQL database, and
  * the automatic database deployment and just-in-time table creation.
  *
- * ALPHATODO:
  * TODO: createTableAndDependencies needs optimising, plus there are too many
  * bugs at the moment.
  */

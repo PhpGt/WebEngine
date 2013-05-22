@@ -1,6 +1,12 @@
 <?php class DalEl {
 /**
- * TODO: Docs.
+ * This object represents a Table Collection, on which it can execute queries.
+ * Any method can be called, which will be wrapped directly to the corresponding
+ * SQL file or stored procedure.
+ *
+ * At this point in the code, the optional API class has done whatever it needs
+ * to, and we can safely assume that there should be an SQL file representing
+ * the called methods.
  */
 private $_dal		= null;
 private $_tableName	= null;
@@ -30,7 +36,7 @@ public function __call($name, $args) {
 	if($this->_isTool) {
 		$toolPathArray = array(
 			APPROOT . "/PageTool/{$this->_tableName}/Database/",
-			GTROOT  . "/PageTool/{$this->_tableName}/Database/"
+			GTROOT  . "/PageTool/{$this->_tableName}/Database/",
 		);
 		$pathArray = array_merge($toolPathArray, $pathArray);
 	}
@@ -43,8 +49,8 @@ public function __call($name, $args) {
 		}
 	}
 
-	// TODO: Throw proper error.
-	die("Error: No SQL found for $this->_tableName called $name.");
+	throw new HttpError(500, 
+		"No SQL found for $this->_tableName called $name.");
 	return false;
 }
 
@@ -54,8 +60,8 @@ public function setTool() {
 
 private function query($sqlFile, $paramArray = array()) {		
 	if(!is_array($paramArray)) {
-		// TODO: Throw proper error.
-		die("Error: Type of query params is not an array");
+		throw new HttpError(500, 
+			"Trying to query $this->_tableName with incorrect parameters.");
 	}
 	$sql = file_get_contents($sqlFile);
 
@@ -123,8 +129,7 @@ private function query($sqlFile, $paramArray = array()) {
 		}
 		$tries ++;
 	}
-
-	// TODO: Throw error here... Database can't be deployed.
+	// Database can't be deployed.
 	return false;
 }
 

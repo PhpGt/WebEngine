@@ -1,6 +1,7 @@
 <?php class ApiWrapper implements ArrayAccess {
 /**
- * TODO: Docs.
+ * This object is passed into the go() methods as the $api parameter. It acts
+ * as an associative array to the ApiEl objects.
  */
 
 private $_apiElObjects = array();	// Cache of APIs used in this request.
@@ -44,14 +45,8 @@ public function offsetGet($offset) {
 	return $this->_apiElObjects[$offset];
 }
 
-public function offsetSet($offset, $value) {
-	// TODO: More appropriate error message and logging.
-	die("What are you setting the API for???");
-}
-
-public function offsetUnset($offset) {
-	// TODO: More appropriate error message and logging.
-	die("What are you unsetting the API for???");
-}
+// Can't set/unset the API values.
+public function offsetSet($offset, $value) {}
+public function offsetUnset($offset) {}
 
 }#
