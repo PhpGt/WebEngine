@@ -42,41 +42,21 @@ public $config = array(
 			"enabled" => true
 		),
 
-		"Yahoo" => array( 
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ),
-		),
-		"AOL"  => array( 
-			"enabled" => true 
-		),
-		"Google" => array( 
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ), 
-		),
-		"Facebook" => array( 
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ), 
-		),
-		"Twitter" => array( 
-			"enabled" => true,
-			"keys"    => array ( "key" => "", "secret" => "" ) 
-		),
-		"Live" => array( // windows live
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ) 
-		),
-		"MySpace" => array( 
-			"enabled" => true,
-			"keys"    => array ( "key" => "", "secret" => "" ) 
-		),
-		"LinkedIn" => array( 
-			"enabled" => true,
-			"keys"    => array ( "key" => "", "secret" => "" ) 
-		),
-		"Foursquare" => array(
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ) 
-		),
+		// Standard providers:
+		"OpenID" => [],
+		"Google" => [],
+		"Twitter" => [],
+		"Facebook" => [],
+		"Yahoo" => [],
+		"AOL" => [],
+		"Live" => [],
+		"MySpace" => [],
+		"LinkedIn" => [],
+		"Foursquare" => [],
+
+		// You need to add your own providers via this object's constructor.
+		// The passed in array should resemble: array(
+		// "ProviderName" => array( "id" => "12345", "secret" => "67890"));
 	),
 
 	// if you want to enable logging, set 'debug_mode' to true then provide a 
