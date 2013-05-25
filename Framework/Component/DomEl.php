@@ -436,6 +436,9 @@ public function __call($name, $args = array()) {
  */
 public function __get($key) {
 	switch($key) {
+	case "className":
+		$this->node->getAttribute("class");
+		break;
 	case "innerHTML":
 	case "innerHtml":
 	case "html":
@@ -479,6 +482,9 @@ public function __get($key) {
  */
 public function __set($key, $value) {
 	switch($key) {
+	case "className":
+		$this->node->setAttribute("class", $value);
+		break;
 	case "innerHTML":
 	case "innerHtml":
 	case "html":
