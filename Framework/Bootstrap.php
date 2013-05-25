@@ -10,6 +10,7 @@
 */
 // Directory is in Web root of current application...
 // Move one directory up to get the "app root".
+$startTime = microtime(true);
 if(!defined("DS")) {
 	define("DS", DIRECTORY_SEPARATOR);
 }
@@ -239,5 +240,5 @@ if(isset($_GET["DebugBootstrap"])) {
 	exit;
 }
 
-return new Gt();
+return new Gt($startTime);
 ?>

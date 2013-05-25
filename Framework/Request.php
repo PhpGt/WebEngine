@@ -13,11 +13,12 @@ public $contentType;
 // Any page code can set this to true to stop executing any more page codes.
 public $pageCodeStop = false;
 
-public function __construct($config) {
+public function __construct($config, $t) {
 	date_default_timezone_set($config["App"]->getTimezone());
 	$this->contentType = "text/html";
 	//session_name("PhpGt_Session");
 	session_start();
+	$_SESSION["PhpGt_StartTime"] = $t;
 
 	if($config["App"]->isProduction()) {
 		if(isset($_SESSION["PhpGt_Development"])) {

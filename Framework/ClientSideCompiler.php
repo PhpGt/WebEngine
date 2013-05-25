@@ -10,11 +10,44 @@
 public function __construct($dom, $isCompiled) {
 	// Ensure all .scss files are pre-processed before anything else.
 	$this->preprocess($dom);
+	$this->allAppScriptInclude($dom["script[@allappscripts]"], $dom);
 
 	if($isCompiled) {
 		$this->compileStyleSheets($dom);
 		$this->compileJavaScript($dom);
 	}
+}
+
+private function allAppScriptInclude($allScriptTags, $dom) {
+	if($allScriptTags->length == 0) {
+		return;
+	}
+	// Find all .js files within Script directory.
+	$fileArray = array();
+	$dir = APPROOT . "/Script";
+	$iterator = new RecursiveDirectoryIterator($dir,
+		RecursiveIteratorIterator::CHILD_FIRST
+		| FilesystemIterator::SKIP_DOTS
+		| FilesystemIterator::UNIX_PATHS);
+	
+	$fileList = new RecursiveIteratorIterator(
+		$iterator, RecursiveIteratorIterator::SELF_FIRST);
+	foreach ($fileList as $key => $value) {
+		if(!is_file($key)) {
+			continue;
+		}
+		if(pathinfo($key, PATHINFO_EXTENSION) == "js") {
+			$fileArray[] = $key;
+		}
+	}
+
+	foreach ($fileArray as $file) {
+		$file = str_replace(APPROOT . "/Script/", "/", $file);
+		$scriptElement = $dom->createElement("script", ["src" => $file]);
+		$allScriptTags[0]->parentNode->appendChild($scriptElement);
+	}
+	$allScriptTags->remove();
+	return;
 }
 
 /**

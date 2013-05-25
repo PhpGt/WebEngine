@@ -122,6 +122,8 @@ public function checkAuth($auth) {
 	$providerList = $auth->providerList;
 	$oAuthMissing = array();
 	foreach ($providerList as $provider) {
+		// TODO: BUG: This line isn't cached, and dramatically increases
+		// rendering time!
 		$profile = $auth->getProfile($provider);
 		$uid = $profile->identifier;
 		$oauth_uuid = $provider . $uid;
@@ -176,6 +178,7 @@ public function checkAuth($auth) {
 			"oauth_name" => $provider,
 		]);
 	}
+
 
 	// Assign the user details to the session object, taking all dbUser fields
 	// and adding extras.

@@ -9,7 +9,7 @@
  * the response. The final task is to compute all code and render the page. This
  * is done by the Dispatcher.
  */
-public function __construct() {
+public function __construct($t) {
 	// set_error_handler(array("ErrorHandler", "error"), 
 	// 	E_ALL & E_NOTICE & E_RECOVERABLE_ERROR);
 
@@ -35,7 +35,7 @@ public function __construct() {
 	);
 
 	// Compute the request, instantiating the relavent PageCode/Api.
-	$request       = new Request($config);
+	$request       = new Request($config, $t);
 	$response      = new Response($request);
 
 	// Execute the page lifecycle from the Dispatcher.
