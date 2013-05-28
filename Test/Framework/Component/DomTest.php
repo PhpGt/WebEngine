@@ -1,12 +1,10 @@
-<?php 
-namespace Framework\Component;
-class DomTest extends PHPUnit_Framework_TestCase {
+<?php class DomTest extends PHPUnit_Framework_TestCase {
 
 public function setup() {
-	define("GTROOT", "/home/g105b/Webroot/PHP.Gt/");
+	define("GTROOT", getcwd() . "/");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
-	require_once(GTROOT . "Framework/Component/DomEl.cmp.php");
-	require_once(GTROOT . "Framework/Component/DomElCollection.cmp.php");
+	require_once(GTROOT . "Framework/Component/DomEl.php");
+	require_once(GTROOT . "Framework/Component/DomElCollection.php");
 }
 
 public function testDomIsDom() {
