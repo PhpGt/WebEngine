@@ -461,7 +461,8 @@ public function __get($key) {
 		if(property_exists($this->node, $key)) {
 			// Attempt to never pass a native DOMElement without converting
 			// to DomEl wrapper class.
-			if($this->node->$key instanceof DOMNode) {
+			if($this->node->$key instanceof DOMNode
+			&& !$this->node->$key instanceof DOMDocument) {
 				return $this->_dom->create($this->node->$key);
 			}
 			return $this->node->$key;

@@ -5,12 +5,18 @@ public function setup() {
 	require_once(GTROOT . "/Framework/Component/Dom.php");
 	require_once(GTROOT . "Framework/Component/DomEl.php");
 	require_once(GTROOT . "Framework/Component/DomElCollection.php");
+	require_once(GTROOT . "Framework/Component/DomElClassList.php");
 }
 
-public function testDomIsDom() {
+public function testDomElInDom() {
 	$dom = new Dom();
-	$dom2 = new Dom();
-	$this->assertTrue(gettype($dom) === gettype($dom2));
+	$el = $dom->create("div");
+
+	$domDoc = $dom->getDomDoc();
+	$ownerOfEl = $el->ownerDocument;
+	
+	$this->assertEquals($domDoc, $ownerOfEl);
+	$this->assertTrue(get_class($domDoc) === get_class($ownerOfEl));
 }
 
 }#
