@@ -195,6 +195,7 @@ public function authenticate($provider) {
 }
 
 public function logout() {
+	unset($_SESSION["PhpGt_Auth"]);
 	$this->hybridAuth->logoutAllProviders();
 	return;
 }
