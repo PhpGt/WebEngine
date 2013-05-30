@@ -6,9 +6,13 @@ private $_ch;
 
 public $response = array();
 
-public function __construct() {
+public function __construct($url = null) {
 	require_once(__DIR__ . "/Http_Exception.class.php");
 	$this->_ch = curl_init();
+
+	if(!is_null($url)) {
+		$this->execute($url);
+	}
 }
 
 public function __destruct() {
@@ -125,9 +129,9 @@ public function execute($url, $method = "GET", $parameters = array()) {
 		$headers[$key] = $value;
 	}
 
-	$this->response["Header"] = $header;
-	$this->response["Headers"] = $headers;
-	$this->response["Body"] = $body;
+	$this->response["header"] = $header;
+	$this->response["headers"] = $headers;
+	$this->response["body"] = $body;
 
 	return true;
 }
