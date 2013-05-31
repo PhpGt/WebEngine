@@ -14,8 +14,8 @@ protected $_charset = "utf8";
 protected $_name;
 protected $_user;
 protected $_pass;
-
 protected $_driver = "mysql";
+protected $_timezone = "+0:00";
 
 // The creation order of PHP.Gt tables (some may rely on others in foreign
 // key constraints, for example).
@@ -63,7 +63,8 @@ public function getSettings() {
 		"Username"	=> $this->_user,
 		"Password"	=> $this->_pass,
 		"DbName" 	=> $this->_name,
-		"Host"		=> $this->_host
+		"Host"		=> $this->_host,
+		"Timezone"	=> $this->_timezone,
 	);
 }
 

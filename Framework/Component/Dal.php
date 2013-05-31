@@ -56,7 +56,7 @@ public function connect() {
 		$this->_dbh->setAttribute(
 			PDO::ATTR_ERRMODE,
 			PDO::ERRMODE_EXCEPTION);
-		$this->_dbh->query("SET time_zone='+0:00';");
+		$this->_dbh->query("SET time_zone='{$this->_config["Timezone"]}';");
 	}
 	catch(PDOException $e) {
 		// TODO: Proper error handling.
