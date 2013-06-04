@@ -97,7 +97,6 @@ else {
 }
 
 $path = str_replace("//", "/", "/$dirName/$fileName");
-var_dump($dirName, $path, $fileName);die();
 
 define("URL",		$pageUrl);
 define("VER",       "1.0");
