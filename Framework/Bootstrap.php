@@ -96,6 +96,9 @@ else {
 	$pageUrl .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
 }
 
+$path = str_replace("//", "/", "/$dirName/$fileName");
+var_dump($dirName, $path, $fileName);die();
+
 define("URL",		$pageUrl);
 define("VER",       "1.0");
 define("APPNAME",   $appName);
@@ -103,6 +106,7 @@ define("GTROOT",    dirname(dirname(__FILE__)));
 define("APPROOT",   getcwd());
 define("DIR",       $dirName);
 define("BASEDIR",   $baseDir);
+define("PATH",		$path);
 define("FILE",      $fileName);
 define("EXT",       $extension);
 define("DIRPATH",   $dirPath);
