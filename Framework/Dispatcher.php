@@ -48,12 +48,20 @@ public function __construct($response, $config) {
 	if($response->mtimeView === false) {
 		// There is no PageView! Allow PageCode's go function to be invoked,
 		// but there's no need to pass in any Dom, Template or Tool.
+		$pageToolWrapper = new PageToolWrapper(
+			$apiWrapper, $emptyObject, $emptyObject);
 		$response->dispatch(
-			"go",
+			"setVars",
 			$apiWrapper,
 			$emptyObject,
 			$emptyObject,
-			$emptyObject);
+			$pageToolWrapper,
+			$config["App"]);
+		$response->dispatch("go",
+			$apiWrapper,
+			$emptyObject,
+			$emptyObject,
+			$pageToolWrapper);
 		throw new HttpError(404);
 	}
 
