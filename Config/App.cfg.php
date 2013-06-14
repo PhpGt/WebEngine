@@ -16,7 +16,7 @@ protected $_timezone = "UTC";
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
 protected $_directoryUrls = false;
-private $_reserved = array("Gt", "admin");
+private $_reserved = array("Gt");
 
 public function __construct() { }
 
