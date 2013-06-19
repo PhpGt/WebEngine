@@ -280,7 +280,8 @@ _nodeListHelpers = {
 			"removeAttributeNS",
 			"removeAttributeNode",
 			"removeEventListener",
-			"replace"
+			"replace",
+			"reset"
 		]
 	}
 },
