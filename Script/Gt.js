@@ -442,7 +442,8 @@ tool = function(name) {
  */
 http = function(url /*,[method],[properties],[callback],[xhr],[responseType]*/){
 	var method, responseType, properties, callback, xhr, arg_i, data,
-		queryString, qsChar, qsArray, qsArrayEl, qsProperties, prop;
+		queryString, qsChar, qsArray, qsArrayEl, qsProperties, prop,
+		formData;
 
 	for(arg_i = 1; arg_i < arguments.length; arg_i++) {
 		if(typeof arguments[arg_i] == "string") {
@@ -524,7 +525,15 @@ http = function(url /*,[method],[properties],[callback],[xhr],[responseType]*/){
 		xhr.responseType = responseType;
 	}
 	if(method == "post" || method == "put") {
-		xhr.send(properties);
+		formData = new FormData();
+		for(prop in properties) {
+			if(!properties.hasOwnProperty(prop)) {
+				continue;
+			}
+			formData.append(prop, properties[prop]);
+		}
+		
+		xhr.send(formData);
 	}
 	else {
 		xhr.send();
