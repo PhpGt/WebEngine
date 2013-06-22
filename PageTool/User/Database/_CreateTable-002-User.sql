@@ -1,8 +1,8 @@
 create table if not exists `User` (
-	`ID`					int			not null	auto_increment	primary key,
+	`ID`					int	unsigned not null	auto_increment	primary key,
 	`uuid`					varchar(128)null,
-	`FK_User_Type`			int			not null	default 1,
-	`FK_User__orphanedBy`	int			null,
+	`FK_User_Type`			int	unsigned not null	default 1,
+	`FK_User__orphanedBy`	int	unsigned null,
 	-- username and password are used as fallback when oauth not used.
 	`username`				varchar(32)	null,
 	-- password should always be a bcrypted password! Not a hashed password!

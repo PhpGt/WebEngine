@@ -1,5 +1,5 @@
 create table if not exists `User_OAuth` (
-	`FK_User`				int			not null,
+	`FK_User`				int	unsigned not null,
 	`oauth_uuid`			varchar(128)not null,
 	`oauth_name`			varchar(32) not null,
 	primary key (`FK_User`, `oauth_uuid`),
