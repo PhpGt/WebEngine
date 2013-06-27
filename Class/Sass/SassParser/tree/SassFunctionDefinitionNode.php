@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassFunctionDefinitionNode extends SassNode {
+class SassFunctionDefinitionNode extends SassNode
+{
   const NODE_IDENTIFIER = FALSE;
   const MATCH = '/^@function\s+([_-\w]+)\s*(?:\((.*?)\))?\s*$/im';
   const IDENTIFIER = 1;
@@ -39,7 +40,8 @@ class SassFunctionDefinitionNode extends SassNode {
    * @param object source token
    * @return SassFunctionDefinitionNode
    */
-  public function __construct($token) {
+  public function __construct($token)
+  {
     // if ($token->level !== 0) {
     //   throw new SassFunctionDefinitionNodeException('Functions can only be defined at root level', $token);
     // }
@@ -66,8 +68,10 @@ class SassFunctionDefinitionNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return array the parsed node - an empty array
    */
-  public function parse($context) {
+  public function parse($context)
+  {
     $context->addFunction($this->name, $this);
+
     return array();
   }
 
@@ -75,7 +79,8 @@ class SassFunctionDefinitionNode extends SassNode {
    * Returns the arguments with default values for this function
    * @return array the arguments with default values for this function
    */
-  public function getArgs() {
+  public function getArgs()
+  {
     return $this->args;
   }
 
@@ -84,7 +89,8 @@ class SassFunctionDefinitionNode extends SassNode {
    * @param object token
    * @return boolean true if the token represents this type of node, false if not
    */
-  public static function isa($token) {
+  public static function isa($token)
+  {
     return $token->source[0] === self::NODE_IDENTIFIER;
   }
 
@@ -95,7 +101,8 @@ class SassFunctionDefinitionNode extends SassNode {
    * @throws SassReturn - if the @return is fired then this is thrown to break early
    * @return SassBoolean(false) - if no @return was fired, return false
    */
-  public function execute($pcontext, $provided) {
+  public function execute($pcontext, $provided)
+  {
     list($arguments, $context) = SassScriptFunction::fill_parameters($this->args, $provided, $pcontext, $this);
     $context->setVariables($arguments);
 

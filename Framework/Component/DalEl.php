@@ -41,7 +41,6 @@ public function __call($name, $args) {
 		$pathArray = array_merge($toolPathArray, $pathArray);
 	}
 
-	$sql = null;
 	foreach($pathArray as $path) {
 		if(file_exists($path . $fileName)) {
 			return $this->query($path . $fileName, $args);
@@ -113,6 +112,7 @@ private function query($sqlFile, $paramArray = array()) {
 		try {
 			$stmt->closeCursor();
 			$result = $stmt->execute();
+
 			// Find out the number of affected rows.
 			$rowCount = $stmt->rowCount();
 			if($rowCount > 0) {

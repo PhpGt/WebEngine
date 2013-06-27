@@ -1,3 +1,7 @@
+Version 201206271500 - Verbump, merge pr #119
+Version 201206181400 - Run PHP-CS-Fixer on all files to fix coding style
+Version 201306071300 - Version bump to reflect multiple merged pull requests
+Version 201304222300 - Version bump to reflect multiple merged pull requests
 Version 201211282000 - Version bump to reflect multiple pull requests being merged over time.
 Version 201209040040 - Fixed a bunch of issues
 Version 201209031740 - Almost up to 3.2.1; Directive interp, splats, new functions, some fixes

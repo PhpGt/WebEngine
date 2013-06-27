@@ -9,17 +9,18 @@
  * @subpackage  Sass.renderers
  */
 
-require_once('SassCompactRenderer.php');
-require_once('SassCompressedRenderer.php');
-require_once('SassExpandedRenderer.php');
-require_once('SassNestedRenderer.php');
+require_once 'SassCompactRenderer.php';
+require_once 'SassCompressedRenderer.php';
+require_once 'SassExpandedRenderer.php';
+require_once 'SassNestedRenderer.php';
 
 /**
  * SassRenderer class.
  * @package      PHamlP
  * @subpackage  Sass.renderers
  */
-class SassRenderer {
+class SassRenderer
+{
   /**#@+
    * Output Styles
    */
@@ -36,7 +37,8 @@ class SassRenderer {
    * @param string render style
    * @return SassRenderer
    */
-  public static function getRenderer($style) {
+  public static function getRenderer($style)
+  {
     switch ($style) {
       case self::STYLE_COMPACT:
         return new SassCompactRenderer();

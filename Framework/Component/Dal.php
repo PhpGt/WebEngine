@@ -23,9 +23,7 @@ public $_dbDeploy = null;
  */
 public function __construct($config) {
 	$this->_config = $config;
-	if(!isset($_SESSION["DbDeploy_TableCache"])) {
-		$_SESSION["DbDeploy_TableCache"] = array();
-	}
+	$_SESSION["DbDeploy_TableCache"] = array();
 }
 
 /**
@@ -250,7 +248,7 @@ public function createTableAndDependencies($tableName) {
 	}
 
 	// Only proceed if table doesn't already exist.
-	//if(!in_array($tableName, $_SESSION["DbDeploy_TableCache"])) {
+	if(!in_array($tableName, $_SESSION["DbDeploy_TableCache"])) {
 		$stmt = $this->_dbh->prepare("
 			select `TABLE_NAME`
 			from `information_schema`.`TABLES`
@@ -319,15 +317,7 @@ public function createTableAndDependencies($tableName) {
 			$this->_dbDeploy->tablesSkipped[] = $tableName;
 			return;
 		}
-	//}
-
-	// TODO: Doesn't seem to be setting cookie...
-	// Output the dbDeploy status as JSON into a session cookie.
-	setcookie("PhpGt_DbDeploy",
-		json_encode($this->_dbDeploy), 
-		0, 
-		"/"
-	);
+	}
 }
 
 }#

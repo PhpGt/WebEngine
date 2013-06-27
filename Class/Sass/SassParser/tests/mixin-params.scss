@@ -18,3 +18,11 @@ two {
 both {
 	@include test('one', 'two');
 }
+
+whitespace {
+  @include test ('one', 'two');
+}
+
+parens {
+  @include test('one', rgb(255, 255, 255) );
+}

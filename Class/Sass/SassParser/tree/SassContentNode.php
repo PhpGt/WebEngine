@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassContentNode extends SassNode {
+class SassContentNode extends SassNode
+{
   const MATCH = '/^(@content)(.*)$/i';
   const IDENTIFIER = 1;
 
@@ -29,7 +30,8 @@ class SassContentNode extends SassNode {
    * @param object source token
    * @return SassContentNode
    */
-  public function __construct($token) {
+  public function __construct($token)
+  {
     parent::__construct($token);
     preg_match(self::MATCH, $token->source, $matches);
 
@@ -45,10 +47,20 @@ class SassContentNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return array the parsed node
    */
-  public function parse($pcontext) {
+  public function parse($pcontext)
+  {
     $return = $this;
     $context = new SassContext($pcontext);
-    return ($context->getContent());
+
+    $children = array();
+    foreach ($context->getContent() as $child) {
+      $child->parent = $this->parent;
+      $ctx = new SassContext($pcontext->parent);
+      $ctx->variables = $pcontext->variables;
+      $children = array_merge($children, $child->parse($ctx));
+    }
+
+    return $children;
   }
 
   /**
@@ -56,7 +68,8 @@ class SassContentNode extends SassNode {
    * @param object token
    * @return boolean true if the token represents this type of node, false if not
    */
-  public static function isa($token) {
+  public static function isa($token)
+  {
     return $token->source[0] === self::NODE_IDENTIFIER;
   }
 }

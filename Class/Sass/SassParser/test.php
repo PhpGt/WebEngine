@@ -1,3 +1,4 @@
+<!-- Just load this in a browser and the tests will run! -->
 <html>
   <head>
     <title>PHamlP Test Suite</title>
@@ -5,10 +6,6 @@
   </head>
   <body>
     <?php
-
-    /**
-     * This file is horrible and not Drupal at all. Forgive me, I did not have time to write concise code.
-     */
 
     /* Testing for Sassy.
      *  Looks in tests* and compiles any .sass/.scss files

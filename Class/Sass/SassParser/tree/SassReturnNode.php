@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassReturnNode extends SassNode {
+class SassReturnNode extends SassNode
+{
   const NODE_IDENTIFIER = '+';
   const MATCH = '/^(@return\s+)(.*)$/i';
   const IDENTIFIER = 1;
@@ -31,10 +32,11 @@ class SassReturnNode extends SassNode {
    * @param object source token
    * @return SassReturnNode
    */
-  public function __construct($token) {
+  public function __construct($token)
+  {
     parent::__construct($token);
     preg_match(self::MATCH, $token->source, $matches);
-    
+
     if (empty($matches)) {
       return new SassBoolean('false');
     }
@@ -49,7 +51,8 @@ class SassReturnNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return array the parsed node
    */
-  public function parse($pcontext) {
+  public function parse($pcontext)
+  {
     $return = $this;
     $context = new SassContext($pcontext);
     $statement = $this->statement;
@@ -59,7 +62,7 @@ class SassReturnNode extends SassNode {
     $lexer = $script->lexer;
 
     $result = $script->evaluate($statement, $context);
-    
+
     throw new SassReturn($result);
   }
 
@@ -68,13 +71,16 @@ class SassReturnNode extends SassNode {
    * @param object token
    * @return boolean true if the token represents this type of node, false if not
    */
-  public static function isa($token) {
+  public static function isa($token)
+  {
     return $token->source[0] === self::NODE_IDENTIFIER;
   }
 }
 
-class SassReturn extends Exception {
-  function __construct($value) {
+class SassReturn extends Exception
+{
+  public function __construct($value)
+  {
     $this->value = $value;
   }
 }

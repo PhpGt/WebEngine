@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassRuleNode extends SassNode {
+class SassRuleNode extends SassNode
+{
   const MATCH = '/^(.+?)(?:\s*\{)?$/';
   const SELECTOR = 1;
   const CONTINUED = ',';
@@ -51,7 +52,8 @@ class SassRuleNode extends SassNode {
    * @param string rule selector
    * @return SassRuleNode
    */
-  public function __construct($token) {
+  public function __construct($token)
+  {
     parent::__construct($token);
     preg_match(self::MATCH, $token->source, $matches);
     $this->addSelectors($matches[SassRuleNode::SELECTOR]);
@@ -62,7 +64,8 @@ class SassRuleNode extends SassNode {
    * If the selectors are to continue for the rule the selector must end in a comma
    * @param string selector
    */
-  public function addSelectors($selectors, $explode = true) {
+  public function addSelectors($selectors, $explode = true)
+  {
     $this->isContinued = substr($selectors, -1) === self::CONTINUED;
     $this->selectors = array_merge($this->selectors, $explode ? $this->explode($selectors) : $selectors);
   }
@@ -72,7 +75,8 @@ class SassRuleNode extends SassNode {
    * @param boolean true if the selectors for this rule are to be continued,
    * false if not
    */
-  public function getIsContinued() {
+  public function getIsContinued()
+  {
     return $this->isContinued;
   }
 
@@ -81,10 +85,12 @@ class SassRuleNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return array the parsed node and its children
    */
-  public function parse($context) {
+  public function parse($context)
+  {
     $node = clone $this;
     $node->selectors = $this->resolveSelectors($context);
     $node->children = $this->parseChildren($context);
+
     return array($node);
   }
 
@@ -92,7 +98,8 @@ class SassRuleNode extends SassNode {
    * Render this node and its children to CSS.
    * @return string the rendered node
    */
-  public function render() {
+  public function render()
+  {
     $this->extend();
     $rules = '';
     $properties = array();
@@ -101,8 +108,7 @@ class SassRuleNode extends SassNode {
       $child->parent = $this;
       if ($child instanceof SassRuleNode) {
         $rules .= $child->render();
-      }
-      else {
+      } else {
         $properties[] = $child->render();
       }
     }
@@ -116,13 +122,13 @@ class SassRuleNode extends SassNode {
    * $extender is the selector that contains the @extend directive
    * $selector a selector or selector sequence that is to be extended
    */
-  public function extend() {
+  public function extend()
+  {
     foreach ($this->root->getExtenders() as $extendee => $extenders) {
       if ($this->isPsuedo($extendee)) {
         $extendee = explode(':', $extendee);
         $pattern = preg_quote($extendee[0]).'((\.[-\w]+)*):'.preg_quote($extendee[1]);
-      }
-      else {
+      } else {
         $pattern = preg_quote($extendee);
       }
 
@@ -138,11 +144,9 @@ class SassRuleNode extends SassNode {
           }
           if (is_array($extendee)) {
             $this->selectors[] = preg_replace('/(.*?)'.$pattern.'([^a-zA-Z0-9_-]|$)/', '$1' . $extender . '$2', $selector);
-          }
-          elseif ($this->isSequence($extender) || $this->isSequence($selector)) {
+          } elseif ($this->isSequence($extender) || $this->isSequence($selector)) {
             $this->selectors = array_merge($this->selectors, $this->mergeSequence($extender, $extendee, $selector));
-          }
-          else {
+          } else {
             $this->selectors[] = str_replace($extendee, $extender, $selector);
           }
         }
@@ -156,7 +160,8 @@ class SassRuleNode extends SassNode {
    * @param string selector to test
    * @return boolean true if the selector is a psuedo selector, false if not
    */
-  private function isPsuedo($selector) {
+  private function isPsuedo($selector)
+  {
     return strpos($selector, ':') !== false;
   }
 
@@ -165,11 +170,13 @@ class SassRuleNode extends SassNode {
    * @param string selector to test
    * @return boolean true if the selector is a sequence selector, false if not
    */
-  private function isSequence($selector) {
+  private function isSequence($selector)
+  {
     return strpos($selector, ' ') !== false;
   }
 
-  public function isPlaceholder($selector) {
+  public function isPlaceholder($selector)
+  {
     return strpos($selector, '%') !== false;
   }
 
@@ -179,7 +186,8 @@ class SassRuleNode extends SassNode {
    * @param string selector to extend
    * @return array the merged sequences
    */
-  private function mergeSequence($extender, $extendee, $selector) {
+  private function mergeSequence($extender, $extendee, $selector)
+  {
     // if it's a placeholder, be lazy. Needs tests.
     if ($extendee[0] == '%') {
       // need to stop things like a%foo accepting div { @extend %foo }
@@ -193,7 +201,7 @@ class SassRuleNode extends SassNode {
 
     $common = array();
     if (count($extender) && count($selector)) {
-      while(trim($extender[0]) === trim($selector[0])) {
+      while (trim($extender[0]) === trim($selector[0])) {
         $common[] = array_shift($selector);
         array_shift($extender);
         if (!count($extender)) {
@@ -207,6 +215,7 @@ class SassRuleNode extends SassNode {
     # Richard Lyon - 2011-10-25 - removes duplicates by uniquing and trimming.
     # regex removes whitespace from start and and end of string as well as removing
     # whitespace following whitespace. slightly quicker than a trim and simpler replace
+
     return array_unique(array(
       preg_replace('/(^\s+|(\s)\s+|\s+$)/', '$2', $beginning.join(' ', $selector).' '.join(' ', $extender). ' ' . $end),
       preg_replace('/(^\s+|(\s)\s+|\s+$)/', '$2', $beginning.join(' ', $extender).' '.join(' ', $selector). ' ' . $end)
@@ -217,7 +226,8 @@ class SassRuleNode extends SassNode {
    * Returns the selectors
    * @return array selectors
    */
-  public function getSelectors() {
+  public function getSelectors()
+  {
     return $this->selectors;
   }
 
@@ -229,7 +239,8 @@ class SassRuleNode extends SassNode {
    *
    * Change: 7/Dec/11 - change to make selector ordering conform to Ruby compiler.
    */
-  public function resolveSelectors($context) {
+  public function resolveSelectors($context)
+  {
     $resolvedSelectors = $normalSelectors = array();
     $this->parentSelectors = $this->getParentSelectors($context);
 
@@ -241,8 +252,7 @@ class SassRuleNode extends SassNode {
         $selector = trim($selector, ' \'"'); // strip whitespace and quotes, just-in-case.
         if ($this->hasParentReference($selector)) {
           $resolvedSelectors = array_merge($resolvedSelectors, $this->resolveParentReferences($selector, $context));
-        }
-        else {
+        } else {
           $normalSelectors[] = $selector;
         }
       }
@@ -269,7 +279,8 @@ class SassRuleNode extends SassNode {
    * This in an empty array if there is no parent selector.
    * @return array the parent selector for this node
    */
-  protected function getParentSelectors($context) {
+  protected function getParentSelectors($context)
+  {
     $ancestor = $this->parent;
     while (!$ancestor instanceof SassRuleNode && $ancestor->hasParent()) {
       $ancestor = $ancestor->parent;
@@ -278,6 +289,7 @@ class SassRuleNode extends SassNode {
     if ($ancestor instanceof SassRuleNode) {
       return $ancestor->resolveSelectors($context);
     }
+
     return array();
   }
 
@@ -291,20 +303,20 @@ class SassRuleNode extends SassNode {
    * @return mixed integer: position of the the first parent reference,
    * boolean: false if there is no parent reference.
    */
-  private function parentReferencePos($selector) {
+  private function parentReferencePos($selector)
+  {
     $inString = '';
     for ($i = 0, $l = strlen($selector); $i < $l; $i++) {
       $c = $selector[$i];
       if ($c === self::PARENT_REFERENCE && empty($inString)) {
         return $i;
-      }
-      elseif (empty($inString) && ($c === '"' || $c === "'")) {
+      } elseif (empty($inString) && ($c === '"' || $c === "'")) {
         $inString = $c;
-      }
-      elseif ($c === $inString) {
+      } elseif ($c === $inString) {
         $inString = '';
       }
     }
+
     return false;
   }
 
@@ -313,7 +325,8 @@ class SassRuleNode extends SassNode {
    * @param string selector
    * @return boolean true if there is a parent reference in the selector
    */
-  private function hasParentReference($selector) {
+  private function hasParentReference($selector)
+  {
     return $this->parentReferencePos($selector) !== false;
   }
 
@@ -322,7 +335,8 @@ class SassRuleNode extends SassNode {
    * @param string selector
    * @return string selector with parent references resolved
    */
-  private function resolveParentReferences($selector, $context) {
+  private function resolveParentReferences($selector, $context)
+  {
     $resolvedReferences = array();
     if (!count($this->parentSelectors)) {
       throw new SassRuleNodeException('Can not use parent selector (' . self::PARENT_REFERENCE . ') when no parent selectors', $this);
@@ -330,6 +344,7 @@ class SassRuleNode extends SassNode {
     foreach ($this->getParentSelectors($context) as $parentSelector) {
       $resolvedReferences[] = str_replace(self::PARENT_REFERENCE, $parentSelector, $selector);
     }
+
     return $resolvedReferences;
   }
 
@@ -340,7 +355,8 @@ class SassRuleNode extends SassNode {
    * @param string selectors
    * @return array selectors
    */
-  private function explode($string) {
+  private function explode($string)
+  {
     $selectors = array();
     $inString = false;
     $interpolate = false;
@@ -351,16 +367,14 @@ class SassRuleNode extends SassNode {
       if ($c === self::CONTINUED && !$inString && !$interpolate) {
         $selectors[] = trim($selector);
         $selector = '';
-      }
-      else {
+      } else {
         $selector .= $c;
         if ($c === '"' || $c === "'") {
           do {
             $_c = $string[++$i];
             $selector .= $_c;
           } while ($_c !== $c && isset($string[$i+1]));
-        }
-        elseif ($c === '#' && $string[$i+1] === '{') {
+        } elseif ($c === '#' && $string[$i+1] === '{') {
           do {
             $c = $string[++$i];
             $selector .= $c;

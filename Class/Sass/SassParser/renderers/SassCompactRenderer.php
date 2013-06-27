@@ -9,7 +9,7 @@
  * @subpackage  Sass.renderers
  */
 
-require_once('SassCompressedRenderer.php');
+require_once 'SassCompressedRenderer.php';
 
 /**
  * SassCompactRenderer class.
@@ -19,7 +19,8 @@ require_once('SassCompressedRenderer.php');
  * @package      PHamlP
  * @subpackage  Sass.renderers
  */
-class SassCompactRenderer extends SassCompressedRenderer {
+class SassCompactRenderer extends SassCompressedRenderer
+{
   const DEBUG_INFO_RULE = '@media -sass-debug-info';
   const DEBUG_INFO_PROPERTY = 'font-family';
 
@@ -27,7 +28,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * Renders the brace between the selectors and the properties
    * @return string the brace between the selectors and the properties
    */
-  protected function between() {
+  protected function between()
+  {
     return ' { ';
   }
 
@@ -35,7 +37,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * Renders the brace at the end of the rule
    * @return string the brace between the rule and its properties
    */
-  protected function end() {
+  protected function end()
+  {
     return " }\n";
   }
 
@@ -46,8 +49,10 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param SassNode the node being rendered
    * @return string the rendered commnt
    */
-  public function renderComment($node) {
+  public function renderComment($node)
+  {
     $nl = ($node->parent instanceof SassRuleNode?'':"\n");
+
     return "$nl/* " . join("\n * ", $node->children) . " */$nl" ;
   }
 
@@ -57,7 +62,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param array properties of the directive
    * @return string the rendered directive
    */
-  public function renderDirective($node, $properties) {
+  public function renderDirective($node, $properties)
+  {
     return str_replace("\n", '', parent::renderDirective($node, $properties)) .
       "\n\n";
   }
@@ -68,7 +74,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param array properties to render
    * @return string the rendered properties
    */
-  public function renderProperties($node, $properties) {
+  public function renderProperties($node, $properties)
+  {
     return join(' ', $properties);
   }
 
@@ -77,8 +84,10 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param SassNode the node being rendered
    * @return string the rendered property
    */
-  public function renderProperty($node) {
+  public function renderProperty($node)
+  {
     $node->important = $node->important ? ' !important' : '';
+
     return "{$node->name}: {$node->value}{$node->important};";
   }
 
@@ -89,7 +98,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param string rendered rules
    * @return string the rendered rule
    */
-  public function renderRule($node, $properties, $rules) {
+  public function renderRule($node, $properties, $rules)
+  {
     return $this->renderDebug($node) . parent::renderRule($node, $properties,
       str_replace("\n\n", "\n", $rules)) . "\n";
   }
@@ -104,7 +114,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param SassNode the node being rendered
    * @return string the debug information
    */
-  protected function renderDebug($node) {
+  protected function renderDebug($node)
+  {
     $indent = $this->getIndent($node);
     $debug = '';
 
@@ -114,10 +125,10 @@ class SassCompactRenderer extends SassCompressedRenderer {
       $debug .= 'filename{' . self::DEBUG_INFO_PROPERTY . ':' . preg_replace('/([^-\w])/', '\\\\\1', "file://{$node->filename}") . ';}';
       $debug .= 'line{' . self::DEBUG_INFO_PROPERTY . ":'{$node->line}';}";
       $debug .= "}\n";
-    }
-    elseif ($node->line_numbers) {
+    } elseif ($node->line_numbers) {
       $debug .= "$indent/* line {$node->line} {$node->filename} */\n";
     }
+
     return $debug;
   }
 
@@ -126,7 +137,8 @@ class SassCompactRenderer extends SassCompressedRenderer {
    * @param SassNode the node being rendered
    * @return string the rendered selectors
    */
-  protected function renderSelectors($node) {
+  protected function renderSelectors($node)
+  {
     return join(', ', $node->selectors);
   }
 }

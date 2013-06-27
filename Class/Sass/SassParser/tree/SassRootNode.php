@@ -18,7 +18,8 @@ require_once(dirname(__FILE__).'/../renderers/SassRenderer.php');
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassRootNode extends SassNode {
+class SassRootNode extends SassNode
+{
   /**
    * @var SassScriptParser SassScript parser
    */
@@ -46,7 +47,8 @@ class SassRootNode extends SassNode {
    * @param SassParser Sass parser
    * @return SassNode
    */
-  public function __construct($parser) {
+  public function __construct($parser)
+  {
     parent::__construct((object) array(
       'source' => '',
       'level' => -1,
@@ -66,9 +68,11 @@ class SassRootNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return SassNode root node of the render tree
    */
-  public function parse($context) {
+  public function parse($context)
+  {
     $node = clone $this;
     $node->children = $this->parseChildren($context);
+
     return $node;
   }
 
@@ -76,17 +80,20 @@ class SassRootNode extends SassNode {
    * Render this node.
    * @return string the rendered node
    */
-  public function render($context = null) {
+  public function render($context = null)
+  {
     $context = new SassContext($context);
     $node = $this->parse($context);
     $output = '';
     foreach ($node->children as $child) {
       $output .= $child->render();
     } // foreach
+
     return $output;
   }
 
-  public function extend($extendee, $selectors) {
+  public function extend($extendee, $selectors)
+  {
     if ($this->extend_parent && method_exists($this->extend_parent, 'extend')) {
       return $this->extend_parent->extend($extendee, $selectors);
     }
@@ -94,10 +101,12 @@ class SassRootNode extends SassNode {
       ? array_merge($this->extenders[$extendee], $selectors) : $selectors);
   }
 
-  public function getExtenders() {
+  public function getExtenders()
+  {
     if ($this->extend_parent && method_exists($this->extend_parent, 'getExtenders')) {
       return $this->extend_parent->getExtenders();
     }
+
     return $this->extenders;
   }
 
@@ -106,7 +115,8 @@ class SassRootNode extends SassNode {
    * Child classes must override this method.
    * @throws SassNodeException if not overriden
    */
-  public static function isa($line) {
+  public static function isa($line)
+  {
     throw new SassNodeException('Child classes must override this method');
   }
 }

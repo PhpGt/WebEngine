@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassMixinDefinitionNode extends SassNode {
+class SassMixinDefinitionNode extends SassNode
+{
   const NODE_IDENTIFIER = '=';
   const MATCH = '/^(=|@mixin\s+)([-\w]+)\s*(?:\((.*?)\))?\s*$/im';
   const IDENTIFIER = 1;
@@ -37,7 +38,8 @@ class SassMixinDefinitionNode extends SassNode {
    * @param object source token
    * @return SassMixinDefinitionNode
    */
-  public function __construct($token) {
+  public function __construct($token)
+  {
     preg_match(self::MATCH, $token->source, $matches);
     parent::__construct($token);
     if (empty($matches)) {
@@ -55,8 +57,10 @@ class SassMixinDefinitionNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return array the parsed node - an empty array
    */
-  public function parse($context) {
+  public function parse($context)
+  {
     $context->addMixin($this->name, $this);
+
     return array();
   }
 
@@ -64,7 +68,8 @@ class SassMixinDefinitionNode extends SassNode {
    * Returns the arguments with default values for this mixin
    * @return array the arguments with default values for this mixin
    */
-  public function getArgs() {
+  public function getArgs()
+  {
     return $this->args;
   }
 
@@ -73,7 +78,8 @@ class SassMixinDefinitionNode extends SassNode {
    * @param object token
    * @return boolean true if the token represents this type of node, false if not
    */
-  public static function isa($token) {
+  public static function isa($token)
+  {
     return $token->source[0] === self::NODE_IDENTIFIER;
   }
 }

@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassDebugNode extends SassNode {
+class SassDebugNode extends SassNode
+{
   const IDENTIFIER = '@';
   const MATCH = '/^@(?:debug|warn)\s+(.+?)\s*;?$/';
   const MESSAGE = 1;
@@ -44,13 +45,13 @@ class SassDebugNode extends SassNode {
    * @param array parameters for the message
    * @return SassDebugNode
    */
-  public function __construct($token, $message = false) {
+  public function __construct($token, $message = false)
+  {
     parent::__construct($token);
     if (is_string($message)) {
       $this->message = $message;
       $this->warning = true;
-    }
-    else {
+    } else {
       preg_match(self::MATCH, $token->source, $matches);
       $this->message = $matches[self::MESSAGE];
       $this->warning = $message;
@@ -62,7 +63,8 @@ class SassDebugNode extends SassNode {
    * This raises an error.
    * @return array An empty array
    */
-  public function parse($context) {
+  public function parse($context)
+  {
     if (!$this->warning) {
       $result = $this->evaluate($this->message, $context)->toString();
 
@@ -84,7 +86,8 @@ class SassDebugNode extends SassNode {
    * @param int Error number
    * @param string Message
    */
-  public function errorHandler($errno, $message) {
+  public function errorHandler($errno, $message)
+  {
     echo '<div style="background-color:#ce4dd6;border-bottom:1px dashed #88338d;color:white;font:10pt verdana;margin:0;padding:0.5em 2%;width:96%;"><p style="height:auto;margin:0.25em 0;padding:0;width:100%;"><span style="font-weight:bold;">SASS '.($this->warning ? 'WARNING' : 'DEBUG').":</span> $message</p><p style=\"margin:0.1em;padding:0;padding-left:0.5em;width:100%;\">{$this->filename}::{$this->line}</p><p style=\"margin:0.1em;padding:0;padding-left:0.5em;width:100%;\">Source: {$this->source}</p></div>";
   }
 }

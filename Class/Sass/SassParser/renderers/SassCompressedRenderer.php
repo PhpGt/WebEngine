@@ -16,12 +16,14 @@
  * @package      PHamlP
  * @subpackage  Sass.renderers
  */
-class SassCompressedRenderer extends SassRenderer {
+class SassCompressedRenderer extends SassRenderer
+{
   /**
    * Renders the brace between the selectors and the properties
    * @return string the brace between the selectors and the properties
    */
-  protected function between() {
+  protected function between()
+  {
     return '{';
   }
 
@@ -29,7 +31,8 @@ class SassCompressedRenderer extends SassRenderer {
    * Renders the brace at the end of the rule
    * @return string the brace between the rule and its properties
    */
-  protected function end() {
+  protected function end()
+  {
     return '}';
   }
 
@@ -38,7 +41,8 @@ class SassCompressedRenderer extends SassRenderer {
    * @param SassNode the node to return the indent string for
    * @return string the indent string for this SassNode
    */
-  protected function getIndent($node) {
+  protected function getIndent($node)
+  {
     return '';
   }
 
@@ -47,7 +51,8 @@ class SassCompressedRenderer extends SassRenderer {
    * @param SassNode the node being rendered
    * @return string the rendered comment
    */
-  public function renderComment($node) {
+  public function renderComment($node)
+  {
     return '';
   }
 
@@ -57,7 +62,8 @@ class SassCompressedRenderer extends SassRenderer {
    * @param array properties of the directive
    * @return string the rendered directive
    */
-  public function renderDirective($node, $properties) {
+  public function renderDirective($node, $properties)
+  {
     return $node->directive . $this->between() . $this->renderProperties($node, $properties) . $this->end();
   }
 
@@ -67,7 +73,8 @@ class SassCompressedRenderer extends SassRenderer {
    * @param array properties to render
    * @return string the rendered properties
    */
-  public function renderProperties($node, $properties) {
+  public function renderProperties($node, $properties)
+  {
     return join('', $properties);
   }
 
@@ -76,8 +83,10 @@ class SassCompressedRenderer extends SassRenderer {
    * @param SassNode the node being rendered
    * @return string the rendered property
    */
-  public function renderProperty($node) {
+  public function renderProperty($node)
+  {
     $node->important = $node->important ? '!important' : '';
+
     return "{$node->name}:{$node->value}{$node->important};";
   }
 
@@ -88,7 +97,8 @@ class SassCompressedRenderer extends SassRenderer {
    * @param string rendered rules
    * @return string the rendered directive
    */
-  public function renderRule($node, $properties, $rules) {
+  public function renderRule($node, $properties, $rules)
+  {
     $selectors = $this->renderSelectors($node);
     if ($selectors) {
       return (!empty($properties) ? $selectors . $this->between() . $this->renderProperties($node, $properties) . $this->end() : '') . $rules;
@@ -100,7 +110,8 @@ class SassCompressedRenderer extends SassRenderer {
    * @param SassNode the node being rendered
    * @return string the rendered selectors
    */
-  protected function renderSelectors($node) {
+  protected function renderSelectors($node)
+  {
     $selectors = array();
     foreach ($node->selectors as $selector) {
       if (!$node->isPlaceholder($selector)) {

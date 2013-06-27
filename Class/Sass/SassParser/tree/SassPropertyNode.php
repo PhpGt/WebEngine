@@ -15,7 +15,8 @@
  * @package      PHamlP
  * @subpackage  Sass.tree
  */
-class SassPropertyNode extends SassNode {
+class SassPropertyNode extends SassNode
+{
   const MATCH_PROPERTY_SCSS = '/^([^\s=:"(\\\\:)]*)\s*(?:(= )|:)([^\:].*?)?(\s*!important.*)?$/';
   const MATCH_PROPERTY_NEW = '/^([^\s=:"]+)\s*(?:(= )|:)([^\:].*?)?(\s*!important.*)?$/';
   const MATCH_PROPERTY_OLD = '/^:([^\s=:]+)(?:\s*(=)\s*|\s+|$)(.*)(\s*!important.*)?/';
@@ -72,7 +73,6 @@ class SassPropertyNode extends SassNode {
    */
   public $value;
 
-
   /**
    * @var boolean, wether the property is important
    */
@@ -84,14 +84,14 @@ class SassPropertyNode extends SassNode {
    * @param string property syntax
    * @return SassPropertyNode
    */
-  public function __construct($token, $syntax = 'new') {
+  public function __construct($token, $syntax = 'new')
+  {
     parent::__construct($token);
     $matches = self::match($token, $syntax);
     $this->name = @$matches[self::NAME];
     if (!isset($matches[self::VALUE])) {
       $this->value = '';
-    }
-    else {
+    } else {
       $this->value = $matches[self::VALUE];
       if ($matches[self::SCRIPT] === self::IS_SCRIPT) {
         $this->addWarning('Setting CSS properties with "=" is deprecated; use "{name}: {value};"',
@@ -109,7 +109,8 @@ class SassPropertyNode extends SassNode {
    * @param SassContext the context in which this node is parsed
    * @return array the parsed node
    */
-  public function parse($context) {
+  public function parse($context)
+  {
     $return = array();
      if ($this->value !== "") {
       $node = clone $this;
@@ -123,6 +124,7 @@ class SassPropertyNode extends SassNode {
     if ($this->children) {
       $return = array_merge($return, $this->parseChildren($context));
     }
+
     return $return;
   }
 
@@ -130,7 +132,8 @@ class SassPropertyNode extends SassNode {
    * Render this node.
    * @return string the rendered node
    */
-  public function render() {
+  public function render()
+  {
     return $this->renderer->renderProperty($this);
   }
 
@@ -138,7 +141,8 @@ class SassPropertyNode extends SassNode {
    * Returns a value indicating if this node is in a namespace
    * @return boolean true if this node is in a property namespace, false if not
    */
-  public function inNamespace() {
+  public function inNamespace()
+  {
     $parent = $this->parent;
     do {
       if ($parent instanceof SassPropertyNode) {
@@ -146,6 +150,7 @@ class SassPropertyNode extends SassNode {
       }
       $parent = $parent->parent;
     } while (is_object($parent));
+
     return false;
   }
 
@@ -153,7 +158,8 @@ class SassPropertyNode extends SassNode {
    * Returns the namespace for this node
    * @return string the namespace for this node
    */
-  public function getNamespace() {
+  public function getNamespace()
+  {
     $namespace = array();
     $parent = $this->parent;
     do {
@@ -162,6 +168,7 @@ class SassPropertyNode extends SassNode {
       }
       $parent = $parent->parent;
     } while (is_object($parent));
+
     return join('-', array_reverse($namespace));
   }
 
@@ -170,7 +177,8 @@ class SassPropertyNode extends SassNode {
    * If the property is in a namespace the namespace is prepended
    * @return string the name of this property
    */
-  public function getName() {
+  public function getName()
+  {
     return $this->name;
   }
 
@@ -178,7 +186,8 @@ class SassPropertyNode extends SassNode {
    * Returns the parsed value of this property.
    * @return string the parsed value of this property
    */
-  public function getValue() {
+  public function getValue()
+  {
     return $this->value;
   }
 
@@ -188,11 +197,11 @@ class SassPropertyNode extends SassNode {
    * @param string the property syntax being used
    * @return boolean true if the token represents this type of node, false if not
    */
-  public static function isa($token) {
-    if(!is_array($token)) {
+  public static function isa($token)
+  {
+    if (!is_array($token)) {
       $syntax = 'old';
-    }
-    else {
+    } else {
       $syntax = $token['syntax'];
       $token = $token['token'];
     }
@@ -206,14 +215,13 @@ class SassPropertyNode extends SassNode {
       if ($token->level === 0) {
         # RL - if it's on the first level it's probably a false positive, not an error.
         # even if it is a genuine error, no need to kill the compiler about it.
+
         return false;
         // throw new SassPropertyNodeException('Properties can not be assigned at root level', $token);
-      }
-      else {
+      } else {
         return true;
       }
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -224,7 +232,8 @@ class SassPropertyNode extends SassNode {
    * @param string the property syntax being used
    * @return array matches
    */
-  public static function match($token, $syntax) {
+  public static function match($token, $syntax)
+  {
     switch ($syntax) {
       case 'scss':
         preg_match(self::MATCH_PROPERTY_SCSS, $token->source, $matches);
@@ -241,6 +250,7 @@ class SassPropertyNode extends SassNode {
         }
         break;
     }
+
     return $matches;
   }
 
@@ -255,8 +265,10 @@ class SassPropertyNode extends SassNode {
    * @param string the string to test
    * @return bool true if the string starts with a pseudo selector, false if not
    */
-  public static function isPseudoSelector($string) {
+  public static function isPseudoSelector($string)
+  {
     preg_match(self::MATCH_PSUEDO_SELECTOR, $string, $matches);
+
     return (isset($matches[0]) && in_array($matches[0], self::$psuedoSelectors)) ||
       preg_match(self::MATCH_INTERPOLATION, $string) ||
       preg_match(self::MATCH_PROPRIETARY_SELECTOR, $string);
