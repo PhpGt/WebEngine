@@ -85,6 +85,8 @@ public $config = array(
 	"debug_file" => "",
 );
 
+private $_data = null;
+
 private $hybridAuth = null;
 private $adapter = null;
 private $profile = null;
@@ -141,6 +143,14 @@ public function __construct($providerConfig = array()) {
 	}
 	$this->hybridAuth = new Hybrid_Auth($this->config);
 	return;
+}
+
+/**
+ * Allows setting of arbritary data, internally accessible by providers that
+ * require extra parameters or do not strictly follow OAuth2 spec.
+ */
+public function setData($data) {
+	$this->_data = $data;
 }
 
 /**
@@ -201,7 +211,7 @@ public function logout() {
 }
 
 public function getAdapter($provider) {
-	$adapter = $this->hybridAuth->authenticate($provider);
+	$adapter = $this->hybridAuth->authenticate($provider, $this->_data);
 	return $adapter;
 }
 
