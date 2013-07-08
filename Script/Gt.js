@@ -520,7 +520,6 @@ http = function(url /*,[method],[properties],[callback],[xhr],[responseType]*/){
 	}
 
 	xhr.open(method, url, true);
-	xhr.setRequestHeader("Gtjs", Gt.version);
 	if(responseType) {
 		xhr.responseType = responseType;
 	}
