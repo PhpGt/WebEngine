@@ -55,9 +55,6 @@ public function apiCall($dal) {
 			);
 
 			$this->_result = array();
-			if(empty($this->_dalResult)) {
-				return false;
-			}
 			foreach($this->_dalResult as $key => $value) {
 				$this->_result[$key] = $value;
 			}
