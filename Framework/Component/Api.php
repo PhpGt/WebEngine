@@ -16,7 +16,7 @@ private $_result 		= null;
 private $_dalResult		= null;
 
 private $_affectedRows	= null;
-private $_lastInsertId	= null;
+private $_lastInsertID	= null;
 
 private $_isTool		= false;
 
@@ -93,7 +93,7 @@ public function apiCall($dal) {
 			}
 
 			$this->_affectedRows = $this->_dalResult->affectedRows;
-			$this->_lastInsertId = $this->_dalResult->lastInsertId;
+			$this->_lastInsertID = $this->_dalResult->lastInsertID;
 			return true;
 		}
 		catch(PDOException $e) {
@@ -114,8 +114,8 @@ public function apiOutput() {
 	$json->method->params = $this->_methodParams;
 	$json->result = $this->_result;
 	$json->affectedRows = $this->_affectedRows;
-	$json->lastInsertId = $this->_lastInsertId != 0
-		? $this->_lastInsertId
+	$json->lastInsertID = $this->_lastInsertID != 0
+		? $this->_lastInsertID
 		: null;
 
 	echo json_encode($json);

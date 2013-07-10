@@ -81,7 +81,7 @@ public function getUser($auth = null) {
 		$result = $db->addAnon(["uuid" => $uuid]);
 		// Build an array that matches what is stored in the database.
 		$dbUser = array(
-			"ID" => $result->lastInsertId,
+			"ID" => $result->lastInsertID,
 			"uuid" => $uuid,
 			"username" => null,
 			"dateTimeIdentified" => null,

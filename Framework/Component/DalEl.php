@@ -128,7 +128,7 @@ private function query($sqlFile, $paramArray = array()) {
 			}
 			return new DalResult(
 				$stmt,
-				$this->_dal->lastInsertId(), 
+				$this->_dal->lastInsertID(), 
 				$sql, 
 				$this->_tableName);
 		}
