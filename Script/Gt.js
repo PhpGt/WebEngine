@@ -102,7 +102,8 @@ _helpers = {
 			var currentElement = this;
 			do {
 				currentElement = currentElement.parentElement;
-				if(currentElement.matches(selector)) {
+				if(currentElement
+				&& currentElement.matches(selector)) {
 					return currentElement;
 				}
 			}while(currentElement);
