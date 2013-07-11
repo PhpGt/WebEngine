@@ -309,7 +309,6 @@ _nodeListHelpers = {
 /**
  * Adds the above list of methods and properties to the NodeList prototype.
  */
-// TODO: MAKE THE PROPERTIES WORK - they are called as methods!
 _addNodeListHelpers = function() {
 	var addLen, i, fnName, helperType;
 	for(helperType in _nodeListHelpers) {
