@@ -235,9 +235,10 @@ _nodeListHelpers = {
 			"tabIndex",
 			"tagName",
 			"textContent",
-			"title"
+			"title",
 		],
 		"all": [
+			"checked",
 		]
 	},
 	"methods": {
@@ -288,7 +289,7 @@ _nodeListHelpers = {
 			"setAttributeNodeNS",
 			"setCapture",
 			"setUserData",
-			"insertAdjacentHTML"
+			"insertAdjacentHTML",
 		],
 		"all": [
 			"addEventListener",
@@ -300,7 +301,7 @@ _nodeListHelpers = {
 			"removeAttributeNode",
 			"removeEventListener",
 			"replace",
-			"reset"
+			"reset",
 		]
 	}
 },
@@ -318,44 +319,61 @@ _addNodeListHelpers = function() {
 		addLen = _nodeListHelpers[helperType].first.length;
 		for(i = 0; i < addLen; i++) {
 			fnName = _nodeListHelpers[helperType].first[i];
-			(function(c_fnName) {
-				if(helperType === "properties") {
+			(function(c_fnName, c_helperType) {
+				if(c_helperType === "properties") {
 					Object.defineProperty(NodeList.prototype, c_fnName, {
 						"get": function() {
 							return this.item(0) ? this.item(0)[c_fnName] : null;
 						},
 						"set": function(val) {
 							return this[c_fnName] = val;
-						}
-					})
+						},
+					});
 				}
-				else if(helperType === "methods") {
+				else if(c_helperType === "methods") {
 					NodeList.prototype[c_fnName] = function() {
 						return this.item(0)[c_fnName].apply(
 							this.item(0), 
 							arguments);
-					}
+					};
 				}
-			})(fnName);
+			})(fnName, helperType);
 		}
 
 		addLen = _nodeListHelpers[helperType].all.length;
 		for(i = 0; i < addLen; i++) {
 			fnName = _nodeListHelpers[helperType].all[i];
-			(function(c_fnName) {
-				NodeList.prototype[c_fnName] = function() {
-					var elLen = this.length,
-						el_i = 0,
-						result, currentResult, el;
-					for(; el_i < elLen; el_i++) {
-						el = this.item(el_i);
-						currentResult = el[c_fnName].apply(el, arguments);
-						result = result || currentResult;
-					}
-
-					return result;
+			(function(c_fnName, c_helperType) {
+				if(c_helperType === "properties") {
+					Object.defineProperty(NodeList.prototype, c_fnName, {
+						"get": function() {
+							return this.item(0)[c_fnName];
+						},
+						"set": function(val) {							
+							var elLen = this.length,
+								el_i = 0, result;
+							for(; el_i < elLen; el_i++) {
+								result = this.item(el_i)[c_fnName] = val;
+							}
+							return result;
+						},
+					});
 				}
-			})(fnName);
+				else if(c_helperType === "methods") {
+					NodeList.prototype[c_fnName] = function() {
+						var elLen = this.length,
+							el_i = 0,
+							result, currentResult, el;
+						for(; el_i < elLen; el_i++) {
+							el = this.item(el_i);
+							currentResult = el[c_fnName].apply(el, arguments);
+							result = result || currentResult;
+						}
+
+						return result;
+					};				
+				}
+			})(fnName, helperType);
 		}
 	}
 },
