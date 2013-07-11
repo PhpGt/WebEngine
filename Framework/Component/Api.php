@@ -15,7 +15,7 @@ private $_methodParams 	= null;
 private $_result 		= null;
 private $_dalResult		= null;
 
-private $_affectedRows	= null;
+private $_affectedRows	= 0;
 private $_lastInsertId	= null;
 
 private $_isTool		= false;
