@@ -115,8 +115,8 @@ public function offsetUnset($offset) {}
 /**
  * Returns the value of the last inserted primary key, null if not set.
  */
-public function lastInsertId() {
-	return $this->_dbh->lastInsertId();
+public function lastInsertID() {
+	return $this->_dbh->lastInsertID();
 }
 
 /**

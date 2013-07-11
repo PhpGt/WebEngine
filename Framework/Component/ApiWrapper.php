@@ -18,6 +18,35 @@ public function __construct($dalOrApiWrapper) {
 }
 
 /**
+ * All arrays that are passed into the autoRegister method will have their
+ * key-value-pairs injected as variables into ALL SQL statements if their
+ * placeholder exists.
+ * This data is saved to the SESSION - to clear it, use clearRegister().
+ * Note that auto registered parameters can be overridden by passing parameters 
+ * to queries as usual.
+ */
+public function autoRegister($array /*, $array2, $arrayN*/ ) {
+	$args = func_get_args();
+	if(!isset($_SESSION["PhpGt_Dal_AutoRegister"])) {
+		$_SESSION["PhpGt_Dal_AutoRegister"] = array();
+	}
+	foreach ($args as $a) {
+		foreach ($a as $key => $value) {
+			$_SESSION["PhpGt_Dal_AutoRegister"][$key] = $value;
+		}
+	}
+}
+
+/**
+ * Removes any automatically registered values from the internal session.
+ */
+public function clearRegister() {
+	if(isset($_SESSION["PhpGt_Dal_AutoRegister"])) {
+		unset($_SESSION["PhpGt_Dal_AutoRegister"]);
+	}
+}
+
+/**
  * Attempts to locate and load the class file for the requested API module.
  * Searches the application-specific directory before the shared directory.
  * @param string $offset The name of the requested API module.

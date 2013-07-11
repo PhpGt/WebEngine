@@ -81,6 +81,17 @@ _templateMap = {},
 _helpers = {
 	"Node": {
 		/**
+		 * Will append the given string to all attributes of given name within 
+		 * the current collection.
+		 * @param {string} attr The attribute to append to.
+		 * @param {string} data The data to append with.
+		 */
+		"appendToAttribute": function(attr, data) {
+			var current = this.getAttribute(attr) || "";
+			current += data;
+			return this.setAttribute(attr, current);
+		},
+		/**
 		 * There is no insertAfter function in JavaScript, but it can be
 		 * achieved by using insertBefore and nextSibling, which is wrapped in
 		 * this function.
@@ -102,7 +113,8 @@ _helpers = {
 			var currentElement = this;
 			do {
 				currentElement = currentElement.parentElement;
-				if(currentElement.matches(selector)) {
+				if(currentElement
+				&& currentElement.matches(selector)) {
 					return currentElement;
 				}
 			}while(currentElement);

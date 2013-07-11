@@ -64,6 +64,14 @@ private function query($sqlFile, $paramArray = array()) {
 	}
 	$sql = file_get_contents($sqlFile);
 
+	// There may be some parameters set to auto-register. Note that auto
+	// registered parameters can be overridden by passing parameters to queries
+	// as usual.
+	$autoRegister = isset($_SESSION["PhpGt_Dal_AutoRegister"])
+		? $_SESSION["PhpGt_Dal_AutoRegister"]
+		: array();
+	$paramArray = array_merge($autoRegister, $paramArray);
+
 	foreach ($paramArray as $key => $value) {
 		if($value === "null") {
 			$value = null;
@@ -120,7 +128,7 @@ private function query($sqlFile, $paramArray = array()) {
 			}
 			return new DalResult(
 				$stmt,
-				$this->_dal->lastInsertId(), 
+				$this->_dal->lastInsertID(), 
 				$sql, 
 				$this->_tableName);
 		}
