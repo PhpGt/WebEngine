@@ -150,6 +150,13 @@ _helpers = {
 			return this;
 		}
 	},
+	"NodeList": {
+		"forEach": function(callback) {
+			Array.prototype.forEach.call(this, function(el) {
+				callback(el);
+			});
+		}
+	}
 },
 
 /**
