@@ -1,22 +1,46 @@
 <?php class Http {
 /**
- * An object-oriented wrapper to the cURL module.
+ * An object-oriented wrapper to the cURL module. Can be constructed with a
+ * single or multiple URLs, to be executed using curl_multi.
  */
-private $_ch;
+private $_urlArray = array();
+private $_ch = array();
+private $_chm = null;
 
 public $response = array();
 
 public function __construct($url = null) {
 	require_once(__DIR__ . "/Http_Exception.class.php");
-	$this->_ch = curl_init();
+	$urlArray = array();
+	$this->_chm = curl_multi_init();
 
-	if(!is_null($url)) {
+	if(!is_null($urlArray)) {
+		if(is_array($url)) {
+			$urlArray = $url;
+		}
+		else {
+			$urlArray = array($url);
+		}
+
+		foreach ($urlArray as $i => $url) {
+			$this->_ch[] = curl_init();
+			$ch = end($this->_ch);
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_multi_add_handle($this->_chm, $ch);
+		}
+
 		$this->execute($url);
 	}
+
+	$this->_urlArray = $urlArray;
 }
 
 public function __destruct() {
-	curl_close($this->_ch);
+	foreach ($this->_ch as $ch) {
+		curl_multi_remove_handle($this->_chm, $ch);		
+	}
+	curl_multi_close($this->_chm);
+	return true;
 }
 
 /**
@@ -38,7 +62,7 @@ public function setOption($option, $value) {
 	if(is_null($optionInt)) {
 		throw new Http_Exception("Invalid option passed to cURL.");
 	}
-	return curl_setopt($this->_ch, $optionInt, $value);
+	return curl_multi_setopt($this->_chm, $optionInt, $value);
 }
 
 public function setHeader($header) {
@@ -54,7 +78,7 @@ public function setHeader($header) {
 		throw new Http_Exception("Http setHeader() only accepts string/array.");
 	}
 
-	curl_setopt($this->_ch, CURLOPT_HTTPHEADER, $headerArray);
+	curl_multi_setopt($this->_ch, CURLOPT_HTTPHEADER, $headerArray);
 	return $headerArray;
 }
 
@@ -95,45 +119,50 @@ public function execute($url, $method = "GET", $parameters = array()) {
 		}
 	}
 	else {
-		curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $parameters);
+		$this->setOption("PostFields", $parameters);
 	}
 
-	curl_setopt($this->_ch, CURLOPT_URL, $url);
-	curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($this->_ch, CURLOPT_CUSTOMREQUEST, $method);
-	curl_setopt($this->_ch, CURLOPT_HEADER, true);
+	$this->setOption("url", $url);
+	$this->setOption("customRequest", $method);
+	$this->setOption("header", true);
 
-	$response = curl_exec($this->_ch);
-	$curlInfo = curl_getinfo($this->_ch);
+	$active = null;
 
-	$this->response = array();
-	// Converts $curlInfo to PHP.Gt naming conventions.
-	foreach ($curlInfo as $key => $value) {
-		$spaces = str_replace("_", " ", $key);
-		$ccKey = ucwords($spaces);
-		$ccKey = str_replace(" ", "", $ccKey);
+	do {
+		$status = curl_multi_exec($this->_chm, $active);	
+		$info = curl_multi_info_read($this->_chm);	
+	} while($status == CURLM_CALL_MULTI_PERFORM || $active);
 
-		$this->response[$ccKey] = $value;
-	}
+	die("HERE");
 
-	list($header, $body) = explode("\r\n\r\n", $response, 2);
-	$headerLines = explode("\n", $header);
-	$headers = array();
-	foreach ($headerLines as $h) {
-		$colonPos = strpos($h, ":");
-		if($colonPos === false) {
-			continue;
-		}
-		$key = substr($h, 0, $colonPos);
-		$value = substr($h, $colonPos + 1);
-		$headers[$key] = $value;
-	}
+	// $curlInfo = curl_getinfo($this->_ch);
 
-	$this->response["header"] = $header;
-	$this->response["headers"] = $headers;
-	$this->response["body"] = $body;
+	// $this->response = array();
+	// // Converts $curlInfo to PHP.Gt naming conventions.
+	// foreach ($curlInfo as $key => $value) {
+	// 	$spaces = str_replace("_", " ", $key);
+	// 	$ccKey = ucwords($spaces);
+	// 	$ccKey = str_replace(" ", "", $ccKey);
 
-	return true;
+	// 	$this->response[$ccKey] = $value;
+	// }
+
+	// list($header, $body) = explode("\r\n\r\n", $response, 2);
+	// $headerLines = explode("\n", $header);
+	// $headers = array();
+	// foreach ($headerLines as $h) {
+	// 	$colonPos = strpos($h, ":");
+	// 	if($colonPos === false) {
+	// 		continue;
+	// 	}
+	// 	$key = substr($h, 0, $colonPos);
+	// 	$value = substr($h, $colonPos + 1);
+	// 	$headers[$key] = $value;
+	// }
+
+	// $this->response["header"] = $header;
+	// $this->response["headers"] = $headers;
+	// $this->response["body"] = $body;
 }
 
 }#
