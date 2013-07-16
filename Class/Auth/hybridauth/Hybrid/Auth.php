@@ -213,14 +213,12 @@ class Hybrid_Auth
 			Hybrid_Logger::info( "Hybrid_Auth::authenticate( $providerId ), User not connected to the provider. Try to authenticate.." );
 
 			$provider_adapter = Hybrid_Auth::setup( $providerId, $params );
-
 			$provider_adapter->login();
 		}
 
 		// else, then return the adapter instance for the given provider
 		else{
 			Hybrid_Logger::info( "Hybrid_Auth::authenticate( $providerId ), User is already connected to this provider. Return the adapter instance." );
-
 			return Hybrid_Auth::getAdapter( $providerId );
 		}
 	}

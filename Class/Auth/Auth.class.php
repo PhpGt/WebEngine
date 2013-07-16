@@ -281,6 +281,7 @@ public function __get($name) {
 	case "isAuthenticated":
 	case "isConnected":
 	case "isLoggedIn":
+	case "isIdentified":
 		$connectedProviders = $this->getConnectedProviders();
 		return !empty($connectedProviders);
 		break;

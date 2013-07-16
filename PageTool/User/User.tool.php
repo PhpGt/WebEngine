@@ -122,10 +122,13 @@ public function checkAuth($auth) {
 	$providerList = $auth->providerList;
 	$oAuthMissing = array();
 	foreach ($providerList as $provider) {
-		// TODO: BUG: This line isn't cached, and dramatically increases
-		// rendering time!
 		$profile = $auth->getProfile($provider);
 		$uid = $profile->identifier;
+		if(empty($uid)) {
+			if(!empty($_SESSION["PhpGt_Auth"]["ID_User"])) {
+				$uid = $_SESSION["PhpGt_Auth"]["ID_User"];
+			}
+		}
 		$oauth_uuid = $provider . $uid;
 
 		$existingOAuthUser = $this->_api[$this]->getByOAuthUuid([
@@ -145,28 +148,52 @@ public function checkAuth($auth) {
 
 	if(is_null($dbUser)) {
 		// The user doesn't have any OAuth records yet, so we don't have a
-		// reference to the user - get it from the tracking ID.
-		$dbUser = $this->_api[$this]->getByUuid([
-			"uuid" => $this->track(),
-		]);
-		if(!$dbUser->hasResult) {
-			// Impossible situation - there's no user found from UUID.
-			throw new HttpError(500, "User tracking code mismatch!");
-		}
-		// Mark the user as identified.
-		$dbUser = array_merge($dbUser->result[0], [
-			"dateTimeIdentified" => date("Y-m-d H:i:s"),
-		]);
-		$this->_api[$this]->anonIdentify([
-			"username" => null,
-			"uuid" => $this->track(),
-		]);
+		// reference to the user - get it from the tracking ID, or if supplied,
+		// the overridden user ID (used by Dummy Auth tests).
+		if(!empty($_SESSION["PhpGt_Auth"]["ID_User"])) {
+			$dbUser = $this->_api[$this]->getByID([
+				"ID" => $_SESSION["PhpGt_Auth"]["ID_User"],
+			]);
+			if(!$dbUser->hasResult) {
+				// Impossible situation - there's no user found from UUID.
+				throw new HttpError(500, "User tracking code mismatch!");
+			}
 
-		// Pull the user out of the database again now it has been updated.
-		$dbUser = $this->_api[$this]->getByUuid([
-			"uuid" => $this->track(),
-		]);
-		$dbUser = $dbUser->result[0];
+			// Mark the user as identified.
+			// This is overridden behaviour for Dummy OAuth login.
+			// TODO: Needs a refactor to be a lot tidier!
+			$dbUser = array_merge($dbUser->result[0], [
+				"dateTimeIdentified" => date("Y-m-d H:i:s"),
+			]);
+			$this->_api[$this]->anonIdentify([
+				"username" => null,
+				"uuid" => $dbUser["uuid"],
+			]);
+		}
+		else {
+			$dbUser = $this->_api[$this]->getByUuid([
+				"uuid" => $this->track(),
+			]);
+			if(!$dbUser->hasResult) {
+				// Impossible situation - there's no user found from UUID.
+				throw new HttpError(500, "User tracking code mismatch!");
+			}
+
+			// Mark the user as identified.
+			$dbUser = array_merge($dbUser->result[0], [
+				"dateTimeIdentified" => date("Y-m-d H:i:s"),
+			]);
+			$this->_api[$this]->anonIdentify([
+				"username" => null,
+				"uuid" => $this->track(),
+			]);
+
+			// Pull the user out of the database again now it has been updated.
+			$dbUser = $this->_api[$this]->getByUuid([
+				"uuid" => $this->track(),
+			]);
+			$dbUser = $dbUser->result[0];
+		}
 	}
 
 	// At this point $dbUser definitely refers to an existing user, but OAuth
@@ -226,7 +253,7 @@ public function track($forceUuid = null) {
 private function userSession($input, $anonUuid = null) {
 	die("Use of dead function: userSession");
 	if(is_int($input)) {
-		$dbUser = $this->_api[$this]->getById(["ID" => $input]);
+		$dbUser = $this->_api[$this]->getByID(["ID" => $input]);
 	}
 	else if(is_string($input)) {
 		$dbUser = $this->_api[$this]->getByUuid(["uuid" => $input]);

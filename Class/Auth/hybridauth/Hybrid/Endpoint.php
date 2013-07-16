@@ -155,7 +155,6 @@ class Hybrid_Endpoint {
 	public static function processAuthDone()
 	{
 		Hybrid_Endpoint::authInit();
-
 		$provider_id = trim( strip_tags( Hybrid_Endpoint::$request["hauth_done"] ) );
 
 		$hauth = Hybrid_Auth::setup( $provider_id );
@@ -184,7 +183,6 @@ class Hybrid_Endpoint {
 		Hybrid_Logger::info( "Endpoint: job done. retrun to callback url." );
 
 		$hauth->returnToCallbackUrl();
-		die();
 	}
 
 	public static function authInit()
