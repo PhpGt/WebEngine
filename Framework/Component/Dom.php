@@ -105,26 +105,28 @@ private function includeHtml($html) {
 		return $html;
 	}
 
-	$includeFile = $matches[1][0];
-	$path = APPROOT . "/PageView";
-	if($includeFile[0] == "/") {
-		$path .= $includeFile;
-	}
-	else {
-		if(DIR == "") {
-			$path .= "/" . $includeFile;
+	$includeList = $matches[1];
+	$matches = $matches[0];
+	foreach ($includeList as $i => $includeFile) {
+		$path = APPROOT . "/PageView";
+		if($includeFile[0] == "/") {
+			$path .= $includeFile;
 		}
 		else {
-			$path .= "/" . DIR . "/" . $includeFile;			
+			if(DIR == "") {
+				$path .= "/" . $includeFile;
+			}
+			else {
+				$path .= "/" . DIR . "/" . $includeFile;			
+			}
 		}
-	}
 
-	if(!is_file($path)) {
-		throw new HttpError(500, "@include($path) file not found.");
+		if(!is_file($path)) {
+			throw new HttpError(500, "@include($path) file not found.");
+		}
+		$replacement = file_get_contents($path);
+		$html = str_replace($matches[$i], $replacement, $html);
 	}
-	$replacement = file_get_contents($path);
-
-	$html = preg_replace($includeRegex, $replacement, $html);
 	return $html;
 }
 
