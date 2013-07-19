@@ -28,13 +28,12 @@ public function __construct($url = null, $method = "GET", $parameters = null) {
 		foreach ($urlArray as $i => $url) {
 			$this->_ch[] = curl_init();
 			$ch = end($this->_ch);
-			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_HEADER, true);
 		}
 
 		$this->_urlArray = $urlArray;
-		$this->execute($url, $method, $parameters);
+		$this->execute($urlArray, $method, $parameters);
 	}
 }
 
@@ -100,25 +99,36 @@ public function setHeader($header) {
  * @return string The HTTP response. Use responseCode property to obtain the
  * latest response code.
  */
-public function execute($url, $method = "GET", $parameters = null) {
+public function execute($urlArray = null, $method = "GET", $parameters = null) {
 	$method = strtoupper($method);
 	$paramChar = "?";
 
-	if($method === "GET"
-	|| $method === "DELETE") {
-		if(strstr($url, "?")) {
-			if(!empty($parameters)) {
+	if(is_null($urlArray)) {
+		$urlArray = $this->_urlArray;
+	}
+	if(!is_array($urlArray)) {
+		$urlArray = array($urlArray);
+	}
+
+	foreach ($urlArray as $i => $url) {
+		if($method === "GET"
+		|| $method === "DELETE") {
+			if(strstr($url, "?")) {
+				if(!empty($parameters)) {
+					$paramChar = "&";
+				}
+			}
+		}
+
+		if(!empty($parameters)) {
+			foreach ($parameters as $key => $value) {
+				$url .= $paramChar;
+				$url .= urlencode($key) . "=" . urlencode($value);
 				$paramChar = "&";
 			}
 		}
-	}
 
-	if(!empty($parameters)) {
-		foreach ($parameters as $key => $value) {
-			$url .= $paramChar;
-			$url .= urlencode($key) . "=" . urlencode($value);
-			$paramChar = "&";
-		}
+		curl_setopt($this->_ch[$i], CURLOPT_URL, $url);
 	}
 
 	if($method === "POST"
@@ -126,7 +136,6 @@ public function execute($url, $method = "GET", $parameters = null) {
 		$this->setOption("PostFields", $parameters);
 	}
 
-	$this->setOption("url", $url);
 	$this->setOption("customRequest", $method);
 	$this->setOption("header", true);
 
@@ -144,6 +153,9 @@ public function execute($url, $method = "GET", $parameters = null) {
 		$response = curl_multi_getcontent($ch);
 		$info = curl_getinfo($ch);
 
+		$header = "";
+		$body = "";
+
 		list($header, $body) = explode("\r\n\r\n", $response, 2);
 		$headerLines = explode("\n", $header);
 		$headers = array();
@@ -160,8 +172,8 @@ public function execute($url, $method = "GET", $parameters = null) {
 			"headers" => $headers,
 			"body" => $body,
 		];
-		$responseData = array_merge($responseData, $info);
 		$this->response->add($responseData);
+		$responseData = array_merge($info, $responseData);
 		
 		curl_multi_remove_handle($this->_chm, $ch);
 	}
