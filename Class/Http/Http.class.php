@@ -9,12 +9,12 @@ private $_chm = null;
 
 public $response = array();
 
-public function __construct($url = null) {
+public function __construct($url = null, $method = "GET", $parameters = null) {
 	require_once(__DIR__ . "/Http_Exception.class.php");
 	$urlArray = array();
 	$this->_chm = curl_multi_init();
 
-	if(!is_null($urlArray)) {
+	if(!is_null($url)) {
 		if(is_array($url)) {
 			$urlArray = $url;
 		}
@@ -29,10 +29,9 @@ public function __construct($url = null) {
 			curl_multi_add_handle($this->_chm, $ch);
 		}
 
-		$this->execute($url);
+		$this->_urlArray = $urlArray;
+		$this->execute($url, $method, $properties);
 	}
-
-	$this->_urlArray = $urlArray;
 }
 
 public function __destruct() {
@@ -62,7 +61,11 @@ public function setOption($option, $value) {
 	if(is_null($optionInt)) {
 		throw new Http_Exception("Invalid option passed to cURL.");
 	}
-	return curl_multi_setopt($this->_chm, $optionInt, $value);
+
+	foreach ($this->_ch as $ch) {
+		curl_setopt($ch, $optionInt, $value);
+	}
+	return true;
 }
 
 public function setHeader($header) {
@@ -96,29 +99,29 @@ public function setHeader($header) {
  * @return string The HTTP response. Use responseCode property to obtain the
  * latest response code.
  */
-public function execute($url, $method = "GET", $parameters = array()) {
+public function execute($url, $method = "GET", $parameters = null) {
 	$method = strtoupper($method);
+	$paramChar = "?";
 
 	if($method === "GET"
 	|| $method === "DELETE") {
 		if(strstr($url, "?")) {
 			if(!empty($parameters)) {
-				throw new Http_Exception(
-					"Only POST or PUT methods can be passed parameters.");
-			}
-		}
-		else {
-			if(!empty($parameters)) {
-				$paramChar = "?";
-				foreach ($parameters as $key => $value) {
-					$url .= $paramChar;
-					$url .= urlencode($key) . "=" . urlencode($value);
-					$paramChar = "&";
-				}
+				$paramChar = "&";
 			}
 		}
 	}
-	else {
+
+	if(!empty($parameters)) {
+		foreach ($parameters as $key => $value) {
+			$url .= $paramChar;
+			$url .= urlencode($key) . "=" . urlencode($value);
+			$paramChar = "&";
+		}
+	}
+
+	if($method === "POST"
+	|| $method === "PUT") {
 		$this->setOption("PostFields", $parameters);
 	}
 
