@@ -1,22 +1,46 @@
 <?php class Http {
 /**
- * An object-oriented wrapper to the cURL module.
+ * An object-oriented wrapper to the cURL module. Can be constructed with a
+ * single or multiple URLs, to be executed using curl_multi.
  */
-private $_ch;
+private $_urlArray = array();
+private $_ch = array();
+private $_chm = null;
 
-public $response = array();
+public $response = null;
 
-public function __construct($url = null) {
+public function __construct($url = null, $method = "GET", $parameters = null) {
 	require_once(__DIR__ . "/Http_Exception.class.php");
-	$this->_ch = curl_init();
+	require_once(__DIR__ . "/Http_Response.class.php");
+
+	$urlArray = array();
+	$this->_chm = curl_multi_init();
+	$this->response = new Http_Response();
 
 	if(!is_null($url)) {
-		$this->execute($url);
+		if(is_array($url)) {
+			$urlArray = $url;
+		}
+		else {
+			$urlArray = array($url);
+		}
+
+		foreach ($urlArray as $i => $url) {
+			$this->_ch[] = curl_init();
+			$ch = end($this->_ch);
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HEADER, true);
+		}
+
+		$this->_urlArray = $urlArray;
+		$this->execute($url, $method, $parameters);
 	}
 }
 
 public function __destruct() {
-	curl_close($this->_ch);
+	curl_multi_close($this->_chm);
+	return true;
 }
 
 /**
@@ -38,7 +62,11 @@ public function setOption($option, $value) {
 	if(is_null($optionInt)) {
 		throw new Http_Exception("Invalid option passed to cURL.");
 	}
-	return curl_setopt($this->_ch, $optionInt, $value);
+
+	foreach ($this->_ch as $ch) {
+		curl_setopt($ch, $optionInt, $value);
+	}
+	return true;
 }
 
 public function setHeader($header) {
@@ -54,7 +82,7 @@ public function setHeader($header) {
 		throw new Http_Exception("Http setHeader() only accepts string/array.");
 	}
 
-	curl_setopt($this->_ch, CURLOPT_HTTPHEADER, $headerArray);
+	curl_multi_setopt($this->_ch, CURLOPT_HTTPHEADER, $headerArray);
 	return $headerArray;
 }
 
@@ -72,68 +100,71 @@ public function setHeader($header) {
  * @return string The HTTP response. Use responseCode property to obtain the
  * latest response code.
  */
-public function execute($url, $method = "GET", $parameters = array()) {
+public function execute($url, $method = "GET", $parameters = null) {
 	$method = strtoupper($method);
+	$paramChar = "?";
 
 	if($method === "GET"
 	|| $method === "DELETE") {
 		if(strstr($url, "?")) {
 			if(!empty($parameters)) {
-				throw new Http_Exception(
-					"Only POST or PUT methods can be passed parameters.");
-			}
-		}
-		else {
-			if(!empty($parameters)) {
-				$paramChar = "?";
-				foreach ($parameters as $key => $value) {
-					$url .= $paramChar;
-					$url .= urlencode($key) . "=" . urlencode($value);
-					$paramChar = "&";
-				}
+				$paramChar = "&";
 			}
 		}
 	}
-	else {
-		curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $parameters);
-	}
 
-	curl_setopt($this->_ch, CURLOPT_URL, $url);
-	curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($this->_ch, CURLOPT_CUSTOMREQUEST, $method);
-	curl_setopt($this->_ch, CURLOPT_HEADER, true);
-
-	$response = curl_exec($this->_ch);
-	$curlInfo = curl_getinfo($this->_ch);
-
-	$this->response = array();
-	// Converts $curlInfo to PHP.Gt naming conventions.
-	foreach ($curlInfo as $key => $value) {
-		$spaces = str_replace("_", " ", $key);
-		$ccKey = ucwords($spaces);
-		$ccKey = str_replace(" ", "", $ccKey);
-
-		$this->response[$ccKey] = $value;
-	}
-
-	list($header, $body) = explode("\r\n\r\n", $response, 2);
-	$headerLines = explode("\n", $header);
-	$headers = array();
-	foreach ($headerLines as $h) {
-		$colonPos = strpos($h, ":");
-		if($colonPos === false) {
-			continue;
+	if(!empty($parameters)) {
+		foreach ($parameters as $key => $value) {
+			$url .= $paramChar;
+			$url .= urlencode($key) . "=" . urlencode($value);
+			$paramChar = "&";
 		}
-		$key = substr($h, 0, $colonPos);
-		$value = substr($h, $colonPos + 1);
-		$headers[$key] = $value;
 	}
 
-	$this->response["header"] = $header;
-	$this->response["headers"] = $headers;
-	$this->response["body"] = $body;
+	if($method === "POST"
+	|| $method === "PUT") {
+		$this->setOption("PostFields", $parameters);
+	}
 
-	return true;
+	$this->setOption("url", $url);
+	$this->setOption("customRequest", $method);
+	$this->setOption("header", true);
+
+	foreach ($this->_ch as $ch) {
+		curl_multi_add_handle($this->_chm, $ch);
+	}
+
+	$active = null;
+
+	do {
+		$status = curl_multi_exec($this->_chm, $active);
+	} while($status == CURLM_CALL_MULTI_PERFORM || $active);
+
+	foreach ($this->_ch as $ch) {
+		$response = curl_multi_getcontent($ch);
+		$info = curl_getinfo($ch);
+
+		list($header, $body) = explode("\r\n\r\n", $response, 2);
+		$headerLines = explode("\n", $header);
+		$headers = array();
+		foreach ($headerLines as $h) {
+			$hArray = explode(":", $h);
+			if(count($hArray) < 2) {
+				continue;
+			}
+			$headers[$hArray[0]] = $hArray[1];
+		}
+		
+		$responseData = [
+			"header" => $header,
+			"headers" => $headers,
+			"body" => $body,
+		];
+		$responseData = array_merge($responseData, $info);
+		$this->response->add($responseData);
+		
+		curl_multi_remove_handle($this->_chm, $ch);
+	}
 }
 
 }#
