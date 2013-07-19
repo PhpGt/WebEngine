@@ -7,12 +7,15 @@ private $_urlArray = array();
 private $_ch = array();
 private $_chm = null;
 
-public $response = array();
+public $response = null;
 
 public function __construct($url = null, $method = "GET", $parameters = null) {
 	require_once(__DIR__ . "/Http_Exception.class.php");
+	require_once(__DIR__ . "/Http_Response.class.php");
+
 	$urlArray = array();
 	$this->_chm = curl_multi_init();
+	$this->response = new Http_Response();
 
 	if(!is_null($url)) {
 		if(is_array($url)) {
@@ -152,12 +155,14 @@ public function execute($url, $method = "GET", $parameters = null) {
 			$headers[$hArray[0]] = $hArray[1];
 		}
 		
-		$this->response[] = [
+		$responseData = [
 			"header" => $header,
 			"headers" => $headers,
 			"body" => $body,
-			"statusCode" => curl_getinfo($ch, CURLINFO_HTTP_CODE),
 		];
+		$responseData = array_merge($responseData, $info);
+		$this->response->add($responseData);
+		
 		curl_multi_remove_handle($this->_chm, $ch);
 	}
 }
