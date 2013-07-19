@@ -26,18 +26,16 @@ public function __construct($url = null, $method = "GET", $parameters = null) {
 			$this->_ch[] = curl_init();
 			$ch = end($this->_ch);
 			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_multi_add_handle($this->_chm, $ch);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HEADER, true);
 		}
 
 		$this->_urlArray = $urlArray;
-		$this->execute($url, $method, $properties);
+		$this->execute($url, $method, $parameters);
 	}
 }
 
 public function __destruct() {
-	foreach ($this->_ch as $ch) {
-		curl_multi_remove_handle($this->_chm, $ch);		
-	}
 	curl_multi_close($this->_chm);
 	return true;
 }
@@ -129,43 +127,39 @@ public function execute($url, $method = "GET", $parameters = null) {
 	$this->setOption("customRequest", $method);
 	$this->setOption("header", true);
 
+	foreach ($this->_ch as $ch) {
+		curl_multi_add_handle($this->_chm, $ch);
+	}
+
 	$active = null;
 
 	do {
-		$status = curl_multi_exec($this->_chm, $active);	
-		$info = curl_multi_info_read($this->_chm);	
+		$status = curl_multi_exec($this->_chm, $active);
 	} while($status == CURLM_CALL_MULTI_PERFORM || $active);
 
-	die("HERE");
+	foreach ($this->_ch as $ch) {
+		$response = curl_multi_getcontent($ch);
+		$info = curl_getinfo($ch);
 
-	// $curlInfo = curl_getinfo($this->_ch);
-
-	// $this->response = array();
-	// // Converts $curlInfo to PHP.Gt naming conventions.
-	// foreach ($curlInfo as $key => $value) {
-	// 	$spaces = str_replace("_", " ", $key);
-	// 	$ccKey = ucwords($spaces);
-	// 	$ccKey = str_replace(" ", "", $ccKey);
-
-	// 	$this->response[$ccKey] = $value;
-	// }
-
-	// list($header, $body) = explode("\r\n\r\n", $response, 2);
-	// $headerLines = explode("\n", $header);
-	// $headers = array();
-	// foreach ($headerLines as $h) {
-	// 	$colonPos = strpos($h, ":");
-	// 	if($colonPos === false) {
-	// 		continue;
-	// 	}
-	// 	$key = substr($h, 0, $colonPos);
-	// 	$value = substr($h, $colonPos + 1);
-	// 	$headers[$key] = $value;
-	// }
-
-	// $this->response["header"] = $header;
-	// $this->response["headers"] = $headers;
-	// $this->response["body"] = $body;
+		list($header, $body) = explode("\r\n\r\n", $response, 2);
+		$headerLines = explode("\n", $header);
+		$headers = array();
+		foreach ($headerLines as $h) {
+			$hArray = explode(":", $h);
+			if(count($hArray) < 2) {
+				continue;
+			}
+			$headers[$hArray[0]] = $hArray[1];
+		}
+		
+		$this->response[] = [
+			"header" => $header,
+			"headers" => $headers,
+			"body" => $body,
+			"statusCode" => curl_getinfo($ch, CURLINFO_HTTP_CODE),
+		];
+		curl_multi_remove_handle($this->_chm, $ch);
+	}
 }
 
 }#
