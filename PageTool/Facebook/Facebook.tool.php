@@ -84,11 +84,11 @@ public function like($domElement, $width = 450, $showFaces = true) {
 
 public function showComments($domElement, $width = 470, $numPosts = 2) {
 	$this->checkSdk();
-	$fbDiv = $this->_dom->create("div", array(
-		"class"				=> "fb-comments",
-		"data-href"			=> URL,
-		"data-num-posts"	=> $numPosts,
-		"data-width"		=> $width
+	$fbDiv = $this->_dom->create("fb:comments", array(
+		// "class"				=> "fb-comments",
+		"href"		=> URL,
+		"num-posts"	=> $numPosts,
+		"width"		=> $width
 	));
 
 	$domElement->replace($fbDiv);
