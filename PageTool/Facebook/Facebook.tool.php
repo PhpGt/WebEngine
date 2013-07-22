@@ -87,7 +87,7 @@ public function showComments($domElement, $width = 470, $numPosts = 2) {
 	$this->checkSdk();
 	$fbDiv = $this->_dom->create("div", array(
 		"class"			=> "fb-comments",
-		"data-href"		=> URL,
+		"data-href"		=> urlencode(URL),
 		"data-num-posts"=> $numPosts,
 		"data-width"	=> $width
 	));
