@@ -28,6 +28,13 @@ JS;
 
 	$this->_fbRootJavaScript = $dom->create("script", null, $js);
 	$dom["body"]->prepend($this->_fbRootJavaScript);
+	$dom["body"]->prepend($dom->createElement("div", ["id" => "fb-root"]));
+
+	$meta = $dom->createElement("meta", [
+		"property" => "fb:app_id",
+		"content" => $token,
+	]);
+	$dom["head"]->append($meta);
 
 	$this->_sdkStarted = true;
 }
@@ -87,7 +94,7 @@ public function showComments($domElement, $width = 470, $numPosts = 2) {
 	$this->checkSdk();
 	$fbDiv = $this->_dom->create("div", array(
 		"class"			=> "fb-comments",
-		"data-href"		=> urlencode(URL),
+		"data-href"		=> URL,
 		"data-num-posts"=> $numPosts,
 		"data-width"	=> $width
 	));
