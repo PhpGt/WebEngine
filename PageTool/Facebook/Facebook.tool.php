@@ -15,18 +15,26 @@ public function go($api, $dom, $template, $tool) {
 	}
 
 	// Pre-written JavaScript, provided by Facebook Developer website:
+	$token = $this->_accessToken;
 	$js = <<<JS
 (function(d, s, id) {
-var js, fjs = d.getElementsByTagName(s)[0];
-if (d.getElementById(id)) return;
-js = d.createElement(s); js.id = id;
-js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-fjs.parentNode.insertBefore(js, fjs);
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=$token";
+  fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 JS;
 
 	$this->_fbRootJavaScript = $dom->create("script", null, $js);
 	$dom["body"]->prepend($this->_fbRootJavaScript);
+	$dom["body"]->prepend($dom->createElement("div", ["id" => "fb-root"]));
+
+	$meta = $dom->createElement("meta", [
+		"property" => "fb:app_id",
+		"content" => $token,
+	]);
+	$dom["head"]->append($meta);
 
 	$this->_sdkStarted = true;
 }
@@ -85,10 +93,10 @@ public function like($domElement, $width = 450, $showFaces = true) {
 public function showComments($domElement, $width = 470, $numPosts = 2) {
 	$this->checkSdk();
 	$fbDiv = $this->_dom->create("div", array(
-		"class"				=> "fb-comments",
-		"data-href"			=> URL,
-		"data-num-posts"	=> $numPosts,
-		"data-width"		=> $width
+		"class"			=> "fb-comments",
+		"data-href"		=> URL,
+		"data-num-posts"=> $numPosts,
+		"data-width"	=> $width
 	));
 
 	$domElement->replace($fbDiv);
