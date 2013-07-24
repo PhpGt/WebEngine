@@ -29,10 +29,13 @@ public function __construct($t) {
 	}
 	
 	$config = array(
-		"App"       => new $appConfigClass(),
-		"Database"  => new $databaseConfigClass(),
-		"Security"  => new $securityConfigClass()
+		"App"       => $appConfigClass,
+		"Database"  => $databaseConfigClass,
+		"Security"  => $securityConfigClass,
 	);
+	foreach ($config as $c) {
+		$c::init();
+	}
 
 	// Compute the request, instantiating the relavent PageCode/Api.
 	$request       = new Request($config, $t);

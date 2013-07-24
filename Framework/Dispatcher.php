@@ -6,7 +6,7 @@
 * access to exactly what they need.
 */
 public function __construct($response, $config) {
-	$dal = new Dal($config["Database"]->getSettings());
+	$dal = new Dal($config["Database"]::getSettings());
 	if($response->dispatch("apiCall", $dal)) {
 		// Quit early if request is api call.
 		$response->dispatch("apiOutput");
@@ -55,8 +55,7 @@ public function __construct($response, $config) {
 			$apiWrapper,
 			$emptyObject,
 			$emptyObject,
-			$pageToolWrapper,
-			$config["App"]);
+			$pageToolWrapper);
 		$response->dispatch("go",
 			$apiWrapper,
 			$emptyObject,
@@ -74,7 +73,7 @@ public function __construct($response, $config) {
 	// Compile and inject <script> and <link> tags, organise the contents
 	// of the Asset, Style, Script directories to be accessible through
 	// the web root.
-	$isCompiled = $config["App"]->isClientCompiled();
+	$isCompiled = $config["App"]::isClientCompiled();
 	$clientSideCompiler = new ClientSideCompiler($dom, $isCompiled);
 	$fileOrganiser = new FileOrganiser($config["App"]);
 

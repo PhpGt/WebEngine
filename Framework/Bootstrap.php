@@ -117,6 +117,8 @@ define("FILECLASS", $fileClass);
 // compatibility).
 $toLoad = array();
 $toLoad["Required"] = array(
+	"Config interface" =>
+		GTROOT."/Config/Config.cfg.php",
 	"Shared application config" => 
 		GTROOT."/Config/App.cfg.php",
 	"Shared database config" => 

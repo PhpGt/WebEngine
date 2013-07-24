@@ -1,4 +1,4 @@
-<?php class App_Config_Framework {
+<?php class App_Config_Framework extends Config {
 /**
  * All config classes suffixed with _Framework hold configuration settings
  * that apply to all applications. All protected properties can be overridden
@@ -8,36 +8,36 @@
 */
 // When an application is set to production mode, errors will be less
 // verbose and less debugging information is available.
-protected $_isProduction = false;
-protected $_isCached = false;
-protected $_isClientCompiled = false;
-protected $_timezone = "UTC";
+protected static $_isProduction = false;
+protected static $_isCached = false;
+protected static $_isClientCompiled = false;
+protected static $_timezone = "UTC";
 
 // When true, URLs are converted into directory style, dropping the need
 // for the file extension.
-protected $_directoryUrls = false;
-private $_reserved = array("Gt");
+protected static $_directoryUrls = false;
+protected static $_reserved = array("Gt");
 
-public function __construct() { }
+public static function init() { }
 
-public function isCached() {
-	return $this->_isCached;
+public static function isCached() {
+	return static::$_isCached;
 }
 
-public function getReserved() {
-	return $this->_reserved;
+public static function getReserved() {
+	return static::$_reserved;
 }
 
-public function getTimezone() {
-	return $this->_timezone;
+public static function getTimezone() {
+	return static::$_timezone;
 }
 
-public function isClientCompiled() {
-	return $this->_isClientCompiled;
+public static function isClientCompiled() {
+	return static::$_isClientCompiled;
 }
 
-public function isProduction() {
-	return $this->_isProduction;
+public static function isProduction() {
+	return static::$_isProduction;
 }
 
 }#

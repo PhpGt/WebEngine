@@ -1,4 +1,4 @@
-<?php class Database_Config_Framework {
+<?php class Database_Config_Framework extends Config {
 /**
  * All details of the database connection are stored in this file. 
  * By default, there are certain connection settings that need to be changed 
@@ -8,18 +8,18 @@
  * The order of automatic deployment of database tables is specified here, so 
  * any table dependencies can be specified.
  */
-protected $_host = "127.0.0.1";
-protected $_port = "3306";
-protected $_charset = "utf8";
-protected $_name;
-protected $_user;
-protected $_pass;
-protected $_driver = "mysql";
-protected $_timezone = "+0:00";
+protected static $_host = "127.0.0.1";
+protected static $_port = "3306";
+protected static $_charset = "utf8";
+protected static $_name;
+protected static $_user;
+protected static $_pass;
+protected static $_driver = "mysql";
+protected static $_timezone = "+0:00";
 
 // The creation order of PHP.Gt tables (some may rely on others in foreign
 // key constraints, for example).
-private $_sharedCreationOrder = array(
+protected $_sharedCreationOrder = array(
 	"User",
 	"Content",
 	"Blog"
@@ -30,41 +30,41 @@ private $_sharedCreationOrder = array(
 protected $_creationOrder = array(
 );
 
-public function __construct() {
-	$this->_name = isset($this->_name)
-		? $this->_name
+public static function init() {
+	static::$_name = isset(static::$_name)
+		? static::$_name
 		: "Gt_" . APPNAME;
-	$this->_user = isset($this->_user)
-		? $this->_user
+	static::$_user = isset(static::$_user)
+		? static::$_user
 		: "Gt_" . APPNAME;
-	$this->_pass = isset($this->_pass)
-		? $this->_pass
+	static::$_pass = isset(static::$_pass)
+		? static::$_pass
 		: "Gt_" . APPNAME . "_Pass";
-	//$this->_pass = md5(APPSALT . $this->_pass);
+	//static::$_pass = md5(APPSALT . static::$_pass);
 }
 
-public function getCreationOrder() {
+public static function getCreationOrder() {
 	return array_merge(
-		$this->_sharedCreationOrder,
-		$this->_creationOrder);
+		static::$_sharedCreationOrder,
+		static::$_creationOrder);
 }
 
-public function getSettings() {
+public static function getSettings() {
 	return array(
 		"ConnectionString" => 
-			$this->_driver 
-			. ":dbname=" 	. $this->_name 
-			. ";host=" 		. $this->_host
-			. ";port=" 		. $this->_port
-			. ";charset=" 	. $this->_charset,
+			static::$_driver 
+			. ":dbname=" 	. static::$_name 
+			. ";host=" 		. static::$_host
+			. ";port=" 		. static::$_port
+			. ";charset=" 	. static::$_charset,
 		"ConnectionString_Root" =>
-			$this->_driver
-			. ":host=" . $this->_host,
-		"Username"	=> $this->_user,
-		"Password"	=> $this->_pass,
-		"DbName" 	=> $this->_name,
-		"Host"		=> $this->_host,
-		"Timezone"	=> $this->_timezone,
+			static::$_driver
+			. ":host=" . static::$_host,
+		"Username"	=> static::$_user,
+		"Password"	=> static::$_pass,
+		"DbName" 	=> static::$_name,
+		"Host"		=> static::$_host,
+		"Timezone"	=> static::$_timezone,
 	);
 }
 

@@ -1,34 +1,34 @@
-<?php class Security_Config_Framework {
-protected $_remoteSetupWhitelist = array(
+<?php class Security_Config_Framework extends Config {
+protected static $_remoteSetupWhitelist = array(
 	"127.0.0.1"
 );
-protected $_allowAllRemoteAdmin = true;
-protected $_remoteAdminWhiteList = array(
+protected static $_allowAllRemoteAdmin = true;
+protected static $_remoteAdminWhiteList = array(
 	"127.0.0.1"
 );
-protected $_salt = "Php.Gt default salt - please change this!";
-protected $_domain;
-private $_remoteIp;
+protected static $_salt = "Php.Gt default salt - please change this!";
+protected static $_domain;
+protected static $_remoteIp;
 
-public function __construct() {
-	$this->_remoteIp = $_SERVER["REMOTE_ADDR"];
-	$this->_domain = isset($this->_domain)
-		? $this->_domain
+public static function init() {
+	static::$_remoteIp = $_SERVER["REMOTE_ADDR"];
+	static::$_domain = isset(static::$_domain)
+		? static::$_domain
 		: $_SERVER["HTTP_HOST"];
-	define("APPSALT", hash("sha512", $this->_salt));
+	define("APPSALT", hash("sha512", static::$_salt));
 }
 
-public function getDomain() {
-	return $this->_domain;
+public static function getDomain() {
+	return static::$_domain;
 }
 
-public function isSetupAllowed() {
-	return in_array($this->_remoteIp, $this->_remoteSetupWhitelist);
+public static function isSetupAllowed() {
+	return in_array(static::$_remoteIp, static::$_remoteSetupWhitelist);
 }
 
-public function isAdminAllowed() {
-	return in_array($this->_remoteIp, $this->_remoteAdminWhiteList)
-		|| $this->_allowAllRemoteAdmin;
+public static function isAdminAllowed() {
+	return in_array(static::$_remoteIp, static::$_remoteAdminWhiteList)
+		|| static::$_allowAllRemoteAdmin;
 }
 
 }#

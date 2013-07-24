@@ -20,12 +20,11 @@ public function __construct(&$stop) {
 /**
  * Internal function for setting the protected variables (also used internally).
  */
-public function setVars($api, $dom, $template, $tool, $appConfig) {
+public function setVars($api, $dom, $template, $tool) {
 	$this->_api = $api;
 	$this->_dom = $dom;
 	$this->_template = $template;
 	$this->_tool = $tool;
-	$this->_appConfig = $appConfig;
 }
 
 /**

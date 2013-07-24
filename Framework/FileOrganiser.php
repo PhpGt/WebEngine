@@ -125,7 +125,7 @@ private function copyFilesToPublic($config) {
 		$this->copyFiles($source, $dest);
 	}
 
-	if($config->isClientCompiled()) {
+	if($config::isClientCompiled()) {
 		if(file_exists(APPROOT . "/Script/Script.min.js")) {
 			copy(APPROOT . "/Script/Script.min.js", 
 				APPROOT . "/www/Script.min.js");

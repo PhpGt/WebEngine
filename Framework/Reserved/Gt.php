@@ -1,6 +1,6 @@
 <?php final class Gt_Reserved {
 public function __construct($config) {
-	$dbConfig = $config["Database"]->getSettings();
+	$dbConfig = $config["Database"]::getSettings();
 
 	if(isset($_GET["ShowSql"])) {
 		$sqlArray = $this->getSqlArray($dbConfig);

@@ -2,7 +2,7 @@ v0.1.1
 -------
 Not yet released
 
-* 
+* All configuration settings are made static, so they are accessible from anywhere in the code.
 
 v0.1.0
 ------

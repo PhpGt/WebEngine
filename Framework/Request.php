@@ -14,13 +14,13 @@ public $contentType;
 public $pageCodeStop = false;
 
 public function __construct($config, $t) {
-	date_default_timezone_set($config["App"]->getTimezone());
+	date_default_timezone_set($config["App"]::getTimezone());
 	$this->contentType = "text/html";
 	//session_name("PhpGt_Session");
 	session_start();
 	$_SESSION["PhpGt_StartTime"] = $t;
 
-	if($config["App"]->isProduction()) {
+	if($config["App"]::isProduction()) {
 		if(isset($_SESSION["PhpGt_Development"])) {
 			unset($_SESSION["PhpGt_Development"]);
 		}
@@ -186,7 +186,7 @@ public function __construct($config, $t) {
 	}
 
 	// Check whether whole request is cached.
-	if($config["App"]->isCached()) {
+	if($config["App"]::isCached()) {
 		// ALPHATODO:
 		// TODO: Cache output.
 		// A file per URL can be created in the Cache directory. This file's
@@ -195,8 +195,8 @@ public function __construct($config, $t) {
 	}
 
 	// Check for framework-reserved requests.
-	if(in_array(FILE, $config["App"]->getReserved())
-	|| in_array(BASEDIR, $config["App"]->getReserved() )) {
+	if(in_array(FILE, $config["App"]::getReserved())
+	|| in_array(BASEDIR, $config["App"]::getReserved() )) {
 
 		// Request is reserved, pass request on to the desired function.
 		$reservedName = BASEDIR == ""

@@ -15,6 +15,16 @@ if(array_key_exists($className, ClassDependencies::$list)) {
 	return;
 }
 
+$configSuffix = "_Config";
+if(substr($className, -strlen($configSuffix)) === $configSuffix) {
+	$configFile = APPROOT . "/Config/$className.cfg.php";
+
+	if(file_exists($configFile) && !class_exists($className)) {
+		require_once($configFile);
+		return;
+	}
+}
+
 $classDirArray = array(
 	APPROOT . "/Class/$className",
 	GTROOT  . "/Class/$className", 
