@@ -11,15 +11,14 @@ private $_skipWc = array(
 	"*.scss", 
 	"ReadMe.md", 
 );
+private $_config;
 
 public function __construct($config) {
 	// Don't do anything if there are no changes in the source directories.
-	if(!$this->changedFiles()) {
-		return;
-	}
-
-	$this->removePublicFiles();
-	$this->copyFilesToPublic($config);
+	// if(!$this->changedFiles()) {
+	// 	return;
+	// }
+	$this->_config = $config;
 }
 
 /**
@@ -82,7 +81,7 @@ private function recursiveMTime($dir) {
  * Deletes all files within the www directory, apart from the vital Go.php.
  * This function is recursive, so will remove all Assets and files within Style.
  */
-private function removePublicFiles() {
+public function removePublicFiles() {
 	$dir = APPROOT . "/www/";
 	if(!is_dir($dir)) {
 		// TODO: Throw proper error here.
@@ -107,7 +106,7 @@ private function removePublicFiles() {
 	}
 }
 
-private function copyFilesToPublic($config) {
+public function copyFilesToPublic($config) {
 	// The order of copying is vital here; some applications can overwrite the
 	// files supplied by GT with their own, in whicch case the application's
 	// version of the file will be preferred.
@@ -125,6 +124,7 @@ private function copyFilesToPublic($config) {
 		$this->copyFiles($source, $dest);
 	}
 
+	$config = $this->_config;
 	if($config::isClientCompiled()) {
 		if(file_exists(APPROOT . "/Script/Script.min.js")) {
 			copy(APPROOT . "/Script/Script.min.js", 

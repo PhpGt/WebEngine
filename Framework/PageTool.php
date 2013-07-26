@@ -27,77 +27,72 @@ public function __construct($api, $dom, $template, $tool) {
 }
 
 /**
- * Injects any client side files used by the current tool into the DOM.
+ * Injects any client side files used by the current tool into the DOM. The
+ * injected files can then be compiled/pre-processed/minified in the usual
+ * way.
  */
 public function clientSide() {
-	$scriptDirArray = array(
-		APPROOT . "/PageTool/{$this->_name}/Script/",
-		GTROOT  . "/PageTool/{$this->_name}/Script/"
+	$dirArrays = array(
+		"Script" => array(
+			APPROOT . "/PageTool/{$this->_name}/Script/",
+			GTROOT  . "/PageTool/{$this->_name}/Script/",
+		),
+		"Style" => array(
+			APPROOT . "/PageTool/{$this->_name}/Style/",
+			GTROOT  . "/PageTool/{$this->_name}/Style/",
+		),
 	);
-	$styleDirArray = array(
-		APPROOT . "/PageTool/{$this->_name}/Style/",
-		GTROOT  . "/PageTool/{$this->_name}/Style/"
+	$elementInfo = array(
+		"Script" => [
+			"tagName" => "script",
+			"source" => "src",
+			"attributes" => [],
+		],
+		"Style" => [
+			"tagName" => "link",
+			"source" => "href",
+			"attributes" => ["rel" => "stylesheet"],
+		],
 	);
 
 	$domHead = $this->_dom["html > head"];
-	$ptDir = "PageTool/{$this->_name}/";
+	$ptDir = "PageTool/{$this->_name}";
 	$wwwDir = APPROOT . "/www/$ptDir";
 
-	foreach ($scriptDirArray as $scriptDir) {
-		if(!is_dir($scriptDir)) {
-			continue;
-		}
-
-		$dir = dir($scriptDir);
-		while(false !== ($file = $dir->read()) ) {
-			if($file[0] == ".") {
+	foreach ($dirArrays as $currentType => $dirArray) {
+		foreach ($dirArray as $dir) {
+			if(!is_dir($dir)) {
 				continue;
 			}
-			$fullPath = $scriptDir . $file;
-			$scriptDir = $wwwDir . "Script";
-			$dest =  $scriptDir . "/$file";
-			if(!is_dir($scriptDir)) {
-				mkdir($scriptDir, 0775, true);
-			}
-			copy($fullPath, $wwwDir . "Script/$file");
-			$domHead->append("script", [
-				"src" => "/{$ptDir}Script/$file"
-			]);
-		}
-	}
 
-	foreach ($styleDirArray as $styleDir) {
-		if(!is_dir($styleDir)) {
-			continue;
-		}
+			foreach ($iterator = new RecursiveIteratorIterator(
+	  		new RecursiveDirectoryIterator($dir, 
+	  			RecursiveDirectoryIterator::SKIP_DOTS),
+	  		RecursiveIteratorIterator::SELF_FIRST) as $item) {
+	  			$subPath = $iterator->getSubPathName();
+				if($item->isDir()) {
+					if(is_dir("$wwwDir/$subPath")) {
+						continue;
+					}
+					if(!mkdir("$wwwDir/$subPath", 0775, true)) {
+						die("error making $wwwDir/$subPath");
+					}
+				} 
+				else {
+					copy($item, "$wwwDir/$subPath");
+					$elementAttributes = array();
+					$elementAttributes[$elementInfo[$currentType]["source"]]
+						= "$ptDir/$subPath";
+					$elementAttributes = array_merge(
+						$elementAttributes,
+						$elementInfo[$currentType]["attributes"]
+					);
 
-		$dir = dir($styleDir);
-		while(false !== ($file = $dir->read()) ) {
-			if($file[0] == ".") {
-				continue;
+					$domHead->appendChild(
+						$elementInfo[$currentType]["tagName"],
+						$elementAttributes);
+				}
 			}
-			$fullPath = $styleDir . $file;
-			$styleDir = $wwwDir . "Style";
-			$dest = $styleDir . "/$file";
-			if(!is_dir($styleDir)) {
-				mkdir($styleDir, 0775, true);
-			}
-			$fileContents = file_get_contents($fullPath);
-
-			if(pathinfo($fullPath, PATHINFO_EXTENSION) == "scss") {
-				$dest = preg_replace("/\.scss$/", ".css", $dest);
-				$file = preg_replace("/\.scss$/", ".css", $file);
-				$sass = new Sass($fullPath);
-				$fileContents = $sass->parse();
-			}
-
-			if(false === file_put_contents($dest, $fileContents)) {
-				die("OOPS!!!");
-			}
-			$domHead->append("link", [
-				"rel" => "stylesheet", 
-				"href" => "/{$ptDir}Style/$file"
-			]);
 		}
 	}
 }
