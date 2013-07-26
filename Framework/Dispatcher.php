@@ -109,10 +109,12 @@ public function __construct($response, $config) {
 	$clientSideCompiler = new ClientSideCompiler();
 	$fileOrganiser = new FileOrganiser($domHeadTags);
 	$fileList = $fileOrganiser->check();
-	$fileOrganiser->clean($fileList);
-	$fileOrganiser->update($fileList);
-	$fileOrganiser->process($clientSideCompiler);
-	$fileOrganiser->compile($clientSideCompiler);
+	if(!empty($fileList)) {
+		$fileOrganiser->clean($fileList);
+		$fileOrganiser->update($fileList);
+		$fileOrganiser->process($clientSideCompiler);
+		$fileOrganiser->compile($clientSideCompiler);		
+	}
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();
