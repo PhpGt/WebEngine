@@ -104,7 +104,15 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	$fileOrganiser = new FileOrganiser();
+	$domHeadTags = $dom["head > script, head > link"];
+
+	$clientSideCompiler = new ClientSideCompiler();
+	$fileOrganiser = new FileOrganiser($domHeadTags);
+	$fileList = $fileOrganiser->check();
+	$fileOrganiser->clean($fileList);
+	$fileOrganiser->update($fileList);
+	$fileOrganiser->process($clientSideCompiler);
+	$fileOrganiser->compile($clientSideCompiler);
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();
