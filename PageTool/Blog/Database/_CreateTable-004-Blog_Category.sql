@@ -1,0 +1,6 @@
+CREATE  TABLE IF NOT EXISTS `Blog_Category` (
+  `ID` INT UNSIGNED NOT NULL ,
+  `name` VARCHAR(32) NOT NULL ,
+  `isHighlighted` TINYINT(1) NULL ,
+  PRIMARY KEY (`ID`) )
+ENGINE = InnoDB;
