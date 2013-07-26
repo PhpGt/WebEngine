@@ -19,12 +19,15 @@ public function __construct($t) {
 	$securityConfigClass = "Security_Config";
 
 	if(!class_exists($appConfigClass)) {
+		class_alias($appConfigClass . $baseSuffix, $appConfigClass);
 		$appConfigClass .= $baseSuffix;
 	}
 	if(!class_exists($databaseConfigClass)) {
+		class_alias($databaseConfigClass . $baseSuffix, $databaseConfigClass);
 		$databaseConfigClass .= $baseSuffix;
 	}
 	if(!class_exists($securityConfigClass)) {
+		class_alias($securityConfigClass . $baseSuffix, $securityConfigClass);
 		$securityConfigClass .= $baseSuffix;
 	}
 	
