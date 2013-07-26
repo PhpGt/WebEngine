@@ -77,8 +77,6 @@ public function __construct($response, $config) {
 	$templateArray = $dom->template();
 	$templateWrapper = new TemplateWrapper($templateArray);
 
-	$fileOrganiser = new FileOrganiser($config["App"]);
-	$fileOrganiser->removePublicFiles();
 	$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
 	// Allows the PageCode objects to have access to the important
@@ -106,12 +104,7 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	// Compile and inject <script> and <link> tags, organise the contents
-	// of the Asset, Style, Script directories to be accessible through
-	// the web root.
-	$isCompiled = $config["App"]::isClientCompiled();
-	$clientSideCompiler = new ClientSideCompiler($dom, $isCompiled);
-	$fileOrganiser->copyFilesToPublic($config);
+	$fileOrganiser = new FileOrganiser();
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();

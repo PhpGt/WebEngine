@@ -1,24 +1,25 @@
 <?php final class FileOrganiser {
 /**
- * All files are stored outside of the webroot (www directory), so it is the job
- * of the FileOrganiser to copy the required files into the webroot when
- * required. The files may need to be minified and compiled before they are
- * copied.
+ * This class works closely with ClientSideCompiler to ensure that all source
+ * files are stored ouside of the webroot (www directory), but the compiled or
+ * minified versions are copied correctly when required.
+ *
+ * The order of execution is controlled by the Dispatcher.
+ *
+ * 1) go functions are executed. This will trigger any PageTools' clientSide()
+ * function, which adds <script> and <link> elements into the DOM head.
+ * 2) FileOrganiser writes files to www directory, pre-processing required files
+ * through the ClientSideCompiler.
+ * 3) If client is compiled, FileOrganiser triggers the last step on the
+ * ClientSideCompiler, minifying and compiling all files together and removing
+ * the originals.
+ *
+ * All of this is only done if there are modifications to the source files since
+ * the modified time within www directory.
  */
 
-// List of wildcards to skip.
-private $_skipWc = array(
-	"*.scss", 
-	"ReadMe.md", 
-);
-private $_config;
-
-public function __construct($config) {
-	// Don't do anything if there are no changes in the source directories.
-	// if(!$this->changedFiles()) {
-	// 	return;
-	// }
-	$this->_config = $config;
+public function __construct() {
+	var_dump(App_Config::isClientCompiled());die();
 }
 
 /**
