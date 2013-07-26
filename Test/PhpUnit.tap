@@ -1,3 +1,3 @@
 TAP version 13
-ok 1 - DomTest::testDomIsDom
+ok 1 - DomTest::testDomElInDom
 1..1
