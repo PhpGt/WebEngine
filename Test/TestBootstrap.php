@@ -1,6 +1,17 @@
 <?php // TestBootstrap.php - loads environment variables required by all tests.
-define("GTROOT", getcwd() . "/../");
+$cwd = getcwd();
+chdir("..");
+define("GTROOT", getcwd());
+chdir($cwd);
+define("APPROOT", getcwd() . "/TestApp");
 
+define("URL",		"/");
+define("APPNAME",   "TestApp");
+define("DIR",       "");
+define("BASEDIR",   "");
+define("PATH",		"/");
+define("FILE",      "Index");
+define("EXT",       "html");
 
 function createTestApp() {
 	$source = "TestApp_Base";

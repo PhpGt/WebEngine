@@ -8,9 +8,10 @@
  *
  * 1) go functions are executed. This will trigger any PageTools' clientSide()
  * function, which adds <script> and <link> elements into the DOM head.
- * 2) FileOrganiser writes files to www directory, pre-processing required files
- * through the ClientSideCompiler.
- * 3) If client is compiled, FileOrganiser triggers the last step on the
+ * 2) FileOrganiser checks if files are needed to be written to www directory.
+ * 3) FileOrganiser writes files to www directory.
+ * 4) ClientSideCompiler pre-processes any SCSS source files.
+ * 5) If client is compiled, FileOrganiser triggers the last step on the
  * ClientSideCompiler, minifying and compiling all files together and removing
  * the originals.
  *
@@ -18,24 +19,40 @@
  * the modified time within www directory.
  */
 
-private $_domHeadTags;
-
-public function __construct($domHeadTags) {
-	$this->_domHeadTags = $domHeadTags;
-}
-
+public function __construct() {}
 /**
- * Uses the www/head.cache file to compare the cached state of the DOM head to
- * the current DOM head. Using the head's state along with the modified times
- * of files, we can find out if there is any work to be done by the class.
+ * Uses the www/file.cache file to compare the cached state of the public web
+ * files, in relation to the current files in the Asset, Script and Style
+ * directories.
  *
  * @return array An array describing the www directory hierarchy to update to,
  * or null if there is nothing to be done.
  */
-public function check() {
-	// Note: DOM head is checked as PageTools may have injected new client side
-	// resources.
-	return;
+public function checkFiles() {
+	$wwwDir = APPROOT . "/www";
+	$sourceDirectoryArray = array("Asset", "Script", "Style");
+
+	$files = array();
+
+	die("[[[" . APPROOT . "/{$sourceDirectoryArray[0]}]]]");
+
+	foreach ($sourceDirectoryArray as $sourceDirectory) {
+		foreach ($iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator(APPROOT . "/$sourceDirectory",
+				RecursiveDirectoryIterator::SKIP_DOTS),
+		RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+			var_dump($item);
+			if(!$item->isDir()) {
+				$files[] = $iterator->getSubPathName();
+			}
+		}
+	}
+
+	// TODO: Check PageTool files!
+	var_dump($files);die();
+
+	return $files;
 }
 
 /**

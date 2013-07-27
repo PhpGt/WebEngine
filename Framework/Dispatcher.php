@@ -104,12 +104,12 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	$domHeadTags = $dom["head > script, head > link"];
-
 	$clientSideCompiler = new ClientSideCompiler();
-	$fileOrganiser = new FileOrganiser($domHeadTags);
-	$fileList = $fileOrganiser->check();
-	if(!empty($fileList)) {
+	$fileOrganiser = new FileOrganiser();
+	// 1. Get a diff of www and Asset,Script,Style
+	// 		also check PageTool's optional client side files.
+	$files = $fileOrganiser->checkFiles();
+	if(!empty($files)) {
 		$fileOrganiser->clean($fileList);
 		$fileOrganiser->update($fileList);
 		$fileOrganiser->process($clientSideCompiler);

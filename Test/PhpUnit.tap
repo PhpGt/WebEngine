@@ -2,4 +2,3 @@ TAP version 13
 ok 1 - ClientSideCompilerTest::testTest
 ok 2 - DomTest::testDomElInDom
 ok 3 - FileOrganiserTest::testInitialWebrootIsEmpty
-1..3
