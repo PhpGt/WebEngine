@@ -2,3 +2,10 @@ TAP version 13
 ok 1 - ClientSideCompilerTest::testTest
 ok 2 - DomTest::testDomElInDom
 ok 3 - FileOrganiserTest::testInitialWebrootIsEmpty
+not ok 4 - Failure: FileOrganiserTest::testCheckFilesWhenEmpty
+  ---
+  message: 'Failed asserting that an array is empty.'
+  severity: fail
+  ...
+ok 5 - FileOrganiserTest::testCheckFilesWhenNotEmpty
+1..5

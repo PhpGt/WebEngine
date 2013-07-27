@@ -34,23 +34,17 @@ public function checkFiles() {
 
 	$files = array();
 
-	die("[[[" . APPROOT . "/{$sourceDirectoryArray[0]}]]]");
-
 	foreach ($sourceDirectoryArray as $sourceDirectory) {
 		foreach ($iterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator(APPROOT . "/$sourceDirectory",
 				RecursiveDirectoryIterator::SKIP_DOTS),
 		RecursiveIteratorIterator::SELF_FIRST) as $item) {
 
-			var_dump($item);
 			if(!$item->isDir()) {
 				$files[] = $iterator->getSubPathName();
 			}
 		}
 	}
-
-	// TODO: Check PageTool files!
-	var_dump($files);die();
 
 	return $files;
 }
