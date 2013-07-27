@@ -36,12 +36,18 @@ public function testInitialWebrootIsEmpty() {
 	$this->assertEmpty($diff, "Unexpected www directory contents");
 }
 
+/**
+ * Test that only core PHP.Gt client-side files are set to copy over on an
+ * empty project.
+ */
 public function testCheckFilesWhenEmpty() {
-	// Test that there is nothing to copy over when there are no files in the
-	// Asset, Script or Style directories.
+	// Test that only core PHP.Gt
 	$webroot = APPROOT . "/www";
 	$fo = new FileOrganiser();
 	$files = $fo->checkFiles();
+
+	// TODO: Create array from actual PHP.Gt files here.
+
 	$this->assertEmpty($files);
 }
 
@@ -55,7 +61,8 @@ public function testCheckFilesWhenNotEmpty() {
 
 	$fo = new FileOrganiser();
 	$files = $fo->checkFiles();
-	$this->assertNotEmpty($files);
+
+	// TODO: Create array from file_put_contents scripts above.
 }
 
 }#

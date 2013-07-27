@@ -20,6 +20,7 @@
  */
 
 public function __construct() {}
+
 /**
  * Uses the www/file.cache file to compare the cached state of the public web
  * files, in relation to the current files in the Asset, Script and Style
@@ -30,21 +31,91 @@ public function __construct() {}
  */
 public function checkFiles() {
 	$wwwDir = APPROOT . "/www";
+	$cacheFile = "$wwwDir/file.cache";
 	$sourceDirectoryArray = array("Asset", "Script", "Style");
 
+	// Some directories should be ignored, as they are only copied if they are
+	// used in the DOM head.
+	$skipSubPaths = array(
+		"All" => ["ReadMe.md"],
+		"Asset" => [],
+		"Style" => ["Font/*"],
+		"Script" => [],
+	);
+
+	$cache = array();
+	$cacheMTime = 0;
+	if(file_exists($cacheFile)) {
+		$cacheMTime = filemtime($cacheFile);
+		$cacheString = file_get_contents($cacheFile);
+		$cache = unserialize($cacheString);
+	}
+	else {
+		$cacheString = serialize($cache);
+		file_put_contents($cacheFile, $cacheString);
+	}
+
 	$files = array();
+	$fileMTimeLatest = 0;
 
+	// First build up the array of files in the source directories.
 	foreach ($sourceDirectoryArray as $sourceDirectory) {
-		foreach ($iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator(APPROOT . "/$sourceDirectory",
-				RecursiveDirectoryIterator::SKIP_DOTS),
-		RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		// GTROOT comes first in the array, so that they will be overrided by
+		// any files that have the same name in the APPROOT.
+		$directoryPathArray = array(
+			GTROOT . "/$sourceDirectory",
+			APPROOT . "/$sourceDirectory",
+		);
 
-			if(!$item->isDir()) {
-				$files[] = $iterator->getSubPathName();
+		foreach($directoryPathArray as $directoryPath) {
+			if(!is_dir($directoryPath)) {
+				continue;
+			}
+
+			foreach ($iterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator($directoryPath,
+					RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+				$pathName = $iterator->getPathName();
+				$subPathName = $iterator->getSubPathName();
+
+				// Don't check on hidden files or directories.
+				if(strpos($item->getFileName(), ".") === 0
+				|| $item->isDir()) {
+					continue;
+				}
+
+				// Ignore directories that are to be checked in the DOM head.
+				$ignoreCheck = array_merge(
+					$skipSubPaths[$sourceDirectory],
+					$skipSubPaths["All"]
+				);
+				foreach ($ignoreCheck as $ignore) {
+					if(fnmatch($ignore, $subPathName)) {
+						continue 2;
+					}	
+				}
+
+				if(!isset($files[$sourceDirectory])) {
+					$files[$sourceDirectory] = array();
+				}
+
+				$files[$sourceDirectory][] = [
+					"SubPathName" => $subPathName,
+					"FileMTime" => filemtime($pathName),
+				];
 			}
 		}
 	}
+
+	if($fileMTimeLatest < $cacheMTime) {
+		return null;
+	}
+
+	// Loop over www directory files, removing them from the $files array if
+	// they already exist.
+	file_put_contents($cacheFile, serialize($files));
 
 	return $files;
 }

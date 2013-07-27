@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="5" assertions="6" failures="1" errors="0" time="0.020189">
-    <testsuite name="Framework Tests" tests="5" assertions="6" failures="1" errors="0" time="0.020189">
-      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="1" assertions="1" failures="0" errors="0" time="0.002473">
-        <testcase name="testTest" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="7" assertions="1" time="0.002473"/>
+  <testsuite name="" tests="5" assertions="5" failures="1" errors="0" time="0.024671">
+    <testsuite name="Framework Tests" tests="5" assertions="5" failures="1" errors="0" time="0.024671">
+      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="1" assertions="1" failures="0" errors="0" time="0.002419">
+        <testcase name="testTest" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="7" assertions="1" time="0.002419"/>
       </testsuite>
-      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.007792">
-        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.007792"/>
+      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.007726">
+        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.007726"/>
       </testsuite>
-      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="3" assertions="3" failures="1" errors="0" time="0.009924">
-        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="33" assertions="1" time="0.002896"/>
-        <testcase name="testCheckFilesWhenEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="39" assertions="1" time="0.003383">
+      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="3" assertions="2" failures="1" errors="0" time="0.014526">
+        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="33" assertions="1" time="0.003090"/>
+        <testcase name="testCheckFilesWhenEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="43" assertions="1" time="0.005187">
           <failure type="PHPUnit_Framework_ExpectationFailedException">FileOrganiserTest::testCheckFilesWhenEmpty
 Failed asserting that an array is empty.
 
-/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php:45
+/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php:51
 </failure>
         </testcase>
-        <testcase name="testCheckFilesWhenNotEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="48" assertions="1" time="0.003645"/>
+        <testcase name="testCheckFilesWhenNotEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="54" assertions="0" time="0.006249"/>
       </testsuite>
     </testsuite>
     <testsuite name="Component Tests" tests="0" assertions="0" failures="0" errors="0" time="0.000000"/>
