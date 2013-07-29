@@ -210,7 +210,8 @@ public function process($clientSideCompiler) {
  * change, and the dom head stays the same, the check() function will not allow
  * this CPU-intensive function to be fired.
  */
-public function compile($clientSideCompiler) {
+public function compile($clientSideCompiler, $domHead) {
+	$clientSideCompiler->combine($domHead);
 	return;
 }
 

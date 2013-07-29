@@ -59,11 +59,8 @@ public function testCheckFilesWhenCached() {
 	$this->assertTrue($cacheInvalid);
 
 	if($cacheInvalid) {
-		$clientSideCompiler = new ClientSideCompiler();
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
-		$fileOrganiser->process($clientSideCompiler);
-		$fileOrganiser->compile($clientSideCompiler);	
 	}
 
 	$cacheInvalid = $fileOrganiser->checkFiles();
@@ -89,11 +86,8 @@ public function testFilesAreCopied() {
 	$cacheInvalid = $fileOrganiser->checkFiles();
 
 	if($cacheInvalid) {
-		$clientSideCompiler = new ClientSideCompiler();
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
-		$fileOrganiser->process($clientSideCompiler);
-		$fileOrganiser->compile($clientSideCompiler);	
 	}
 
 	foreach ($fileContents as $subPath => $contents) {
@@ -140,7 +134,6 @@ public function testScssIsProcessed() {
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
 		$fileOrganiser->process($clientSideCompiler);
-		// DON'T TEST THIS: $fileOrganiser->compile($clientSideCompiler);
 	}
 
 	foreach ($fileContents as $subPath => $contents) {
@@ -163,7 +156,83 @@ public function testScssIsProcessed() {
  * into single scripts.
  */
 public function testClientSideCompilation() {
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Style/Style1.css" => "* { color: red; }",
+		"Style/Style2.css" => "p { color: blue; }",
+		"Style/SubDir/Style3.css" => "p a { color: black; }",
 
+		"Script/Script1.js" => "var test = 'This is ';",
+		"Script/Script2.js" => "test += 'a test!';",
+		"Script/SubDir/Script3.js" => "alert(test);",
+	);
+
+	$html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="/Style/Style1.css" />
+	<link rel="stylesheet" href="/Style/Style2.css" />
+	<link rel="stylesheet" href="/Style/SubDir/Style3.css" />
+
+	<script src="/Script/Script1.js"></script>
+	<script src="/Script/Script2.js"></script>
+	<script src="/Script/SubDir/Script3.js"></script>
+</head>
+<body>
+	<h1>Test</h1>
+</body>
+</html>
+HTML;
+
+	$fileContentsCombined = array();
+	foreach ($fileContents as $subPath => $contents) {
+		$dir = dirname(APPROOT . "/$subPath");
+		if(!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+
+		file_put_contents(APPROOT . "/$subPath", $contents);
+
+		$type = substr($subPath, 0, strpos($subPath, "/"));
+		if(!isset($fileContentsCombined[$type])) {
+			$fileContentsCombined[$type] = "";
+		}
+		$fileContentsCombined[$type] .= $contents . "\n";
+	}
+
+	$fileOrganiser = new FileOrganiser();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+
+	if($cacheInvalid) {
+		$clientSideCompiler = new ClientSideCompiler();
+		$fileOrganiser->clean();
+		$fileOrganiser->update();
+
+		$dom = new Dom($html);
+		$domHead = $dom["head"];
+
+		$fileOrganiser->compile($clientSideCompiler, $domHead);
+	}
+
+	$this->assertFileExists("$wwwDir/Script.js");
+	$actualFileContentsCombined = file_get_contents("$wwwDir/Script.js");
+	$actualFileContentsCombined = preg_replace('/\s+/', '', 
+		$actualFileContentsCombined);
+	$fileContentsCombined["Script"] = preg_replace('/\s+/', '', 
+		$fileContentsCombined["Script"]);
+	$this->assertEquals($actualFileContentsCombined, 
+		$fileContentsCombined["Script"]);
+
+	$this->assertFileExists("$wwwDir/Style.css");
+	$actualFileContentsCombined = file_get_contents("$wwwDir/Style.css");
+	$actualFileContentsCombined = preg_replace('/\s+/', '', 
+		$actualFileContentsCombined);
+	$fileContentsCombined["Style"] = preg_replace('/\s+/', '', 
+		$fileContentsCombined["Style"]);
+	$this->assertEquals($actualFileContentsCombined, 
+		$fileContentsCombined["Style"]);
 }
 
 /**

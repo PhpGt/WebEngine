@@ -29,11 +29,66 @@ public function process($filePath) {
 		} 
 		unlink($filePath);
 		return true;
-		
+
 		break;
 	default:
 		break;
 	}
+}
+
+/**
+ * Combines all source files *in order* into a single source file, and placed
+ * into the www directory. The order of source files is taken from their order
+ * in the DOM head. All source files that don't exist in the DOM head will be
+ * kept in their original place, for you to combine yourself.
+ *
+ * All source files will be removed after combining.
+ */
+public function combine($domHead) {
+	$wwwDir = APPROOT . "/www";
+	$tagNameArray = array(
+		"script" => [
+			"sourceAttribute" => "src",
+			"requiredAttributes" => [],
+			"combinedFile" => "Script.js",
+		],
+		"link" => [
+			"sourceAttribute" => "href",
+			"requiredAttributes" => ["rel" => "stylesheet"],
+			"combinedFile" => "Style.css",
+		],
+	);
+
+	foreach ($tagNameArray as $tagName => $tagDetails) {
+		$elementArray = $domHead[$tagName];
+
+		foreach ($elementArray as $element) {
+			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
+				continue;
+			}
+			foreach ($element["requiredAttributes"] as $requiredAttribute) {
+				if(!$element->hasAttribute($requiredAttribute)) {
+					continue;
+				}
+			}
+
+			$source = $element->getAttribute($tagDetails["sourceAttribute"]);
+			if(!file_exists("$wwwDir/$source")) {
+				// TODO: Handle missing file.
+				continue;
+			}
+
+			$fileContents = file_get_contents("$wwwDir/$source");
+			file_put_contents("$wwwDir/{$tagDetails["combinedFile"]}", 
+				$fileContents . "\n", FILE_APPEND);
+
+			unlink("$wwwDir/$source");
+		}
+	}
+}
+
+public function compile($filePath) {
+
 }
 
 }#
