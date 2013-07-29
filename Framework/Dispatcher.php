@@ -104,16 +104,14 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	$clientSideCompiler = new ClientSideCompiler();
 	$fileOrganiser = new FileOrganiser();
-	// 1. Get a diff of www and Asset,Script,Style
-	// 		also check PageTool's optional client side files.
-	$files = $fileOrganiser->checkFiles();
-	if(!empty($files)) {
-		$fileOrganiser->clean($fileList);
-		$fileOrganiser->update($fileList);
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	if($cacheInvalid) {
+		$clientSideCompiler = new ClientSideCompiler();
+		$fileOrganiser->clean();
+		$fileOrganiser->update($dom["head > *[data-pagetool]"]);
 		$fileOrganiser->process($clientSideCompiler);
-		$fileOrganiser->compile($clientSideCompiler);		
+		$fileOrganiser->compile($clientSideCompiler);
 	}
 
 	$dom->templateOutput($templateWrapper);

@@ -19,44 +19,34 @@
  * the modified time within www directory.
  */
 
-public function __construct() {}
+private $_wwwDir;
+private $_cacheFile;
+
+public function __construct() {
+	$this->_wwwDir = APPROOT . "/www";
+	$this->_cacheFile = "{$this->_wwwDir}/www.cache";
+}
 
 /**
- * Uses the www/file.cache file to compare the cached state of the public web
- * files, in relation to the current files in the Asset, Script and Style
- * directories.
+ * In production, cache is *always* valid when the www.cache file is present.
+ * To invalidate, just remove the file.
  *
- * @return array An array describing the www directory hierarchy to update to,
- * or null if there is nothing to be done.
+ * In non-production, simply obtains the latest modified file time and compares
+ * it to the www.cache's time.
+ *
+ * @return bool True if the www directory needs refreshing.
  */
 public function checkFiles() {
-	$wwwDir = APPROOT . "/www";
-	$cacheFile = "$wwwDir/file.cache";
+	$cacheFileExists = file_exists($this->_cacheFile);
+	if(!$cacheFileExists) {
+		return true;
+	}
+	if(App_Config::isProduction()) {
+		return !$cacheFileExists;
+	}
+
 	$sourceDirectoryArray = array("Asset", "Script", "Style");
-
-	// Some directories should be ignored, as they are only copied if they are
-	// used in the DOM head.
-	$skipSubPaths = array(
-		"All" => ["ReadMe.md"],
-		"Asset" => [],
-		"Style" => ["Font/*"],
-		"Script" => [],
-	);
-
-	$cache = array();
-	$cacheMTime = 0;
-	if(file_exists($cacheFile)) {
-		$cacheMTime = filemtime($cacheFile);
-		$cacheString = file_get_contents($cacheFile);
-		$cache = unserialize($cacheString);
-	}
-	else {
-		$cacheString = serialize($cache);
-		file_put_contents($cacheFile, $cacheString);
-	}
-
-	$files = array();
-	$fileMTimeLatest = 0;
+	$fileMTime = 0;
 
 	// First build up the array of files in the source directories.
 	foreach ($sourceDirectoryArray as $sourceDirectory) {
@@ -86,53 +76,102 @@ public function checkFiles() {
 					continue;
 				}
 
-				// Ignore directories that are to be checked in the DOM head.
-				$ignoreCheck = array_merge(
-					$skipSubPaths[$sourceDirectory],
-					$skipSubPaths["All"]
-				);
-				foreach ($ignoreCheck as $ignore) {
-					if(fnmatch($ignore, $subPathName)) {
-						continue 2;
-					}	
+				$thisFileMTime = filemtime($pathName);
+				if($thisFileMTime > $fileMTime) {
+					$fileMTime = $thisFileMTime;
 				}
-
-				if(!isset($files[$sourceDirectory])) {
-					$files[$sourceDirectory] = array();
-				}
-
-				$files[$sourceDirectory][] = [
-					"SubPathName" => $subPathName,
-					"FileMTime" => filemtime($pathName),
-				];
 			}
 		}
 	}
 
-	if($fileMTimeLatest < $cacheMTime) {
-		return null;
+
+	$cacheMTime = filemtime($this->_cacheFile);
+	// Returns if the cache is out of date.
+	return $cacheMTime < $fileMTime;
+}
+
+/**
+ * Removes all files within any subdirectories in the www directory. Doesn't 
+ * remove any files within the root www directory.
+ */
+public function clean() {
+	$directoryArray = array("Asset", "Script", "Style");
+	foreach($directoryArray as $directory) {
+		$directoryPath = "{$this->_wwwDir}/$directory";
+
+		if(!is_dir($directoryPath)) {
+			continue;
+		}
+
+		foreach ($iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($directoryPath,
+				RecursiveDirectoryIterator::SKIP_DOTS),
+		RecursiveIteratorIterator::CHILD_FIRST) as $item) {
+
+			$pathName = $iterator->getPathName();
+			unset($pathName);
+		}
+
+		rmdir($directoryPath);
 	}
 
-	// Loop over www directory files, removing them from the $files array if
-	// they already exist.
-	file_put_contents($cacheFile, serialize($files));
-
-	return $files;
+	if(file_exists($this->_cacheFile)) {
+		unset($this->_cacheFile);
+	}
 }
 
 /**
- * Removes any old files from www, but doesn't remove files that have been put
- * there manually (for example, adding robots.txt to www should not get removed)
+ * Performs the actual copying of resources within the three source directories.
+ * Because PageTools can inject client-side resources in the DOM head, a list
+ * of matching elements could be passed in to be included in the file copying.
  */
-public function clean($fileList) {
-	return;
-}
+public function update($pageToolElements = array()) {
+	$time = time();
 
-/**
- * Performs the actual copying of changed resources.
- */
-public function update($fileList) {
-	return;
+	$directoryArray = array("Asset", "Script", "Style");
+	foreach($directoryArray as $directory) {
+		$sourceDirectoryArray = array(
+			GTROOT . "/$directory",
+			APPROOT . "/$directory",
+		);
+
+		foreach ($sourceDirectoryArray as $sourceDirectory) {
+			if(!is_dir($sourceDirectory)) {
+				continue;
+			}
+			
+			foreach ($iterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator($sourceDirectory,
+					RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+				$pathName = $iterator->getPathName();
+				$subPathName = $iterator->getSubPathName();
+				$fileName = $item->getFileName();
+				if($fileName[0] === ".") {
+					continue;
+				}
+
+				$destinationFile = "{$this->_wwwDir}/$directory/$subPathName";
+				$destinationDir = dirname($destinationFile);
+
+				if(!is_dir($destinationDir)) {
+					mkdir($destinationDir, 0775, true);
+				}
+
+				if($item->isDir()) {
+					continue;
+				}
+
+				copy($pathName, $destinationFile);
+			}
+		}
+	}
+
+	// TODO: PageTool stuff.
+
+	file_put_contents($this->_cacheFile, $time);
+	return $time;
 }
 
 /**
@@ -141,7 +180,27 @@ public function update($fileList) {
  * REPLACE the source files.
  */
 public function process($clientSideCompiler) {
-	return;
+	$count = 0;
+
+	foreach ($iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator("$this->_wwwDir/Style",
+			RecursiveDirectoryIterator::SKIP_DOTS),
+	RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+		$pathName = $iterator->getPathName();
+		$fileName = $item->getFileName();
+		$extension = strtolower($item->getExtension());
+		
+		if($extension !== "scss") {
+			continue;
+		}
+		
+		if($clientSideCompiler->process($pathName)) {
+			$count++;			
+		}
+
+	}
+	return $count;
 }
 
 /**

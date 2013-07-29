@@ -11,4 +11,29 @@
  */
 public function __construct() {}
 
+/**
+ * Process a client-side file, such as SCSS, and replace the file with its
+ * processed couterpart.
+ * Only SCSS is supported at this moment.
+ */
+public function process($filePath) {
+	$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+	switch($extension) {
+	case "scss":
+		$filePathProcessed = preg_replace("/\.scss$/i", ".css", $filePath);
+
+		$sass = new Sass($filePath);
+		$parsedString = $sass->parse();
+		if(file_put_contents($filePathProcessed, $parsedString) === false) {
+			return false;
+		} 
+		unlink($filePath);
+		return true;
+		
+		break;
+	default:
+		break;
+	}
+}
+
 }#
