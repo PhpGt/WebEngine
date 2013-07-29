@@ -13,6 +13,15 @@ define("PATH",		"/");
 define("FILE",      "Index");
 define("EXT",       "html");
 
+require(GTROOT . "/Framework/Autoloader.php");
+require(GTROOT . "/Config/Config.cfg.php");
+require(GTROOT . "/Config/App.cfg.php");
+require(GTROOT . "/Config/Database.cfg.php");
+require(GTROOT . "/Config/Security.cfg.php");
+require(GTROOT . "/Framework/Gt.php");
+
+$gt = new Gt(microtime(), true);
+
 function createTestApp() {
 	$source = "TestApp_Base";
 	$dir = APPROOT;

@@ -37,32 +37,141 @@ public function testInitialWebrootIsEmpty() {
 }
 
 /**
- * Test that only core PHP.Gt client-side files are set to copy over on an
- * empty project.
+ * Test that cache is invalid when the www.cache file hasn't been made.
  */
-public function testCheckFilesWhenEmpty() {
-	// Test that only core PHP.Gt
-	$webroot = APPROOT . "/www";
-	$fo = new FileOrganiser();
-	$files = $fo->checkFiles();
+public function testCheckFilesNew() {
+	$fileOrganiser = new FileOrganiser();
+	$cacheInvalid = $fileOrganiser->checkFiles();
 
-	// TODO: Create array from actual PHP.Gt files here.
-
-	$this->assertEmpty($files);
+	$this->assertTrue($cacheInvalid, "Cache should be invalid.");
 }
 
-public function testCheckFilesWhenNotEmpty() {
-	// Test that there is something to copy over when there are files in the
-	// Asset, Script or Style directories.
-	$webroot = APPROOT . "/www";
+/**
+ * Test that the cache is valid after FileOrganiser's methods have been called.
+ */
+public function testCheckFilesWhenCached() {
 	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
 	file_put_contents(APPROOT . "/Script/Main.js", "alert('Script!')");
 	file_put_contents(APPROOT . "/Style/Main.css", "* { color: red; }");
 
-	$fo = new FileOrganiser();
-	$files = $fo->checkFiles();
+	$fileOrganiser = new FileOrganiser();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	$this->assertTrue($cacheInvalid);
 
-	// TODO: Create array from file_put_contents scripts above.
+	if($cacheInvalid) {
+		$clientSideCompiler = new ClientSideCompiler();
+		$fileOrganiser->clean();
+		$fileOrganiser->update();
+		$fileOrganiser->process($clientSideCompiler);
+		$fileOrganiser->compile($clientSideCompiler);	
+	}
+
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	$this->assertFalse($cacheInvalid);
+}
+
+/**
+ * Test that the files in the source directories are actually copied to the
+ * www directory.
+ */
+public function testFilesAreCopied() {
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Asset/SomeAssetData.dat" => "Asset content",
+		"Script/Main.js" => "alert('Script!')",
+		"Style/Main.css" => "* { color: red; }",
+	);
+	foreach ($fileContents as $subPath => $contents) {
+		file_put_contents(APPROOT . "/$subPath", $contents);
+	}
+
+	$fileOrganiser = new FileOrganiser();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+
+	if($cacheInvalid) {
+		$clientSideCompiler = new ClientSideCompiler();
+		$fileOrganiser->clean();
+		$fileOrganiser->update();
+		$fileOrganiser->process($clientSideCompiler);
+		$fileOrganiser->compile($clientSideCompiler);	
+	}
+
+	foreach ($fileContents as $subPath => $contents) {
+		$filePath = "$wwwDir/$subPath";
+		$this->assertFileExists($filePath);
+		$actualContents = file_get_contents($filePath);
+		$this->assertEquals($contents, $actualContents);
+	}
+}
+
+/**
+ * Test that SCSS files are converted to CSS, and the source SCSS file is not
+ * present in www directory after the processing. The "compiled" css that is
+ * hard-coded here will be stripped of all white-space when comparing to the 
+ * actual white-space.
+ */
+public function testScssIsProcessed() {
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Style/TestVar.scss" => [
+			"Source" => "\$red = #fa124e; * { color: \$red; }",
+			"Compiled" => "* { color: #fa124e; }"],
+		"Style/TestNest.scss" => [
+			"Source" => "p { color: red; a { color: blue; } }",
+			"Compiled" => "p { color: red; } p a { color: blue; }"],
+		"Style/SubDir/TestMixin.scss" => [
+			"Source" => "@mixin Test() { color: red; } p { @include Test(); }",
+			"Compiled" => "p { color: red; }"],
+	);
+	foreach ($fileContents as $subPath => $contents) {
+		$dir = dirname(APPROOT . "/$subPath");
+		if(!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+
+		file_put_contents(APPROOT . "/$subPath", $contents["Source"]);
+	}
+
+	$fileOrganiser = new FileOrganiser();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+
+	if($cacheInvalid) {
+		$clientSideCompiler = new ClientSideCompiler();
+		$fileOrganiser->clean();
+		$fileOrganiser->update();
+		$fileOrganiser->process($clientSideCompiler);
+		// DON'T TEST THIS: $fileOrganiser->compile($clientSideCompiler);
+	}
+
+	foreach ($fileContents as $subPath => $contents) {
+		$filePath = "$wwwDir/$subPath";
+		// $filePath still points to .scss file.
+		$this->assertFileNotExists($filePath);
+
+		$filePath = preg_replace("/.scss$/i", ".css", $filePath);
+		$actualContents = file_get_contents($filePath);
+
+		$actual_stripped = preg_replace('/\s+/', '', $actualContents);
+		$compiled_stripped = preg_replace('/\s+/', '', $contents["Compiled"]);
+
+		$this->assertEquals($actual_stripped, $compiled_stripped);
+	}
+}
+
+/**
+ * Test that when isClientCompiled is set, the www directory files get compiled
+ * into single scripts.
+ */
+public function testClientSideCompilation() {
+
+}
+
+/**
+ * Test that client side files added to the DOM head by PageTools are handled
+ * in the correct way.
+ */
+public function testPageToolClientSide() {
+
 }
 
 }#
