@@ -6,6 +6,7 @@ ok 4 - FileOrganiserTest::testCheckFilesNew
 ok 5 - FileOrganiserTest::testCheckFilesWhenCached
 ok 6 - FileOrganiserTest::testFilesAreCopied
 ok 7 - FileOrganiserTest::testScssIsProcessed
-ok 8 - FileOrganiserTest::testClientSideCompilation
-ok 9 - FileOrganiserTest::testPageToolClientSide
-1..9
+ok 8 - FileOrganiserTest::testClientSideCombination
+ok 9 - FileOrganiserTest::testClientSideCompilation
+ok 10 - FileOrganiserTest::testPageToolClientSide
+1..10

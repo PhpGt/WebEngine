@@ -95,8 +95,21 @@ public function combine($domHead) {
 	}
 }
 
-public function compile($filePath) {
+public function compile() {
+	$wwwDir = APPROOT . "/www";
+	$fileNameArray = array(
+		"Script.js",
+		"Style.css",
+	);
 
+	foreach ($fileNameArray as $fileName) {
+		$filePath = "$wwwDir/$fileName";
+		if(!file_exists($filePath)) {
+			continue;
+		}
+
+		// TODO: Implement Closure-Compiler service or alternative.
+	}
 }
 
 }#

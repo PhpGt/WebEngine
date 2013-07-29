@@ -210,8 +210,15 @@ public function process($clientSideCompiler) {
  * change, and the dom head stays the same, the check() function will not allow
  * this CPU-intensive function to be fired.
  */
-public function compile($clientSideCompiler, $domHead) {
-	$clientSideCompiler->combine($domHead);
+public function compile($clientSideCompiler, $domHead, 
+$combineForce = false, $compileForce = false) {
+	$isCompiled = App_Config::isClientCompiled();
+	if($isCompiled || $combineForce) {
+		$clientSideCompiler->combine($domHead);
+	}
+	if($isCompiled || $compileForce) {
+		$clientSideCompiler->compile();	
+	}
 	return;
 }
 

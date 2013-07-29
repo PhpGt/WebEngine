@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="9" assertions="27" failures="0" errors="0" time="0.114023">
-    <testsuite name="Framework Tests" tests="9" assertions="27" failures="0" errors="0" time="0.114023">
-      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="1" assertions="1" failures="0" errors="0" time="0.002572">
-        <testcase name="testTest" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="7" assertions="1" time="0.002572"/>
+  <testsuite name="" tests="10" assertions="27" failures="0" errors="0" time="0.131262">
+    <testsuite name="Framework Tests" tests="10" assertions="27" failures="0" errors="0" time="0.131262">
+      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="1" assertions="1" failures="0" errors="0" time="0.002593">
+        <testcase name="testTest" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="7" assertions="1" time="0.002593"/>
       </testsuite>
-      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.007565">
-        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.007565"/>
+      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.007539">
+        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.007539"/>
       </testsuite>
-      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="7" assertions="24" failures="0" errors="0" time="0.103886">
-        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="33" assertions="1" time="0.003259"/>
-        <testcase name="testCheckFilesNew" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="42" assertions="1" time="0.002278"/>
-        <testcase name="testCheckFilesWhenCached" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="52" assertions="2" time="0.014827"/>
-        <testcase name="testFilesAreCopied" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="74" assertions="6" time="0.013495"/>
-        <testcase name="testScssIsProcessed" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="107" assertions="6" time="0.046659"/>
-        <testcase name="testClientSideCompilation" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="158" assertions="8" time="0.021714"/>
-        <testcase name="testPageToolClientSide" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="251" assertions="0" time="0.001654"/>
+      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="8" assertions="24" failures="0" errors="0" time="0.121130">
+        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="33" assertions="1" time="0.003182"/>
+        <testcase name="testCheckFilesNew" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="42" assertions="1" time="0.002236"/>
+        <testcase name="testCheckFilesWhenCached" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="52" assertions="2" time="0.014641"/>
+        <testcase name="testFilesAreCopied" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="74" assertions="6" time="0.013325"/>
+        <testcase name="testScssIsProcessed" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="107" assertions="6" time="0.041744"/>
+        <testcase name="testClientSideCombination" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="158" assertions="8" time="0.025808"/>
+        <testcase name="testClientSideCompilation" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="247" assertions="0" time="0.017971"/>
+        <testcase name="testPageToolClientSide" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="333" assertions="0" time="0.002223"/>
       </testsuite>
     </testsuite>
     <testsuite name="Component Tests" tests="0" assertions="0" failures="0" errors="0" time="0.000000"/>
