@@ -9,6 +9,10 @@
  * reference all JS and CSS/SCSS files without the worry of multiple requests
  * or unminified scripts being exposed publicly.
  */
+private $_compileFunctionList = array(
+	"js" => "javaScript",
+);
+
 public function __construct() {}
 
 /**
@@ -104,12 +108,48 @@ public function compile() {
 
 	foreach ($fileNameArray as $fileName) {
 		$filePath = "$wwwDir/$fileName";
+		$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 		if(!file_exists($filePath)) {
 			continue;
 		}
 
-		// TODO: Implement Closure-Compiler service or alternative.
+		if(!array_key_exists($extension, $this->_compileFunctionList)) {
+			continue;
+		}
+
+		$compiledString = call_user_func_array(
+			[$this, $this->_compileFunctionList[$extension]],
+			[$filePath]
+		);
+
+		file_put_contents($filePath, $compiledString);
 	}
+}
+
+private function javaScript($path) {
+	$js = file_get_contents($path);
+	if(strlen(trim($js)) === 0) {
+		return $js;
+	}
+
+	$http = new Http();
+	$http->setOption("timeout", 10);
+	$response = $http->execute(
+		// "http://g105b.com/PostTest.php",
+		"http://closure-compiler.appspot.com/compile",
+		"POST", [
+			"output_info" => "compiled_code",
+			"output_format" => "text",
+			"compilation_level" => "SIMPLE_OPTIMIZATIONS",
+			"js_code" => $js,
+		]
+	);
+
+	if(!empty($js_c)) {
+		return $js_c;
+	}
+
+	return $js;
 }
 
 }#

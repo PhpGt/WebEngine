@@ -38,6 +38,8 @@ public function __construct($url = null, $method = "GET", $parameters = null) {
 	foreach ($this->_ch as $i => $ch) {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
 	}
 }
 
@@ -122,26 +124,24 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 					$paramChar = "&";
 				}
 			}
-		}
-
-		if(!empty($parameters)) {
-			foreach ($parameters as $key => $value) {
-				$url .= $paramChar;
-				$url .= urlencode($key) . "=" . urlencode($value);
-				$paramChar = "&";
+			if(!empty($parameters)) {
+				foreach ($parameters as $key => $value) {
+					$url .= $paramChar;
+					$url .= urlencode($key) . "=" . urlencode($value);
+					$paramChar = "&";
+				}
 			}
 		}
 
 		curl_setopt($this->_ch[$i], CURLOPT_URL, $url);
 	}
 
+	$this->setOption("customRequest", $method);
+
 	if($method === "POST"
 	|| $method === "PUT") {
 		$this->setOption("PostFields", $parameters);
 	}
-
-	$this->setOption("customRequest", $method);
-	$this->setOption("header", true);
 
 	foreach ($this->_ch as $ch) {
 		curl_multi_add_handle($this->_chm, $ch);
@@ -153,9 +153,12 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 		$status = curl_multi_exec($this->_chm, $active);
 	} while($status == CURLM_CALL_MULTI_PERFORM || $active);
 
+	$responseData = null;
+
 	foreach ($this->_ch as $ch) {
 		$response = curl_multi_getcontent($ch);
-		$info = curl_getinfo($ch);
+		// $info = curl_getinfo($ch);
+		// var_dump($info, $response);die();
 
 		$header = "";
 		$body = "";
@@ -177,10 +180,10 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 			"body" => $body,
 		];
 		$this->response->add($responseData);
-		$responseData = array_merge($info, $responseData);
 		
 		curl_multi_remove_handle($this->_chm, $ch);
 	}
+	return $this->response;
 }
 
 }#

@@ -7,10 +7,20 @@ public function add($data) {
 }
 
 public function offsetExists($offset) {
+	if(is_string($offset)
+	&& array_key_exists($offset, $this->_responseArray[0])) {
+		return true;
+	}
+
 	return isset($this->_responseArray[$offset]);
 }
 
 public function offsetGet($offset) {
+	if(is_string($offset)
+	&& array_key_exists($offset, $this->_responseArray[0])) {
+		return $this->_responseArray[0][$offset];
+	}
+	
 	return $this->_responseArray[$offset];
 }
 
