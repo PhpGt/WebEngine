@@ -17,23 +17,27 @@ public function __construct($url = null, $method = "GET", $parameters = null) {
 	$this->_chm = curl_multi_init();
 	$this->response = new Http_Response();
 
-	if(!is_null($url)) {
+	if(empty($url)) {
+		$this->_ch[] = curl_init();
+	}
+	else {
 		if(is_array($url)) {
 			$urlArray = $url;
 		}
 		else {
 			$urlArray = array($url);
 		}
-
 		foreach ($urlArray as $i => $url) {
-			$this->_ch[] = curl_init();
-			$ch = end($this->_ch);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HEADER, true);
+			$this->_ch[] = curl_init();			
 		}
 
 		$this->_urlArray = $urlArray;
 		$this->execute($urlArray, $method, $parameters);
+	}
+
+	foreach ($this->_ch as $i => $ch) {
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
 	}
 }
 
