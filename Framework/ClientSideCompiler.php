@@ -84,6 +84,14 @@ public function combine($domHead) {
 
 			unlink("$wwwDir/$source");
 		}
+
+		$elementArray->remove();
+		$newElement = new DomEl($domHead->_dom, $tagName);
+		$newElement->setAttribute(
+			$tagDetails["sourceAttribute"], 
+			"/" . $tagDetails["combinedFile"]
+		);
+		$domHead->appendChild($newElement);
 	}
 }
 

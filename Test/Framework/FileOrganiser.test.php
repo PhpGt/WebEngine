@@ -202,6 +202,8 @@ HTML;
 		$fileContentsCombined[$type] .= $contents . "\n";
 	}
 
+	$dom = new Dom($html);
+
 	$fileOrganiser = new FileOrganiser();
 	$cacheInvalid = $fileOrganiser->checkFiles();
 
@@ -210,7 +212,6 @@ HTML;
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
 
-		$dom = new Dom($html);
 		$domHead = $dom["head"];
 
 		$fileOrganiser->compile($clientSideCompiler, $domHead);
@@ -233,6 +234,14 @@ HTML;
 		$fileContentsCombined["Style"]);
 	$this->assertEquals($actualFileContentsCombined, 
 		$fileContentsCombined["Style"]);
+
+	$domHeadScriptTags = $dom["head > script"];
+	$domHeadStyleTags = $dom["head > link"];
+
+	$this->assertCount(1, $domHeadScriptTags);
+	$this->assertCount(1, $domHeadStyleTags);
+	$this->assertEquals("/Script.js", $domHeadScriptTags[0]->src);
+	$this->assertEquals("/Style.css", $domHeadStyleTags[0]->href);
 }
 
 /**
