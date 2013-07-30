@@ -6,6 +6,7 @@
 private $_urlArray = array();
 private $_ch = array();
 private $_chm = null;
+private $_headers = array();
 
 public $response = null;
 
@@ -39,8 +40,9 @@ public function __construct($url = null, $method = "GET", $parameters = null) {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
 	}
+
+	$this->_headers[] = 'Expect:';
 }
 
 public function __destruct() {
@@ -87,8 +89,9 @@ public function setHeader($header) {
 		throw new Http_Exception("Http setHeader() only accepts string/array.");
 	}
 
-	curl_multi_setopt($this->_ch, CURLOPT_HTTPHEADER, $headerArray);
-	return $headerArray;
+	$this->_headers = array_merge($this->_headers, $headerArray);
+		
+	return $this->_headers;
 }
 
 /**
@@ -144,6 +147,7 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 	}
 
 	foreach ($this->_ch as $ch) {
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
 		curl_multi_add_handle($this->_chm, $ch);
 	}
 

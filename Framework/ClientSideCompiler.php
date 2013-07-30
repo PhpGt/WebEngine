@@ -134,6 +134,7 @@ private function javaScript($path) {
 
 	$http = new Http();
 	$http->setOption("timeout", 10);
+	$http->setHeader("Content-Type: application/x-www-form-urlencoded");
 	$response = $http->execute(
 		// "http://g105b.com/PostTest.php",
 		"http://closure-compiler.appspot.com/compile",
@@ -144,6 +145,8 @@ private function javaScript($path) {
 			"js_code" => $js,
 		]
 	);
+
+	var_dump($response["body"]);
 
 	if(!empty($js_c)) {
 		return $js_c;
