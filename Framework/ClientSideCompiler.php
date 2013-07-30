@@ -135,18 +135,17 @@ private function javaScript($path) {
 	$http = new Http();
 	$http->setOption("timeout", 10);
 	$http->setHeader("Content-Type: application/x-www-form-urlencoded");
+	// Google Closure service does not support multipart/form-data POST request,
+	// which is very odd. Instead, data has to be in the query string.
 	$response = $http->execute(
 		// "http://g105b.com/PostTest.php",
-		"http://closure-compiler.appspot.com/compile",
-		"POST", [
-			"output_info" => "compiled_code",
-			"output_format" => "text",
-			"compilation_level" => "SIMPLE_OPTIMIZATIONS",
-			"js_code" => $js,
-		]
+		"http://closure-compiler.appspot.com/compile"
+			. "?output_info=compiled_code"
+			. "&output_format=text"
+			. "&compilation_level=SIMPLE_OPTIMIZATIONS"
+			. "&js_code=" . urlencode($js),
+		"POST"
 	);
-
-	var_dump($response["body"]);
 
 	if(!empty($js_c)) {
 		return $js_c;

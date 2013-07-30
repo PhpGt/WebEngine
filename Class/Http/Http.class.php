@@ -127,12 +127,12 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 					$paramChar = "&";
 				}
 			}
-			if(!empty($parameters)) {
-				foreach ($parameters as $key => $value) {
-					$url .= $paramChar;
-					$url .= urlencode($key) . "=" . urlencode($value);
-					$paramChar = "&";
-				}
+		}
+		if(!empty($parameters)) {
+			foreach ($parameters as $key => $value) {
+				$url .= $paramChar;
+				$url .= urlencode($key) . "=" . urlencode($value);
+				$paramChar = "&";
 			}
 		}
 
