@@ -44,6 +44,10 @@ function createTestApp() {
 
 function removeTestApp() {
 	$dir = APPROOT;
+	if(!is_dir($dir)) {
+		return;
+	}
+	
 	foreach ($iterator = new RecursiveIteratorIterator(
 		new RecursiveDirectoryIterator($dir,
 			RecursiveDirectoryIterator::SKIP_DOTS),

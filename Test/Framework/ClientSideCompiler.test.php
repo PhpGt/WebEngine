@@ -1,6 +1,7 @@
 <?php class ClientSideCompilerTest extends PHPUnit_Framework_TestCase {
 
 public function setup() {
+	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
@@ -164,10 +165,6 @@ HTML;
 public function testClientSideCompilation() {
 	$wwwDir = APPROOT . "/www";
 	$fileContents = array(
-		"Style/Style1.css" => "* { color: red; }",
-		"Style/Style2.css" => "p { color: blue; }",
-		"Style/SubDir/Style3.css" => "p a { color: black; }",
-
 		"Script/Script1.js" => "var test = 'This is ';",
 		"Script/Script2.js" => "test += 'a test!';",
 		"Script/SubDir/Script3.js" => "alert(test);",
@@ -192,7 +189,7 @@ public function testClientSideCompilation() {
 </html>
 HTML;
 
-	$fileContentsCombined = array();
+	$compiledOutput = 'var test="This is ",test=test+"a test!";alert(test);';
 	foreach ($fileContents as $subPath => $contents) {
 		$dir = dirname(APPROOT . "/$subPath");
 		if(!is_dir($dir)) {
@@ -200,48 +197,29 @@ HTML;
 		}
 
 		file_put_contents(APPROOT . "/$subPath", $contents);
-
-		$type = substr($subPath, 0, strpos($subPath, "/"));
-		if(!isset($fileContentsCombined[$type])) {
-			$fileContentsCombined[$type] = "";
-		}
-		$fileContentsCombined[$type] .= $contents . "\n";
 	}
-
-	$dom = new Dom($html);
 
 	$fileOrganiser = new FileOrganiser();
 	$cacheInvalid = $fileOrganiser->checkFiles();
 
 	if($cacheInvalid) {
+		$dom = new Dom($html);
+
 		$clientSideCompiler = new ClientSideCompiler();
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
 
-		$domHead = $dom["head"];
+		$domHead = $dom["head"][0];
 
 		$fileOrganiser->compile($clientSideCompiler, $domHead, true, true);
 	}
-	die("!!!!!");
+	
+	$scriptFile = "$wwwDir/Script.js";
+	$this->assertFileExists($scriptFile);
+	$actualFileContentsCompiled = file_get_contents($scriptFile);
+	$actualFileContentsCompiled = trim($actualFileContentsCompiled);
 
-	// Waiting for ClientSideCompiler to implement full compilation.
-	// $this->assertFileExists("$wwwDir/Script.js");
-	// $actualFileContentsCopiled = file_get_contents("$wwwDir/Script.js");
-	// $actualFileContentsCopiled = preg_replace('/\s+/', '', 
-	// 	$actualFileContentsCopiled);
-	// $fileContentsCombined["Script"] = preg_replace('/\s+/', '', 
-	// 	$fileContentsCombined["Script"]);
-	// $this->assertEquals($actualFileContentsCopiled, 
-	// 	$fileContentsCombined["Script"]);
-
-	// $this->assertFileExists("$wwwDir/Style.css");
-	// $actualFileContentsCopiled = file_get_contents("$wwwDir/Style.css");
-	// $actualFileContentsCopiled = preg_replace('/\s+/', '', 
-	// 	$actualFileContentsCopiled);
-	// $fileContentsCombined["Style"] = preg_replace('/\s+/', '', 
-	// 	$fileContentsCombined["Style"]);
-	// $this->assertEquals($actualFileContentsCopiled, 
-	// 	$fileContentsCombined["Style"]);
+	$this->assertEquals($compiledOutput, $actualFileContentsCompiled);
 }
 
 }#

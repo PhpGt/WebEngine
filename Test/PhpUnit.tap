@@ -1,3 +1,11 @@
 TAP version 13
-not ok 1 - Error: ClientSideCompilerTest::testScssIsProcessed
+ok 1 - ClientSideCompilerTest::testScssIsProcessed
 ok 2 - ClientSideCompilerTest::testClientSideCombination
+ok 3 - ClientSideCompilerTest::testClientSideCompilation
+ok 4 - DomTest::testDomElInDom
+ok 5 - FileOrganiserTest::testInitialWebrootIsEmpty
+ok 6 - FileOrganiserTest::testCheckFilesNew
+ok 7 - FileOrganiserTest::testCheckFilesWhenCached
+ok 8 - FileOrganiserTest::testFilesAreCopied
+ok 9 - FileOrganiserTest::testPageToolClientSide
+1..9

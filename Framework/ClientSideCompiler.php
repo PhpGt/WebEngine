@@ -64,7 +64,10 @@ public function combine($domHead) {
 	);
 
 	foreach ($tagNameArray as $tagName => $tagDetails) {
-		$elementArray = $domHead[$tagName];
+		$elementArray = array();
+		if(!is_null($domHead)) {
+			$elementArray = $domHead[$tagName];			
+		}
 
 		foreach ($elementArray as $element) {
 			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
@@ -89,13 +92,15 @@ public function combine($domHead) {
 			unlink("$wwwDir/$source");
 		}
 
-		$elementArray->remove();
-		$newElement = new DomEl($domHead->_dom, $tagName);
-		$newElement->setAttribute(
-			$tagDetails["sourceAttribute"], 
-			"/" . $tagDetails["combinedFile"]
-		);
-		$domHead->appendChild($newElement);
+		if(!is_null($domHead)) {
+			$elementArray->remove();
+			$newElement = new DomEl($domHead->_dom, $tagName);
+			$newElement->setAttribute(
+				$tagDetails["sourceAttribute"], 
+				"/" . $tagDetails["combinedFile"]
+			);
+			$domHead->appendChild($newElement);			
+		}
 	}
 }
 
@@ -146,6 +151,8 @@ private function javaScript($path) {
 			. "&js_code=" . urlencode($js),
 		"POST"
 	);
+
+	$js_c = $response["body"];
 
 	if(!empty($js_c)) {
 		return $js_c;
