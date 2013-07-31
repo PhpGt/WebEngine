@@ -72,7 +72,6 @@ $baseDir = ($slashPos === false)
 		? ""
 		: $dirName)
 	: substr($dirName, 0, $slashPos);
-
 // For finding the correct PageCode and PageView, on different systems.
 $dirPath = str_replace("/", DS, $dirName);
 $filePath = $dirName . DS . $fileName;
@@ -80,6 +79,7 @@ while($filePath[0] == DS) {
 	$filePath = substr($filePath, 1);
 }
 $fileClass = str_replace(DS, "_", $filePath);
+define("FILEPATH", $filePath);
 
 $appName = strstr($cwd, ".")
 	? substr($cwd, 0, strrpos($cwd, "."))

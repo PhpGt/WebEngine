@@ -111,9 +111,12 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	if($cacheInvalid)
-		$fileOrganiser->update($dom["head > *[data-pagetool]"]);
-		$fileOrganiser->process($clientSideCompiler);
+	$domHead = $dom["head"];
+	$fileOrganiser->processHead($domHead);
+	if($cacheInvalid) {
+		$fileOrganiser->clean();
+		$fileOrganiser->update($domHead);
+		$fileOrganiser->process($clientSideCompiler, $domHead);
 		$fileOrganiser->compile($clientSideCompiler);
 	}
 

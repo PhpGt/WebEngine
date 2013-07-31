@@ -81,7 +81,6 @@ public function combine($domHead) {
 
 			$source = $element->getAttribute($tagDetails["sourceAttribute"]);
 			if(!file_exists("$wwwDir/$source")) {
-				// TODO: Handle missing file.
 				continue;
 			}
 

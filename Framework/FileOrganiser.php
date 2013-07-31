@@ -108,15 +108,20 @@ public function clean() {
 				RecursiveDirectoryIterator::SKIP_DOTS),
 		RecursiveIteratorIterator::CHILD_FIRST) as $item) {
 
-			$pathName = $iterator->getPathName();
-			unset($pathName);
+			$pathName = $iterator->getPathname();
+			if($item->isDir()) {
+				rmdir($pathName);
+			}
+			else {
+				unlink($pathName);
+			}
 		}
 
 		rmdir($directoryPath);
 	}
 
 	if(file_exists($this->_cacheFile)) {
-		unset($this->_cacheFile);
+		unlink($this->_cacheFile);
 	}
 }
 
@@ -201,6 +206,23 @@ public function update($pageToolElements = array()) {
 	return $time;
 }
 
+public function processHead($domHead) {
+	$count = 0;
+	$styleElements = $domHead["link"];
+	foreach ($styleElements as $el) {
+		$pattern = "/\.scss$/i";
+		$href = $el->getAttribute("href");
+		if(!preg_match($pattern, $href)) {
+			continue;
+		}
+		
+		$href = preg_replace($pattern, ".css", $href);
+		$el->setAttribute("href", $href);
+		$count++;
+	}
+	return $count;
+}
+
 /**
  * Some files will require preprocessing, such as SCSS source files. The source
  * files will be present in the www directory structure, so this function will
@@ -223,10 +245,10 @@ public function process($clientSideCompiler) {
 		}
 		
 		if($clientSideCompiler->process($pathName)) {
-			$count++;			
+			$count++;
 		}
-
 	}
+
 	return $count;
 }
 
