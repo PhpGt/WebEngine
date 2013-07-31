@@ -66,7 +66,7 @@ public function combine($domHead) {
 	foreach ($tagNameArray as $tagName => $tagDetails) {
 		$elementArray = array();
 		if(!is_null($domHead)) {
-			$elementArray = $domHead[$tagName];			
+			$elementArray = $domHead[$tagName];		
 		}
 
 		foreach ($elementArray as $element) {

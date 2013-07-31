@@ -89,6 +89,13 @@ public function __construct($response, $config) {
 		$toolWrapper,
 		$config["App"]);
 
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	if($cacheInvalid) {	
+		$fileOrganiser->clean();
+	}
+	
 	// Dispatch the all important "go" event, that is the entry point to
 	// each PageCode, and has access to all required components.
 	$response->dispatch(
@@ -104,11 +111,7 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	$fileOrganiser = new FileOrganiser();
-	$cacheInvalid = $fileOrganiser->checkFiles();
-	if($cacheInvalid) {
-		$clientSideCompiler = new ClientSideCompiler();
-		$fileOrganiser->clean();
+	if($cacheInvalid)
 		$fileOrganiser->update($dom["head > *[data-pagetool]"]);
 		$fileOrganiser->process($clientSideCompiler);
 		$fileOrganiser->compile($clientSideCompiler);
