@@ -4,6 +4,8 @@ Not yet released
 
 * All configuration settings are made static, so they are accessible from anywhere in the code.
 * ResponsiveImg PageTool allows serving multi-resolution images dependent on screen width.
+* FileOrganiser class improved and optimised.
+* ClientSideCompiler class improved and optimised.
 
 v0.1.0
 ------

@@ -1,4 +1,4 @@
-<?php function __autoload($className) {
+<?php spl_autoload_register(function($className) {
 /**
 * Utility classes are small and uncommon code libraries. Typically, a utility
 * class does not complete a whole task on its own, otherwise it would be classed
@@ -9,7 +9,8 @@
 * objects, and new features can be introduced.
 */
 
-if(array_key_exists($className, ClassDependencies::$list)) {
+if(class_exists("ClassDependencies")
+&& array_key_exists($className, ClassDependencies::$list)) {
 	$relPath = ClassDependencies::$list[$className];
 	require_once(GTROOT . "/Class/$relPath");
 	return;
@@ -46,4 +47,4 @@ foreach ($classDirArray as $classDir) {
 	}
 }
 
-}#
+});#

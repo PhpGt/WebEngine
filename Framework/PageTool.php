@@ -79,10 +79,15 @@ public function clientSide() {
 					}
 				} 
 				else {
-					copy($item, "$wwwDir/$subPath");
+					$destination = APPROOT . "/www/$currentType/$subPath";
+					if(!is_dir(dirname($destination))) {
+						mkdir(dirname($destination), 0775, true);
+					}
+					copy($item->getPathname(), $destination);
+
 					$elementAttributes = array();
 					$elementAttributes[$elementInfo[$currentType]["source"]]
-						= "$ptDir/$subPath";
+						= "/$currentType/$subPath";
 					$elementAttributes = array_merge(
 						$elementAttributes,
 						$elementInfo[$currentType]["attributes"]

@@ -77,8 +77,6 @@ public function __construct($response, $config) {
 	$templateArray = $dom->template();
 	$templateWrapper = new TemplateWrapper($templateArray);
 
-	$fileOrganiser = new FileOrganiser($config["App"]);
-	$fileOrganiser->removePublicFiles();
 	$toolWrapper = new PageToolWrapper($apiWrapper, $dom, $templateWrapper);
 
 	// Allows the PageCode objects to have access to the important
@@ -91,6 +89,13 @@ public function __construct($response, $config) {
 		$toolWrapper,
 		$config["App"]);
 
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	if($cacheInvalid) {	
+		$fileOrganiser->clean();
+	}
+	
 	// Dispatch the all important "go" event, that is the entry point to
 	// each PageCode, and has access to all required components.
 	$response->dispatch(
@@ -106,12 +111,11 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 
-	// Compile and inject <script> and <link> tags, organise the contents
-	// of the Asset, Style, Script directories to be accessible through
-	// the web root.
-	$isCompiled = $config["App"]::isClientCompiled();
-	$clientSideCompiler = new ClientSideCompiler($dom, $isCompiled);
-	$fileOrganiser->copyFilesToPublic($config);
+	if($cacheInvalid)
+		$fileOrganiser->update($dom["head > *[data-pagetool]"]);
+		$fileOrganiser->process($clientSideCompiler);
+		$fileOrganiser->compile($clientSideCompiler);
+	}
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();

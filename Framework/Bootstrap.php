@@ -108,8 +108,6 @@ define("BASEDIR",   $baseDir);
 define("PATH",		$path);
 define("FILE",      $fileName);
 define("EXT",       $extension);
-define("DIRPATH",   $dirPath);
-define("FILEPATH",  $filePath);
 define("FILECLASS", $fileClass);
 
 // Define the minimum required files to run the framework. The path of each
