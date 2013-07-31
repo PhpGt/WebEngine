@@ -222,4 +222,105 @@ HTML;
 	$this->assertEquals($compiledOutput, $actualFileContentsCompiled);
 }
 
+/**
+ * Test that client side files added to the DOM head by PageTools are handled
+ * in the correct way, and compiled as standard.
+ */
+public function testPageToolClientSideCompiled() {
+	$wwwDir = APPROOT . "/www";
+	$html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="/Style/TheOnlyStyle.css" />
+	<script src="/Script/TheOnlyScript.js"></script>
+</head>
+<body>
+	<h1>Test</h1>
+</body>
+</html>
+HTML;
+	$pageToolPhp = <<<PHP
+<?php class TestPT_PageTool extends PageTool {
+public function go(\$api, \$dom, \$template, \$tool) {
+	\$this->clientSide();
+}
+}#
+PHP;
+	$pageToolJs = "msg = msg + 'This is from PageTool';";
+	$pageToolCss = "a { color: green; }";
+
+	$styleFile = APPROOT . "/Style/TheOnlyStyle.css";
+	if(!is_dir(dirname($styleFile))) {
+		mkdir(dirname($styleFile), 0775, true);
+	}
+	$css = "p { color: red; }";
+	file_put_contents($styleFile, $css);
+
+	$scriptFile = APPROOT . "/Script/TheOnlyScript.js";
+	if(!is_dir(dirname($scriptFile))) {
+		mkdir(dirname($scriptFile), 0775, true);
+	}
+	$js = "var msg = 'This is the only script';alert(msg);";
+	file_put_contents($scriptFile, $js);
+
+	$pageToolPhpFile = APPROOT . "/PageTool/TestPT/TestPT.tool.php";
+	if(!is_dir(dirname($pageToolPhpFile))) {
+		mkdir(dirname($pageToolPhpFile), 0775, true);
+	}
+	file_put_contents($pageToolPhpFile, $pageToolPhp);
+
+	$pageToolScriptFile = APPROOT . "/PageTool/TestPT/Script/TestPT.tool.js";
+	if(!is_dir(dirname($pageToolScriptFile))) {
+		mkdir(dirname($pageToolScriptFile), 0775, true);
+	}
+	file_put_contents($pageToolScriptFile, $pageToolJs);
+
+	$pageToolStyleFile = APPROOT . "/PageTool/TestPT/Style/TestPT.tool.css";
+	if(!is_dir(dirname($pageToolStyleFile))) {
+		mkdir(dirname($pageToolStyleFile), 0775, true);
+	}
+	file_put_contents($pageToolStyleFile, $pageToolCss);
+
+	require_once(GTROOT . "/Framework/EmptyObject.php");
+	require_once(GTROOT . "/Framework/Component/PageToolWrapper.php");
+	require_once(GTROOT . "/Framework/PageTool.php");
+	$emptyObject = new EmptyObject();
+	$dom = new Dom($html);
+	$tool = new PageToolWrapper($emptyObject, $dom, $emptyObject);
+
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+
+	if($cacheInvalid) {
+		$fileOrganiser->clean();
+	}
+	// Call the PageTool as it would be done in the app.
+	// Within the go method, the clientSide() method is called.
+	$testPT = $tool["TestPT"];
+	$testPT->go($emptyObject, $dom, $emptyObject, $emptyObject);
+
+	if($cacheInvalid) {
+		$fileOrganiser->update();
+		$domHead = $dom["head"][0];
+		$fileOrganiser->compile($clientSideCompiler, $domHead, true, true);
+	}
+
+	$combinedScriptFile = "$wwwDir/Script.js";
+	$combinedScript = file_get_contents($combinedScriptFile);
+	$combinedScript = preg_replace('/\s+/', '', $combinedScript);
+	$combinedStyleFile = "$wwwDir/Style.css";
+	$combinedStyle = file_get_contents($combinedStyleFile);
+	$combinedStyle = preg_replace('/\s+/', '', $combinedStyle);
+
+	$expectedScript = 
+		'varmsg="Thisistheonlyscript";alert(msg);msg+="ThisisfromPageTool";';
+	$expectedStyle = "p{color:red;}a{color:green;}";
+
+	$this->assertEquals($expectedScript, $combinedScript);
+	$this->assertEquals($expectedStyle, $combinedStyle);
+}
+
 }#
