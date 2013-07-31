@@ -37,6 +37,9 @@ function createTestApp() {
 				mkdir("$dir/" . $subPathName, 0775, true);				
 			}
 		} else {
+			if($item->getFilename()[0] == ".") {
+				continue;
+			}
 			copy($item, "$dir/" . $subPathName);
 		}
 	}

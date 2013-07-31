@@ -7,5 +7,3 @@ ok 5 - FileOrganiserTest::testInitialWebrootIsEmpty
 ok 6 - FileOrganiserTest::testCheckFilesNew
 ok 7 - FileOrganiserTest::testCheckFilesWhenCached
 ok 8 - FileOrganiserTest::testFilesAreCopied
-ok 9 - FileOrganiserTest::testPageToolClientSide
-1..9
