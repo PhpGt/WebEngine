@@ -31,7 +31,6 @@ public function process($filePath) {
 		if(file_put_contents($filePathProcessed, $parsedString) === false) {
 			return false;
 		} 
-		unlink($filePath);
 		return true;
 
 		break;

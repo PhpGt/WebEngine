@@ -231,6 +231,8 @@ public function processHead($domHead) {
 public function process($clientSideCompiler) {
 	$count = 0;
 
+	$filesToRemove = array();
+
 	foreach ($iterator = new RecursiveIteratorIterator(
 		new RecursiveDirectoryIterator("$this->_wwwDir/Style",
 			RecursiveDirectoryIterator::SKIP_DOTS),
@@ -246,7 +248,12 @@ public function process($clientSideCompiler) {
 		
 		if($clientSideCompiler->process($pathName)) {
 			$count++;
+			$filesToRemove[] = $pathName;
 		}
+	}
+
+	foreach ($filesToRemove as $file) {
+		unlink($file);
 	}
 
 	return $count;
