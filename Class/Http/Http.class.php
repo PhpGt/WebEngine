@@ -161,8 +161,6 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 
 	foreach ($this->_ch as $ch) {
 		$response = curl_multi_getcontent($ch);
-		// $info = curl_getinfo($ch);
-		// var_dump($info, $response);die();
 
 		$header = "";
 		$body = "";
