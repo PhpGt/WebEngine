@@ -36,12 +36,6 @@ public function __construct($url = null, $method = "GET", $parameters = null) {
 		$this->execute($urlArray, $method, $parameters);
 	}
 
-	foreach ($this->_ch as $i => $ch) {
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-	}
-
 	$this->_headers[] = 'Expect:';
 }
 
@@ -147,6 +141,9 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 	}
 
 	foreach ($this->_ch as $ch) {
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
 		curl_multi_add_handle($this->_chm, $ch);
 	}
