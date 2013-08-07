@@ -8,8 +8,11 @@
  * defaults for when there aren't any. Then the request is handled, followed by
  * the response. The final task is to compute all code and render the page. This
  * is done by the Dispatcher.
+ *
+ * For unit tests, passing in true to $skipRequestResponse will stop the usual
+ * request-response execution.
  */
-public function __construct($t) {
+public function __construct($t, $skipRequestResponse = false) {
 	// set_error_handler(array("ErrorHandler", "error"), 
 	// 	E_ALL & E_NOTICE & E_RECOVERABLE_ERROR);
 
@@ -19,12 +22,15 @@ public function __construct($t) {
 	$securityConfigClass = "Security_Config";
 
 	if(!class_exists($appConfigClass)) {
+		class_alias($appConfigClass . $baseSuffix, $appConfigClass);
 		$appConfigClass .= $baseSuffix;
 	}
 	if(!class_exists($databaseConfigClass)) {
+		class_alias($databaseConfigClass . $baseSuffix, $databaseConfigClass);
 		$databaseConfigClass .= $baseSuffix;
 	}
 	if(!class_exists($securityConfigClass)) {
+		class_alias($securityConfigClass . $baseSuffix, $securityConfigClass);
 		$securityConfigClass .= $baseSuffix;
 	}
 	
@@ -35,6 +41,10 @@ public function __construct($t) {
 	);
 	foreach ($config as $c) {
 		$c::init();
+	}
+
+	if($skipRequestResponse) {
+		return;
 	}
 
 	// Compute the request, instantiating the relavent PageCode/Api.

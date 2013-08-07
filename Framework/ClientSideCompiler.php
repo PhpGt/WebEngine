@@ -1,247 +1,168 @@
-<?php class ClientSideCompiler {
+<?php final class ClientSideCompiler {
 /**
- * The ClientSideCompiler pre-processes all SCSS files, converting them into
- * their CSS equivalents, and optionally minifies and compiles all CSS and JS
- * files into a single Script.min.js and Style.min.css
+ * The ClientSideCompiler pre-processes necessary files, converting them into
+ * their processed equivalents, removing the originals. If App_Config has the
+ * client-side compilation enabled, all resources will be minified and compiled
+ * into a single resource.
+ *
  * The DOM is updated to only include the necessary files, so the HTML should
  * reference all JS and CSS/SCSS files without the worry of multiple requests
  * or unminified scripts being exposed publicly.
  */
-public function __construct($dom, $isCompiled) {
-	// Ensure all .scss files are pre-processed before anything else.
-	$this->preprocess($dom);
-	$this->allAppScriptInclude($dom["script[@allappscripts]"], $dom);
+private $_compileFunctionList = array(
+	"js" => "javaScript",
+);
 
-	if($isCompiled) {
-		$this->compileStyleSheets($dom);
-		$this->compileJavaScript($dom);
-	}
-}
+public function __construct() {}
 
-private function allAppScriptInclude($allScriptTags, $dom) {
-	if($allScriptTags->length == 0) {
-		return;
-	}
-	// Find all .js files within Script directory.
-	$fileArray = array();
-	$dir = APPROOT . "/Script";
-	$iterator = new RecursiveDirectoryIterator($dir,
-		RecursiveIteratorIterator::CHILD_FIRST
-		| FilesystemIterator::SKIP_DOTS
-		| FilesystemIterator::UNIX_PATHS);
-	
-	$fileList = new RecursiveIteratorIterator(
-		$iterator, RecursiveIteratorIterator::SELF_FIRST);
-	foreach ($fileList as $key => $value) {
-		if(!is_file($key)) {
-			continue;
-		}
-		if(pathinfo($key, PATHINFO_EXTENSION) == "js") {
-			$fileArray[] = $key;
-		}
-	}
+/**
+ * Process a client-side file, such as SCSS, and replace the file with its
+ * processed couterpart.
+ * Only SCSS is supported at this moment.
+ */
+public function process($filePath) {
+	$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+	switch($extension) {
+	case "scss":
+		$filePathProcessed = preg_replace("/\.scss$/i", ".css", $filePath);
 
-	foreach ($fileArray as $file) {
-		$file = str_replace(APPROOT . "/Script/", "/", $file);
-		$scriptElement = $dom->createElement("script", ["src" => $file]);
-		$allScriptTags[0]->parentNode->appendChild($scriptElement);
+		$sass = new Sass($filePath);
+		$parsedString = $sass->parse();
+		if(file_put_contents($filePathProcessed, $parsedString) === false) {
+			return false;
+		} 
+		return true;
+
+		break;
+	default:
+		break;
 	}
-	$allScriptTags->remove();
-	return;
 }
 
 /**
- * Pre-processes any .scss stylesheets into .css files, ready for optional
- * compilation, and handling by the FileOrganiser class.
- * After running this function, all .scss files are converted into .scss.css
- * representations of the original, preserving white-space and comments.
+ * Combines all source files *in order* into a single source file, and placed
+ * into the www directory. The order of source files is taken from their order
+ * in the DOM head. All source files that don't exist in the DOM head will be
+ * kept in their original place, for you to combine yourself.
+ *
+ * All source files will be removed after combining.
  */
-private function preprocess($dom) {
-	$styleLinkArray = $dom["head > link[rel='stylesheet']"];
-	foreach($styleLinkArray as $styleLink) {
-		// Only care about .scss files.
-		if(!preg_match("/\.scss$/i", $styleLink->href)) {
+public function combine($domHead) {
+	$wwwDir = APPROOT . "/www";
+	$tagNameArray = array(
+		"script" => [
+			"sourceAttribute" => "src",
+			"requiredAttributes" => [],
+			"combinedFile" => "Script.js",
+		],
+		"link" => [
+			"sourceAttribute" => "href",
+			"requiredAttributes" => ["rel" => "stylesheet"],
+			"combinedFile" => "Style.css",
+		],
+	);
+
+	foreach ($tagNameArray as $tagName => $tagDetails) {
+		$elementArray = array();
+		if(!is_null($domHead)) {
+			$elementArray = $domHead[$tagName];		
+		}
+
+		unlink("$wwwDir/{$tagDetails["combinedFile"]}");
+
+		foreach ($elementArray as $element) {
+			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
+				continue;
+			}
+			foreach ($element["requiredAttributes"] as $requiredAttribute) {
+				if(!$element->hasAttribute($requiredAttribute)) {
+					continue;
+				}
+			}
+
+			$source = $element->getAttribute($tagDetails["sourceAttribute"]);
+			if(!file_exists("$wwwDir/$source")) {
+				continue;
+			}
+
+			$fileContents = file_get_contents("$wwwDir/$source");
+			file_put_contents("$wwwDir/{$tagDetails["combinedFile"]}", 
+				$fileContents . "\n", FILE_APPEND);
+
+			unlink("$wwwDir/$source");
+		}
+
+		if(!is_null($domHead)) {
+			$elementArray->remove();
+			$newElement = new DomEl($domHead->_dom, $tagName);
+			foreach ($tagDetails["requiredAttributes"] as $key => $value) {
+				$newElement->setAttribute($key, $value);
+			}
+
+			$newElement->setAttribute(
+				$tagDetails["sourceAttribute"], 
+				"/" . $tagDetails["combinedFile"]
+			);
+			$domHead->appendChild($newElement);			
+		}
+	}
+}
+
+public function compile() {
+	$wwwDir = APPROOT . "/www";
+	$fileNameArray = array(
+		"Script.js",
+		"Style.css",
+	);
+
+	foreach ($fileNameArray as $fileName) {
+		$filePath = "$wwwDir/$fileName";
+		$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+		if(!file_exists($filePath)) {
 			continue;
 		}
-		$pathArray = array(
-			APPROOT . "/Style/",
-			GTROOT  . "/Style/",
-		);
-		foreach($pathArray as $path) {
-			if(!file_exists($path . $styleLink->href)) {
-				continue;
-			}
-			if(!$this->sassParse($path . $styleLink->href)) {
-				die("Error parsing SASS file.");
-			}
-			$styleLink->href .= ".css";
-			break;
-		}
-	}
-}
 
-// TODO: Issue #62 and #64 - Don't preprocess the sass files to the Style
-// direcotry. Instead, output to the www directory... but two extra things must
-// be done to achieve this: the compiler must work within the www directory,
-// and the FileOrganiser must ignore .scss files. 
-private function sassParse($filePath) {
-	if(file_exists($filePath . ".css")) {
-		$needToPreProcess = false;
-		// If any source file has been modified since the last pre-processing,
-		// we need to pre-process again, otherwise the pre-processing can be
-		// skipped completely for this file.
-		$dir = dirname($filePath);
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($dir));
-		foreach ($iterator as $path) {
-			// Only check files.
-			if($path->isDir()) {
-				continue;
-			}
-
-			// Only check .scss files (source files).
-			$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-			if($extension != "scss") {
-				continue;
-			}
-
-			// Check the pre-processed file's modified time.
-			if(filemtime($path) > filemtime($filePath . ".css")) {
-				$needToPreProcess = true;
-				break;
-			}
-		}
-		if(!$needToPreProcess) {
-			return true;
-		}
-	}
-
-	$sass = new Sass($filePath);
-	$parsedString = $sass->parse();
-
-	return file_put_contents($filePath . ".css", $parsedString) >= 0;
-}
-
-/**
- * Takes all <link rel="stylesheet"> elements in the html head and minifies them
- * into one file, named Style.min.css.
- * @param  Dom $dom The current DOM.
- * @return int      The number of stylesheets minified.
- */
-private function compileStyleSheets($dom) {
-	$css = "";
-	$lastModify = 0;
-	$styleList = $dom["head > link[rel='stylesheet']"];
-	foreach($styleList as $style) {
-		$pubUri = $style->href;
-		$filePathArray = array(
-			APPROOT . "/Style/" . $pubUri,
-			GTROOT  . "/Style/" . $pubUri,
-		);
-
-		foreach($filePathArray as $filePath) {
-			if(!file_exists($filePath)) {
-				continue;
-			}
-
-			// Check to see if file is .scss, so the actual preprocessed CSS can
-			// be used instead.
-			// $scssEnd = ".scss";
-			// if(substr_compare(
-			// $filePath, 
-			// $scssEnd, 
-			// strlen($scssEnd) - strlen($scssEnd), 
-			// strlen($scssEnd)) === 0) {
-			// 	$filePath .= ".css";
-			// }
-			$css .= file_get_contents($filePath);
-			$fmtime = filemtime($filePath);
-			if($fmtime > $lastModify) {
-				$lastModify = $fmtime;
-			}
-
-			break;
-		}
-	}
-
-	$pubMinUri = "/Style.min.css";
-
-	// Ensure that compilation only occurs when there are modified styles.
-	if(file_exists(APPROOT . "/Script" . $pubMinUri)) {
-		if(filemtime(APPROOT . "/Script" . $pubMinUri) >= $lastModify) {
-			return 0;
-		}
-	}
-
-	$cssCompiler = new StyleSheetCompiler_Utility($css);
-	$css = $cssCompiler->output();
-
-	if(false === file_put_contents(APPROOT . "/Style" . $pubMinUri, $css)) {
-		return false;
-	}
-
-	$styleList->remove();
-	$styleNew = $dom->create("link", ["href" => $pubMinUri, 
-		"rel" => "stylesheet"]);
-	$dom["head"]->append($styleNew);
-
-	return $styleList->length;
-}
-
-/**
- * Takes all <script> elements in the html head and compiles and minifies them
- * into one file, named Script.min.js.
- * @param  Dom $dom The current DOM
- * @return int      The number of scripts compiled.
- */
-private function compileJavaScript($dom) {
-	$js = "";
-	$lastModify = 0;
-	$scriptList = $dom["head > script"];
-	foreach($scriptList as $script) {
-		if(!$script->hasAttribute("src")) {
-			$scriptList->removeElement($script);
+		if(!array_key_exists($extension, $this->_compileFunctionList)) {
 			continue;
 		}
-		$pubUri = $script->src;
-		$filePathArray = array(
-			APPROOT . "/Script/" . $pubUri,
-			GTROOT  . "/Script/" . $pubUri,
+
+		$compiledString = call_user_func_array(
+			[$this, $this->_compileFunctionList[$extension]],
+			[$filePath]
 		);
 
-		foreach($filePathArray as $filePath) {
-			if(!file_exists($filePath)) {
-				continue;
-			}
-			$js .= file_get_contents($filePath);
-			$fmtime = filemtime($filePath);
-			if($fmtime > $lastModify) {
-				$lastModify = $fmtime;
-			}
+		file_put_contents($filePath, $compiledString);
+	}
+}
 
-			break;
-		}
+private function javaScript($path) {
+	$js = file_get_contents($path);
+	if(strlen(trim($js)) === 0) {
+		return $js;
 	}
 
-	$pubMinUri = "/Script.min.js";
+	$http = new Http();
+	$http->setOption("timeout", 10);
+	$http->setHeader("Content-Type: application/x-www-form-urlencoded");
+	// Google Closure service does not support multipart/form-data POST request,
+	// which is very odd. Instead, data has to be in the query string.
+	$response = $http->execute(
+		// "http://g105b.com/PostTest.php",
+		"http://closure-compiler.appspot.com/compile"
+			. "?output_info=compiled_code"
+			. "&output_format=text"
+			. "&compilation_level=SIMPLE_OPTIMIZATIONS"
+			. "&js_code=" . urlencode($js),
+		"POST"
+	);
 
-	$scriptList->remove();
-	$scriptNew = $dom->create("script", ["src" => $pubMinUri]);
-	$dom["head"]->append($scriptNew);
+	$js_c = $response["body"];
 
-	// Ensure that compilation only occurs when there are modified scripts.
-	if(filemtime(APPROOT . "/Script" . $pubMinUri) >= $lastModify) {
-		return 0;
+	if(!empty($js_c)) {
+		return $js_c;
 	}
 
-	$jsCompiler = new JavaScriptCompiler_Utility($js);
-	$js = $jsCompiler->output();
-
-	if(false === file_put_contents(APPROOT . "/Script" . $pubMinUri, $js)) {
-		return false;
-	}
-
-	return $scriptList->length;
+	return $js;
 }
 
 }#

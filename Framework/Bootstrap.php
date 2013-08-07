@@ -72,7 +72,6 @@ $baseDir = ($slashPos === false)
 		? ""
 		: $dirName)
 	: substr($dirName, 0, $slashPos);
-
 // For finding the correct PageCode and PageView, on different systems.
 $dirPath = str_replace("/", DS, $dirName);
 $filePath = $dirName . DS . $fileName;
@@ -80,6 +79,7 @@ while($filePath[0] == DS) {
 	$filePath = substr($filePath, 1);
 }
 $fileClass = str_replace(DS, "_", $filePath);
+define("FILEPATH", $filePath);
 
 $appName = strstr($cwd, ".")
 	? substr($cwd, 0, strrpos($cwd, "."))
@@ -108,8 +108,6 @@ define("BASEDIR",   $baseDir);
 define("PATH",		$path);
 define("FILE",      $fileName);
 define("EXT",       $extension);
-define("DIRPATH",   $dirPath);
-define("FILEPATH",  $filePath);
 define("FILECLASS", $fileClass);
 
 // Define the minimum required files to run the framework. The path of each

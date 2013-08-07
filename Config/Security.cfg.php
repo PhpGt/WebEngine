@@ -11,11 +11,15 @@ protected static $_domain;
 protected static $_remoteIp;
 
 public static function init() {
-	static::$_remoteIp = $_SERVER["REMOTE_ADDR"];
+	define("APPSALT", hash("sha512", static::$_salt));
+	static::$_remoteIp = isset($_SERVER["REMOTE_ADDR"])
+		? $_SERVER["REMOTE_ADDR"]
+		: null;
 	static::$_domain = isset(static::$_domain)
 		? static::$_domain
-		: $_SERVER["HTTP_HOST"];
-	define("APPSALT", hash("sha512", static::$_salt));
+		: isset($_SERVER["HTTP_HOST"])
+			? $_SERVER["HTTP_HOST"]
+			: null;
 }
 
 public static function getDomain() {
