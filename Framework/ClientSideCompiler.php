@@ -68,6 +68,8 @@ public function combine($domHead) {
 			$elementArray = $domHead[$tagName];		
 		}
 
+		unlink("$wwwDir/{$tagDetails["combinedFile"]}");
+
 		foreach ($elementArray as $element) {
 			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
 				continue;
@@ -93,6 +95,10 @@ public function combine($domHead) {
 		if(!is_null($domHead)) {
 			$elementArray->remove();
 			$newElement = new DomEl($domHead->_dom, $tagName);
+			foreach ($tagDetails["requiredAttributes"] as $key => $value) {
+				$newElement->setAttribute($key, $value);
+			}
+
 			$newElement->setAttribute(
 				$tagDetails["sourceAttribute"], 
 				"/" . $tagDetails["combinedFile"]

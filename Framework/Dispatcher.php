@@ -117,7 +117,7 @@ public function __construct($response, $config) {
 		$fileOrganiser->clean();
 		$fileOrganiser->update($domHead);
 		$fileOrganiser->process($clientSideCompiler, $domHead);
-		$fileOrganiser->compile($clientSideCompiler);
+		$fileOrganiser->compile($clientSideCompiler, $domHead);
 	}
 
 	$dom->templateOutput($templateWrapper);
