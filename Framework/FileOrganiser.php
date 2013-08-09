@@ -130,7 +130,7 @@ public function clean() {
  * Because PageTools can inject client-side resources in the DOM head, a list
  * of matching elements could be passed in to be included in the file copying.
  */
-public function update($pageToolElements = array()) {
+public function update($domHead = null) {
 	$time = time();
 
 	$directoryArray = array("Asset", "Script", "Style");
@@ -172,6 +172,9 @@ public function update($pageToolElements = array()) {
 			}
 		}
 	}
+
+	// TODO: Get array of pt el from domhead.
+	$pageToolElements = array();
 
 	foreach ($pageToolElements as $pageTool) {
 		$source = null;
@@ -217,16 +220,16 @@ public function processHead($domHead, $clientSideCompiler) {
 			continue;
 		}
 
-		$href = preg_replace($pattern, ".css", $href);
-		$el->setAttribute("href", $href);
-
-		$pathArray = array(APPROOT . $href, GTROOT . $href);
+		$pathArray = array(APPROOT . "/www/$href", GTROOT . "/www/$href");
 		$path = null;
 		foreach ($pathArray as $pathI) {
 			if(is_null($path) && file_exists($pathI)) {
 				$path = $pathI;
 			}
 		}
+
+		$href = preg_replace($pattern, ".css", $href);
+		$el->setAttribute("href", $href);
 
 		if(is_null($path)) {
 			continue;
@@ -280,7 +283,6 @@ public function tidyProcessed() {
 		if(!in_array($extension, $sourceExtensions)) {
 			continue;
 		}
-		
 		unlink($pathName);
 	}
 }
