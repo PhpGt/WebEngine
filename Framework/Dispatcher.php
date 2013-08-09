@@ -92,9 +92,6 @@ public function __construct($response, $config) {
 	$fileOrganiser = new FileOrganiser();
 	$clientSideCompiler = new ClientSideCompiler();
 	$cacheInvalid = $fileOrganiser->checkFiles();
-	if($cacheInvalid) {	
-		$fileOrganiser->clean();
-	}
 	
 	// Dispatch the all important "go" event, that is the entry point to
 	// each PageCode, and has access to all required components.
@@ -112,12 +109,15 @@ public function __construct($response, $config) {
 		$toolWrapper);
 
 	$domHead = $dom["head"];
-	$fileOrganiser->processHead($domHead);
 	if($cacheInvalid) {
 		$fileOrganiser->clean();
 		$fileOrganiser->update($domHead);
-		$fileOrganiser->process($clientSideCompiler, $domHead);
+		$fileOrganiser->processHead($domHead, $clientSideCompiler);
+		$fileOrganiser->tidyProcessed();
 		$fileOrganiser->compile($clientSideCompiler);
+	}
+	else {
+		$fileOrganiser->processHead($domHead, false);
 	}
 
 	$dom->templateOutput($templateWrapper);

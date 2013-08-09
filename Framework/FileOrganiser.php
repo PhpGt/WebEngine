@@ -206,54 +206,38 @@ public function update($pageToolElements = array()) {
 	return $time;
 }
 
-public function processHead($domHead) {
+public function processHead($domHead, $clientSideCompiler) {
 	$count = 0;
 	$styleElements = $domHead["link"];
 	foreach ($styleElements as $el) {
 		$pattern = "/\.scss$/i";
 		$href = $el->getAttribute("href");
+		
 		if(!preg_match($pattern, $href)) {
 			continue;
 		}
-		
+
 		$href = preg_replace($pattern, ".css", $href);
 		$el->setAttribute("href", $href);
-		$count++;
-	}
-	return $count;
-}
 
-/**
- * Some files will require preprocessing, such as SCSS source files. The source
- * files will be present in the www directory structure, so this function will
- * REPLACE the source files.
- */
-public function process($clientSideCompiler) {
-	$count = 0;
+		$pathArray = array(APPROOT . $href, GTROOT . $href);
+		$path = null;
+		foreach ($pathArray as $pathI) {
+			if(is_null($path) && file_exists($pathI)) {
+				$path = $pathI;
+			}
+		}
 
-	$filesToRemove = array();
-
-	foreach ($iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator("$this->_wwwDir/Style",
-			RecursiveDirectoryIterator::SKIP_DOTS),
-	RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-		$pathName = $iterator->getPathName();
-		$fileName = $item->getFileName();
-		$extension = strtolower($item->getExtension());
-		
-		if($extension !== "scss") {
+		if(is_null($path)) {
 			continue;
 		}
-		
-		if($clientSideCompiler->process($pathName)) {
-			$count++;
-			$filesToRemove[] = $pathName;
-		}
-	}
 
-	foreach ($filesToRemove as $file) {
-		unlink($file);
+
+		if($clientSideCompiler !== false) {
+			if($clientSideCompiler->process($path)) {
+				$count++;
+			}
+		}
 	}
 
 	return $count;
@@ -276,6 +260,29 @@ $combineForce = false, $compileForce = false) {
 		$clientSideCompiler->compile();	
 	}
 	return;
+}
+
+/**
+ * Removes any source files from the public web root.
+ */
+public function tidyProcessed() {
+	$sourceExtensions = array("scss");
+
+	foreach ($iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator("$this->_wwwDir",
+			RecursiveDirectoryIterator::SKIP_DOTS),
+	RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+		$pathName = $iterator->getPathName();
+		$fileName = $item->getFileName();
+		$extension = strtolower($item->getExtension());
+		
+		if(!in_array($extension, $sourceExtensions)) {
+			continue;
+		}
+		
+		unlink($pathName);
+	}
 }
 
 }#
