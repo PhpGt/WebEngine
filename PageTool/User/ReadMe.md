@@ -6,7 +6,7 @@ Examples
 The common PageCode can be used to check for authentication requests:
 
 ```php
-<?php class _Common_PageCode extends PageCode {
+<?php class Common_PageCode extends PageCode {
 
 public function go($api, $dom, $template, $tool) {
 	$user = $tool["User"]->getUser();

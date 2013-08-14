@@ -68,7 +68,10 @@ public function combine($domHead) {
 			$elementArray = $domHead[$tagName];		
 		}
 
-		unlink("$wwwDir/{$tagDetails["combinedFile"]}");
+		$fileName = "$wwwDir/{$tagDetails["combinedFile"]}";
+		if(file_exists($fileName)) {
+			unlink($fileName);
+		}
 
 		foreach ($elementArray as $element) {
 			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
