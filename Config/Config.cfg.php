@@ -1,3 +1,3 @@
 <?php abstract class Config {
-public abstract static function init();
+public static function init() {}
 }#
