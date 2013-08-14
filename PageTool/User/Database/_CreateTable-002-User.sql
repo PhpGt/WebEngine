@@ -15,6 +15,8 @@ create table if not exists `User` (
 	unique index `UNIQUE_username` (`username` asc),
 	index `INDEX_FK_User_Type` (`FK_User_Type` asc),
 	index `INDEX_FK_User__orphanedBy` (`FK_User__orphanedBy` asc),
+	index `INDEX_uuid` (`uuid` asc),
+	index `INDEX_dateTimeDeleted` (`dateTimeDeleted` asc),
 	constraint `INDEX_FK_User_Type`
 		foreign key (`FK_User_Type`)
 		references `User_Type` (`ID`)
