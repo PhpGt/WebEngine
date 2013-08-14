@@ -22,9 +22,7 @@ public function setup() {
 	require_once(GTROOT . "/Framework/Component/PageToolWrapper.php");
 }
 
-public function tearDown() {
-	// removeTestApp();
-}
+public function tearDown() {}
 
 
 public function testAnalyticsToolExists() {
@@ -35,9 +33,7 @@ public function testAnalyticsToolExists() {
 	$this->assertInstanceOf("PageTool", $analyticsPageTool);
 	$this->assertInstanceOf("Analytics_PageTool", $analyticsPageTool);
 }
-/**
- * Description.
- */
+
 public function testCodeIsAddedToHead() {
 	$dom = new Dom($this->_html);
 	$tool = new PageToolWrapper(new EmptyObject(), $dom, new EmptyObject());
