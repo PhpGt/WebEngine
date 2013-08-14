@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="10" assertions="32" failures="0" errors="0" time="2.296274">
-    <testsuite name="Framework Tests" tests="10" assertions="32" failures="0" errors="0" time="2.296274">
-      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="4" assertions="18" failures="0" errors="0" time="2.246661">
-        <testcase name="testScssIsProcessed" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="25" assertions="6" time="0.040301"/>
-        <testcase name="testClientSideCombination" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="69" assertions="8" time="0.019355"/>
-        <testcase name="testClientSideCompilation" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="158" assertions="2" time="1.680364"/>
-        <testcase name="testPageToolClientSideCompiled" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="222" assertions="2" time="0.506641"/>
+  <testsuite name="" tests="12" assertions="37" failures="0" errors="0" time="0.817045">
+    <testsuite name="Framework Tests" tests="10" assertions="32" failures="0" errors="0" time="0.813533">
+      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="4" assertions="18" failures="0" errors="0" time="0.775027">
+        <testcase name="testScssIsProcessed" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="25" assertions="6" time="0.029237"/>
+        <testcase name="testClientSideCombination" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="69" assertions="8" time="0.013722"/>
+        <testcase name="testClientSideCompilation" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="158" assertions="2" time="0.393676"/>
+        <testcase name="testPageToolClientSideCompiled" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="222" assertions="2" time="0.338392"/>
       </testsuite>
-      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.001481">
-        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.001481"/>
+      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.001093">
+        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.001093"/>
       </testsuite>
-      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="5" assertions="12" failures="0" errors="0" time="0.048132">
-        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="16" assertions="1" time="0.002162"/>
-        <testcase name="testCheckFilesNew" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="25" assertions="1" time="0.001878"/>
-        <testcase name="testCheckFilesWhenCached" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="35" assertions="2" time="0.014043"/>
-        <testcase name="testFilesAreCopied" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="57" assertions="6" time="0.013304"/>
-        <testcase name="testPageToolClientSide" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="88" assertions="2" time="0.016745"/>
+      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="5" assertions="12" failures="0" errors="0" time="0.037413">
+        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="16" assertions="1" time="0.001576"/>
+        <testcase name="testCheckFilesNew" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="25" assertions="1" time="0.001378"/>
+        <testcase name="testCheckFilesWhenCached" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="35" assertions="2" time="0.010126"/>
+        <testcase name="testFilesAreCopied" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="57" assertions="6" time="0.009331"/>
+        <testcase name="testPageToolClientSide" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="88" assertions="2" time="0.015002"/>
       </testsuite>
     </testsuite>
     <testsuite name="Component Tests" tests="0" assertions="0" failures="0" errors="0" time="0.000000"/>
+    <testsuite name="" tests="2" assertions="5" failures="0" errors="0" time="0.003512">
+      <testsuite name="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" tests="2" assertions="5" failures="0" errors="0" time="0.003512">
+        <testcase name="testAnalyticsToolExists" class="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" line="30" assertions="2" time="0.001177"/>
+        <testcase name="testCodeIsAddedToHead" class="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" line="41" assertions="3" time="0.002335"/>
+      </testsuite>
+    </testsuite>
   </testsuite>
 </testsuites>
