@@ -9,4 +9,10 @@ ok 7 - FileOrganiserTest::testCheckFilesNew
 ok 8 - FileOrganiserTest::testCheckFilesWhenCached
 ok 9 - FileOrganiserTest::testFilesAreCopied
 ok 10 - FileOrganiserTest::testPageToolClientSide
-1..10
+ok 11 - AnalyticsPageToolTest::testAnalyticsToolExists
+ok 12 - AnalyticsPageToolTest::testCodeIsAddedToHead
+ok 13 - NavigationPageToolTest::testNavigationToolExists
+ok 14 - NavigationPageToolTest::testHomepageSelected
+ok 15 - NavigationPageToolTest::testBareSelected
+ok 16 - NavigationPageToolTest::testNestedSelected
+1..16

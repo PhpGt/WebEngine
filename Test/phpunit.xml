@@ -7,6 +7,9 @@
 		<testsuite name="Component Tests">
 			<directory suffix=".test.php">Framework/Component</directory>
 		</testsuite>
+		<testsuite>
+			<directory suffix=".test.php">PageTool</directory>
+		</testsuite>
 	</testsuites>
 	<logging>
 		<log type="json" target="PhpUnit.json" />

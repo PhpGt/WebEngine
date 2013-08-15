@@ -44,23 +44,16 @@ public function testScssIsProcessed() {
 		file_put_contents(APPROOT . "/$subPath", $contents["Source"]);
 	}
 
-	$fileOrganiser = new FileOrganiser();
-	$cacheInvalid = $fileOrganiser->checkFiles();
-
-	if($cacheInvalid) {
-		$clientSideCompiler = new ClientSideCompiler();
-		$fileOrganiser->clean();
-		$fileOrganiser->update();
-		$fileOrganiser->process($clientSideCompiler);
-	}
+	$clientSideCompiler = new ClientSideCompiler();
 
 	foreach ($fileContents as $subPath => $contents) {
-		$filePath = "$wwwDir/$subPath";
+		$clientSideCompiler->process(APPROOT . "/$subPath");
+
+		$filePath = preg_replace("/\.scss$/i", ".css", $subPath);
 		// $filePath still points to .scss file.
 		$this->assertFileNotExists($filePath);
 
-		$filePath = preg_replace("/.scss$/i", ".css", $filePath);
-		$actualContents = file_get_contents($filePath);
+		$actualContents = file_get_contents(APPROOT . "/$filePath");
 
 		$actual_stripped = preg_replace('/\s+/', '', $actualContents);
 		$compiled_stripped = preg_replace('/\s+/', '', $contents["Compiled"]);
