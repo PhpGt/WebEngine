@@ -64,7 +64,14 @@ public function __construct($name, $dal) {
  * correct DAL queries in the default way.
  */
 public function __call($methodName, $params) {
-	
+	if(!empty($params)
+	&& count($params) > 1) {
+		$merged = array();
+		foreach ($params as $p) {
+			$merged = array_merge($merged, $p);
+		}
+		$params = array($merged);
+	}
 	$this->_apiObject->setApiName($this->_apiName);
 	$this->_apiObject->setMethodName($methodName);
 	$this->_apiObject->setMethodParams($params);
