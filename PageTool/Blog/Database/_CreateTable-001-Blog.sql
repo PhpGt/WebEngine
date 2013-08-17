@@ -1,9 +1,8 @@
 CREATE  TABLE IF NOT EXISTS `Blog` (
-  `ID` INT NOT NULL AUTO_INCREMENT ,
-  `name` VARCHAR(32) NOT NULL DEFAULT "Blog" ,
-  `autoPublishComments` TINYINT(1) NULL ,
-  `previewLength` INT NOT NULL DEFAULT 100 ,
-  PRIMARY KEY (`ID`) ,
-  UNIQUE INDEX `UNIQUE_name` (`name` ASC) )
-ENGINE = InnoDB
-COMMENT = 'Holds settings for blog, allows multiple blogs per site.';
+  `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(128) NOT NULL ,
+  `description` VARCHAR(256) NULL ,
+  `cssClass` VARCHAR(32) NULL COMMENT 'Useful for different colours' ,
+  `commentsRequirePublishing` TINYINT(1) NULL ,
+  PRIMARY KEY (`ID`) )
+ENGINE = InnoDB;

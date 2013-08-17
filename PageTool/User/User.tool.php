@@ -108,7 +108,8 @@ public function getUser($auth = null) {
  * @return bool			True if $auth is authenticated, false if not.
  */
 public function checkAuth($auth) {
-	if(!$auth->isAuthenticated) {
+	if(!isset($auth)
+	|| $auth->isAuthenticated) {
 		// NOTE: It was planned to allow standard username/password storage at
 		// this position, but a better idea for apps that require their own
 		// authorisation is to use a local OAuth server.

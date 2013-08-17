@@ -70,13 +70,6 @@ public function __construct($response, $config) {
 	$dom = new Dom($response->getBuffer());
 	$response->addMetaData($dom);
 
-	// Compile and inject <script> and <link> tags, organise the contents
-	// of the Asset, Style, Script directories to be accessible through
-	// the web root.
-	$isCompiled = $config["App"]::isClientCompiled();
-	$clientSideCompiler = new ClientSideCompiler($dom, $isCompiled);
-	$fileOrganiser = new FileOrganiser($config["App"]);
-
 	// Remove any elements in the incorrect language.
 	$dom->languageScrape();
 
@@ -96,6 +89,10 @@ public function __construct($response, $config) {
 		$toolWrapper,
 		$config["App"]);
 
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	
 	// Dispatch the all important "go" event, that is the entry point to
 	// each PageCode, and has access to all required components.
 	$response->dispatch(
@@ -110,6 +107,18 @@ public function __construct($response, $config) {
 		$dom,
 		$templateWrapper,
 		$toolWrapper);
+
+	$domHead = $dom["head"];
+	if($cacheInvalid) {
+		$fileOrganiser->clean();
+		$fileOrganiser->update($domHead);
+		$fileOrganiser->processHead($domHead, $clientSideCompiler);
+		$fileOrganiser->tidyProcessed();
+		$fileOrganiser->compile($clientSideCompiler);
+	}
+	else {
+		$fileOrganiser->processHead($domHead, false);
+	}
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();

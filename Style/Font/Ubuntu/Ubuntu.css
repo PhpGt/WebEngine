@@ -3,56 +3,56 @@
   font-style: normal;
   font-weight: 300;
   src: local('Ubuntu Light'), local('Ubuntu-Light'), 
-    url("/Font/UbuntuLight.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuLight.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: italic;
   font-weight: 300;
   src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-    url("/Font/UbuntuLightItalic.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuLightItalic.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 400;
   src: local('Ubuntu'), 
-    url("/Font/Ubuntu.woff") format('woff');
+    url("/Style/Font/Ubuntu/Ubuntu.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-    url("/Font/UbuntuItalic.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuItalic.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 500;
   src: local('Ubuntu Medium'), local('Ubuntu-Medium'), 
-    url("/Font/UbuntuMedium.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuMedium.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'), 
-    url("/Font/UbuntuMediumItalic.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuMediumItalic.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 700;
   src: local('Ubuntu Bold'), local('Ubuntu-Bold'), 
-    url("/Font/UbuntuBold.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuBold.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: italic;
   font-weight: 700;
   src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'), 
-    url("/Font/UbuntuBoldItalic.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuBoldItalic.woff") format('woff');
 }
 
 @font-face {
@@ -60,28 +60,28 @@
   font-style: normal;
   font-weight: 400;
   src: local('Ubuntu Mono'), local('UbuntuMono-Regular'), 
-    url("/Font/UbuntuMono.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuMono.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu Mono';
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Mono Italic'), local('UbuntuMono-Italic'), 
-    url("/Font/UbuntuMonoItalic.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuMonoItalic.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu Mono';
   font-style: normal;
   font-weight: 700;
   src: local('Ubuntu Mono Bold'), local('UbuntuMono-Bold'), 
-    url("/Font/UbuntuMonoBold.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuMonoBold.woff") format('woff');
 }
 @font-face {
   font-family: 'Ubuntu Mono';
   font-style: italic;
   font-weight: 700;
   src: local('Ubuntu Mono Bold Italic'), local('UbuntuMono-BoldItalic'), 
-    url("/Font/UbuntuMonoBoldItalic.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuMonoBoldItalic.woff") format('woff');
 }
 
 @font-face {
@@ -89,5 +89,5 @@
   font-style: normal;
   font-weight: 400;
   src: local('Ubuntu Condensed'), local('UbuntuCondensed-Regular'), 
-    url("/Font/UbuntuCondensed.woff") format('woff');
+    url("/Style/Font/Ubuntu/UbuntuCondensed.woff") format('woff');
 }

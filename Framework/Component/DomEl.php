@@ -5,7 +5,7 @@
  */
 
 public $node;
-private $_dom;
+public $_dom;
 
 // Helps debugging:
 private $_tagName;

@@ -40,8 +40,11 @@ public function offsetGet($offset) {
 				if(file_exists($path . $fileName)) {
 					require_once($path . $fileName);
 					if(class_exists($className)) {
+						$apiWrapper = class_exists("ApiWrapper")
+							? new ApiWrapper($this->_api, $offset)
+							: new EmptyObject();
 						$this->_pageToolObjects[$offset] = new $className(
-							new ApiWrapper($this->_api, $offset),
+							$apiWrapper,
 							$this->_dom,
 							$this->_template,
 							$this

@@ -75,7 +75,13 @@ Between beta versions, only pre-defined areas of the codebase can become unstabl
 
 Branches
 --------
-As master is the default branch, code is committed into master as regularly as possible, leaving unmerged branches open for as little time as possible.
+PHP.Gt is used within a continuous integration environment and has the following rules within its branching:
+
+* **XX-issueName-category** - a rule of thumb is that code shouldn't be written unless the bug/feature/improvement is in the issue tracker. Once the issue starts to be tackled, a new branch is created using this naming convention: the issue number, hyphen, the issue name, hyphen, the category/importance. These branches are tested locally and when finished will make their way into the daily build.
+* **daily** - A.K.A. nightly / dev. At the end of every day, all completed branches are merged into the daily branch. While each issue has its own tests, there could be rare cases where code has conflicting side effects - using this branch in the workflow helps reduce the likelihood of bugs being introduced into the master branch.
+* **master** - A.K.A. build. When a set of features is ready, they are merged into the master branch. All tests should pass before pushing to master! The master branch, being the default branch on Github, is where new development should be branched from. This branch is not ready for use in production! There are two more branches ahead!
+* **next** - When ready to promote a set of changes, the master branch will be merged into next. Next and master should be very close in the tree, as there is only really one difference between them: the development workflow of all PHP.Gt projects uses the next branch to test against production data. If all tests pass on the next branch, it can be safely assumed that they will pass in live.
+* **live** - This branch points to the lastest public release. There are no tests run against this branch, it is never debugged, and most importantly - has no bugs! If there is a bug in live, the test methodology needs reconsidering further back down the tree.
 
 Bug fixes, new features and code improvements are done on separate branches, whose names should show the issue number with a descriptive name in the following format:
 
@@ -91,4 +97,4 @@ When implementing new features or fixing bugs through Github using pull requests
 
 When your code is ready to be added to the PHP.Gt repository, a pull request should be raised, and your code will be added to a new branch using the above naming convention, and merged into master after tests have been completed.
 
-Lastly, the PHP.Gt team accept contributions in patch format, which can be created using the [`git format-patch` command](http://git-scm.com/docs/git-format-patch).
+Lastly, the PHP.Gt team accept contributions in patch format, which can be created using the [`git format-patch` command](http://git-scm.com/docs/git-format-patch). These can be sent as attachments in the issues they are fixing, using [Github Gists](https://gist.github.com/).
