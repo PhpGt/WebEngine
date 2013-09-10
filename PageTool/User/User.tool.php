@@ -201,7 +201,7 @@ public function checkAuth($auth) {
 	// and adding extras.
 	$_SESSION["PhpGt.User_PageTool"] = array_merge($dbUser, [
 		"dateTimeLastActive" => date("Y-m-d H:i:s"),
-		"isIdentified" => true,
+		"isIdentified" => !empty($providerList),
 		"providerList" => $providerList,
 	]);
 
