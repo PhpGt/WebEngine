@@ -108,14 +108,6 @@ public function getUser($auth = null) {
  * @return bool			True if $auth is authenticated, false if not.
  */
 public function checkAuth($auth) {
-	if(!isset($auth)
-	|| $auth->isAuthenticated) {
-		// NOTE: It was planned to allow standard username/password storage at
-		// this position, but a better idea for apps that require their own
-		// authorisation is to use a local OAuth server.
-		return false;
-	}
-
 	// The user is authenticated to at least one OAuth provider.
 	// The database will be checked for existing user matching OAuth data...
 	// ... if there is no match, one will be stored.
@@ -176,17 +168,14 @@ public function checkAuth($auth) {
 				"uuid" => $this->track(),
 			]);
 			if(!$dbUser->hasResult) {
+				return false;
 				// Impossible situation - there's no user found from UUID.
-				throw new HttpError(500, "User tracking code mismatch!");
+				throw new HttpError(500, "No user found!");
 			}
 
 			// Mark the user as identified.
 			$dbUser = array_merge($dbUser->result[0], [
 				"dateTimeIdentified" => date("Y-m-d H:i:s"),
-			]);
-			$this->_api[$this]->anonIdentify([
-				"username" => null,
-				"uuid" => $this->track(),
 			]);
 
 			// Pull the user out of the database again now it has been updated.

@@ -32,6 +32,7 @@ public function __construct($request) {
 	$this->mtimeView = $mtimeView;
 	if($mtimeView === false) {
 		// There will be a 404 error thrown after potential PageCode is invoked.
+		$ob = ob_get_contents();
 		ob_clean();
 		return;
 	}
