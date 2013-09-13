@@ -182,38 +182,6 @@ public function update($domHead = null) {
 		}
 	}
 
-	// TODO: Get array of pt el from domhead.
-	$pageToolElements = array();
-
-	foreach ($pageToolElements as $pageTool) {
-		$source = null;
-		switch(strtolower($pageTool->tagName)) {
-		case "script":
-			$source = $pageTool->getAttribute("src");
-			break;
-		case "style":
-			$source = $pageTool->getAttribute("href");
-			break;
-		default:
-			break;
-		}
-
-		if(is_null($source)) {
-			continue;
-		}
-		
-		$sourcePath = APPROOT . dirname(PATH) . "/$source";
-		$sourcePath = str_replace("//", "/", $sourcePath);
-		$destinationPath = $this->_wwwDir . dirname(PATH) . "/$source";
-		$destinationPath = str_replace("//", "/", $destinationPath);
-
-		$destimationDirectory = dirname($destinationPath);
-		if(!is_dir($destinationDir)) {
-			mkdir($destinationDir, 0775, true);
-		}
-		copy($sourcePath, $destinationPath);
-	}
-
 	$md5Str = "";
 	foreach ($hashArray as $hash) {
 		$md5Str .= $hash;
