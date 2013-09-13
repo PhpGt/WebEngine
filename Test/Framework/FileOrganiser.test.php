@@ -13,6 +13,10 @@ public function tearDown() {
 	removeTestApp();
 }
 
+/**
+ * There should only be one file within the www directory in a brand new app:
+ * the Go.php, which is triggered by the webserver.
+ */
 public function testInitialWebrootIsEmpty() {
 	$webroot = APPROOT . "/www";
 	$diff = array_diff(["Go.php"], scandir($webroot));
@@ -31,6 +35,8 @@ public function testCheckFilesNew() {
 
 /**
  * Test that the cache is valid after FileOrganiser's methods have been called.
+ * This tests that PHP.Gt places all required files into the www directory that
+ * it should.
  */
 public function testCheckFilesWhenCached() {
 	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
@@ -41,10 +47,10 @@ public function testCheckFilesWhenCached() {
 	$cacheInvalid = $fileOrganiser->checkFiles();
 	$this->assertTrue($cacheInvalid);
 
-	if($cacheInvalid) {
+	// if($cacheInvalid) {
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
-	}
+	// }
 
 	$cacheInvalid = $fileOrganiser->checkFiles();
 	$this->assertFalse($cacheInvalid);
@@ -142,6 +148,7 @@ PHP;
 	}
 	file_put_contents($pageToolStyleFile, $pageToolCss);
 
+	// Perform the basic actions usually performed by the Dispatcher object:
 	require_once(GTROOT . "/Framework/EmptyObject.php");
 	require_once(GTROOT . "/Framework/Component/PageToolWrapper.php");
 	require_once(GTROOT . "/Framework/PageTool.php");
