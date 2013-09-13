@@ -47,10 +47,10 @@ public function testCheckFilesWhenCached() {
 	$cacheInvalid = $fileOrganiser->checkFiles();
 	$this->assertTrue($cacheInvalid);
 
-	// if($cacheInvalid) {
+	if($cacheInvalid) {
 		$fileOrganiser->clean();
 		$fileOrganiser->update();
-	// }
+	}
 
 	$cacheInvalid = $fileOrganiser->checkFiles();
 	$this->assertFalse($cacheInvalid);

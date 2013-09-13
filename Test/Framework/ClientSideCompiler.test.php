@@ -326,12 +326,9 @@ PHP;
 public function testJavaScriptRequire() {
 	$wwwDir = APPROOT . "/www";
 	$fileContents = array(
-		"Script/Script1.js" => <<<JS
-//= require /Script/Script2.js
-//= require /Script/SubDir/Script3.js
-
-alert(test);
-JS,
+		"Script/Script1.js" => "//= require /Script/Script2.js"
+								. "//= require /Script/SubDir/Script3.js"
+								."alert(test);",
 		"Script/Script2.js" => "test = 'this is a test';",
 		"Script/SubDir/Script3.js" => "test += ', appended.';",
 	);
@@ -368,7 +365,7 @@ JS;
 		file_put_contents(APPROOT . "/$subPath", $contents);
 	}
 
-	// TODO: 103: Finish.
+	// TODO: 111: Finish.
 }
 
 /**

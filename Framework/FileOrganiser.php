@@ -28,17 +28,16 @@ public function __construct() {
 }
 
 /**
- * In production, cache is *always* valid when the www.cache file is present.
+ * In production, cache is *always* valid if the www.cache file is present.
  * To invalidate, just remove the file.
  *
- * In non-production, simply obtains the latest modified file time and compares
- * it to the www.cache's time.
+ * In non-production, creates an md5 hash of all the files within the
+ * source directories and compares it to the contents of www.cache. If www.cache
+ * does not exist, or the hash is different, the cache is invalid.
  *
  * @return bool True if the www directory needs refreshing.
  */
 public function checkFiles() {
-	// TODO: 103: The check should be made on the md5 of all files' contents,
-	// rather than the filemtime.
 	$cacheFileExists = file_exists($this->_cacheFile);
 	if(!$cacheFileExists) {
 		return true;
@@ -48,7 +47,9 @@ public function checkFiles() {
 	}
 
 	$sourceDirectoryArray = array("Asset", "Script", "Style");
-	$fileMTime = 0;
+	$hashArray = array(
+		md5(""),
+	);
 
 	// First build up the array of files in the source directories.
 	foreach ($sourceDirectoryArray as $sourceDirectory) {
@@ -78,17 +79,21 @@ public function checkFiles() {
 					continue;
 				}
 
-				$thisFileMTime = filemtime($pathName);
-				if($thisFileMTime > $fileMTime) {
-					$fileMTime = $thisFileMTime;
-				}
+				$hashArray[] = md5_file($pathName);
 			}
 		}
 	}
 
-	$cacheMTime = filemtime($this->_cacheFile);
-	// Returns if the cache is out of date.
-	return $cacheMTime < $fileMTime;
+	$md5Str = "";
+	foreach ($hashArray as $hash) {
+		$md5Str .= $hash;
+	}
+	$md5 = md5($md5Str);
+
+	$cacheHash = trim(file_get_contents($this->_cacheFile));
+
+	// Returns if the two hashes are different.
+	return $cacheHash !== $md5;
 }
 
 /**
@@ -132,7 +137,9 @@ public function clean() {
  * of matching elements could be passed in to be included in the file copying.
  */
 public function update($domHead = null) {
-	$time = time();
+	$hashArray = array(
+		md5(""),
+	);
 
 	$directoryArray = array("Asset", "Script", "Style");
 	foreach($directoryArray as $directory) {
@@ -170,6 +177,7 @@ public function update($domHead = null) {
 				}
 
 				copy($pathName, $destinationFile);
+				$hashArray[] = md5_file($pathName);
 			}
 		}
 	}
@@ -206,8 +214,14 @@ public function update($domHead = null) {
 		copy($sourcePath, $destinationPath);
 	}
 
-	file_put_contents($this->_cacheFile, $time);
-	return $time;
+	$md5Str = "";
+	foreach ($hashArray as $hash) {
+		$md5Str .= $hash;
+	}
+	$md5 = md5($md5Str);
+
+	file_put_contents($this->_cacheFile, $md5);
+	return $md5;
 }
 
 /**
