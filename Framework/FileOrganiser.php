@@ -210,6 +210,11 @@ public function update($domHead = null) {
 	return $time;
 }
 
+/**
+ * Script and Link elements in the HEAD can use server-side processing
+ * techniques, such as using Sass/Scss and the //= require syntax within
+ * JavaScript.
+ */
 public function processHead($domHead, $clientSideCompiler) {
 	$count = 0;
 	$styleElements = $domHead["link"];
@@ -242,6 +247,11 @@ public function processHead($domHead, $clientSideCompiler) {
 				$count++;
 			}
 		}
+	}
+
+	$scriptElements = $domHead["script"];
+	foreach ($scriptElements as $el) {
+		// TODO: 103: Implementation here.
 	}
 
 	return $count;

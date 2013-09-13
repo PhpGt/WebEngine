@@ -195,7 +195,29 @@ PHP;
  * and they are re-coppied to the www directory.
  */
 public function testNewFilesCauseInvalid() {
-	// TODO: 103.
+	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
+	file_put_contents(APPROOT . "/Script/Main.js", "alert('Script!')");
+	file_put_contents(APPROOT . "/Style/Main.css", "* { color: red; }");
+
+	$fileOrganiser = new FileOrganiser();
+	$this->assertTrue($fileOrganiser->checkFiles());
+
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	$this->assertFalse($cacheInvalid);
+
+	// Make a change to one of the files:
+	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "New contents!");
+	$this->assertTrue($fileOrganiser->checkFiles());
+
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+
+	// Add another file:
+	file_put_contents(APPROOT . "/Script/Second.js", "location.reload()");
+	$this->assertTrue($fileOrganiser->checkFiles());
 }
 
 }#

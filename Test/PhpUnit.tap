@@ -11,12 +11,12 @@ ok 9 - FileOrganiserTest::testCheckFilesNew
 ok 10 - FileOrganiserTest::testCheckFilesWhenCached
 ok 11 - FileOrganiserTest::testFilesAreCopied
 ok 12 - FileOrganiserTest::testPageToolClientSide
-ok 13 - FileOrganiserTest::testNewFilesCauseInvalid
-not ok 14 - Failure: ManifestTest::testManifestIsNotRequiredOnSingleDomHead
+not ok 13 - Failure: FileOrganiserTest::testNewFilesCauseInvalid
   ---
-  message: 'Failed asserting that true is false.'
+  message: 'Failed asserting that false is true.'
   severity: fail
   ...
+ok 14 - ManifestTest::testManifestIsNotRequiredOnSingleDomHead
 ok 15 - ManifestTest::testMultipleHeaderHtmlFilesTriggerManifestError
 ok 16 - ManifestTest::testManifestCreatesDomHead
 ok 17 - AnalyticsPageToolTest::testAnalyticsToolExists

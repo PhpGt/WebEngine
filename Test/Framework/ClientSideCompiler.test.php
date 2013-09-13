@@ -125,7 +125,8 @@ HTML;
 
 		$domHead = $dom["head"];
 
-		// Force isClientCompiled by passing true as the final parameter.
+		// Force combination by passing true. You can also force compilation by
+		// passing another true into the method.
 		$fileOrganiser->compile($clientSideCompiler, $domHead, true);
 	}
 
@@ -205,6 +206,7 @@ HTML;
 
 		$domHead = $dom["head"][0];
 
+		// The last 2 parameters force combination and compilation respectfully.
 		$fileOrganiser->compile($clientSideCompiler, $domHead, true, true);
 	}
 	
@@ -322,7 +324,51 @@ PHP;
  * JavaScript asset files.
  */
 public function testJavaScriptRequire() {
-	// TODO: 111:
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Script/Script1.js" => <<<JS
+//= require /Script/Script2.js
+//= require /Script/SubDir/Script3.js
+
+alert(test);
+JS,
+		"Script/Script2.js" => "test = 'this is a test';",
+		"Script/SubDir/Script3.js" => "test += ', appended.';",
+	);
+
+	$html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<script src="/Script/Script1.js"></script>
+	<script src="/Script/Script2.js"></script>
+	<script src="/Script/SubDir/Script3.js"></script>
+</head>
+<body>
+	<h1>Test</h1>
+</body>
+</html>
+HTML;
+
+	// The compiled output is what is expected from the above three scripts
+	// using the require syntax.
+	$compiledOutput = <<<JS
+test = 'this is a test';
+test += ', appended.';
+alert(test);
+JS;
+
+	foreach ($fileContents as $subPath => $contents) {
+		$dir = dirname(APPROOT . "/$subPath");
+		if(!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+
+		file_put_contents(APPROOT . "/$subPath", $contents);
+	}
+
+	// TODO: 103: Finish.
 }
 
 /**
