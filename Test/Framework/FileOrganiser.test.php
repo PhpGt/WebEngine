@@ -190,4 +190,12 @@ PHP;
 	$this->assertEquals($expectedStyle, $combinedStyle);
 }
 
+/**
+ * Test that when source files are overwritten, it causes a cache invalidation,
+ * and they are re-coppied to the www directory.
+ */
+public function testNewFilesCauseInvalid() {
+	// TODO: 103.
+}
+
 }#

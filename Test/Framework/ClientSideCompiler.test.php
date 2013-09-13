@@ -50,8 +50,8 @@ public function testScssIsProcessed() {
 		$clientSideCompiler->process(APPROOT . "/$subPath");
 
 		$filePath = preg_replace("/\.scss$/i", ".css", $subPath);
-		// $filePath still points to .scss file.
-		$this->assertFileNotExists($filePath);
+		// $filePath now points to .css file.
+		$this->assertFileExists(APPROOT . "/$filePath");
 
 		$actualContents = file_get_contents(APPROOT . "/$filePath");
 
@@ -125,6 +125,7 @@ HTML;
 
 		$domHead = $dom["head"];
 
+		// Force isClientCompiled by passing true as the final parameter.
 		$fileOrganiser->compile($clientSideCompiler, $domHead, true);
 	}
 
@@ -314,6 +315,22 @@ PHP;
 
 	$this->assertEquals($expectedScript, $combinedScript);
 	$this->assertEquals($expectedStyle, $combinedStyle);
+}
+
+/**
+ * Tests that the //= require syntax performs a server-side include of 
+ * JavaScript asset files.
+ */
+public function testJavaScriptRequire() {
+	// TODO: 111:
+}
+
+/**
+ * Tests that the //= require_tree syntax performs a recursive server-side
+ * include of JavaScript asset files within the given directory.
+ */
+public function testJavaScriptRequireTree() {
+	// TODO: 111:
 }
 
 }#

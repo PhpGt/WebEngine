@@ -37,6 +37,8 @@ public function __construct() {
  * @return bool True if the www directory needs refreshing.
  */
 public function checkFiles() {
+	// TODO: 103: The check should be made on the md5 of all files' contents,
+	// rather than the filemtime.
 	$cacheFileExists = file_exists($this->_cacheFile);
 	if(!$cacheFileExists) {
 		return true;
@@ -83,7 +85,6 @@ public function checkFiles() {
 			}
 		}
 	}
-
 
 	$cacheMTime = filemtime($this->_cacheFile);
 	// Returns if the cache is out of date.

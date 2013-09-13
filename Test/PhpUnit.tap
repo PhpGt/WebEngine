@@ -3,16 +3,26 @@ ok 1 - ClientSideCompilerTest::testScssIsProcessed
 ok 2 - ClientSideCompilerTest::testClientSideCombination
 ok 3 - ClientSideCompilerTest::testClientSideCompilation
 ok 4 - ClientSideCompilerTest::testPageToolClientSideCompiled
-ok 5 - DomTest::testDomElInDom
-ok 6 - FileOrganiserTest::testInitialWebrootIsEmpty
-ok 7 - FileOrganiserTest::testCheckFilesNew
-ok 8 - FileOrganiserTest::testCheckFilesWhenCached
-ok 9 - FileOrganiserTest::testFilesAreCopied
-ok 10 - FileOrganiserTest::testPageToolClientSide
-ok 11 - AnalyticsPageToolTest::testAnalyticsToolExists
-ok 12 - AnalyticsPageToolTest::testCodeIsAddedToHead
-ok 13 - NavigationPageToolTest::testNavigationToolExists
-ok 14 - NavigationPageToolTest::testHomepageSelected
-ok 15 - NavigationPageToolTest::testBareSelected
-ok 16 - NavigationPageToolTest::testNestedSelected
-1..16
+ok 5 - ClientSideCompilerTest::testJavaScriptRequire
+ok 6 - ClientSideCompilerTest::testJavaScriptRequireTree
+ok 7 - DomTest::testDomElInDom
+ok 8 - FileOrganiserTest::testInitialWebrootIsEmpty
+ok 9 - FileOrganiserTest::testCheckFilesNew
+ok 10 - FileOrganiserTest::testCheckFilesWhenCached
+ok 11 - FileOrganiserTest::testFilesAreCopied
+ok 12 - FileOrganiserTest::testPageToolClientSide
+ok 13 - FileOrganiserTest::testNewFilesCauseInvalid
+not ok 14 - Failure: ManifestTest::testManifestIsNotRequiredOnSingleDomHead
+  ---
+  message: 'Failed asserting that true is false.'
+  severity: fail
+  ...
+ok 15 - ManifestTest::testMultipleHeaderHtmlFilesTriggerManifestError
+ok 16 - ManifestTest::testManifestCreatesDomHead
+ok 17 - AnalyticsPageToolTest::testAnalyticsToolExists
+ok 18 - AnalyticsPageToolTest::testCodeIsAddedToHead
+ok 19 - NavigationPageToolTest::testNavigationToolExists
+ok 20 - NavigationPageToolTest::testHomepageSelected
+ok 21 - NavigationPageToolTest::testBareSelected
+ok 22 - NavigationPageToolTest::testNestedSelected
+1..22
