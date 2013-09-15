@@ -198,6 +198,9 @@ public function update($domHead = null) {
  * JavaScript.
  */
 public function processHead($domHead, $clientSideCompiler) {
+	// TODO: In non-production, //= required JavaScript files should be inserted
+	// before the requirer source file in the head.
+	// In production, the required files should be concatenated.
 	$count = 0;
 	$styleElements = $domHead["link"];
 	foreach ($styleElements as $el) {
@@ -233,7 +236,7 @@ public function processHead($domHead, $clientSideCompiler) {
 
 	$scriptElements = $domHead["script"];
 	foreach ($scriptElements as $el) {
-		// TODO: 103: Implementation here.
+		// TODO: 111: Implementation here.
 	}
 
 	return $count;

@@ -339,8 +339,6 @@ public function testJavaScriptRequire() {
 <head>
 	<meta charset="utf-8" />
 	<script src="/Script/Script1.js"></script>
-	<script src="/Script/Script2.js"></script>
-	<script src="/Script/SubDir/Script3.js"></script>
 </head>
 <body>
 	<h1>Test</h1>
@@ -350,12 +348,14 @@ HTML;
 
 	// The compiled output is what is expected from the above three scripts
 	// using the require syntax.
-	$compiledOutput = <<<JS
-test = 'this is a test';
-test += ', appended.';
-alert(test);
-JS;
+	// TODO: 111 - this needs testing in testJavaScriptRequireInProduction().
+// 	$compiledOutput = <<<JS
+// test = 'this is a test';
+// test += ', appended.';
+// alert(test);
+// JS;
 
+	// Create the source files.
 	foreach ($fileContents as $subPath => $contents) {
 		$dir = dirname(APPROOT . "/$subPath");
 		if(!is_dir($dir)) {
@@ -365,7 +365,26 @@ JS;
 		file_put_contents(APPROOT . "/$subPath", $contents);
 	}
 
-	// TODO: 111: Finish.
+	$dom = new Dom($html);
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+	$domHead = $dom["head"][0];
+	$fileOrganiser->processHead($domHead, $clientSideCompiler);
+
+	// At this point, the 'required' JavaScript files should be appended to
+	// the DOM head, before the requirer.
+	$scriptElements = $dom["head > script"];
+	$this->assertEquals(3, $scriptElements->length);
+
+	// Because script 1 requires scripts 2 then 3, the order should be:
+	$hrefOrder = array("2", "3", "1");
+	foreach ($scriptElements as $i => $scriptElement) {
+		$this->assertStringEndsWith(
+			$hrefOrder[$i] . ".js", 
+			$scriptElement->href);
+	}
 }
 
 /**
@@ -373,7 +392,69 @@ JS;
  * include of JavaScript asset files within the given directory.
  */
 public function testJavaScriptRequireTree() {
-	// TODO: 111:
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Script/Main.js" => "//= require_tree /Script/Namespace/"
+							. "//= require_tree /Script/Go/";
+		"Script/Namespace/Test/Functions.js" => ";namespace('Test.Functions', {"
+			. "sayPage: function(msg) {"
+			. "    alert('You are on page: ' + window.location.href);"
+			. "    if(msg) {"
+			. "        alert('Message: ' + msg);"
+			. "    }"
+			. "}"
+			. "});",
+		"Script/Go/Index.js" => ";go(function() {"
+			. "Test.Functions.sayPage();"
+			. "});",
+		"Script/Go/Test.js" => ";go(function() {"
+			. "Test.Functions.sayPage('TEST!');"
+			. "});",
+	);
+
+	$html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<script src="/Script/Main.js"></script>
+</head>
+<body>
+	<h1>Test</h1>
+</body>
+</html>
+HTML;
+
+	// Create the source files.
+	foreach ($fileContents as $subPath => $contents) {
+		$dir = dirname(APPROOT . "/$subPath");
+		if(!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+
+		file_put_contents(APPROOT . "/$subPath", $contents);
+	}
+
+	$dom = new Dom($html);
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+	$domHead = $dom["head"][0];
+	$fileOrganiser->processHead($domHead, $clientSideCompiler);
+
+	// At this point, the 'required' JavaScript files should be appended to
+	// the DOM head, before the requirer.
+	$scriptElements = $dom["head > script"];
+	$this->assertEquals(4, $scriptElements->length);
+
+	// Because script main requires scripts 2 then 3, the order should be:
+	$hrefOrder = array("2", "3", "1");
+	foreach ($scriptElements as $i => $scriptElement) {
+		$this->assertStringEndsWith(
+			$hrefOrder[$i] . ".js", 
+			$scriptElement->href);
+	}
 }
 
 }#
