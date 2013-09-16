@@ -166,6 +166,8 @@ $toLoad["Required"] = array(
 		GTROOT."/Framework/FileOrganiser.php",
 	"Client side compiler class" =>
 		GTROOT."/Framework/ClientSideCompiler.php",
+	"Manifest class" =>
+		GTROOT."/Framework/Manifest.php",
 	"Request class" =>
 		GTROOT."/Framework/Request.php",
 	"Response class" =>

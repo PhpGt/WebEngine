@@ -12,13 +12,19 @@ ok 10 - FileOrganiserTest::testCheckFilesWhenCached
 ok 11 - FileOrganiserTest::testFilesAreCopied
 ok 12 - FileOrganiserTest::testPageToolClientSide
 ok 13 - FileOrganiserTest::testNewFilesCauseInvalid
-ok 14 - ManifestTest::testManifestIsNotRequiredOnSingleDomHead
-ok 15 - ManifestTest::testMultipleHeaderHtmlFilesTriggerManifestError
-ok 16 - ManifestTest::testManifestCreatesDomHead
-ok 17 - AnalyticsPageToolTest::testAnalyticsToolExists
-ok 18 - AnalyticsPageToolTest::testCodeIsAddedToHead
-ok 19 - NavigationPageToolTest::testNavigationToolExists
-ok 20 - NavigationPageToolTest::testHomepageSelected
-ok 21 - NavigationPageToolTest::testBareSelected
-ok 22 - NavigationPageToolTest::testNestedSelected
-1..22
+ok 14 - ManifestTest::testManifestRemovesMetaManifestTag
+not ok 15 - Failure: ManifestTest::testManifestCreatesDomHead
+  ---
+  message: 'Number of scripts in head.'
+  severity: fail
+  data:
+    got: 0
+    expected: 2
+  ...
+ok 16 - AnalyticsPageToolTest::testAnalyticsToolExists
+ok 17 - AnalyticsPageToolTest::testCodeIsAddedToHead
+ok 18 - NavigationPageToolTest::testNavigationToolExists
+ok 19 - NavigationPageToolTest::testHomepageSelected
+ok 20 - NavigationPageToolTest::testBareSelected
+ok 21 - NavigationPageToolTest::testNestedSelected
+1..21
