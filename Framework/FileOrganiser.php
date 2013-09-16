@@ -198,9 +198,6 @@ public function update($domHead = null) {
  * JavaScript.
  */
 public function processHead($domHead, $clientSideCompiler) {
-	// TODO: In non-production, //= required JavaScript files should be inserted
-	// before the requirer source file in the head.
-	// In production, the required files should be concatenated.
 	$count = 0;
 	$styleElements = $domHead["link"];
 	foreach ($styleElements as $el) {
@@ -234,9 +231,79 @@ public function processHead($domHead, $clientSideCompiler) {
 		}
 	}
 
+	// Include any scripts noted in //=require syntaxes.
 	$scriptElements = $domHead["script"];
 	foreach ($scriptElements as $el) {
-		// TODO: 111: Implementation here.
+		if(!$el->hasAttribute("src")) {
+			continue;
+		}
+		$src = $el->getAttribute("src");
+		$pathArray = array(
+			APPROOT . $src,
+			GTROOT . $src,
+		);
+
+		foreach ($pathArray as $path) {
+			if(!file_exists($path)) {
+				continue;
+			}
+
+			$fh = fopen($path, "r");
+
+			while(false !== ($line = fgets($fh)) ) {
+				$matches = array();
+				if(preg_match("/^\/\/=[ ]?require(_tree)?[ ]?(.+)$/", $line,
+				$matches) > 0) {
+					$isTree = !empty($matches[1]);
+					$reqPath = trim($matches[2]);
+
+					$subPathArray = array(
+						APPROOT . $reqPath,
+						GTROOT . $reqPath,
+					);
+
+					$dom = $domHead->_dom;
+
+					if($isTree) {
+						foreach ($subPathArray as $subPath) {
+							if(!is_dir($subPath)) {
+								continue;
+							}
+
+							foreach ($iterator = new RecursiveIteratorIterator(
+								new RecursiveDirectoryIterator($subPath,
+									RecursiveDirectoryIterator::SKIP_DOTS),
+							RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+								$extension = strtolower($item->getExtension());
+								if($extension !== "js") {
+									continue;
+								}
+								$pathName = $iterator->getPathName();
+								$newSrc = substr($pathName, 
+									strpos($pathName, "/Script/"));
+
+								$newEl = $dom->createElement("script", [
+									"src" => $newSrc,
+									"data-required" => $src,
+								]);
+								$domHead->node->insertBefore(
+									$newEl->node, $el->node);
+							}
+						}
+					}
+					else {
+						// Require a single JavaScript file.
+						$newEl = $dom->createElement("script", [
+							"src" => $reqPath,
+							"data-required" => $src,
+						]);
+						$domHead->node->insertBefore($newEl->node, $el->node);
+					}
+				}
+			}
+			fclose($fh);
+		}
 	}
 
 	return $count;

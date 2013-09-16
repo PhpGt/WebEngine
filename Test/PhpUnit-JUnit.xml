@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="22" assertions="52" failures="0" errors="0" time="2.354161">
-    <testsuite name="Framework Tests" tests="16" assertions="36" failures="0" errors="0" time="2.335087">
-      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="6" assertions="18" failures="0" errors="0" time="2.170480">
-        <testcase name="testScssIsProcessed" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="25" assertions="6" time="0.073070"/>
-        <testcase name="testClientSideCombination" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="69" assertions="8" time="0.063994"/>
-        <testcase name="testClientSideCompilation" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="160" assertions="2" time="1.019463"/>
-        <testcase name="testPageToolClientSideCompiled" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="225" assertions="2" time="0.989295"/>
-        <testcase name="testJavaScriptRequire" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="326" assertions="0" time="0.022747"/>
-        <testcase name="testJavaScriptRequireTree" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="384" assertions="0" time="0.001911"/>
+  <testsuite name="" tests="22" assertions="61" failures="0" errors="0" time="0.856946">
+    <testsuite name="Framework Tests" tests="16" assertions="45" failures="0" errors="0" time="0.846829">
+      <testsuite name="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" tests="6" assertions="27" failures="0" errors="0" time="0.759025">
+        <testcase name="testScssIsProcessed" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="25" assertions="6" time="0.024888"/>
+        <testcase name="testClientSideCombination" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="69" assertions="8" time="0.019155"/>
+        <testcase name="testClientSideCompilation" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="160" assertions="2" time="0.343752"/>
+        <testcase name="testPageToolClientSideCompiled" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="225" assertions="2" time="0.337947"/>
+        <testcase name="testJavaScriptRequire" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="326" assertions="4" time="0.018927"/>
+        <testcase name="testJavaScriptRequireTree" class="ClientSideCompilerTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/ClientSideCompiler.test.php" line="385" assertions="5" time="0.014356"/>
       </testsuite>
-      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.003644">
-        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.003644"/>
+      <testsuite name="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" tests="1" assertions="2" failures="0" errors="0" time="0.001272">
+        <testcase name="testDomElInDom" class="DomTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Component/Dom.test.php" line="10" assertions="2" time="0.001272"/>
       </testsuite>
-      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="6" assertions="16" failures="0" errors="0" time="0.155523">
-        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="20" assertions="1" time="0.002783"/>
-        <testcase name="testCheckFilesNew" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="29" assertions="1" time="0.001889"/>
-        <testcase name="testCheckFilesWhenCached" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="41" assertions="2" time="0.032558"/>
-        <testcase name="testFilesAreCopied" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="63" assertions="6" time="0.022862"/>
-        <testcase name="testPageToolClientSide" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="94" assertions="2" time="0.026490"/>
-        <testcase name="testNewFilesCauseInvalid" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="197" assertions="4" time="0.068941"/>
+      <testsuite name="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" tests="6" assertions="16" failures="0" errors="0" time="0.083310">
+        <testcase name="testInitialWebrootIsEmpty" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="20" assertions="1" time="0.001536"/>
+        <testcase name="testCheckFilesNew" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="29" assertions="1" time="0.001198"/>
+        <testcase name="testCheckFilesWhenCached" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="41" assertions="2" time="0.016163"/>
+        <testcase name="testFilesAreCopied" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="63" assertions="6" time="0.013270"/>
+        <testcase name="testPageToolClientSide" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="94" assertions="2" time="0.014238"/>
+        <testcase name="testNewFilesCauseInvalid" class="FileOrganiserTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/FileOrganiser.test.php" line="197" assertions="4" time="0.036905"/>
       </testsuite>
-      <testsuite name="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" tests="3" assertions="0" failures="0" errors="0" time="0.005440">
-        <testcase name="testManifestIsNotRequiredOnSingleDomHead" class="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" line="23" assertions="0" time="0.001861"/>
-        <testcase name="testMultipleHeaderHtmlFilesTriggerManifestError" class="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" line="32" assertions="0" time="0.001772"/>
-        <testcase name="testManifestCreatesDomHead" class="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" line="40" assertions="0" time="0.001807"/>
+      <testsuite name="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" tests="3" assertions="0" failures="0" errors="0" time="0.003222">
+        <testcase name="testManifestIsNotRequiredOnSingleDomHead" class="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" line="23" assertions="0" time="0.001133"/>
+        <testcase name="testMultipleHeaderHtmlFilesTriggerManifestError" class="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" line="32" assertions="0" time="0.001038"/>
+        <testcase name="testManifestCreatesDomHead" class="ManifestTest" file="/home/g105b/Webroot/PHP.Gt/Test/Framework/Manifest.test.php" line="40" assertions="0" time="0.001051"/>
       </testsuite>
     </testsuite>
     <testsuite name="Component Tests" tests="0" assertions="0" failures="0" errors="0" time="0.000000"/>
-    <testsuite name="" tests="6" assertions="16" failures="0" errors="0" time="0.019074">
-      <testsuite name="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" tests="2" assertions="5" failures="0" errors="0" time="0.005553">
-        <testcase name="testAnalyticsToolExists" class="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" line="28" assertions="2" time="0.002182"/>
-        <testcase name="testCodeIsAddedToHead" class="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" line="37" assertions="3" time="0.003371"/>
+    <testsuite name="" tests="6" assertions="16" failures="0" errors="0" time="0.010117">
+      <testsuite name="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" tests="2" assertions="5" failures="0" errors="0" time="0.002579">
+        <testcase name="testAnalyticsToolExists" class="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" line="28" assertions="2" time="0.000989"/>
+        <testcase name="testCodeIsAddedToHead" class="AnalyticsPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Analytics.tool.test.php" line="37" assertions="3" time="0.001590"/>
       </testsuite>
-      <testsuite name="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" tests="4" assertions="11" failures="0" errors="0" time="0.013521">
-        <testcase name="testNavigationToolExists" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="43" assertions="2" time="0.001702"/>
-        <testcase name="testHomepageSelected" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="52" assertions="3" time="0.004440"/>
-        <testcase name="testBareSelected" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="66" assertions="3" time="0.003576"/>
-        <testcase name="testNestedSelected" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="80" assertions="3" time="0.003803"/>
+      <testsuite name="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" tests="4" assertions="11" failures="0" errors="0" time="0.007538">
+        <testcase name="testNavigationToolExists" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="43" assertions="2" time="0.000836"/>
+        <testcase name="testHomepageSelected" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="52" assertions="3" time="0.002549"/>
+        <testcase name="testBareSelected" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="66" assertions="3" time="0.002135"/>
+        <testcase name="testNestedSelected" class="NavigationPageToolTest" file="/home/g105b/Webroot/PHP.Gt/Test/PageTool/Navigation.tool.test.php" line="80" assertions="3" time="0.002018"/>
       </testsuite>
     </testsuite>
   </testsuite>

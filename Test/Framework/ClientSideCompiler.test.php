@@ -326,8 +326,8 @@ PHP;
 public function testJavaScriptRequire() {
 	$wwwDir = APPROOT . "/www";
 	$fileContents = array(
-		"Script/Script1.js" => "//= require /Script/Script2.js"
-								. "//= require /Script/SubDir/Script3.js"
+		"Script/Script1.js" => "//= require /Script/Script2.js\n"
+								. "//= require /Script/SubDir/Script3.js\n"
 								."alert(test);",
 		"Script/Script2.js" => "test = 'this is a test';",
 		"Script/SubDir/Script3.js" => "test += ', appended.';",
@@ -345,15 +345,6 @@ public function testJavaScriptRequire() {
 </body>
 </html>
 HTML;
-
-	// The compiled output is what is expected from the above three scripts
-	// using the require syntax.
-	// TODO: 111 - this needs testing in testJavaScriptRequireInProduction().
-// 	$compiledOutput = <<<JS
-// test = 'this is a test';
-// test += ', appended.';
-// alert(test);
-// JS;
 
 	// Create the source files.
 	foreach ($fileContents as $subPath => $contents) {
@@ -383,7 +374,7 @@ HTML;
 	foreach ($scriptElements as $i => $scriptElement) {
 		$this->assertStringEndsWith(
 			$hrefOrder[$i] . ".js", 
-			$scriptElement->href);
+			$scriptElement->src);
 	}
 }
 
@@ -394,21 +385,21 @@ HTML;
 public function testJavaScriptRequireTree() {
 	$wwwDir = APPROOT . "/www";
 	$fileContents = array(
-		"Script/Main.js" => "//= require_tree /Script/Namespace/"
-							. "//= require_tree /Script/Go/";
-		"Script/Namespace/Test/Functions.js" => ";namespace('Test.Functions', {"
-			. "sayPage: function(msg) {"
-			. "    alert('You are on page: ' + window.location.href);"
-			. "    if(msg) {"
-			. "        alert('Message: ' + msg);"
-			. "    }"
-			. "}"
+		"Script/Main.js" => "//= require_tree /Script/Namespace/\n"
+							. "//= require_tree /Script/Go/\n",
+		"Script/Namespace/Test/Functions.js"=>";namespace('Test.Functions', {\n"
+			. "sayPage: function(msg) {\n"
+			. "    alert('You are on page: ' + window.location.href);\n"
+			. "    if(msg) {\n"
+			. "        alert('Message: ' + msg);\n"
+			. "    }\n"
+			. "\n}"
 			. "});",
-		"Script/Go/Index.js" => ";go(function() {"
-			. "Test.Functions.sayPage();"
+		"Script/Go/Index.js" => ";go(function() {\n"
+			. "Test.Functions.sayPage();\n"
 			. "});",
-		"Script/Go/Test.js" => ";go(function() {"
-			. "Test.Functions.sayPage('TEST!');"
+		"Script/Go/Test.js" => ";go(function() {\n"
+			. "Test.Functions.sayPage('TEST!');\n"
 			. "});",
 	);
 
@@ -448,12 +439,13 @@ HTML;
 	$scriptElements = $dom["head > script"];
 	$this->assertEquals(4, $scriptElements->length);
 
-	// Because script main requires scripts 2 then 3, the order should be:
-	$hrefOrder = array("2", "3", "1");
+	// require_tree doesn't infer an order.
+	$sourceList = array("Main", "Functions", "Index", "Test");
 	foreach ($scriptElements as $i => $scriptElement) {
-		$this->assertStringEndsWith(
-			$hrefOrder[$i] . ".js", 
-			$scriptElement->href);
+		$src = $scriptElement->src;
+		$src = substr($src, strrpos($src, "/") + 1);
+		$src = substr($src, 0, strrpos($src, ".js"));
+		$this->assertContains($src,	$sourceList);
 	}
 }
 
