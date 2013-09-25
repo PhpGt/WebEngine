@@ -162,7 +162,8 @@ public function execute($urlArray = null, $method = "GET", $parameters = null) {
 		$header = "";
 		$body = "";
 
-		list($header, $body) = explode("\r\n\r\n", $response, 2);
+		// Surpress warning if there is no body index.
+		@list($header, $body) = explode("\r\n\r\n", $response, 2);
 		$headerLines = explode("\n", $header);
 		$headers = array();
 		foreach ($headerLines as $h) {
