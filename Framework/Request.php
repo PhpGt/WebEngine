@@ -14,6 +14,12 @@ public $contentType;
 public $pageCodeStop = false;
 
 public function __construct($config, $t) {
+	// Do not allow access to static. subdomain.
+	if(strpos($_SERVER["HTTP_HOST"], "static.") === 0) {
+		$host = substr($_SERVER["HTTP_HOST"], strlen("static."));
+		header("Location: //www.$host", 301);
+		exit;
+	}
 	date_default_timezone_set($config["App"]::getTimezone());
 	$this->contentType = "text/html";
 	//session_name("PhpGt_Session");
