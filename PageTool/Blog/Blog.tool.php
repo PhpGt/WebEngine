@@ -69,13 +69,14 @@ public function go($api, $dom, $template, $tool) {
  */
 public function checkUrl() {
 	$url = strtok($_SERVER["REQUEST_URI"], "?");
+	$url = substr($url, strlen("/{$this->_blogName}/"));
 	foreach ($this->_urlFormatArray as $urlFormat) {
-		if(0 === preg_match($urlFormat, $url)) {
-			return false;
+		if(preg_match($urlFormat, $url)) {
+			return true;
 		}
 	}
 	
-	return true;
+	return false;
 }
 
 public function clientSide() {
