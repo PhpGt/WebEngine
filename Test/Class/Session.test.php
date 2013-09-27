@@ -63,4 +63,14 @@ public function testSessionExtendsStorage() {
 	$this->assertEquals("bar7", $array["foo7"]);
 }
 
+public function testSessionUnsets() {
+	Session::set("Test.Session", ["foo8", "bar8"]);
+	Session::set("Test.Session.Deep.Deeper.Namespace", ["foo9" => "bar9"]);
+
+	Session::delete("Test.Session.Deep");
+
+	$this->assertTrue(Session::exists("Test.Session"));
+	$this->assertFalse(Session::exists("Test.Session.Deep.Deeper"));
+}
+
 }#
