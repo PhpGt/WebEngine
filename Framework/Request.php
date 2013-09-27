@@ -14,10 +14,13 @@ public $contentType;
 public $pageCodeStop = false;
 
 public function __construct($config, $t) {
-	// Force www subdomain.
-	if(strpos($_SERVER["HTTP_HOST"], "www.") !== 0) {
-		$host = substr($_SERVER["HTTP_HOST"], strlen("www."));
-		header("Location: //www.$host" . $_SERVER["REQUEST_URI"], 301);
+	// Force removal of www subdomain.
+	if(strpos($_SERVER["HTTP_HOST"], "www.") === 0) {
+		$host = substr(
+			$_SERVER["HTTP_HOST"], 
+			strlen("www.")
+		);
+		header("Location: //$host" . $_SERVER["REQUEST_URI"], 302);
 		exit;
 	}
 	date_default_timezone_set($config["App"]::getTimezone());
