@@ -24,7 +24,7 @@ private $_urlFormatArray = array(
 	"/^[0-9]{4}\/[A-Z][a-z]+\/[0-9]{0,2}\/[A-Za-z\-]+\.html$/",
 	"/^Archive\.html$/",
 	"/^Category\/[A-Z0-9][a-z0-9\-]*\.html$/",
-	"/^About\/[A-Z0-9][a-z0-9\-_]*\.html$/",
+	"/^About\/[a-z0-9\-_]+\.html$/",
 );
 /**
  * Called to output a single blog file, according to current URL.
@@ -75,7 +75,7 @@ public function checkUrl() {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
