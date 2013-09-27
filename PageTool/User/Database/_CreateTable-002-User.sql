@@ -1,8 +1,8 @@
 create table if not exists `User` (
-	`ID`					int	unsigned not null	auto_increment	primary key,
+	`ID`					int	not null	auto_increment	primary key,
 	`uuid`					varchar(128)null,
-	`FK_User_Type`			int	unsigned not null	default 1,
-	`FK_User__orphanedBy`	int	unsigned null,
+	`FK_User_Type`			int	not null	default 1,
+	`FK_User__orphanedBy`	int	null,
 	-- username and password are used as fallback when oauth not used.
 	`username`				varchar(32)	null,
 	-- password should always be a bcrypted password! Not a hashed password!
@@ -11,7 +11,7 @@ create table if not exists `User` (
 	`dateTimeIdentified`	datetime	null,
 	`dateTimeDeleted`		datetime	null		default null,
 	`dateTimeLastActive`	datetime	null,
-	`activityCount`			int unsigned not null	default 0,
+	`activityCount`			int not null	default 0,
 	unique index `UNIQUE_username` (`username` asc),
 	index `INDEX_FK_User_Type` (`FK_User_Type` asc),
 	index `INDEX_FK_User__orphanedBy` (`FK_User__orphanedBy` asc),
