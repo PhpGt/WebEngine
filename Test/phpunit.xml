@@ -7,7 +7,10 @@
 		<testsuite name="Component Tests">
 			<directory suffix=".test.php">Framework/Component</directory>
 		</testsuite>
-		<testsuite>
+		<testsuite name="Class Tests">
+			<directory suffix=".test.php">Class</directory>
+		</testsuite>
+		<testsuite name="PageTool Tests">
 			<directory suffix=".test.php">PageTool</directory>
 		</testsuite>
 	</testsuites>
