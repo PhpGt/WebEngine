@@ -18,7 +18,7 @@
 
 public static function get($ns) {
 	$nsArray = self::getNsArray($ns);
-	return self::getRecursive($_SESSION, $nsArray);
+	return self::getData($_SESSION, $nsArray);
 }
 
 public static function set($ns, $data) {
@@ -29,10 +29,34 @@ public static function set($ns, $data) {
 
 }
 
+public static function delete($ns) {
+	$nsArray = self::getNsArray($ns);
+
+	return self::setData($_SESSION, $nsArray, true);
+}
+
+public static function exists($ns) {
+	$nsArray = self::getNsArray($ns);
+	$data = self::getData($_SESSION, $nsArray);
+	return isset($data);
+}
+
+private static function &getKey(&$ns, $nsArray, $key = null) {
+	if(empty($nsArray)) {
+		return $ns[$key];
+	}
+
+	$key = array_shift($nsArray);
+	return self::getKey($ns[$key], $nsArray, $key);
+}
+
 private static function setData(&$ns, $nsArray, $data) {
 	if(count($nsArray) === 1) {
 		if(is_array($data)) {
 			$ns[$nsArray[0]] = array_merge($ns[$nsArray[0]], $data);
+		}
+		else if($data === true) {
+			unset($ns[$nsArray[0]]);
 		}
 		else {
 			$ns[$nsArray[0]] = $data;			
@@ -60,7 +84,7 @@ private static function getNsArray($ns) {
 	return $nsArray;
 }
 
-private static function getRecursive(&$arrayContainer, $nsArray, $value = null){
+private static function getData(&$arrayContainer, $nsArray, $value = null) {
 	if(empty($nsArray)) {
 		return $value;
 	}
@@ -71,7 +95,7 @@ private static function getRecursive(&$arrayContainer, $nsArray, $value = null){
 		return null;
 	}
 
-	return self::getRecursive(
+	return self::getData(
 		$arrayContainer[$getKey],
 		$nsArray,
 		$arrayContainer[$getKey]
