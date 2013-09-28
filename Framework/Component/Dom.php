@@ -272,12 +272,13 @@ public function create() {
 * instantly flushes the buffer to the browser.
 */
 public function flush() {
-	ob_clean();
+	ob_end_clean();
+	ob_start("ob_gzhandler");
 	$this->_domDoc->formatOutput = true;
 	$html = $this->_domDoc->saveHTML();
 	$this->cacheOutput($html);
 	echo $html;
-	ob_flush();
+	ob_end_flush();
 }
 
 /**
