@@ -25,7 +25,6 @@ public function __construct($config, $t) {
 	}
 	date_default_timezone_set($config["App"]::getTimezone());
 	$this->contentType = "text/html";
-	//session_name("PhpGt_Session");
 	session_start();
 	$_SESSION["PhpGt_StartTime"] = $t;
 
