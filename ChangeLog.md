@@ -6,6 +6,7 @@ Not yet released
 * ResponsiveImg PageTool allows serving multi-resolution images dependent on screen width.
 * FileOrganiser class improved and optimised.
 * ClientSideCompiler class improved and optimised.
+* Log class added allowing configurable logging.
 
 v0.1.0
 ------
