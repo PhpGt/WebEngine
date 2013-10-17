@@ -40,4 +40,46 @@ public function testLoggerLogsManual() {
 	$this->assertContains(":$line", $fileContents);
 }
 
+public function testLoggerConfig() {
+	$cfgPhp = <<<PHP
+<?php class Logger_Config extends Config {
+public static \$logLevel = "INFO";
+public static \$path = "{REPLACE_WITH_CURRENT_DIR}";
+public static \$datePattern = "d/m/Y H:i:s";
+public static \$messageFormat = "%DATETIME% %LEVEL% Your log: %MESSAGE%";
+public static \$messageEnd = "\n\n";
+}#
+PHP;
+	$cfgPhpPath = APPROOT . "/Config/Logger_Config.cfg.php";
+	$cfgPhp = str_replace("{REPLACE_WITH_CURRENT_DIR}", dirname(__DIR__),
+		$cfgPhp);
+
+	if(!is_dir(dirname($cfgPhpPath))) {
+		mkdir(dirname($cfgPhpPath), 0775, true);
+	}
+
+	// Log file is in non-default place due to config override.
+	$logPath = dirname(__DIR__) . "/Default.log";
+	if(file_exists($logPath)) {
+		unlink($logPath);
+	}
+
+	file_put_contents($cfgPhpPath, $cfgPhp);
+	$logger = Log::get();
+	$logger->info("This log should use the config settings.");
+	$logger->trace("This line should not make it into the log.");
+
+	// Ensure config file has been created successfully.
+	$this->assertFileExists($cfgPhpPath);
+	$this->assertFileExists($logPath);
+	$logContents = file_get_contents($logPath);
+	$this->assertContains(
+		"This log should use the config settings.", $logContents);
+	// Due to overridden logLevel, trace logs should not be recorded.
+	$this->assertNotContains(
+		"This line should not make it into the log.", $logContents);
+
+	unlink($logPath);
+}
+
 }#

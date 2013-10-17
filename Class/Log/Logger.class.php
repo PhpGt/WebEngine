@@ -12,6 +12,7 @@ private $_levels = array(
 	"DEBUG", // Low-level abstraction of debugging information.
 	"TRACE", // Low-level, high-grain logging.
 );
+private $_logLevel = 0;
 private $_name;
 private $_file;
 private $_path;
@@ -24,9 +25,31 @@ public function __construct($name) {
 	$this->_file = "$name.log";
 	$this->_path = APPROOT;
 
+	// Import config variables here if they exist.
 	if(class_exists("Logger_Config")) {
-		// Import config variables here if they exist.
-		// TODO: Path may want to be /var/log/lighttpd or /var/log/phpgt/appname
+		$this->importConfig();
+		if(isset(Logger_Config::$logLevel)) {
+			$this->_logLevel = Logger_Config::$logLevel;			
+		}
+		$this->_path = Logger_Config::$path;
+		$this->_datePattern = Logger_Config::$datePattern;
+	}
+}
+
+private function importConfig() {
+	// Load all members from Config object over this object's members, ignoring
+	// those stored in skipMembers.
+	$members = get_class_vars(__CLASS__);
+	$skipMembers = array("levels", "name");
+	$configMemberArray = get_class_vars("Logger_Config");
+	foreach ($configMemberArray as $member => $value) {
+		if(in_array($member, $skipMembers)) {
+			continue;
+		}
+
+		if(in_array("_$member", $members)) {
+			$this->_{$member} = $value;
+		}
 	}
 }
 
@@ -50,6 +73,15 @@ public function __call($name, $args) {
 }
 
 private function log($backtrace, $level, $msg, $throwable = null) {
+	$logLevel = $this->_logLevel;
+	if(is_string($logLevel)) {
+		$logLevel = array_search($logLevel, $this->_levels);
+	}
+
+	if($level > $logLevel) {
+		return false;
+	}
+
 	$logLine = $this->_messageFormat;
 
 	$logLine = str_replace("%DATETIME%", date($this->_datePattern), $logLine);
