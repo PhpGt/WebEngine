@@ -12,7 +12,7 @@ private $_levels = array(
 	"DEBUG", // Low-level abstraction of debugging information.
 	"TRACE", // Low-level, high-grain logging.
 );
-private $_logLevel = 0;
+private $_logLevel = 5;
 private $_name;
 private $_file;
 private $_path;
@@ -47,7 +47,7 @@ private function importConfig() {
 			continue;
 		}
 
-		if(in_array("_$member", $members)) {
+		if(array_key_exists("_$member", $members)) {
 			$this->_{$member} = $value;
 		}
 	}
@@ -78,7 +78,10 @@ private function log($backtrace, $level, $msg, $throwable = null) {
 		$logLevel = array_search($logLevel, $this->_levels);
 	}
 
-	if($level > $logLeve) {
+	// Level is the current level of the log being made, 
+	// from 0: FATAL to 5: TRACE.
+	// LogLevel is the minimum-allowed log to be made.
+	if($level > $logLevel) {
 		return false;
 	}
 

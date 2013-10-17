@@ -19,4 +19,11 @@ public static function get($name = "Default") {
 	return self::$_loggers[$name];
 }
 
+/**
+ * Removes all internal references to existing loggers.
+ */
+public static function reset() {
+	self::$_loggers = array();
+}
+
 }#

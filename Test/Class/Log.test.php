@@ -10,11 +10,13 @@ public function tearDown() {
 }
 
 public function testLoggerInstantiates() {
+	Log::reset();
 	$logger = Log::get();
 	$this->assertInstanceOf("Logger", $logger);
 }
 
 public function testLoggerLogsDefault() {
+	Log::reset();
 	$logger = Log::get();
 	$logger->info("Test!!!");
 
@@ -26,6 +28,7 @@ public function testLoggerLogsDefault() {
 }
 
 public function testLoggerLogsManual() {
+	Log::reset();
 	$logger = Log::get("Nondefault");
 	$logger->info("This log should go to Nondefault.log");
 	$line = __LINE__ - 1;
@@ -41,6 +44,7 @@ public function testLoggerLogsManual() {
 }
 
 public function testLoggerConfig() {
+	Log::reset();
 	$cfgPhp = <<<PHP
 <?php class Log_Config extends Config {
 public static \$logLevel = "INFO";
