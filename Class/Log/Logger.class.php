@@ -26,13 +26,13 @@ public function __construct($name) {
 	$this->_path = APPROOT;
 
 	// Import config variables here if they exist.
-	if(class_exists("Logger_Config")) {
+	if(class_exists("Log_Config")) {
 		$this->importConfig();
-		if(isset(Logger_Config::$logLevel)) {
-			$this->_logLevel = Logger_Config::$logLevel;			
+		if(isset(Log_Config::$logLevel)) {
+			$this->_logLevel = Log_Config::$logLevel;			
 		}
-		$this->_path = Logger_Config::$path;
-		$this->_datePattern = Logger_Config::$datePattern;
+		$this->_path = Log_Config::$path;
+		$this->_datePattern = Log_Config::$datePattern;
 	}
 }
 
@@ -41,7 +41,7 @@ private function importConfig() {
 	// those stored in skipMembers.
 	$members = get_class_vars(__CLASS__);
 	$skipMembers = array("levels", "name");
-	$configMemberArray = get_class_vars("Logger_Config");
+	$configMemberArray = get_class_vars("Log_Config");
 	foreach ($configMemberArray as $member => $value) {
 		if(in_array($member, $skipMembers)) {
 			continue;
@@ -78,7 +78,7 @@ private function log($backtrace, $level, $msg, $throwable = null) {
 		$logLevel = array_search($logLevel, $this->_levels);
 	}
 
-	if($level > $logLevel) {
+	if($level > $logLeve) {
 		return false;
 	}
 

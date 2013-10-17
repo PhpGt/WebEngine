@@ -42,7 +42,7 @@ public function testLoggerLogsManual() {
 
 public function testLoggerConfig() {
 	$cfgPhp = <<<PHP
-<?php class Logger_Config extends Config {
+<?php class Log_Config extends Config {
 public static \$logLevel = "INFO";
 public static \$path = "{REPLACE_WITH_CURRENT_DIR}";
 public static \$datePattern = "d/m/Y H:i:s";
@@ -50,7 +50,7 @@ public static \$messageFormat = "%DATETIME% %LEVEL% Your log: %MESSAGE%";
 public static \$messageEnd = "\n\n";
 }#
 PHP;
-	$cfgPhpPath = APPROOT . "/Config/Logger_Config.cfg.php";
+	$cfgPhpPath = APPROOT . "/Config/Log_Config.cfg.php";
 	$cfgPhp = str_replace("{REPLACE_WITH_CURRENT_DIR}", dirname(__DIR__),
 		$cfgPhp);
 
