@@ -22,6 +22,7 @@
  */
 
 public function __construct($domHead) {
+	$dom = $domHead->_dom;
 	// Search for a meta tag with name of manifest.
 	$manifest = null;
 	$metaList = $domHead["meta"];
@@ -43,8 +44,22 @@ public function __construct($domHead) {
 		return;
 	}
 
-	$typeArray = array("Script", "Style");
-	foreach ($typeArray as $type) {
+	// Defines the order of element insertion, attributes to import from
+	// manifest contents.
+	$typeArray = array(
+		"Style" => [
+			"tagName" => "link",
+			"urlAttr" => "href",
+			"reqAttr" => [
+				"rel" => "stylesheet"
+			]
+		],
+		"Script" => [
+			"tagName" => "script",
+			"urlAttr" => "src"
+		],
+	);
+	foreach ($typeArray as $type => $attributes) {
 		$path = APPROOT . "/$type";
 		$filePath = "$path/$manifest.manifest";
 		if(!file_exists($filePath)) {
@@ -53,10 +68,24 @@ public function __construct($domHead) {
 
 		$fh = fopen($filePath, "r");
 		while(false !== ($line = fgets($fh)) ) {
-			// TODO: 103: Include referenced files into head.
+			if(trim($line)[0] == "#") {
+				continue;
+			}
+			// Create the script/link element.
+			$el = $dom->createElement($attributes["tagName"]);
+			$el->setAttribute($attributes["urlAttr"], $line);
+			if(isset($attributes["reqAttr"])) {
+				foreach($attributes["reqAttr"] as $attrName => $attrContent) {
+					$el->setAttribute($attrName, $attrContent);
+				}				
+			}
+
+			$domHead->appendChild($el);
 		}
 		fclose($fh);
 	}
+
+	$metaList->remove();
 }
 
 }#
