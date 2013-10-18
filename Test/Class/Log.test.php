@@ -1,4 +1,4 @@
-<?php class SessionTest extends PHPUnit_Framework_TestCase {
+<?php class LogTest extends PHPUnit_Framework_TestCase {
 public function setUp() {
 	createTestApp();
 	require_once(GTROOT . "/Class/Log/Log.class.php");
