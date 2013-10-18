@@ -28,11 +28,12 @@ public function __construct() {
 }
 
 /**
- * In production, cache is *always* valid when the www.cache file is present.
+ * In production, cache is *always* valid if the www.cache file is present.
  * To invalidate, just remove the file.
  *
- * In non-production, simply obtains the latest modified file time and compares
- * it to the www.cache's time.
+ * In non-production, creates an md5 hash of all the files within the
+ * source directories and compares it to the contents of www.cache. If www.cache
+ * does not exist, or the hash is different, the cache is invalid.
  *
  * @return bool True if the www directory needs refreshing.
  */
@@ -46,7 +47,9 @@ public function checkFiles() {
 	}
 
 	$sourceDirectoryArray = array("Asset", "Script", "Style");
-	$fileMTime = 0;
+	$hashArray = array(
+		md5(""),
+	);
 
 	// First build up the array of files in the source directories.
 	foreach ($sourceDirectoryArray as $sourceDirectory) {
@@ -76,18 +79,21 @@ public function checkFiles() {
 					continue;
 				}
 
-				$thisFileMTime = filemtime($pathName);
-				if($thisFileMTime > $fileMTime) {
-					$fileMTime = $thisFileMTime;
-				}
+				$hashArray[] = md5_file($pathName);
 			}
 		}
 	}
 
+	$md5Str = "";
+	foreach ($hashArray as $hash) {
+		$md5Str .= $hash;
+	}
+	$md5 = md5($md5Str);
 
-	$cacheMTime = filemtime($this->_cacheFile);
-	// Returns if the cache is out of date.
-	return $cacheMTime < $fileMTime;
+	$cacheHash = trim(file_get_contents($this->_cacheFile));
+
+	// Returns if the two hashes are different.
+	return $cacheHash !== $md5;
 }
 
 /**
@@ -131,7 +137,9 @@ public function clean() {
  * of matching elements could be passed in to be included in the file copying.
  */
 public function update($domHead = null) {
-	$time = time();
+	$hashArray = array(
+		md5(""),
+	);
 
 	$directoryArray = array("Asset", "Script", "Style");
 	foreach($directoryArray as $directory) {
@@ -169,46 +177,26 @@ public function update($domHead = null) {
 				}
 
 				copy($pathName, $destinationFile);
+				$hashArray[] = md5_file($pathName);
 			}
 		}
 	}
 
-	// TODO: Get array of pt el from domhead.
-	$pageToolElements = array();
-
-	foreach ($pageToolElements as $pageTool) {
-		$source = null;
-		switch(strtolower($pageTool->tagName)) {
-		case "script":
-			$source = $pageTool->getAttribute("src");
-			break;
-		case "style":
-			$source = $pageTool->getAttribute("href");
-			break;
-		default:
-			break;
-		}
-
-		if(is_null($source)) {
-			continue;
-		}
-		
-		$sourcePath = APPROOT . dirname(PATH) . "/$source";
-		$sourcePath = str_replace("//", "/", $sourcePath);
-		$destinationPath = $this->_wwwDir . dirname(PATH) . "/$source";
-		$destinationPath = str_replace("//", "/", $destinationPath);
-
-		$destimationDirectory = dirname($destinationPath);
-		if(!is_dir($destinationDir)) {
-			mkdir($destinationDir, 0775, true);
-		}
-		copy($sourcePath, $destinationPath);
+	$md5Str = "";
+	foreach ($hashArray as $hash) {
+		$md5Str .= $hash;
 	}
+	$md5 = md5($md5Str);
 
-	file_put_contents($this->_cacheFile, $time);
-	return $time;
+	file_put_contents($this->_cacheFile, $md5);
+	return $md5;
 }
 
+/**
+ * Script and Link elements in the HEAD can use server-side processing
+ * techniques, such as using Sass/Scss and the //= require syntax within
+ * JavaScript.
+ */
 public function processHead($domHead, $clientSideCompiler) {
 	$count = 0;
 	$styleElements = $domHead["link"];
@@ -240,6 +228,81 @@ public function processHead($domHead, $clientSideCompiler) {
 			if($clientSideCompiler->process($path)) {
 				$count++;
 			}
+		}
+	}
+
+	// Include any scripts noted in //=require syntaxes.
+	$scriptElements = $domHead["script"];
+	foreach ($scriptElements as $el) {
+		if(!$el->hasAttribute("src")) {
+			continue;
+		}
+		$src = $el->getAttribute("src");
+		$pathArray = array(
+			APPROOT . $src,
+			GTROOT . $src,
+		);
+
+		foreach ($pathArray as $path) {
+			if(!file_exists($path)) {
+				continue;
+			}
+
+			$fh = fopen($path, "r");
+
+			while(false !== ($line = fgets($fh)) ) {
+				$matches = array();
+				if(preg_match("/^\/\/=[ ]?require(_tree)?[ ]?(.+)$/", $line,
+				$matches) > 0) {
+					$isTree = !empty($matches[1]);
+					$reqPath = trim($matches[2]);
+
+					$subPathArray = array(
+						APPROOT . $reqPath,
+						GTROOT . $reqPath,
+					);
+
+					$dom = $domHead->_dom;
+
+					if($isTree) {
+						foreach ($subPathArray as $subPath) {
+							if(!is_dir($subPath)) {
+								continue;
+							}
+
+							foreach ($iterator = new RecursiveIteratorIterator(
+								new RecursiveDirectoryIterator($subPath,
+									RecursiveDirectoryIterator::SKIP_DOTS),
+							RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+								$extension = strtolower($item->getExtension());
+								if($extension !== "js") {
+									continue;
+								}
+								$pathName = $iterator->getPathName();
+								$newSrc = substr($pathName, 
+									strpos($pathName, "/Script/"));
+
+								$newEl = $dom->createElement("script", [
+									"src" => $newSrc,
+									"data-required" => $src,
+								]);
+								$domHead->node->insertBefore(
+									$newEl->node, $el->node);
+							}
+						}
+					}
+					else {
+						// Require a single JavaScript file.
+						$newEl = $dom->createElement("script", [
+							"src" => $reqPath,
+							"data-required" => $src,
+						]);
+						$domHead->node->insertBefore($newEl->node, $el->node);
+					}
+				}
+			}
+			fclose($fh);
 		}
 	}
 

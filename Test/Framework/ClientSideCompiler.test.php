@@ -50,8 +50,8 @@ public function testScssIsProcessed() {
 		$clientSideCompiler->process(APPROOT . "/$subPath");
 
 		$filePath = preg_replace("/\.scss$/i", ".css", $subPath);
-		// $filePath still points to .scss file.
-		$this->assertFileNotExists($filePath);
+		// $filePath now points to .css file.
+		$this->assertFileExists(APPROOT . "/$filePath");
 
 		$actualContents = file_get_contents(APPROOT . "/$filePath");
 
@@ -125,6 +125,8 @@ HTML;
 
 		$domHead = $dom["head"];
 
+		// Force combination by passing true. You can also force compilation by
+		// passing another true into the method.
 		$fileOrganiser->compile($clientSideCompiler, $domHead, true);
 	}
 
@@ -204,6 +206,7 @@ HTML;
 
 		$domHead = $dom["head"][0];
 
+		// The last 2 parameters force combination and compilation respectfully.
 		$fileOrganiser->compile($clientSideCompiler, $domHead, true, true);
 	}
 	
@@ -314,6 +317,136 @@ PHP;
 
 	$this->assertEquals($expectedScript, $combinedScript);
 	$this->assertEquals($expectedStyle, $combinedStyle);
+}
+
+/**
+ * Tests that the //= require syntax performs a server-side include of 
+ * JavaScript asset files.
+ */
+public function testJavaScriptRequire() {
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Script/Script1.js" => "//= require /Script/Script2.js\n"
+								. "//= require /Script/SubDir/Script3.js\n"
+								."alert(test);",
+		"Script/Script2.js" => "test = 'this is a test';",
+		"Script/SubDir/Script3.js" => "test += ', appended.';",
+	);
+
+	$html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<script src="/Script/Script1.js"></script>
+</head>
+<body>
+	<h1>Test</h1>
+</body>
+</html>
+HTML;
+
+	// Create the source files.
+	foreach ($fileContents as $subPath => $contents) {
+		$dir = dirname(APPROOT . "/$subPath");
+		if(!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+
+		file_put_contents(APPROOT . "/$subPath", $contents);
+	}
+
+	$dom = new Dom($html);
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+	$domHead = $dom["head"][0];
+	$fileOrganiser->processHead($domHead, $clientSideCompiler);
+
+	// At this point, the 'required' JavaScript files should be appended to
+	// the DOM head, before the requirer.
+	$scriptElements = $dom["head > script"];
+	$this->assertEquals(3, $scriptElements->length);
+
+	// Because script 1 requires scripts 2 then 3, the order should be:
+	$hrefOrder = array("2", "3", "1");
+	foreach ($scriptElements as $i => $scriptElement) {
+		$this->assertStringEndsWith(
+			$hrefOrder[$i] . ".js", 
+			$scriptElement->src);
+	}
+}
+
+/**
+ * Tests that the //= require_tree syntax performs a recursive server-side
+ * include of JavaScript asset files within the given directory.
+ */
+public function testJavaScriptRequireTree() {
+	$wwwDir = APPROOT . "/www";
+	$fileContents = array(
+		"Script/Main.js" => "//= require_tree /Script/Namespace/\n"
+							. "//= require_tree /Script/Go/\n",
+		"Script/Namespace/Test/Functions.js"=>";namespace('Test.Functions', {\n"
+			. "sayPage: function(msg) {\n"
+			. "    alert('You are on page: ' + window.location.href);\n"
+			. "    if(msg) {\n"
+			. "        alert('Message: ' + msg);\n"
+			. "    }\n"
+			. "\n}"
+			. "});",
+		"Script/Go/Index.js" => ";go(function() {\n"
+			. "Test.Functions.sayPage();\n"
+			. "});",
+		"Script/Go/Test.js" => ";go(function() {\n"
+			. "Test.Functions.sayPage('TEST!');\n"
+			. "});",
+	);
+
+	$html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<script src="/Script/Main.js"></script>
+</head>
+<body>
+	<h1>Test</h1>
+</body>
+</html>
+HTML;
+
+	// Create the source files.
+	foreach ($fileContents as $subPath => $contents) {
+		$dir = dirname(APPROOT . "/$subPath");
+		if(!is_dir($dir)) {
+			mkdir($dir, 0775, true);
+		}
+
+		file_put_contents(APPROOT . "/$subPath", $contents);
+	}
+
+	$dom = new Dom($html);
+	$fileOrganiser = new FileOrganiser();
+	$clientSideCompiler = new ClientSideCompiler();
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+	$domHead = $dom["head"][0];
+	$fileOrganiser->processHead($domHead, $clientSideCompiler);
+
+	// At this point, the 'required' JavaScript files should be appended to
+	// the DOM head, before the requirer.
+	$scriptElements = $dom["head > script"];
+	$this->assertEquals(4, $scriptElements->length);
+
+	// require_tree doesn't infer an order.
+	$sourceList = array("Main", "Functions", "Index", "Test");
+	foreach ($scriptElements as $i => $scriptElement) {
+		$src = $scriptElement->src;
+		$src = substr($src, strrpos($src, "/") + 1);
+		$src = substr($src, 0, strrpos($src, ".js"));
+		$this->assertContains($src,	$sourceList);
+	}
 }
 
 }#

@@ -13,6 +13,10 @@ public function tearDown() {
 	removeTestApp();
 }
 
+/**
+ * There should only be one file within the www directory in a brand new app:
+ * the Go.php, which is triggered by the webserver.
+ */
 public function testInitialWebrootIsEmpty() {
 	$webroot = APPROOT . "/www";
 	$diff = array_diff(["Go.php"], scandir($webroot));
@@ -31,6 +35,8 @@ public function testCheckFilesNew() {
 
 /**
  * Test that the cache is valid after FileOrganiser's methods have been called.
+ * This tests that PHP.Gt places all required files into the www directory that
+ * it should.
  */
 public function testCheckFilesWhenCached() {
 	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
@@ -142,6 +148,7 @@ PHP;
 	}
 	file_put_contents($pageToolStyleFile, $pageToolCss);
 
+	// Perform the basic actions usually performed by the Dispatcher object:
 	require_once(GTROOT . "/Framework/EmptyObject.php");
 	require_once(GTROOT . "/Framework/Component/PageToolWrapper.php");
 	require_once(GTROOT . "/Framework/PageTool.php");
@@ -181,6 +188,36 @@ PHP;
 
 	$this->assertEquals($expectedScript, $combinedScript);
 	$this->assertEquals($expectedStyle, $combinedStyle);
+}
+
+/**
+ * Test that when source files are overwritten, it causes a cache invalidation,
+ * and they are re-coppied to the www directory.
+ */
+public function testNewFilesCauseInvalid() {
+	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
+	file_put_contents(APPROOT . "/Script/Main.js", "alert('Script!')");
+	file_put_contents(APPROOT . "/Style/Main.css", "* { color: red; }");
+
+	$fileOrganiser = new FileOrganiser();
+	$this->assertTrue($fileOrganiser->checkFiles());
+
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+
+	$cacheInvalid = $fileOrganiser->checkFiles();
+	$this->assertFalse($cacheInvalid);
+
+	// Make a change to one of the files:
+	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "New contents!");
+	$this->assertTrue($fileOrganiser->checkFiles());
+
+	$fileOrganiser->clean();
+	$fileOrganiser->update();
+
+	// Add another file:
+	file_put_contents(APPROOT . "/Script/Second.js", "location.reload()");
+	$this->assertTrue($fileOrganiser->checkFiles());
 }
 
 }#

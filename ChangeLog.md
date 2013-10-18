@@ -2,6 +2,8 @@ v0.1.1
 -------
 Not yet released
 
+* Client-side manifest files added.
+* JavaScript server-side includes.
 * All configuration settings are made static, so they are accessible from anywhere in the code.
 * ResponsiveImg PageTool allows serving multi-resolution images dependent on screen width.
 * FileOrganiser class improved and optimised.
