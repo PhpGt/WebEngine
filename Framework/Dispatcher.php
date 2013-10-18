@@ -109,6 +109,8 @@ public function __construct($response, $config) {
 		$toolWrapper);
 
 	$domHead = $dom["head"];
+	$manifest = new Manifest($domHead);
+	
 	if($cacheInvalid) {
 		$fileOrganiser->clean();
 		$fileOrganiser->update($domHead);
