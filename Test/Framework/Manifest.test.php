@@ -54,15 +54,32 @@ public function testManifestRemovesMetaManifestTag() {
  * appropriate elements, in the correct order.
  */
 public function testManifestCreatesDomHead() {
-	$html = $this->_html;
+	// First create the manifest files:
 	$mfFiles = array(
-		APPROOT . "/Script/_Default.manifest",
-		APPROOT . "/Style/_Default.manifest",
+		APPROOT . "/Script/_Default.manifest" => 
+			"/Main.js\n"
+			. "/Another.js\n",
+		APPROOT . "/Style/_Default.manifest" =>
+			"/Main.css\n"
+			. "/_Common.css\n"
+			. "/Index.css\n",
 	);
+	foreach ($mfFiles as $path => $content) {
+		if(!is_dir(dirname($path))) {
+			mkdir(dirname($path), 0775, true);
+		}
+		file_put_contents($path, $content);
+	}
+
+	$html = $this->_html;
 
 	$dom = new Dom($html);
+	$manifest = new Manifest($dom["head"]);
+
 	$scriptList = $dom["head > script"];
+	$styleList = $dom["head > link"];
 	$this->assertEquals(2, $scriptList->length, "Number of scripts in head.");
+	$this->assertEquals(3, $styleList->length, "Number of styles in head.");
 }
 
 }#
