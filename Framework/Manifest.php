@@ -44,10 +44,20 @@ public function __construct($domHead) {
 		return;
 	}
 
+	// Defines the order of element insertion, attributes to import from
+	// manifest contents.
 	$typeArray = array(
-		"Style" => ["tagName" => "link", "urlAttr" => "href",
-			"reqAttr" => ["rel" => "stylesheet"]],
-		"Script" => ["tagName" => "script", "urlAttr" => "src"],
+		"Style" => [
+			"tagName" => "link",
+			"urlAttr" => "href",
+			"reqAttr" => [
+				"rel" => "stylesheet"
+			]
+		],
+		"Script" => [
+			"tagName" => "script",
+			"urlAttr" => "src"
+		],
 	);
 	foreach ($typeArray as $type => $attributes) {
 		$path = APPROOT . "/$type";
@@ -61,7 +71,6 @@ public function __construct($domHead) {
 			if(trim($line)[0] == "#") {
 				continue;
 			}
-
 			// Create the script/link element.
 			$el = $dom->createElement($attributes["tagName"]);
 			$el->setAttribute($attributes["urlAttr"], $line);

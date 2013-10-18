@@ -82,4 +82,32 @@ public function testManifestCreatesDomHead() {
 	$this->assertEquals(3, $styleList->length, "Number of styles in head.");
 }
 
+/**
+ * Tests that comments within manifest files are ignored.
+ */
+public function testManifestComments() {
+	// First create the manifest files:
+	$mfFiles = array(
+		APPROOT . "/Script/_Default.manifest" => 
+			"# This is a comment\n"
+			. "/Main.js\n"
+			. "   #   This is a comment with spaces\n"
+			. "/Another.js\n",
+	);
+	foreach ($mfFiles as $path => $content) {
+		if(!is_dir(dirname($path))) {
+			mkdir(dirname($path), 0775, true);
+		}
+		file_put_contents($path, $content);
+	}
+
+	$html = $this->_html;
+
+	$dom = new Dom($html);
+	$manifest = new Manifest($dom["head"]);
+
+	$scriptList = $dom["head > script"];
+	$this->assertEquals(2, $scriptList->length, "Number of scripts in head.");
+}
+
 }#
