@@ -13,6 +13,8 @@ private $_levels = array(
 	"TRACE", // Low-level, high-grain logging.
 );
 private $_logLevel = 5;
+private $_classWhiteList = array();
+private $_classBlackList = array();
 private $_name;
 private $_file;
 private $_path;
