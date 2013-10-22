@@ -413,7 +413,16 @@ public function injectAttribute($attr, $substr, $replacement) {
 * Allows underlying DOMNode methods to be called on the DomEl object.
 */
 public function __call($name, $args = array()) {
-	// TODO: 112: Convert any $args to Node or NodeList objects.
+	// Convert any $args to Node or NodeList objects.
+	foreach ($args as $key => $value) {
+		if(is_a($value, "DomEl")) {
+			$args[$key] = $value->node;
+		}
+		if(is_a($value, "DomElCollection")) {
+			$args[$key] = $value->nodeList;
+		}
+	}
+
 	if(method_exists($this->node, $name)) {
 		$result = null;
 		try {

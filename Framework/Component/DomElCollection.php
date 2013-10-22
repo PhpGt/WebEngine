@@ -108,6 +108,14 @@ public function __call($name, $args) {
 */
 public function __get($key) {
 	switch($key) {
+	case "nodeList":
+		$frag = $this->_dom->createDocumentFragment();
+		foreach ($this->_elArray as $el) {
+			$frag->appendChild($el->node);
+		}
+		return $frag->childNodes;
+		break;
+		
 	case "length":
 		$this->checkElementsInDom();
 		return count($this->_elArray);
