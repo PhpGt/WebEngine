@@ -18,4 +18,29 @@ public function testDomElInDom() {
 	$this->assertTrue(get_class($domDoc) === get_class($ownerOfEl));
 }
 
+/**
+ * Tests that when a DomEl has a native DOM method called on it, if DomEl or 
+ * DomElCollections are passed as arguments to the method, they need converting
+ * to Node or NodeList objects, otherwise DOMDocument will throw a type error.
+ */
+public function testDomElNodeArgumentsAreConvertedToNodes() {
+	$dom = new Dom();
+	$parent = $dom->createElement("div");
+	$child1 = $dom->createElement("p");
+	$child1->setAttribute("id", "child1");
+	$child2 = $dom->createElement("p");
+	$child2->setAttribute("id", "child2");
+
+	$parent->appendChild($child1);
+
+	// Check that the method we are testing is not overridden from default DOM.
+	$this->assertFalse(method_exists($parent, "insertBefore"));
+
+	$parent->insertBefore($child2, $child1);
+	$paragraphs = $parent["p"];
+
+	$this->assertEquals("child2", $paragraphs[0]->id);
+	$this->assertEquals("child1", $paragraphs[1]->id);
+}
+
 }#
