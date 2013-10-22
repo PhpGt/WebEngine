@@ -1,8 +1,11 @@
 <?php class LogTest extends PHPUnit_Framework_TestCase {
 public function setUp() {
+	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Log/Log.class.php");
 	require_once(GTROOT . "/Class/Log/Logger.class.php");
+	require_once(GTROOT . "/Framework/PageCode.php");
+	require_once(GTROOT . "/Framework/EmptyObject.php");
 }
 
 public function tearDown() {
@@ -84,6 +87,66 @@ PHP;
 		"This line should not make it into the log.", $logContents);
 
 	unlink($logPath);
+}
+
+public function testLoggerClassWhiteList() {
+	Log::reset();
+	$cfgPhp = <<<PHP
+<?php class Log_Config extends Config {
+public static \$classWhiteList = array("WhiteListTestOne_PageCode");
+}#
+PHP;
+	$cfgPhpPath = APPROOT . "/Config/Log_Config.cfg.php";
+	$cfgPhp = str_replace("{REPLACE_WITH_CURRENT_DIR}", dirname(__DIR__),
+		$cfgPhp);
+
+	if(!is_dir(dirname($cfgPhpPath))) {
+		mkdir(dirname($cfgPhpPath), 0775, true);
+	}
+
+	// Log file is in non-default place due to config override.
+	$logPath = dirname(__DIR__) . "/Default.log";
+	if(file_exists($logPath)) {
+		unlink($logPath);
+	}
+
+	file_put_contents($cfgPhpPath, $cfgPhp);
+
+	$logger = Log::get();
+
+	$pageCode1 = $this->createPageCode("WhiteListTestOne");
+	$pageCode1->go(null, null, null, null);
+
+	$pageCode2 = $this->createPageCode("WhiteListTestTwo");
+	$pageCode2->go(null, null, null, null);
+
+	$logContents = file_get_contents(APPROOT . "/Default.log");
+	$this->assertContains("Log message from WhiteListTestOne", $logContents);
+	$this->assertNotContains("Log message from WhiteListTestTwo", $logContents);
+}
+
+private function createPageCode($name) {
+	$pcClassName = "{$name}_PageCode";
+	$pcString = <<<PHP
+<?php class $pcClassName extends PageCode {
+public function go(\$api, \$dom, \$template, \$tool) {
+	\$logger = Log::get();
+	\$logger->info("Log message from $name");
+
+	var_dump(\$logger);die();
+}
+}#
+PHP;
+	$pcDir = APPROOT . "/PageCode";
+	$pcFilePath = "$pcDir/$name.php";
+
+	if(!is_dir($pcDir)) {
+		mkdir($pcDir, 0775, true);
+	}
+	file_put_contents($pcFilePath, $pcString);
+	require_once($pcFilePath);
+
+	return new $pcClassName(new EmptyObject());
 }
 
 }#
