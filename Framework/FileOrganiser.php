@@ -197,7 +197,7 @@ public function update($domHead = null) {
  * techniques, such as using Sass/Scss and the //= require syntax within
  * JavaScript.
  */
-public function processHead($domHead, $clientSideCompiler) {
+public function processHead($domHead, $clientSideCompiler = false) {
 	$count = 0;
 	$styleElements = $domHead["link"];
 	foreach ($styleElements as $el) {
@@ -306,6 +306,46 @@ public function processHead($domHead, $clientSideCompiler) {
 		}
 	}
 
+	if(App_Config::isClientCompiled()) {
+		$addScript = false;
+		$addLink = false;
+		$elList = $domHead["script, link"];
+		foreach ($elList as $el) {
+			if($el->hasAttribute("data-nocompile")
+			|| $el->hasAttribute("nocompile")) {
+				continue;
+			}
+
+			if($el->tagName == "script") {
+				if($el->hasAttribute("src")) {
+					$el->remove();
+					$addScript = true;
+				}
+			}
+			else {
+				if($el->hasAttribute("href")
+				&& $el->hasAttribute("rel")) {
+					if($el->getAttribute("rel") == "stylesheet") {
+						$el->remove();
+						$addLink = true;
+					}
+				}
+			}
+		}
+
+		if($addLink) {
+			$domHead->appendChild("link", [
+				"rel" => "stylesheet",
+				"href" => "/Style.css"
+			]);
+		}
+		if($addScript) {
+			$domHead->appendChild("script", [
+				"src" => "/Script.js",
+			]);
+		}
+	}
+
 	return $count;
 }
 
@@ -316,14 +356,16 @@ public function processHead($domHead, $clientSideCompiler) {
  * change, and the dom head stays the same, the check() function will not allow
  * this CPU-intensive function to be fired.
  */
-public function compile($clientSideCompiler, $domHead, 
+public function compile($clientSideCompiler, $domHead,
 $combineForce = false, $compileForce = false) {
 	$isCompiled = App_Config::isClientCompiled();
 	if($isCompiled || $combineForce) {
 		$clientSideCompiler->combine($domHead);
 	}
 	if($isCompiled || $compileForce) {
-		$clientSideCompiler->compile();	
+		if($clientSideCompiler->compile()) {
+			$this->processHead($domHead);
+		}
 	}
 	return;
 }
