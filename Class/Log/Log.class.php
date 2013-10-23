@@ -11,9 +11,9 @@ private static $_loggers = array();
  * Obtains an instance of the Logger class that will log out to the given named
  * file.
  */
-public static function get($name = "Default") {
+public static function get($name = "Default", $config = array()) {
 	if(!array_key_exists($name, self::$_loggers)) {
-		self::$_loggers[$name] = new Logger($name);
+		self::$_loggers[$name] = new Logger($name, $config);
 	}
 
 	return self::$_loggers[$name];
