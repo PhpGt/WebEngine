@@ -141,6 +141,12 @@ private function log($backtrace, $level, $msg, $throwable = null) {
 		}
 	}
 	else if(!empty($this->_classBlackList)) {
+		$blackListInvalid = in_array(
+			$backtrace[2]["class"], $this->_classBlackList);
+
+		if($blackListInvalid === true) {
+			return false;
+		}
 	}
 
 	return false !== file_put_contents(

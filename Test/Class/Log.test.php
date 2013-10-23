@@ -108,7 +108,7 @@ PHP;
 		if(!is_dir(dirname($cfgPhpPath))) {
 			mkdir(dirname($cfgPhpPath), 0775, true);
 		}
-		
+
 		file_put_contents($cfgPhpPath, $cfgPhp);
 	}
 
@@ -132,12 +132,57 @@ PHP;
 	$this->assertNotContains("Log message from WhiteListTestTwo", $logContents);
 }
 
-private function createPageCode($name) {
+public function testLoggerClassBlackList() {
+	Log::reset();
+	$config = array();
+
+	if(class_exists("Log_Config")) {
+		$config["classWhiteList"] = array();
+		$config["classBlackList"] = array("BlackListTestOne_PageCode");
+	}
+	else {
+		$path = APPROOT;
+		$cfgPhp = <<<PHP
+<?php class Log_Config extends Config {
+public static \$classBlackList = array("BlackListTestOne_PageCode");
+}#
+PHP;
+		$cfgPhpPath = APPROOT . "/Config/Log_Config.cfg.php";
+
+		if(!is_dir(dirname($cfgPhpPath))) {
+			mkdir(dirname($cfgPhpPath), 0775, true);
+		}
+		
+		file_put_contents($cfgPhpPath, $cfgPhp);
+	}
+
+	// Log file is in non-default place due to config override.
+	$logPath = APPROOT . "/BlackListTest.log";
+	if(file_exists($logPath)) {
+		unlink($logPath);
+	}
+
+
+	$logger = Log::get("BlackListTest", $config);
+
+	$pageCode1 = $this->createPageCode("BlackListTestOne", "Black");
+	$pageCode1->go(null, null, null, null);
+
+	$pageCode2 = $this->createPageCode("BlackListTestTwo", "Black");
+	$pageCode2->go(null, null, null, null);
+
+	$logContents = file_get_contents($logPath);
+	$this->assertNotContains("Log message from BlackListTestOne", $logContents);
+	$this->assertContains("Log message from BlackListTestTwo", $logContents);
+}
+
+private function createPageCode($name, $colour = "White") {
 	$pcClassName = "{$name}_PageCode";
+	$logName = $colour . "ListTest";
 	$pcString = <<<PHP
 <?php class $pcClassName extends PageCode {
 public function go(\$api, \$dom, \$template, \$tool) {
-	\$logger = Log::get("WhiteListTest");
+	\$logger = Log::get("$logName");
 	\$logger->info("Log message from $name");
 }
 }#
