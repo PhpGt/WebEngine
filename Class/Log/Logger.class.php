@@ -17,24 +17,45 @@ private $_classWhiteList = array();
 private $_classBlackList = array();
 private $_name;
 private $_file;
-private $_path;
+private $_path = APPROOT;
 private $_datePattern = "Y-m-d H:i:s";
-private $_messageFormat = "%DATETIME% %LEVEL% [%FILE% :%LINE%]\t%MESSAGE%\n";
+private $_messageFormat = 
+	"%DATETIME% %LEVEL% [%CLASS%, %FILE% :%LINE%]\t%MESSAGE%\n";
 private $_messageEnd = "\n";
 
-public function __construct($name) {
+private $_defaults = array(
+	"logLevel" => 5,
+	"classWhiteList" => array(),
+	"classBlackList" => array(),
+	"path" => APPROOT,
+	"datePattern" => "Y-m-d H:i:s",
+	"messageFormat" => 
+		"%DATETIME% %LEVEL% [%CLASS%, %FILE% :%LINE%]\t%MESSAGE%\n",
+);
+
+public function __construct($name, $config) {
 	$this->_name = ucfirst($name);
 	$this->_file = "$name.log";
 	$this->_path = APPROOT;
 
 	// Import config variables here if they exist.
-	if(class_exists("Log_Config")) {
+	if(!empty($config)) {
+		foreach ($config as $key => $value) {
+			$var = "_$key";
+			$this->$var = $value;
+		}
+	}
+	else if(class_exists("Log_Config")) {
 		$this->importConfig();
 		if(isset(Log_Config::$logLevel)) {
 			$this->_logLevel = Log_Config::$logLevel;			
 		}
-		$this->_path = Log_Config::$path;
-		$this->_datePattern = Log_Config::$datePattern;
+		if(isset(Log_Config::$path)) {
+			$this->_path = Log_Config::$path;			
+		}
+		if(isset(Log_Config::$datePattern)) {
+			$this->_datePattern = Log_Config::$datePattern;			
+		}
 	}
 }
 
@@ -44,13 +65,25 @@ private function importConfig() {
 	$members = get_class_vars(__CLASS__);
 	$skipMembers = array("levels", "name");
 	$configMemberArray = get_class_vars("Log_Config");
+	foreach ($members as $member => $value) {
+		if(in_array($member, $skipMembers)) {
+			continue;
+		}
+
+		if(isset($_this->_defaults[$member])) {
+			$this->_{$member} = $this->_defaults[$member];			
+		}
+	}
+
 	foreach ($configMemberArray as $member => $value) {
 		if(in_array($member, $skipMembers)) {
 			continue;
 		}
 
+
 		if(array_key_exists("_$member", $members)) {
-			$this->_{$member} = $value;
+			$var = "_$member";
+			$this->$var = $value;
 		}
 	}
 }
@@ -93,9 +126,21 @@ private function log($backtrace, $level, $msg, $throwable = null) {
 	$logLine = str_replace("%LEVEL%", $this->_levels[$level], $logLine);
 	$logLine = str_replace("%FILE%", $backtrace[0]["file"], $logLine);
 	$logLine = str_replace("%LINE%", $backtrace[0]["line"], $logLine);
+	$logLine = str_replace("%CLASS%", $backtrace[2]["class"], $logLine);
 	$logLine = str_replace("%MESSAGE%", $msg, $logLine);
 	if(!is_null($throwable)) {
 		str_replace("%EXCEPTION%", $throwable->getMessage());
+	}
+
+	if(!empty($this->_classWhiteList)) {
+		$whiteListValid = in_array(
+			$backtrace[2]["class"], $this->_classWhiteList);
+
+		if($whiteListValid === false) {
+			return false;
+		}
+	}
+	else if(!empty($this->_classBlackList)) {
 	}
 
 	return false !== file_put_contents(
