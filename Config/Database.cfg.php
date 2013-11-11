@@ -33,14 +33,13 @@ protected $_creationOrder = array(
 public static function init() {
 	static::$_name = isset(static::$_name)
 		? static::$_name
-		: "Gt_" . APPNAME;
+		: substr(APPNAME, 0, 16);
 	static::$_user = isset(static::$_user)
 		? static::$_user
-		: "Gt_" . APPNAME;
+		: substr(APPNAME, 0, 16);
 	static::$_pass = isset(static::$_pass)
 		? static::$_pass
-		: "Gt_" . APPNAME . "_Pass";
-	//static::$_pass = md5(APPSALT . static::$_pass);
+		: substr(APPNAME, 0, 16) . "_Pass";
 }
 
 public static function getCreationOrder() {
