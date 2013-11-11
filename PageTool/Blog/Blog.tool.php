@@ -238,13 +238,23 @@ public function setName($name) {
  * @return string         Absolute URL to the blog.
  */
 public function getUrl($blogObj) {
-	$dtPublish = new DateTime($blogObj["dateTimePublish"]);
+	$dtPublish = new DateTime(
+		empty($blogObj["dateTimePublished"])
+			? $blogObj["dateTimeCreated"]
+			: $blogObj["dateTimePublished"]
+	);
+
 	$url = "/{$this->_blogName}/";
-	$url .= $dtPublish->format("Y/M/d");
-	$url .= "/" . $blogObj["ID"] . "-";
-	$url .= urlencode($blogObj["title"]);
-	// TODO: Temp. remove periods as to not break URL regex.
-	$url = str_replace(".", "", $url);
+	$url .= $dtPublish->format("Y/M/d/");
+
+	// Transliterate characters not in ASCII, for example "café" => "cafe".
+	$title = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $blogObj["title"]);
+	$title = str_replace(" ", "_", $title);
+	$title = preg_replace("/\W+/", "", $title);
+	$title = preg_replace("/\s+/", "-", $title);
+	$title = str_replace("_", "-", $title);
+	$title = str_replace("--", "-", $title);
+	$url .= urlencode($title);
 	$url .= ".html";
 	return $url;
 }
