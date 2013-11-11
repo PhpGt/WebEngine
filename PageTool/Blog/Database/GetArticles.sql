@@ -5,11 +5,13 @@ select
 	Blog_User.username,
 	Blog_User.firstName,
 	Blog_User.lastName,
+	concat_ws(" ", Blog_User.firstName, Blog_User.lastName)as fullName,
 	Blog_Article.title,
 	Blog_Article.content,
 	Blog_Article.coverImageUrl,
 	Blog_Article.dateTimeCreated,
-	Blog_Article.dateTimePublished,
+	ifnull(Blog_Article.dateTimePublished, Blog_Article.dateTimeCreated
+		)as dateTimePublished,
 	Blog_Article.dateTimeFeatured,
 	Blog_Article.dateTimeUnfeatured,
 	count(Blog_Article_Comment.ID) as commentCount
