@@ -12,7 +12,7 @@
  * To automatically output the blog's article according the the current URL,
  * simply use the go method.
  */
-private $_blogName = "Blog";
+public $blogName = "Blog";
 private $_dtFormat = "jS F Y";
 private $_urlFormatArray = array(
 	// An array of regular expressions used to check if the curent URL is
@@ -69,7 +69,7 @@ public function go($api, $dom, $template, $tool) {
  */
 public function checkUrl() {
 	$url = strtok($_SERVER["REQUEST_URI"], "?");
-	$url = substr($url, strlen("/{$this->_blogName}/"));
+	$url = substr($url, strlen("/{$this->blogName}/"));
 	foreach ($this->_urlFormatArray as $urlFormat) {
 		if(preg_match($urlFormat, $url)) {
 			return true;
@@ -160,7 +160,7 @@ public function getArticle($ID) {
  */
 public function getArticleList($limit = 10) {
 	$dbBlogList = $this->_api[$this]->getArticles([
-		"name_Blog" => $this->_blogName,
+		"name_Blog" => $this->blogName,
 		"Limit" => $limit
 	]);
 
@@ -223,7 +223,7 @@ public function output($article, $domEl) {
  * @param string $name The name of the blog.
  */
 public function setName($name) {
-	$this->_blogName = $name;
+	$this->blogName = $name;
 
 	$dbResult = $this->_api[$this]->getBlogByName(["name" => $name]);
 	if(!$dbResult->hasResult) {
@@ -244,7 +244,7 @@ public function getUrl($blogObj) {
 			: $blogObj["dateTimePublished"]
 	);
 
-	$url = "/{$this->_blogName}/";
+	$url = "/{$this->blogName}/";
 	$url .= $dtPublish->format("Y/M/d/");
 
 	// Transliterate characters not in ASCII, for example "café" => "cafe".
@@ -270,7 +270,7 @@ public function getTagUrl($tagObj) {
 		: $tagObj["name"];
 
 
-	$url = "/{$this->_blogName}/Tagged/";
+	$url = "/{$this->blogName}/Tagged/";
 	$url .= urlencode($name);
 	$url .= ".html";
 	return $url;
