@@ -159,7 +159,7 @@ public function getArticle($ID) {
  * @return array          Array of associative arrays containing blog details.
  */
 public function getArticleList($limit = 10) {
-	$dbBlogList = $this->_api[$this]->getLatestArticles([
+	$dbBlogList = $this->_api[$this]->getArticles([
 		"name_Blog" => $this->_blogName,
 		"Limit" => $limit
 	]);
