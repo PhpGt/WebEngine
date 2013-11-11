@@ -4,4 +4,4 @@ CREATE  TABLE IF NOT EXISTS `Blog_Category` (
   `isHighlighted` TINYINT(1) NULL ,
   PRIMARY KEY (`ID`) ,
   INDEX `INDEX_isHighlighted` (`isHighlighted` ASC) )
-ENGINE = InnoDB;
+ENGINE = InnoDB
