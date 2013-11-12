@@ -20,6 +20,7 @@ require(GTROOT . "/Config/Database.cfg.php");
 require(GTROOT . "/Config/Security.cfg.php");
 require(GTROOT . "/Framework/Gt.php");
 
+date_default_timezone_set("UTC");
 $gt = new Gt(microtime(), true);
 
 function createTestApp() {
