@@ -12,7 +12,7 @@
  * To automatically output the blog's article according the the current URL,
  * simply use the go method.
  */
-private $_blogName = "Blog";
+public $blogName = "Blog";
 private $_dtFormat = "jS F Y";
 private $_urlFormatArray = array(
 	// An array of regular expressions used to check if the curent URL is
@@ -69,7 +69,7 @@ public function go($api, $dom, $template, $tool) {
  */
 public function checkUrl() {
 	$url = strtok($_SERVER["REQUEST_URI"], "?");
-	$url = substr($url, strlen("/{$this->_blogName}/"));
+	$url = substr($url, strlen("/{$this->blogName}/"));
 	foreach ($this->_urlFormatArray as $urlFormat) {
 		if(preg_match($urlFormat, $url)) {
 			return true;
@@ -159,8 +159,8 @@ public function getArticle($ID) {
  * @return array          Array of associative arrays containing blog details.
  */
 public function getArticleList($limit = 10) {
-	$dbBlogList = $this->_api[$this]->getLatestArticles([
-		"name_Blog" => $this->_blogName,
+	$dbBlogList = $this->_api[$this]->getArticles([
+		"name_Blog" => $this->blogName,
 		"Limit" => $limit
 	]);
 
@@ -223,7 +223,7 @@ public function output($article, $domEl) {
  * @param string $name The name of the blog.
  */
 public function setName($name) {
-	$this->_blogName = $name;
+	$this->blogName = $name;
 
 	$dbResult = $this->_api[$this]->getBlogByName(["name" => $name]);
 	if(!$dbResult->hasResult) {
@@ -238,13 +238,23 @@ public function setName($name) {
  * @return string         Absolute URL to the blog.
  */
 public function getUrl($blogObj) {
-	$dtPublish = new DateTime($blogObj["dateTimePublish"]);
-	$url = "/{$this->_blogName}/";
-	$url .= $dtPublish->format("Y/M/d");
-	$url .= "/" . $blogObj["ID"] . "-";
-	$url .= urlencode($blogObj["title"]);
-	// TODO: Temp. remove periods as to not break URL regex.
-	$url = str_replace(".", "", $url);
+	$dtPublish = new DateTime(
+		empty($blogObj["dateTimePublished"])
+			? $blogObj["dateTimeCreated"]
+			: $blogObj["dateTimePublished"]
+	);
+
+	$url = "/{$this->blogName}/";
+	$url .= $dtPublish->format("Y/M/d/");
+
+	// Transliterate characters not in ASCII, for example "café" => "cafe".
+	$title = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $blogObj["title"]);
+	$title = str_replace(" ", "_", $title);
+	$title = preg_replace("/\W+/", "", $title);
+	$title = preg_replace("/\s+/", "-", $title);
+	$title = str_replace("_", "-", $title);
+	$title = str_replace("--", "-", $title);
+	$url .= urlencode($title);
 	$url .= ".html";
 	return $url;
 }
@@ -260,7 +270,7 @@ public function getTagUrl($tagObj) {
 		: $tagObj["name"];
 
 
-	$url = "/{$this->_blogName}/Tagged/";
+	$url = "/{$this->blogName}/Tagged/";
 	$url .= urlencode($name);
 	$url .= ".html";
 	return $url;
