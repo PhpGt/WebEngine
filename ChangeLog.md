@@ -1,6 +1,6 @@
-v0.1.1
--------
-Not yet released
+v0.2
+----
+24th Oct 2013
 
 * Client-side manifest files added.
 * JavaScript server-side includes.
@@ -10,6 +10,11 @@ Not yet released
 * FileOrganiser class improved and optimised.
 * ClientSideCompiler class improved and optimised.
 * Log class added allowing configurable logging.
+* Updated order of Dispatcher for enhanced client-side compilation.
+* Unit tests use own bootstrapper.
+* Http class deprecated in favour of PHP's native HttpRequest.
+* All client-side files served from individual Style, Script and Asset directories within webroot.
+* Behat tests extracted into individual Blueprint repositories.
 
 v0.1.0
 ------
