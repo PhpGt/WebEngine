@@ -40,6 +40,9 @@ public static function exists($ns) {
 	$data = self::getData($_SESSION, $nsArray);
 	return isset($data);
 }
+public static function check($ns) {
+	return self::exists($ns);
+}
 
 private static function &getKey(&$ns, $nsArray, $key = null) {
 	if(empty($nsArray)) {
