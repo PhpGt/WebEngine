@@ -136,6 +136,8 @@ public function compile() {
 
 		file_put_contents($filePath, $compiledString);
 	}
+
+	return true;
 }
 
 private function javaScript($path) {
