@@ -2,19 +2,15 @@
     private $_userID;
 
     function initialize() {
-        // Temporary logging:
-        if(!isset($_SESSION["PhpGt_Auth"])) {
-           $_SESSION["PhpGt_Auth"] = array();
-        }
     }
 
     function loginBegin() {
         // capture the userID that we want to use
         if(!isset($this->params["ID_User"])) {
-            $this->params["ID_User"] = $_SESSION["User"]["ID"];
+            $this->params["ID_User"] = Session::get("PhpGt.User.ID");
         }
         $this->_userID = $this->params["ID_User"];
-        $_SESSION["PhpGt_Auth"]["ID_User"] = $this->_userID;
+        Session::set("PhpGt.Auth.ID_User", $this->_userID);
 
         $endPoint = Hybrid_Auth::storage()->get( "hauth_session.{$this->providerId}.hauth_endpoint" );
         Hybrid_Auth::redirect( $endPoint ); 
@@ -22,7 +18,7 @@
 
     function loginFinish() {
         if(!isset($this->params["ID_User"])) {
-            $this->params["ID_User"] = $_SESSION["User"]["ID"];
+            $this->params["ID_User"] = Session::get("PhpGt.User.ID");
         }
         $this->_userID = $this->params["ID_User"];
         $this->user->profile->identifier = $this->_userID;
