@@ -60,7 +60,8 @@ public function testManifestCreatesDomHead() {
 			"/Main.js\n"
 			. "/Another.js\n",
 		APPROOT . "/Style/_Default.manifest" =>
-			"/Main.css\n"
+			"\n" // Ensure that new lines don't break things.
+			. "/Main.css\n"
 			. "/_Common.css\n"
 			. "/Index.css\n",
 	);
