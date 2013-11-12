@@ -15,11 +15,11 @@ private $_whiteList = array();
 public function go($api, $dom, $template, $tool) {}
 
 public function __get($name) {
-	if(empty($_SESSION["PhpGt.User_PageTool"])) {
-		$user = $this->getUser();
+	if(Session::exists("PhpGt.User")) {
+		$user = Session::get("PhpGt.User");
 	}
 	else {
-		$user = $_SESSION["PhpGt.User_PageTool"];
+		$user = $this->getUser();
 	}
 
 	switch($name) {
@@ -63,7 +63,7 @@ public function getUser($auth = null) {
 	// user detains in an array.
 	if($this->checkAuth($auth)) {
 		$this->setActive();
-		return $_SESSION["PhpGt.User_PageTool"];
+		return Session::get("PhpGt.User");
 	}
 	
 	// Ensure there is a related user in the database.
@@ -101,7 +101,7 @@ public function getUser($auth = null) {
  * Checks the given Auth object for authentication. If there is no 
  * authentication, the method will simply return false. If there is 
  * authentication, the authenticated details will be mapped to the user's
- * database record which in turn will be stored in the PhpGt.User_PageTool
+ * database record which in turn will be stored in the PhpGt.User
  * session variable, before returning true.
  *
  * @param Auth $auth 	An instance of Auth object, representing an OAuth user.
@@ -118,8 +118,8 @@ public function checkAuth($auth) {
 		$profile = $auth->getProfile($provider);
 		$uid = $profile->identifier;
 		if(empty($uid)) {
-			if(!empty($_SESSION["PhpGt_Auth"]["ID_User"])) {
-				$uid = $_SESSION["PhpGt_Auth"]["ID_User"];
+			if(Session::exists("PhpGt.Auth.ID_User")) {
+				$uid = Session::get("PhpGt.Auth.ID_User");
 			}
 		}
 		$oauth_uuid = $provider . $uid;
@@ -143,9 +143,9 @@ public function checkAuth($auth) {
 		// The user doesn't have any OAuth records yet, so we don't have a
 		// reference to the user - get it from the tracking ID, or if supplied,
 		// the overridden user ID (used by Dummy Auth tests).
-		if(!empty($_SESSION["PhpGt_Auth"]["ID_User"])) {
+		if(Session::exists("PhpGt.Auth.ID_User")) {
 			$dbUser = $this->_api[$this]->getByID([
-				"ID" => $_SESSION["PhpGt_Auth"]["ID_User"],
+				"ID" => Session::get("PhpGt.Auth.ID_User"),
 			]);
 			if(!$dbUser->hasResult) {
 				// Impossible situation - there's no user found from UUID.
@@ -199,11 +199,11 @@ public function checkAuth($auth) {
 
 	// Assign the user details to the session object, taking all dbUser fields
 	// and adding extras.
-	$_SESSION["PhpGt.User_PageTool"] = array_merge($dbUser, [
+	Session::set("PhpGt.User", array_merge($dbUser, [
 		"dateTimeLastActive" => date("Y-m-d H:i:s"),
 		"isIdentified" => !empty($providerList),
 		"providerList" => $providerList,
-	]);
+	]));
 
 	return true;
 }
@@ -253,22 +253,19 @@ private function userSession($input, $anonUuid = null) {
 	}
 
 	if($dbUser->hasResult) {
-		if(empty($_SESSION["PhpGt.User_PageTool"])) {
-			$_SESSION["PhpGt.User_PageTool"] = array();
-		}
-		$_SESSION["PhpGt.User_PageTool"]["ID"] = $dbUser["ID"];
-		$_SESSION["PhpGt.User_PageTool"]["uuid"] = $dbUser["uuid"];
-		$_SESSION["PhpGt.User_PageTool"]["username"] = $dbUser["username"];
+		Session::set("PhpGt.User.ID", $dbUser["ID"]);
+		Session::set("PhpGt.User.uuid", $dbUser["uuid"]);
+		Session::set("PhpGt.User.username", $dbUser["username"]);
 
 		if (!is_null($anonUuid)) {
 			$anonDb = $this->_api[$this]->getByUuid(["uuid" => $anonUuid]);
 			if($anonDb->hasResult) {
-				$_SESSION["PhpGt.User_PageTool"]["orphanedID"] = $anonDb["ID"];
+				Session::set("PhpGt.User.orphanedID", $anonDb["ID"]);
 				$this->mergeOrphan();
 			}
 		}
 
-		return $_SESSION["PhpGt.User_PageTool"];
+		return Session::get("PhpGt.User");
 	}
 
 	return null;
@@ -302,7 +299,7 @@ public function logout($auth = null) {
  */
 private function setActive($id = null) {
 	if(is_null($id)) {
-		$id = $_SESSION["PhpGt.User_PageTool"]["ID"];
+		$id = Session::get("PhpGt.User.ID");
 	}
 	if(is_null($id)) {
 		return false;
@@ -324,7 +321,7 @@ private function generateSalt() {
  * @return  bool True on successful merge, false if there is no orphan record.
  */
 public function mergeOrphan() {
-	$user = $_SESSION["PhpGt.User_PageTool"];
+	$user = Session::get("PhpGt.User");
 	if(empty($user["orphanedID"])) {
 		return false;
 	}
