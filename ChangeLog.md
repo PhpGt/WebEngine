@@ -1,3 +1,13 @@
+v0.2.1
+------
+Not yet released
+
+* DomEl objects can call all native DOMNode methods correctly.
+* Session class implemented for easy namespace-setting within $_SESSION.
+* IDs used in the database are all signed integers.
+* Blueprint styles added.
+* Making use of the new (2013) Google Analytics code.
+
 v0.2
 ----
 24th Oct 2013
