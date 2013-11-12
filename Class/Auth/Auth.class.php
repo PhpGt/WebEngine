@@ -232,7 +232,7 @@ public function profile($provider) {
 public function getConnectedProfile($provider) {
 	try {
 		$adapter = $this->getAdapter($provider);
-		if(!Session::check("PhpGt.Auth.Profile.$provider")) {
+		if(!Session::exists("PhpGt.Auth.Profile.$provider")) {
 			Session::set("PhpGt.Auth.Profile.$provider",
 				$adapter->getUserProfile()
 			);
