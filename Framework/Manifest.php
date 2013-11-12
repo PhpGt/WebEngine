@@ -68,7 +68,8 @@ public function __construct($domHead) {
 
 		$fh = fopen($filePath, "r");
 		while(false !== ($line = fgets($fh)) ) {
-			if(trim($line)[0] == "#") {
+			$line = trim($line);
+			if($line[0] == "#") {
 				continue;
 			}
 			// Create the script/link element.
