@@ -4,26 +4,23 @@ A lightweight application development toolkit aimed at automating deployment, st
 
 [Head over to the Github Wiki for documentation](https://github.com/g105b/PHP.Gt/wiki)
 
-Updates in Beta1
-----------------
-For a full list of updates, see the [ChangeLog.md](ChangeLog.md) file.
+Beta2
+-----
+24th Oct 2013
 
-In order of importance: 
-
-* Auth class provides wrapper to easy OAuth + social network interaction.
-* Optional PageView when PageCode handles request itself.
-* @include(path/to/file) to provide HTML includes.
-* Introduction of Gt.js client side file v0.0.1.
-* Introduction of Gt.css client side file v0.0.1.
-* Class system fully replaces Utility classes.
-* SCSS files are pre-processed *much* faster.
-* Major improvements and bugfixes in User PageTool.
-* User PageTool implemented to allow OAuth authentication and anonymous users.
-* Blog PageTool initial features.
-* Bugfixes in the DOM classes.
-* PHP errors and exceptions handled by PHP.Gt.
-* Translatable content through data-lang attribute.
-* Selection of web-ready fonts included as standard.
+* Client-side manifest files added.
+* JavaScript server-side includes.
+* @include within PageView deprecated.
+* All configuration settings are made static, so they are accessible from anywhere in the code.
+* ResponsiveImg PageTool allows serving multi-resolution images dependent on screen width.
+* FileOrganiser class improved and optimised.
+* ClientSideCompiler class improved and optimised.
+* Log class added allowing configurable logging.
+* Updated order of Dispatcher for enhanced client-side compilation.
+* Unit tests use own bootstrapper.
+* Http class deprecated in favour of PHP's native HttpRequest.
+* All client-side files served from individual Style, Script and Asset directories within webroot.
+* Behat tests extracted into individual Blueprint repositories.
 
 System Requirements
 -------------------

@@ -116,10 +116,10 @@ public function __construct($response, $config) {
 		$fileOrganiser->update($domHead);
 		$fileOrganiser->processHead($domHead, $clientSideCompiler);
 		$fileOrganiser->tidyProcessed();
-		$fileOrganiser->compile($clientSideCompiler);
+		$fileOrganiser->compile($clientSideCompiler, $domHead);
 	}
 	else {
-		$fileOrganiser->processHead($domHead, false);
+		$fileOrganiser->processHead($domHead, $clientSideCompiler);
 	}
 
 	$dom->templateOutput($templateWrapper);
