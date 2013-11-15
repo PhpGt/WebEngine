@@ -87,8 +87,6 @@ public function __construct($domHead) {
 		}
 		fclose($fh);
 	}
-
-	$metaList->remove();
 }
 
 }#
