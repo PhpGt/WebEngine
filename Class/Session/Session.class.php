@@ -32,7 +32,7 @@ public static function set($ns, $data) {
 public static function delete($ns) {
 	$nsArray = self::getNsArray($ns);
 
-	return self::setData($_SESSION, $nsArray, true);
+   return self::deleteData($_SESSION, $nsArray);
 }
 
 public static function exists($ns) {
@@ -58,9 +58,6 @@ private static function setData(&$ns, $nsArray, $data) {
 		if(is_array($data)) {
 			$ns[$nsArray[0]] = array_merge($ns[$nsArray[0]], $data);
 		}
-		else if($data === true) {
-			unset($ns[$nsArray[0]]);
-		}
 		else {
 			$ns[$nsArray[0]] = $data;			
 		}
@@ -69,6 +66,17 @@ private static function setData(&$ns, $nsArray, $data) {
 
 	$nsKey = array_shift($nsArray);
 	return self::setData($ns[$nsKey], $nsArray, $data);
+}
+
+private static function deleteData(&$ns, $nsArray) {
+   if(count($nsArray) === 1) {
+       $value = $ns[$nsArray[0]];
+       unset($ns[$nsArray[0]]);
+       return $value;
+   }
+
+   $nsKey = array_shift($nsArray);
+   return self::deleteData($ns[$nsKey], $nsArray);
 }
 
 private static function getNsArray($ns) {

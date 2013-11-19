@@ -22,9 +22,13 @@ public function testSessionClassLoaded() {
 
 public function testSessionSets() {
 	Session::set("Test.Session.foo1", "bar1");
-	$value = Session::get("Test.Session.foo1");
+   Session::set("Test.Session.fooTrue", true);
 
+   $value = Session::get("Test.Session.foo1");
 	$this->assertEquals("bar1", $value);
+
+   $value = Session::get("Test.Session.fooTrue");
+   $this->assertTrue($value);
 }
 
 public function testSessionSetsArray() {
