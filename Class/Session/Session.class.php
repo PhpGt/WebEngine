@@ -70,9 +70,13 @@ private static function setData(&$ns, $nsArray, $data) {
 
 private static function deleteData(&$ns, $nsArray) {
    if(count($nsArray) === 1) {
-       $value = $ns[$nsArray[0]];
-       unset($ns[$nsArray[0]]);
-       return $value;
+               if(isset($ns[$nsArray[0]])) {
+                       $value = $ns[$nsArray[0]];
+                       unset($ns[$nsArray[0]]);
+                       return $value;
+               } else {
+                       return null;
+               }
    }
 
    $nsKey = array_shift($nsArray);
