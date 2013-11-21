@@ -55,8 +55,12 @@ public function apiCall($dal) {
 			);
 
 			$this->_result = array();
-			foreach($this->_dalResult as $key => $value) {
-				$this->_result[$key] = $value;
+
+			if((is_array($this->_dalResult) 
+			|| $this->_dalResult instanceof Traversable)) {
+				foreach($this->_dalResult as $key => $value) {
+					$this->_result[$key] = $value;
+				}				
 			}
 			return true;
 		}
