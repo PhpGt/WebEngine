@@ -204,6 +204,13 @@ public function before() {
 }
 
 /**
+ * Synonym for appendChildBefore
+ */
+public function prependSibling() {
+	return call_user_func_array([$this, "appendChildBefore"], func_get_args());
+}
+
+/**
  * Inserts the specified node(s) after the current node.
  */
 public function appendChildAfter($newElement /*, $newElement2, ... */) {
@@ -233,6 +240,13 @@ public function appendChildAfter($newElement /*, $newElement2, ... */) {
  * Synonym for appendChildAfter.
  */
 public function after() {
+	return call_user_func_array([$this, "appendChildAfter"], func_get_args());
+}
+
+/**
+ * Synonym for appendChildAfter.
+ */
+public function appendSibling() {
 	return call_user_func_array([$this, "appendChildAfter"], func_get_args());
 }
 
