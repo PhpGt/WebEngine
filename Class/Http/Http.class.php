@@ -1,5 +1,8 @@
 <?php class Http {
 /**
+ * DEPRECATED: Use PHP's internal HttpRequest object instead.
+ * http://www.php.net/manual/en/class.httprequest.php
+ * 
  * An object-oriented wrapper to the cURL module. Can be constructed with a
  * single or multiple URLs, to be executed using curl_multi.
  */

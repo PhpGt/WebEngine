@@ -17,6 +17,14 @@ private $_errorCodeMessage = array(
 	503 => "Service Unavailable"
 );
 
+private $_errorLogLevels = array(
+	"TRACE" => [301, 302, ],
+	"INFO" => [400, 401, 403, 404, ],
+	"WARN" => [408, 410, ],
+	"ERROR" => [429, ],
+	"FATAL" => [500, 501, 503, ],
+);
+
 
 public function __construct(
 $code, $data = null, Exception $previous = null) {
@@ -98,6 +106,15 @@ private function displayError($code, $data = array("")) {
 	if(is_string($data)) {
 		$message = $data;
 	}
+
+	$logLevel = "INFO";
+	$logger = Log::get("PhpGt");
+	foreach ($this->_errorLogLevels as $key => $value) {
+		if(in_array($code, $value)) {
+			$logLevel = $key;	
+		}
+	}
+	$logger->$logLevel($_SERVER["REQUEST_URI"] . " - " . $message);
 
 	foreach ($pathArray as $path) {
 		if(is_dir($path)) {
