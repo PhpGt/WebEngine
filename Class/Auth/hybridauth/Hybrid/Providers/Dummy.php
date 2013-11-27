@@ -17,6 +17,11 @@
     }
 
     function loginFinish() {
+        if(isset($this->params["Error_Code"])) {
+            throw new Exception( "Authentication failed! {$this->providerId} returned error "
+                . $this->params["Error_Code"] . " as requested", $this->params["Error_Code"]);
+        }
+
         if(!isset($this->params["ID_User"])) {
             $this->params["ID_User"] = Session::get("PhpGt.User.ID");
         }
