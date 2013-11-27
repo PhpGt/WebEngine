@@ -104,8 +104,16 @@ public function __construct($response, $config) {
 		$toolWrapper);
 	
 	$domHead = $dom["head"];
-	$manifestList = Manifest::getList($domHead);
 	
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$cacheValid = $fileOrganiser->checkCache();
+	if(!$cacheValid) {
+		// Perform process and copy operation into www.
+		$fileOrganiser->organise();
+	}
+
+	// TODO: Compile & minify.
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();
