@@ -23,6 +23,7 @@ private $_wwwDir;
 private $_cacheFile;
 
 public function __construct() {
+	// TODO: Got to know about the manifest here!
 	$this->_wwwDir = APPROOT . "/www";
 	$this->_cacheFile = "{$this->_wwwDir}/www.cache";
 }

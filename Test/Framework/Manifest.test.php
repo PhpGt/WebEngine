@@ -28,6 +28,7 @@ public function tearDown() {
 	removeTestApp();
 }
 
+// TODO: Replace not remove.
 public function testManifestRemovesMetaManifestTag() {
 	$html = $this->_html;
 	$dom = new Dom($html);
