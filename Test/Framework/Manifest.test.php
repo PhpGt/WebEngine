@@ -73,6 +73,7 @@ Go/*";
 	}
 	file_put_contents($styleManifestPath, $styleManifest);
 	foreach ($styleContents as $fileName => $contents) {
+		$fileName = APPROOT . "/Style/$fileName";
 		if(!is_dir(dirname($fileName))) {
 			mkdir(dirname($fileName), 0775, true);
 		}
@@ -84,6 +85,7 @@ Go/*";
 	}
 	file_put_contents($scriptManifestPath, $scriptManifest);
 	foreach ($scriptContents as $fileName => $contents) {
+		$fileName = APPROOT . "/Script/$fileName";
 		if(!is_dir(dirname($fileName))) {
 			mkdir(dirname($fileName), 0775, true);
 		}
@@ -97,10 +99,8 @@ Go/*";
 	$manifestList = Manifest::getList($domHead);
 	$fileList = $manifestList[0]->getFiles();
 
-	var_dump($fileList);die();
-
-	$this->assertCount(0, $fileList["Style"]);
-	$this->assertCount(4, $fileList["Script"]);
+	$this->assertCount(1, $fileList["Style"], "List of Style files");
+	$this->assertCount(4, $fileList["Script"], "List of Script files");
 }
 
 }#

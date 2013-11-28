@@ -25,19 +25,18 @@ public function __construct($name) {
  * optional .manifest files.
  */
 public function getFiles() {
-	$fileList = [
+	$fileListArray = [
 		"Script" => array(),
 		"Style" => array(),
 	];
 
-	foreach ($fileList as $type => $fileList) {
+	foreach ($fileListArray as $type => $fileList) {
 		$dir = APPROOT . "/$type";
 		$mfFile = "$dir/" . $this->_name . ".manifest";
 
 		if(!is_file($mfFile)) {
 			continue;
 		}
-		var_dump($mfFile);
 		$lines = file($mfFile);
 		foreach ($lines as $l) {
 			// Skip empty or comment lines.
@@ -47,13 +46,25 @@ public function getFiles() {
 				continue;
 			}
 
-			array_push($fileList[$type], $l);
+			if(substr($l, -1) == "*") {
+				// If * has been given, add all files in directory.
+				$innerFiles = scandir("$dir/" . dirname($l));
+				foreach ($innerFiles as $f) {
+					if($f[0] == ".") {
+						continue;
+					}
+
+					$fileListArray[$type][] = $f;
+				}
+			}
+			else {
+				$fileListArray[$type][] = $l;				
+			}
+
 		}
 	}
 
-	var_dump($fileList);die();
-
-	return $fileList;
+	return $fileListArray;
 }
 
 }#
