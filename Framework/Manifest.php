@@ -15,6 +15,7 @@ public static function getList($domHead) {
 }
 
 private $_name;
+private $_fileListArray;
 
 public function __construct($name) {
 	$this->_name = $name;
@@ -25,12 +26,12 @@ public function __construct($name) {
  * optional .manifest files.
  */
 public function getFiles() {
-	$fileListArray = [
+	$this->_fileListArray = [
 		"Script" => array(),
 		"Style" => array(),
 	];
 
-	foreach ($fileListArray as $type => $fileList) {
+	foreach ($this->_fileListArray as $type => $fileList) {
 		$dir = APPROOT . "/$type";
 		$mfFile = "$dir/" . $this->_name . ".manifest";
 
@@ -54,17 +55,37 @@ public function getFiles() {
 						continue;
 					}
 
-					$fileListArray[$type][] = $f;
+					$lf = substr($l, 0, stripos($l, "*"));
+					$this->_fileListArray[$type][] = $lf . $f;
 				}
 			}
 			else {
-				$fileListArray[$type][] = $l;				
+				$this->_fileListArray[$type][] = $l;				
 			}
 
 		}
 	}
 
-	return $fileListArray;
+	return $this->_fileListArray;
+}
+
+/**
+ * Returns the MD5 hash of all files within both Script and Style .manifest.
+ */
+public function getMd5() {
+	$md5 = "";
+	if(empty($this->_fileListArray)) {
+		$this->getFiles();
+	}
+	foreach ($this->_fileListArray as $type => $fileList) {
+		foreach ($this->_fileListArray[$type] as $filePath) {
+			$filePath = APPROOT . "/$type/$filePath";
+
+			$md5 .= md5_file($filePath);
+		}
+	}
+
+	return md5($md5);
 }
 
 }#

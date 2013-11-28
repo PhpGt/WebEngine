@@ -103,4 +103,42 @@ Go/*";
 	$this->assertCount(4, $fileList["Script"], "List of Script files");
 }
 
+/**
+ * Ensures that the md5 returned by the getMd5 function matches the md5 of
+ * actual files mentioned in a .manifest file.
+ */
+public function testManifestMd5() {
+	$md5 = "";
+
+	$scriptManifestPath = APPROOT . "/Script/TestManifest.manifest";
+	$scriptManifest = "Main.js\nGo/*";
+	$scriptContents = [
+		"Main.js" => "Just a test",
+		"Go/Test1.js" => "Some content here",
+		"Go/Test2.js" => "it doesn't need to be valid javascript",
+		"Go/Test3.js" => "as we are just testing if the file list is built.",
+	];
+	if(!is_dir(dirname($scriptManifestPath))) {
+		mkdir(dirname($scriptManifestPath, 0775, true));
+	}
+	file_put_contents($scriptManifestPath, $scriptManifest);
+	foreach ($scriptContents as $fileName => $contents) {
+		$fileName = APPROOT . "/Script/$fileName";
+		if(!is_dir(dirname($fileName))) {
+			mkdir(dirname($fileName), 0775, true);
+		}
+		file_put_contents($fileName, $contents);
+
+		// Store the md5 of actual contents:
+		$md5 .= md5($contents);
+	}
+
+	$md5 = md5($md5);
+
+	$manifest = new Manifest("TestManifest");
+	$testMd5 = $manifest->getMd5();
+
+	$this->assertEquals($testMd5, $md5);
+}
+
 }#
