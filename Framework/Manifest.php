@@ -79,7 +79,7 @@ public function getFiles() {
 public function getMd5() {
 	$md5 = "";
 	$this->getFiles();
-	
+
 	foreach ($this->_fileListArray as $type => $fileList) {
 		foreach ($this->_fileListArray[$type] as $filePath) {
 			$filePath = APPROOT . "/$type/$filePath";
@@ -96,6 +96,44 @@ public function getMd5() {
 	}
 
 	return md5($md5);
+}
+
+public function expandHead($type, $destinationList, $domHead) {
+	$elementType = array(
+		"Script" => [
+			"TagName" => "script",
+			"SourceAttr" => "src",
+			"ReqAttr" => [],
+		],
+		"Style" => [
+			"TagName" => "link",
+			"SourceAttr" => "href",
+			"ReqAttr" => ["rel" => "stylesheet"],
+		],
+	);
+
+	$myMeta = $domHead->xPath(
+		".//meta[@name='manifest' and @content='{$this->_name}']");
+
+	foreach ($destinationList as $destination) {
+		$publicPath = "/$type";
+		if(empty($this->_name)) {
+			$publicPath .= "/";
+		}
+		else {
+			$publicPath .= "_" . $this->_name . "/";
+		}
+		$publicPath .= $destination;
+
+		$el = $domHead->_dom->createElement($elementType[$type]["TagName"]);
+		$el->setAttribute($elementType[$type]["SourceAttr"], $publicPath);
+		foreach ($elementType[$type]["ReqAttr"] as $key => $value) {
+			$el->setAttribute($key, $value);
+		}
+		$domHead->appendChild($el);
+	}
+	$myMeta->remove();
+	// var_dump($publicPath, $destinationList);die();
 }
 
 }#

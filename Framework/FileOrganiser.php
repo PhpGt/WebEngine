@@ -60,15 +60,15 @@ public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
 	}
 }
 
-public function organise() {
+public function organise($domHead) {
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
 	if(!$manifestCache) {
-		$this->organiseManifest();
+		$this->organiseManifest($domHead);
 	}
 	if(!$assetCache) {
-		$this->organiseAsset();
+		$this->organiseAsset($domHead);
 	}
 }
 
@@ -76,7 +76,7 @@ public function organise() {
  * Performs a process & copy operation from source client-side directories into
  * www directory. Processes any special files such as scss, etc.
  */
-public function organiseManifest() {
+public function organiseManifest($domHead) {
 	foreach ($this->_manifestList as $manifest) {
 		$manifestName = $manifest->getName();
 		$dirTypeArray = ["Script", "Style"];
@@ -91,7 +91,16 @@ public function organiseManifest() {
 			}
 			
 			$this->recursiveRemove($baseDir);
-			$md5 .= $this->processCopy($fileList[$dirType], $baseDir, $dirType);
+			$processResult = $this->processCopy(
+				$fileList[$dirType], $baseDir, $dirType);
+			$md5 .= $processResult["md5"];
+
+			// Expand meta elements in DOM head to their actual files.
+			$manifest->expandHead(
+				$dirType, 
+				$processResult["DestinationList"],
+				$domHead
+			);
 		}
 
 		$md5File = $this->_wwwDir . "/$manifestName.cache";
@@ -114,7 +123,10 @@ public function organiseAsset() {
  * to allow for only processing and copying when the source files change.
  */
 private function processCopy($fileList, $destDir, $type) {
-	$md5 = "";
+	$result = array(
+		"md5" => "",
+		"DestinationList" => [],
+	);
 	$sourceDir = APPROOT . "/$type";
 
 	foreach ($fileList as $file) {
@@ -123,9 +135,11 @@ private function processCopy($fileList, $destDir, $type) {
 			continue;
 		}
 
-		$md5 .= md5_file($sourcePath);
+		$result["md5"] .= md5_file($sourcePath);
 		$fileContents = file_get_contents($sourcePath);
 		$processed = ClientSideCompiler::process($sourcePath, $file);
+
+		$result["DestinationList"][] = $processed["Destination"];
 
 		$destinationPath = $destDir . "/" . $processed["Destination"];
 		if(!is_dir(dirname($destinationPath))) {
@@ -138,7 +152,7 @@ private function processCopy($fileList, $destDir, $type) {
 		);
 	}
 
-	return $md5;
+	return $result;
 }
 
 /**

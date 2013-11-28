@@ -21,6 +21,8 @@ public function setup() {
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
 	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
 	require_once(GTROOT . "/Framework/Manifest.php");
+	require_once(GTROOT . "/Framework/FileOrganiser.php");
+	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
 }
 
 public function tearDown() {
@@ -28,6 +30,7 @@ public function tearDown() {
 }
 
 private function createManifestFiles($name, $manifestContents, $fileContents) {
+	$sourceFileList = [];
 	// Create the contents of the .manifest file:
 	$manifestFile = "$name.manifest";
 	foreach ($manifestContents as $type => $contents) {
@@ -48,8 +51,11 @@ private function createManifestFiles($name, $manifestContents, $fileContents) {
 			}
 
 			file_put_contents($filePath, $contents);
+			$sourceFileList[] = "$type/$fileName";
 		}
 	}
+
+	return $sourceFileList;
 }
 
 private function getDomHead($manifests = ["TestManifest"]) {
@@ -156,7 +162,8 @@ public function testManifestMd5() {
  * DOM head actually has the meta tag replaced with the correct elements.
  */
 public function testManifestHeadTagsReplaced() {
-	$this->createManifestFiles("TestManifest", [
+	// Test with just one manifest first:
+	$sourceFiles = $this->createManifestFiles("TestManifest", [
 		"Style" => "Main.css",
 		"Script" => "Main.js
 			#This is a comment, followed by a new line.
@@ -173,6 +180,56 @@ public function testManifestHeadTagsReplaced() {
 			"Go/Test3.js" => "as we're just testing if the file list is built.",
 		],
 	]);
+
+	$domHead = $this->getDomHead();
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(1, $metaList->length);
+	$scriptStyleList = $domHead["script, link"];
+	$this->assertEquals(0, $scriptStyleList->length);
+	
+	$manifestList = Manifest::getList($domHead);
+	// Even though FileOrganiser is used, actual injection of head elements is
+	// done in the Manifest still (file organiser is used to get processed 
+	// names of files as their extensions may have to change).
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organiseManifest($domHead);
+
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(0, $metaList->length);
+
+	$scriptStyleList = $domHead["script, link"];
+	$this->assertEquals(5, $scriptStyleList->length);
+
+	foreach ($scriptStyleList as $el) {
+		$source = "";
+		if($el->hasAttribute("href")) {
+			$source = $el->getAttribute("href");
+		}
+		else {
+			$source = $el->getAttribute("src");
+		}
+
+		// Obtain source without extension (for matching against originals).
+		$sourceSubstr = substr($source, 0, stripos($source, "."));
+		$sourceSubstr = substr($sourceSubstr, strpos($sourceSubstr, "/") + 1);
+		$sourceSubstr = substr($sourceSubstr, strpos($sourceSubstr, "/") + 1);
+		$match = false;
+
+		foreach ($sourceFiles as $sourceFile) {
+			$sourceFileSubstr = substr(
+				$sourceFile, 0, stripos($sourceFile, "."));
+			$sourceFileSubstr = substr(
+				$sourceFileSubstr, strpos($sourceFileSubstr, "/") + 1);
+
+			if($sourceSubstr == $sourceFileSubstr) {
+				$match = true;
+			}
+		}
+
+		$this->assertTrue($match, "Head source found in original source");
+	}
+
+	// Test with more than one manifest:
 }
 
 }#
