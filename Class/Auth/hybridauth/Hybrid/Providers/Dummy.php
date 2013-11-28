@@ -5,6 +5,16 @@
     }
 
     function loginBegin() {
+        $endPoint = Hybrid_Auth::storage()->get( "hauth_session.{$this->providerId}.hauth_endpoint" );
+        Hybrid_Auth::redirect( $endPoint ); 
+    }
+
+    function loginFinish() {
+        if(isset($this->params["Error_Code"])) {
+            throw new Exception( "Authentication failed! {$this->providerId} returned error "
+                . $this->params["Error_Code"] . " as requested", $this->params["Error_Code"]);
+        }
+
         // capture the userID that we want to use
         if(!isset($this->params["ID_User"])) {
             $this->params["ID_User"] = Session::get("PhpGt.User.ID");
@@ -12,11 +22,6 @@
         $this->_userID = $this->params["ID_User"];
         Session::set("PhpGt.Auth.ID_User", $this->_userID);
 
-        $endPoint = Hybrid_Auth::storage()->get( "hauth_session.{$this->providerId}.hauth_endpoint" );
-        Hybrid_Auth::redirect( $endPoint ); 
-    }
-
-    function loginFinish() {
         if(!isset($this->params["ID_User"])) {
             $this->params["ID_User"] = Session::get("PhpGt.User.ID");
         }
