@@ -1,167 +1,46 @@
 <?php final class ClientSideCompiler {
 /**
- * The ClientSideCompiler minifies necessary files, removes the originals,
- * according to App_Config's client-side compilation and production flags.
+ * The ClientSideCompiler minifies/obfuscates source files.
  */
-private $_compileFunctionList = array(
-	"js" => "javaScript",
-);
-
-public function __construct() {}
 
 /**
- * Process a client-side file, such as SCSS, and replace the file with its
- * processed couterpart.
- * Only SCSS is supported at this moment.
- */
-public function process($filePath) {
-	$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-	switch($extension) {
-	case "scss":
-		$filePathProcessed = preg_replace("/\.scss$/i", ".css", $filePath);
-
-		$sass = new Sass($filePath);
-		$parsedString = $sass->parse();
-		if(file_put_contents($filePathProcessed, $parsedString) === false) {
-			return false;
-		} 
-		return true;
-
-		break;
-	default:
-		break;
-	}
-}
-
-/**
- * Combines all source files *in order* into a single source file, and placed
- * into the www directory. The order of source files is taken from their order
- * in the DOM head. All source files that don't exist in the DOM head will be
- * kept in their original place, for you to combine yourself.
+ * Perform the processing of files that require server-side processing. This
+ * does not include minification/obfuscation, only the processing/expansion
+ * of files such as scss or JavaScript files with server-side includes.
  *
- * All source files will be removed after combining.
+ * Returns an array with two keys: Destination (including possibly-changed
+ * file extension) and Contents - the file contents to write.
  */
-public function combine($domHead) {
-	$wwwDir = APPROOT . "/www";
-	$tagNameArray = array(
-		"script" => [
-			"sourceAttribute" => "src",
-			"requiredAttributes" => [],
-			"combinedFile" => "Script.js",
-		],
-		"link" => [
-			"sourceAttribute" => "href",
-			"requiredAttributes" => ["rel" => "stylesheet"],
-			"combinedFile" => "Style.css",
-		],
-	);
-
-	foreach ($tagNameArray as $tagName => $tagDetails) {
-		$elementArray = array();
-		if(!is_null($domHead)) {
-			$elementArray = $domHead[$tagName];		
-		}
-
-		$fileName = "$wwwDir/{$tagDetails["combinedFile"]}";
-		if(file_exists($fileName)) {
-			unlink($fileName);
-		}
-
-		foreach ($elementArray as $element) {
-			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
-				continue;
-			}
-			foreach ($element["requiredAttributes"] as $requiredAttribute) {
-				if(!$element->hasAttribute($requiredAttribute)) {
-					continue;
-				}
-			}
-
-			$source = $element->getAttribute($tagDetails["sourceAttribute"]);
-			if(!file_exists("$wwwDir/$source")) {
-				continue;
-			}
-
-			$fileContents = file_get_contents("$wwwDir/$source");
-			file_put_contents("$wwwDir/{$tagDetails["combinedFile"]}", 
-				$fileContents . "\n", FILE_APPEND);
-
-			unlink("$wwwDir/$source");
-		}
-
-		if(!is_null($domHead)) {
-			$elementArray->remove();
-			$newElement = new DomEl($domHead->_dom, $tagName);
-			foreach ($tagDetails["requiredAttributes"] as $key => $value) {
-				$newElement->setAttribute($key, $value);
-			}
-
-			$newElement->setAttribute(
-				$tagDetails["sourceAttribute"], 
-				"/" . $tagDetails["combinedFile"]
-			);
-			$domHead->appendChild($newElement);			
-		}
+public static function process($sourcePath, $destination) {
+	// TODO: For now, return original source.
+	if(!file_exists($sourcePath)) {
+		throw new Exception("Attempt to process missing file: $sourcePath");
 	}
+
+	$ext = pathinfo($sourcePath, PATHINFO_EXTENSION);
+	$ext = trim(strtolower($ext));
+	$processMethod = "process_$ext";
+
+	if(method_exists("ClientSideCompiler", $processMethod)) {
+		return ClientSideCompiler::$processMethod($sourcePath, $destination);
+	}
+
+	// Some files may not need processing:
+	$contents = file_get_contents($sourcePath);		
+
+	return [
+		"Destination" => $destination,
+		"Contents" => $contents,
+	];
 }
 
-public function compile() {
-	$wwwDir = APPROOT . "/www";
-	$fileNameArray = array(
-		"Script.js",
-		"Style.css",
-	);
-
-	foreach ($fileNameArray as $fileName) {
-		$filePath = "$wwwDir/$fileName";
-		$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-		if(!file_exists($filePath)) {
-			continue;
-		}
-
-		if(!array_key_exists($extension, $this->_compileFunctionList)) {
-			continue;
-		}
-
-		$compiledString = call_user_func_array(
-			[$this, $this->_compileFunctionList[$extension]],
-			[$filePath]
-		);
-
-		file_put_contents($filePath, $compiledString);
-	}
-
-	return true;
-}
-
-private function javaScript($path) {
-	$js = file_get_contents($path);
-	if(strlen(trim($js)) === 0) {
-		return $js;
-	}
-
-	$http = new Http();
-	$http->setOption("timeout", 10);
-	$http->setHeader("Content-Type: application/x-www-form-urlencoded");
-	// Google Closure service does not support multipart/form-data POST request,
-	// which is very odd. Instead, data has to be in the query string.
-	$response = $http->execute(
-		// "http://g105b.com/PostTest.php",
-		"http://closure-compiler.appspot.com/compile"
-			. "?output_info=compiled_code"
-			. "&output_format=text"
-			. "&compilation_level=SIMPLE_OPTIMIZATIONS"
-			. "&js_code=" . urlencode($js),
-		"POST"
-	);
-
-	$js_c = $response["body"];
-
-	if(!empty($js_c)) {
-		return $js_c;
-	}
-
-	return $js;
+private static function process_js($sourcePath, $destination) {
+	// TODO: Expand server-side includes.
+	$contents = file_get_contents($sourcePath);
+	return [
+		"Destination" => $destination,
+		"Contents" => $contents,
+	];
 }
 
 }#

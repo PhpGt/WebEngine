@@ -125,13 +125,17 @@ private function processCopy($fileList, $destDir, $type) {
 
 		$md5 .= md5_file($sourcePath);
 		$fileContents = file_get_contents($sourcePath);
-		$fileContents = ClientSideCompiler::process($sourcePath);
+		$processed = ClientSideCompiler::process($sourcePath, $file);
 
-		$destPath = "$destDir/$file";
-		if(!is_dir(dirname($destPath))) {
-			mkdir(dirname($destPath), 0775, true);
+		$destinationPath = $destDir . "/" . $processed["Destination"];
+		if(!is_dir(dirname($destinationPath))) {
+			mkdir(dirname($destinationPath), 0775, true);
 		}
-		file_put_contents($destPath, $fileContents);
+
+		file_put_contents(
+			$destinationPath, 
+			$processed["Contents"]
+		);
 	}
 
 	return $md5;
