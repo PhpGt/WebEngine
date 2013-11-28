@@ -47,50 +47,53 @@ public function testManifestGetsList() {
 	$this->assertEquals(2, count($manifestList));
 }
 
+private function createManifestFiles($name, $manifestContents, $fileContents) {
+	// Create the contents of the .manifest file:
+	$manifestFile = "$name.manifest";
+	foreach ($manifestContents as $type => $contents) {
+		$manifestFilePath = APPROOT . "/$type/$manifestFile";
+		if(!is_dir(dirname($manifestFilePath))) {
+			mkdir(dirname($manifestFilePath), 0775, true);
+		}
+		file_put_contents($manifestFilePath, $contents);
+	}
+
+	// Create the contents of the refrenced source files:
+	foreach ($fileContents as $type => $fileList) {
+		$typePath = APPROOT . "/$type";
+		foreach ($fileList as $fileName => $contents) {
+			$filePath = "$typePath/$fileName";
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+
+			file_put_contents($filePath, $contents);
+		}
+	}
+}
+
 /**
  * Ensures that the files listed inside .manifest files are read correctly,
  * as well as checking for misreads on blank lines and comments.
  */
 public function testManifestFilesRead() {
-	$styleManifestPath = APPROOT . "/Style/TestManifest.manifest";
-	$styleManifest = "Main.css";
-	$styleContents = ["Main.css" => "* { color: red; }"];
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Main.css",
+		"Script" => "Main.js
+			#This is a comment, followed by a new line.
 
-	$scriptManifestPath = APPROOT . "/Script/TestManifest.manifest";
-	$scriptManifest = "Main.js
-# This is a comment, followed by a new line.
-
-Go/*";
-	$scriptContents = [
-		"Main.js" => "Just a test",
-		"Go/Test1.js" => "Some content here",
-		"Go/Test2.js" => "it doesn't need to be valid javascript",
-		"Go/Test3.js" => "as we are just testing if the file list is built.",
-	];
-
-	if(!is_dir(dirname($styleManifestPath))) {
-		mkdir(dirname($styleManifestPath, 0775, true));
-	}
-	file_put_contents($styleManifestPath, $styleManifest);
-	foreach ($styleContents as $fileName => $contents) {
-		$fileName = APPROOT . "/Style/$fileName";
-		if(!is_dir(dirname($fileName))) {
-			mkdir(dirname($fileName), 0775, true);
-		}
-		file_put_contents($fileName, $contents);
-	}
-
-	if(!is_dir(dirname($scriptManifestPath))) {
-		mkdir(dirname($scriptManifestPath, 0775, true));
-	}
-	file_put_contents($scriptManifestPath, $scriptManifest);
-	foreach ($scriptContents as $fileName => $contents) {
-		$fileName = APPROOT . "/Script/$fileName";
-		if(!is_dir(dirname($fileName))) {
-			mkdir(dirname($fileName), 0775, true);
-		}
-		file_put_contents($fileName, $contents);
-	}
+			Go/*",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+		],
+		"Script" => [
+			"Main.js" => "Just a test",
+			"Go/Test1.js" => "Some content here",
+			"Go/Test2.js" => "it doesn't need to be valid javascript",
+			"Go/Test3.js" => "as we're just testing if the file list is built.",
+		],
+	]);
 
 	$html = $this->_html;
 	$dom = new Dom($html);
@@ -110,25 +113,21 @@ Go/*";
 public function testManifestMd5() {
 	$md5 = "";
 
-	$scriptManifestPath = APPROOT . "/Script/TestManifest.manifest";
-	$scriptManifest = "Main.js\nGo/*";
-	$scriptContents = [
-		"Main.js" => "Just a test",
-		"Go/Test1.js" => "Some content here",
-		"Go/Test2.js" => "it doesn't need to be valid javascript",
-		"Go/Test3.js" => "as we are just testing if the file list is built.",
+	$sourceContents = [
+		"Script" => [
+			"Main.js" => "Just a test",
+			"Go/Test1.js" => "Some content here",
+			"Go/Test2.js" => "it doesn't need to be valid javascript",
+			"Go/Test3.js" => "as we're just testing if the file list is built.",
+		],
 	];
-	if(!is_dir(dirname($scriptManifestPath))) {
-		mkdir(dirname($scriptManifestPath, 0775, true));
-	}
-	file_put_contents($scriptManifestPath, $scriptManifest);
-	foreach ($scriptContents as $fileName => $contents) {
-		$fileName = APPROOT . "/Script/$fileName";
-		if(!is_dir(dirname($fileName))) {
-			mkdir(dirname($fileName), 0775, true);
-		}
-		file_put_contents($fileName, $contents);
 
+	$this->createManifestFiles("TestManifest", [
+		"Script" => "Main.js
+			Go/*"
+	], $sourceContents);
+
+	foreach ($sourceContents["Script"] as $fileName => $contents) {
 		// Store the md5 of actual contents:
 		$md5 .= md5($contents);
 	}
@@ -139,6 +138,30 @@ public function testManifestMd5() {
 	$testMd5 = $manifest->getMd5();
 
 	$this->assertEquals($testMd5, $md5);
+}
+
+/**
+ * Ensures that after the processing has taken place that the end result in the
+ * DOM head actually has the meta tag replaced with the correct elements.
+ */
+public function testManifestHeadTagsReplaced() {
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Main.css",
+		"Script" => "Main.js
+			#This is a comment, followed by a new line.
+
+			Go/*",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+		],
+		"Script" => [
+			"Main.js" => "Just a test",
+			"Go/Test1.js" => "Some content here",
+			"Go/Test2.js" => "it doesn't need to be valid javascript",
+			"Go/Test3.js" => "as we're just testing if the file list is built.",
+		],
+	]);
 }
 
 }#
