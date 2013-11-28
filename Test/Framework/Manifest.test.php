@@ -5,7 +5,6 @@ private $_html = <<<HTML
 <head>
 	<meta charset="utf-8" />
 	<title>Manifest Test</title>
-	<meta name="manifest" content="TestManifest" />
 </head>
 <body>
 	<h1>Manifest Test</h1>
@@ -26,25 +25,6 @@ public function setup() {
 
 public function tearDown() {
 	removeTestApp();
-}
-
-public function testManifestGetsList() {
-	$html = $this->_html;
-	$dom = new Dom($html);
-	$domHead = $dom["html > head"][0];
-
-	$manifestList = Manifest::getList($domHead);
-	$this->assertEquals(1, count($manifestList));
-
-	// Add another manifest file.
-	$metaEl = $dom->createElement("meta", [
-		"name" => "manifest",
-		"content" => "AnotherTestManifest",
-	]);
-	$domHead->appendChild($metaEl);
-
-	$manifestList = Manifest::getList($domHead);
-	$this->assertEquals(2, count($manifestList));
 }
 
 private function createManifestFiles($name, $manifestContents, $fileContents) {
@@ -72,6 +52,39 @@ private function createManifestFiles($name, $manifestContents, $fileContents) {
 	}
 }
 
+private function getDomHead($manifests = ["TestManifest"]) {
+	$dom = new Dom($this->_html);
+	$domHead = $dom["html > head"][0];
+
+	foreach ($manifests as $m) {
+		$metaEl = $dom->createElement("meta", [
+			"name" => "manifest",
+			"content" => $m,
+		]);
+		$domHead->appendChild($metaEl);
+	}
+
+	return $domHead;
+}
+
+public function testManifestGetsList() {
+	$domHead = $this->getDomHead();
+
+	$manifestList = Manifest::getList($domHead);
+	$this->assertEquals(1, count($manifestList));
+
+	// Add another manifest file.
+	$dom = $domHead->_dom;
+	$metaEl = $dom->createElement("meta", [
+		"name" => "manifest",
+		"content" => "AnotherTestManifest",
+	]);
+	$domHead->appendChild($metaEl);
+
+	$manifestList = Manifest::getList($domHead);
+	$this->assertEquals(2, count($manifestList));
+}
+
 /**
  * Ensures that the files listed inside .manifest files are read correctly,
  * as well as checking for misreads on blank lines and comments.
@@ -95,9 +108,7 @@ public function testManifestFilesRead() {
 		],
 	]);
 
-	$html = $this->_html;
-	$dom = new Dom($html);
-	$domHead = $dom["html > head"][0];
+	$domHead = $this->getDomHead();
 
 	$manifestList = Manifest::getList($domHead);
 	$fileList = $manifestList[0]->getFiles();
