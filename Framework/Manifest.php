@@ -21,6 +21,10 @@ public function __construct($name) {
 	$this->_name = $name;
 }
 
+public function getName() {
+	return $this->_name;
+}
+
 /**
  * Returns a list of all Script and Style files that are present within the
  * optional .manifest files.
@@ -74,12 +78,18 @@ public function getFiles() {
  */
 public function getMd5() {
 	$md5 = "";
-	if(empty($this->_fileListArray)) {
-		$this->getFiles();
-	}
+	$this->getFiles();
+	
 	foreach ($this->_fileListArray as $type => $fileList) {
 		foreach ($this->_fileListArray[$type] as $filePath) {
 			$filePath = APPROOT . "/$type/$filePath";
+
+			if(!file_exists($filePath)) {
+				throw new Exception(
+					"Manifest references file that does not exist (" 
+						. $this->_name
+						. " manifest, $filePath).");
+			}
 
 			$md5 .= md5_file($filePath);
 		}

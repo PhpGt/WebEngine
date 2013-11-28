@@ -107,12 +107,8 @@ public function __construct($response, $config) {
 	
 	$manifestList = Manifest::getList($domHead);
 	$fileOrganiser = new FileOrganiser($manifestList);
-	$cacheValid = $fileOrganiser->checkCache();
-	if(!$cacheValid) {
-		// Perform process and copy operation into www.
-		$fileOrganiser->organise();
-	}
-
+	$fileOrganiser->organise();
+	
 	// TODO: Compile & minify.
 
 	$dom->templateOutput($templateWrapper);

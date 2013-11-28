@@ -10,4 +10,8 @@ public function tearDown() {
 	removeTestApp();
 }
 
+public function testBlank() {
+	$this->assertTrue(true);
+}
+
 }#
