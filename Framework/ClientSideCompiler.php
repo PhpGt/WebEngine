@@ -26,7 +26,7 @@ public static function process($sourcePath, $destination) {
 	}
 
 	// Some files may not need processing:
-	$contents = file_get_contents($sourcePath);		
+	$contents = file_get_contents($sourcePath);
 
 	return [
 		"Destination" => $destination,

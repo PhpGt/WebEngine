@@ -10,8 +10,11 @@ public function tearDown() {
 	removeTestApp();
 }
 
-public function testBlank() {
-	$this->assertTrue(true);
+/**
+ * Test the various "//= require" syntax within JavaScript files.
+ */
+public function testJavaScriptRequires() {
+	
 }
 
 }#
