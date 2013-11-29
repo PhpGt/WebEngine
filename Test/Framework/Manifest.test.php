@@ -124,6 +124,38 @@ public function testManifestFilesRead() {
 }
 
 /**
+ * Ensures that files that are referenced to in manifests that don't exist throw
+ * an appropriate error.
+ */
+public function testManifestFileNotFound() {
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Main.css",
+		"Script" => "Main.js",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+		],
+		"Script" => [
+		//       ↓ Note missing .js!
+			"Main" => "Just a test",
+		],
+	]);
+
+	$domHead = $this->getDomHead();
+	$manifestList = Manifest::getList($domHead);
+	
+	$exceptionThrown = false;
+	try {
+		$fileList = $manifestList[0]->getFiles();		
+	}
+	catch(Exception $e) {
+		$exceptionThrown = true;
+	}
+
+	$this->assertTrue($exceptionThrown, "Manifest throws exception");
+}
+
+/**
  * Ensures that the md5 returned by the getMd5 function matches the md5 of
  * actual files mentioned in a .manifest file.
  */
@@ -230,6 +262,36 @@ public function testManifestHeadTagsReplaced() {
 	}
 
 	// Test with more than one manifest:
+	$sourceFiles = $this->createManifestFiles("TestManifestTwo", [
+		"Style" => "Main.css
+			AnotherStyleSheet.css",
+		"Script" => "Main.js",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+			"AnotherStyleSheet.css" => "* { font-family: 'Comic Sans MS'; }",
+		],
+		"Script" => [
+			"Main.js" => "Just a test",
+		],
+	]);
+
+	$domHead = $this->getDomHead(["TestManifest", "TestManifestTwo"]);
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(2, $metaList->length);
+	$scriptStyleList = $domHead["script, link"];
+	$this->assertEquals(0, $scriptStyleList->length);
+
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organiseManifest($domHead);
+
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(0, $metaList->length);
+
+	$scriptStyleList = $domHead["script, link"];
+
+	$this->assertEquals(8, $scriptStyleList->length);
 }
 
 }#

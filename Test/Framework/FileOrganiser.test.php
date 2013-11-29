@@ -80,7 +80,7 @@ public function testCheckCache() {
 	$fileOrganiser = new FileOrganiser([new Manifest("TestFileOrganiser")]);
 
 	// Force the organisation of www directory for the first time.
-	$fileOrganiser->organiseManifest();
+	$fileOrganiser->organiseManifest($domHead);
 
 	// Because of the forced organisation, cache muse be valid!
 	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
@@ -97,7 +97,7 @@ public function testCheckCache() {
 	$this->assertFalse($cacheValid, "Cache should be invalid");
 
 	// Re-evaluate the cache again.
-	$fileOrganiser->organiseManifest();
+	$fileOrganiser->organiseManifest($domHead);
 	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$this->assertTrue($cacheValid, "Cache should be valid");
 
@@ -109,7 +109,7 @@ public function testCheckCache() {
 	$this->assertFalse($cacheValid, "Cache should be invalid");
 
 	// Re-evaluate the cache again.
-	$fileOrganiser->organiseManifest();
+	$fileOrganiser->organiseManifest($domHead);
 	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$this->assertTrue($cacheValid, "Cache should be valid");
 
