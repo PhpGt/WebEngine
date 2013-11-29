@@ -122,7 +122,8 @@ public function testManifestFilesRead() {
 	$domHead = $this->getDomHead();
 
 	$manifestList = Manifest::getList($domHead);
-	$fileList = $manifestList[0]->getFiles();
+	// Get index 1, as [0] always equals the nameless manifest.
+	$fileList = $manifestList[1]->getFiles();
 
 	$this->assertCount(1, $fileList["Style"], "List of Style files");
 	$this->assertCount(4, $fileList["Script"], "List of Script files");
@@ -151,7 +152,7 @@ public function testManifestFileNotFound() {
 	
 	$exceptionThrown = false;
 	try {
-		$fileList = $manifestList[0]->getFiles();		
+		$fileList = $manifestList[1]->getFiles();		
 	}
 	catch(Exception $e) {
 		$exceptionThrown = true;

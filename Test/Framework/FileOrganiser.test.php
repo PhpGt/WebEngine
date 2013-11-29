@@ -247,7 +247,7 @@ HTML;
 
 	// The link in the head should be renamed to css.
 	$linkEl = $domHead["link"][0];
-	$this->assertEquals("/Main.css", $linkEl->getAttribute("href"));
+	$this->assertEquals("/Style/Main.css", $linkEl->getAttribute("href"));
 }
 
 //public function testClientSideProcessingWithManifest() {

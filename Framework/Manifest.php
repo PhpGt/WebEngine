@@ -5,18 +5,18 @@
 public static function getList($domHead) {
 	$list = array();
 
-	$metaList = $domHead->xPath(".//meta[@name='manifest']");
-	foreach ($metaList as $meta) {
-		$manifestName = $meta->getAttribute("content");
-		$list[] = new Manifest($manifestName);
-	}
-
 	// When no manifests are mentioned in the dom head, a non-named manifest
 	// should be used, representing the dom head in its current state.
 	// This nameless Manifest will also be present when there *are* other
 	// Manifests in the head, as to contain and represent stray link/style
 	// elements.
 	$list[] = new Manifest($domHead);
+
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	foreach ($metaList as $meta) {
+		$manifestName = $meta->getAttribute("content");
+		$list[] = new Manifest($manifestName);
+	}
 
 	return $list;
 }
@@ -115,15 +115,11 @@ private function getFilesFromHead() {
 			"Required" => ["rel" => "stylesheet"]
 		],
 	];
-	$this->_fileListArray = array();
+	$this->_fileListArray = array("Script" => [], "Style" => []);
 
 	foreach ($scriptLinkElements as $scriptLink) {
 		$tag = $scriptLink->tagName;
 		$attributeData = $attributes[$tag];
-
-		if(!isset($this->_fileListArray[$attributeData["Type"]])) {
-			$this->_fileListArray[$attributeData["Type"]] = array();			
-		}
 
 		$skipThisElement = false;
 
@@ -190,6 +186,28 @@ public function expandHead($type, $destinationList, $domHead) {
 
 	$myMeta = $domHead->xPath(
 		".//meta[@name='manifest' and @content='{$this->_name}']");
+	if($myMeta->length == 0 
+	&& is_null($this->_name)) {
+		// Remove all existing script/link tags from head on this occasion.
+		foreach ($elementType as $type => $typeData) {
+			$elementList = $domHead[$typeData["TagName"]];
+			foreach ($elementList as $el) {
+				$doNotRemove = false;
+				foreach ($typeData["ReqAttr"] as $key => $value) {
+					if(!$el->hasAttribute($key)) {
+						$doNotRemove = true;
+					}
+				}
+				if(!$el->hasAttribute($typeData["SourceAttr"])) {
+					$doNotRemove = true;
+				}
+
+				if(!$doNotRemove) {
+					$el->remove();
+				}
+			}
+		}
+	}
 
 	foreach ($destinationList as $destination) {
 		$publicPath = "/$type";
@@ -200,9 +218,11 @@ public function expandHead($type, $destinationList, $domHead) {
 			$publicPath .= "_" . $this->_name . "/";
 		}
 		$publicPath .= $destination;
+		$publicPath = str_replace("//", "/", $publicPath);
 
 		$el = $domHead->_dom->createElement($elementType[$type]["TagName"]);
 		$el->setAttribute($elementType[$type]["SourceAttr"], $publicPath);
+
 		foreach ($elementType[$type]["ReqAttr"] as $key => $value) {
 			$el->setAttribute($key, $value);
 		}
