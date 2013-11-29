@@ -15,8 +15,14 @@ HTML;
 
 public function setUp() {
 	createTestApp();
+	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
+	require_once(GTROOT . "/Framework/Component/Dom.php");
+	require_once(GTROOT . "/Framework/Component/DomEl.php");
+	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
+	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
 	require_once(GTROOT . "/Framework/FileOrganiser.php");
 	require_once(GTROOT . "/Framework/Manifest.php");
+	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
 }
 
 public function tearDown() {
@@ -126,5 +132,124 @@ public function testCheckCache() {
 
 	$this->assertTrue($caughtException, "Caught exception");
 }
+
+/**
+ * Ensures that manifests are purely optional.
+ */
+public function testFileOrganiserNoManifest() {
+	$sourceFiles = array(
+		"Script" => [
+			"Main.js" =>
+				"alert('From main.js!');"
+		],
+		"Style" => [
+			"Main.css" => 
+				"body { background: red; }",
+		],
+	);
+	foreach ($sourceFiles as $type => $file) {
+		foreach ($file as $fileName => $contents) {
+			$filePath = APPROOT . "/$type/$fileName";
+
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $contents);
+		}
+	}
+
+	$htmlNoManifest = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>FileOrganiser Test</title>
+	<link rel="stylesheet" href="/Main.css" />
+	<script src="/Main.js"></script>
+</head>
+<body>
+	<h1>FileOrganiser Test</h1>
+</body>
+</html>
+HTML;
+	
+	$dom = new Dom($htmlNoManifest);
+	$domHead = $dom["html > head"][0];
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organise($domHead);
+
+	// The two client-side files should exist in www/Script and www/Style
+	// seeing as there is no named manifest declared.
+	foreach ($sourceFiles as $type => $file) {
+		foreach ($file as $fileName => $contents) {
+			$filePath = APPROOT . "/www/$type/$fileName";
+			$filePathSource = APPROOT . "/$type/$fileName";
+
+			$this->assertFileExists($filePath);
+			$this->assertFileEquals($filePathSource, $filePath);
+		}
+	}
+}
+
+/**
+ * Ensure that scss files are processed into css, and that javascript files
+ * expand server-side requirements.
+ */
+public function testClientSideProcessing() {
+	$sourceFiles = array(
+		"Script" => [
+			"Main.js" =>
+				"//= require Inc/Script2.js",
+			"Inc/Script2" =>
+				"alert('ohyeah!');"
+		],
+		"Style" => [
+			"Main.scss" => 
+				"\$red = #fd2376;
+				@include SecondStyle",
+			"SecondStyle.scss" => 
+				"body { background \$red; }",
+		],
+	);
+
+	foreach ($sourceFiles as $type => $file) {
+		foreach ($file as $fileName => $contents) {
+			$filePath = APPROOT . "/$type/$fileName";
+
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $contents);
+		}
+	}
+
+	$htmlNoManifest = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>FileOrganiser Test</title>
+	<link rel="stylesheet" href="/Main.scss" />
+	<script src="/Main.js"></script>
+</head>
+<body>
+	<h1>FileOrganiser Test</h1>
+</body>
+</html>
+HTML;
+	
+	$dom = new Dom($htmlNoManifest);
+	$domHead = $dom["html > head"][0];
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organise($domHead);
+
+	// The link in the head should be renamed to css.
+	$linkEl = $domHead["link"][0];
+	$this->assertEquals("/Main.css", $linkEl->getAttribute("href"));
+}
+
+//public function testClientSideProcessingWithManifest() {
 
 }#

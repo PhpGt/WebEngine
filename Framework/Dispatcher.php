@@ -107,7 +107,7 @@ public function __construct($response, $config) {
 	
 	$manifestList = Manifest::getList($domHead);
 	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organise();
+	$fileOrganiser->organise($domHead);
 	
 	// TODO: Compile & minify.
 

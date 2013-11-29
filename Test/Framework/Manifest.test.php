@@ -73,11 +73,16 @@ private function getDomHead($manifests = ["TestManifest"]) {
 	return $domHead;
 }
 
+/**
+ * Counts the manifests created by the getList static function. Note that there
+ * is always one manifest that represents the dom head itself, so there should
+ * always be 1 more manifest than there are meta tags for manifests.
+ */
 public function testManifestGetsList() {
 	$domHead = $this->getDomHead();
 
 	$manifestList = Manifest::getList($domHead);
-	$this->assertEquals(1, count($manifestList));
+	$this->assertEquals(2, count($manifestList));
 
 	// Add another manifest file.
 	$dom = $domHead->_dom;
@@ -88,7 +93,7 @@ public function testManifestGetsList() {
 	$domHead->appendChild($metaEl);
 
 	$manifestList = Manifest::getList($domHead);
-	$this->assertEquals(2, count($manifestList));
+	$this->assertEquals(3, count($manifestList));
 }
 
 /**

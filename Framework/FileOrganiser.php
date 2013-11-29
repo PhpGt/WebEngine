@@ -103,7 +103,9 @@ public function organiseManifest($domHead) {
 			);
 		}
 
-		$md5File = $this->_wwwDir . "/$manifestName.cache";
+		$md5File = (empty($manifestName))
+			? $this->_wwwDir . "/www.cache"
+			: $this->_wwwDir . "/$manifestName.cache";
 		file_put_contents($md5File, md5($md5));
 	}
 }

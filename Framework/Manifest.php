@@ -11,14 +11,35 @@ public static function getList($domHead) {
 		$list[] = new Manifest($manifestName);
 	}
 
+	// When no manifests are mentioned in the dom head, a non-named manifest
+	// should be used, representing the dom head in its current state.
+	// This nameless Manifest will also be present when there *are* other
+	// Manifests in the head, as to contain and represent stray link/style
+	// elements.
+	$list[] = new Manifest($domHead);
+
 	return $list;
 }
 
 private $_name;
+private $_domHead;
 private $_fileListArray;
 
-public function __construct($name) {
-	$this->_name = $name;
+/**
+ * The Manifest constructor can take its name as a string, or the DOM head to
+ * represent as a nameless Manifest.
+ */
+public function __construct($nameOrDomHead) {
+	if(is_string($nameOrDomHead)) {
+		$this->_name = $nameOrDomHead;		
+	}
+	else if($nameOrDomHead instanceof DomEl) {
+		$this->_name = null;
+		$this->_domHead = $nameOrDomHead;
+	}
+	else {
+		throw new Exception("Manifest constructed with incorrect parameters");
+	}
 }
 
 public function getName() {
@@ -30,6 +51,10 @@ public function getName() {
  * optional .manifest files.
  */
 public function getFiles() {
+	if(is_null($this->_name)) {
+		return $this->getFilesFromHead();
+	}
+
 	$this->_fileListArray = [
 		"Script" => array(),
 		"Style" => array(),
@@ -71,6 +96,54 @@ public function getFiles() {
 			}
 
 		}
+	}
+
+	return $this->_fileListArray;
+}
+
+private function getFilesFromHead() {
+	$scriptLinkElements = $this->_domHead["script, link"];
+	$attributes = [
+		"script" => [
+			"Type" => "Script",
+			"Source" => "src",
+			"Required" => []
+		],
+		"link" => [
+			"Type" => "Style",
+			"Source" => "href",
+			"Required" => ["rel" => "stylesheet"]
+		],
+	];
+	$this->_fileListArray = array();
+
+	foreach ($scriptLinkElements as $scriptLink) {
+		$tag = $scriptLink->tagName;
+		$attributeData = $attributes[$tag];
+
+		if(!isset($this->_fileListArray[$attributeData["Type"]])) {
+			$this->_fileListArray[$attributeData["Type"]] = array();			
+		}
+
+		$skipThisElement = false;
+
+		foreach ($attributeData["Required"] as $key => $value) {
+			if(!$scriptLink->hasAttribute($key)) {
+				$skipThisElement = true;
+				break;
+			}
+		}
+
+		if(!$scriptLink->hasAttribute($attributeData["Source"])) {
+			$skipThisElement = true;
+		}
+
+		if($skipThisElement) {
+			continue;
+		}
+
+		$source = $scriptLink->getAttribute($attributeData["Source"]);
+		$this->_fileListArray[$attributeData["Type"]][] = $source;
 	}
 
 	return $this->_fileListArray;
@@ -136,7 +209,6 @@ public function expandHead($type, $destinationList, $domHead) {
 		$domHead->appendChild($el);
 	}
 	$myMeta->remove();
-	// var_dump($publicPath, $destinationList);die();
 }
 
 }#
