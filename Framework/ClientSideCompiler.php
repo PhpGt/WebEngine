@@ -44,8 +44,9 @@ private static function process_js($sourcePath, $destination) {
 }
 
 private static function process_scss($sourcePath, $destination) {
-	// TODO: Actually process the scss, not just removing the 's'.
-	$contents = file_get_contents($sourcePath);
+	$sass = new Sass($sourcePath);
+	$contents = $sass->parse();
+
 	$destination = preg_replace("/\.scss$/", ".css", $destination);
 	return [
 		"Destination" => $destination,
