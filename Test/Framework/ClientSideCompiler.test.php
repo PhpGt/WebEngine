@@ -33,4 +33,39 @@ public function testSassProcesses() {
 	$this->assertContains("body h1", $processed["Contents"]);
 }
 
+
+/**
+ * Test the various "//= require" syntax within JavaScript files:
+ * From https://github.com/BrightFlair/PHP.Gt/issues/111
+ *
+ * //= require /Script/Lib/jquery.js
+ * //= require_tree /Script/Go/
+ * //= require_tree /Script/Namespace/
+ */
+public function testJavaScriptRequires() {
+	$js = [
+		"/Script/Main.js" => "alert('Just a test, from Main.js');
+			//= require Relative/Path/Include.js
+			alert('Is everything working?');
+			//= require /Script/IncludeAbsolute.js
+			alert('One last requirement...');
+			//= require_tree /Script/Inc",
+		"/Script/Relative/Path/Include.js" => "alert('testing from relative');",
+		"/Script/IncludeAbsolute.js" => "alert('absolute');",
+		"/Script/Inc/1.js" => "alert('First inc');",
+		"/Script/Inc/2.js" => "alert('Second inc');",
+	];
+	foreach ($js as $file => $contents) {
+		$filePath = APPROOT . $file;
+		if(!is_dir(dirname($filePath))) {
+			mkdir(dirname($filePath), 0775, true);
+		}
+		file_put_contents($filePath, $contents);
+	}
+
+	$processed = ClientSideCompiler::process(APPROOT . "/Script/Main.js",
+		"Output.js");
+	$processedContents = $processed["Contents"];
+}
+
 }#
