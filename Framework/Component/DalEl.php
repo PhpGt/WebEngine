@@ -57,7 +57,7 @@ public function setTool() {
 	$this->_isTool = true;
 }
 
-private function query($sqlFile, $paramArray = array()) {		
+private function query($sqlFile, $paramArray = array()) {
 	if(!is_array($paramArray)) {
 		throw new HttpError(500, 
 			"Trying to query $this->_tableName with incorrect parameters.");
