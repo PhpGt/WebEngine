@@ -14,6 +14,7 @@
 HTML;
 
 public function setUp() {
+	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
