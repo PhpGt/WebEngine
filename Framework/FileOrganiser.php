@@ -7,15 +7,28 @@
 const CACHETYPE_MANIFEST = 1;
 const CACHETYPE_ASSET = 2;
 
+private $_wwwDir;
+private $_manifestList;
+
 public function __construct($manifestList) {
 	// TODO: Got to know about the manifest here!
 	$this->_wwwDir = APPROOT . "/www";
 	$this->_manifestList = $manifestList;
 }
 
-private $_wwwDir;
-private $_manifestList;
+public function organise($domHead) {
+	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
+	if(!$manifestCache) {
+		$this->organiseManifest($domHead);
+	}
+	if(!$assetCache) {
+		$this->organiseAsset($domHead);
+	}
+
+	return true;
+}
 /**
  * Checks if all manifest files are already copied to the www directory.
  * For each Manifest, if MD5 cache file exists, in production treat that as 
@@ -29,6 +42,9 @@ public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
 	case FileOrganiser::CACHETYPE_MANIFEST:
 		foreach ($this->_manifestList as $manifest) {
 			$manifestName = $manifest->getName();
+			if(is_null($manifestName)) {
+				$manifestName = $manifest->getMd5();
+			}
 			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
 			if(!file_exists($manifestCache)) {
 				return false;
@@ -43,6 +59,9 @@ public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
 		// Need to check integrity of cache files.
 		foreach ($this->_manifestList as $manifest) {
 			$manifestName = $manifest->getName();
+			if(is_null($manifestName)) {
+				$manifestName = $manifest->getMd5();
+			}
 			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
 			$md5Cache = trim(file_get_contents($manifestCache));
 			$manifestMd5 = $manifest->getMd5();
@@ -56,21 +75,11 @@ public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
 		break;
 
 	case FileOrganiser::CACHETYPE_ASSET;
+		return false;
 		break;
 	}
 }
 
-public function organise($domHead) {
-	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
-	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
-
-	if(!$manifestCache) {
-		$this->organiseManifest($domHead);
-	}
-	if(!$assetCache) {
-		$this->organiseAsset($domHead);
-	}
-}
 
 /**
  * Performs a process & copy operation from source client-side directories into
@@ -78,10 +87,11 @@ public function organise($domHead) {
  */
 public function organiseManifest($domHead) {
 	foreach ($this->_manifestList as $manifest) {
+		$hash = $manifest->getMd5();
+
 		$manifestName = $manifest->getName();
 		$dirTypeArray = ["Script", "Style"];
 		$fileList = $manifest->getFiles();
-		$md5 = "";
 
 		foreach ($dirTypeArray as $dirType) {
 			$baseDir = $this->_wwwDir . "/$dirType";
@@ -93,7 +103,6 @@ public function organiseManifest($domHead) {
 			$this->recursiveRemove($baseDir);
 			$processResult = $this->processCopy(
 				$fileList[$dirType], $baseDir, $dirType);
-			$md5 .= $processResult["md5"];
 
 			// Expand meta elements in DOM head to their actual files.
 			$manifest->expandHead(
@@ -103,10 +112,11 @@ public function organiseManifest($domHead) {
 			);
 		}
 
+
 		$md5File = (empty($manifestName))
-			? $this->_wwwDir . "/www.cache"
+			? $this->_wwwDir . "/$hash.cache"
 			: $this->_wwwDir . "/$manifestName.cache";
-		file_put_contents($md5File, md5($md5));
+		file_put_contents($md5File, $hash);
 	}
 }
 
@@ -121,29 +131,40 @@ public function organiseAsset() {
 /**
  * For each file referenced in each manifest, process the contents if
  * required, then write the processed contents to the public www directory.
- * After all files are processed, return an md5 hash of the *source* files,
- * to allow for only processing and copying when the source files change.
+ * After all files are processed.
  */
 private function processCopy($fileList, $destDir, $type) {
+	// TODO: No need for array result any more.
 	$result = array(
-		"md5" => "",
 		"DestinationList" => [],
 	);
 	$sourceDir = APPROOT . "/$type";
 
 	foreach ($fileList as $file) {
-		$sourcePath = "$sourceDir/$file";
+		if($file[0] == "/") {
+			$sourcePath = APPROOT . "$file";
+		}
+		else {
+			$sourcePath = "$sourceDir/$file";
+		}
+
 		if(!file_exists($sourcePath)) {
 			continue;
 		}
 
-		$result["md5"] .= md5_file($sourcePath);
 		$fileContents = file_get_contents($sourcePath);
 		$processed = ClientSideCompiler::process($sourcePath, $file);
 
 		$result["DestinationList"][] = $processed["Destination"];
 
-		$destinationPath = $destDir . "/" . $processed["Destination"];
+		if($processed["Destination"][0] == "/") {
+			$destinationPath = substr($destDir, 0, stripos($destDir, "/$type"))
+				. $processed["Destination"];
+		}
+		else {
+			$destinationPath = $destDir . "/" . $processed["Destination"];			
+		}
+
 		if(!is_dir(dirname($destinationPath))) {
 			mkdir(dirname($destinationPath), 0775, true);
 		}

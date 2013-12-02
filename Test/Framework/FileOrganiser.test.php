@@ -165,8 +165,8 @@ public function testFileOrganiserNoManifest() {
 <head>
 	<meta charset="utf-8" />
 	<title>FileOrganiser Test</title>
-	<link rel="stylesheet" href="/Main.css" />
-	<script src="/Main.js"></script>
+	<link rel="stylesheet" href="/Style/Main.css" />
+	<script src="/Script/Main.js"></script>
 </head>
 <body>
 	<h1>FileOrganiser Test</h1>
@@ -225,7 +225,7 @@ public function testClientSideProcessing() {
 <head>
 	<meta charset="utf-8" />
 	<title>FileOrganiser Test</title>
-	<link rel="stylesheet" href="/Main.scss" />
+	<link rel="stylesheet" href="/Style/Main.scss" />
 </head>
 <body>
 	<h1>FileOrganiser Test</h1>
@@ -241,9 +241,8 @@ HTML;
 
 	// The link in the head should be renamed to css.
 	$linkEl = $domHead["link"][0];
+	$this->assertInstanceOf("DomEl", $linkEl);
 	$this->assertEquals("/Style/Main.css", $linkEl->getAttribute("href"));
 }
-
-//public function testClientSideProcessingWithManifest() {
 
 }#

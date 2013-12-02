@@ -162,6 +162,27 @@ public function testManifestFileNotFound() {
 }
 
 /**
+ * Client side files should be loadable between APPROOT and GTROOT
+ */
+public function testManifestSharesPhpGtFiles() {
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Gt.css",
+		"Script" => "Gt.js",
+	], []);
+
+	$domHead = $this->getDomHead();
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$success = false;
+	try {
+		$success = $fileOrganiser->organise($domHead);		
+	}
+	catch(Exception $e) {}
+
+	$this->assertTrue($success, "Organisation of Gt files.");
+}
+
+/**
  * Ensures that the md5 returned by the getMd5 function matches the md5 of
  * actual files mentioned in a .manifest file.
  */

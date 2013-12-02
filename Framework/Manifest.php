@@ -24,6 +24,7 @@ public static function getList($domHead) {
 private $_name;
 private $_domHead;
 private $_fileListArray;
+private $_md5;
 
 /**
  * The Manifest constructor can take its name as a string, or the DOM head to
@@ -130,6 +131,11 @@ private function getFilesFromHead() {
 				$skipThisElement = true;
 				break;
 			}
+			if($scriptLink->hasAttribute($key)
+			&& $scriptLink->getAttribute($key) != $value) {
+				$skipThisElement = true;
+				break;
+			}
 		}
 
 		if(!$scriptLink->hasAttribute($attributeData["Source"])) {
@@ -156,7 +162,12 @@ public function getMd5() {
 
 	foreach ($this->_fileListArray as $type => $fileList) {
 		foreach ($this->_fileListArray[$type] as $filePath) {
-			$filePath = APPROOT . "/$type/$filePath";
+			if($filePath[0] == "/") {
+				$filePath = APPROOT . $filePath;
+			}
+			else {
+				$filePath = APPROOT . "/$type/$filePath";
+			}
 
 			if(!file_exists($filePath)) {
 				throw new Exception(
@@ -169,7 +180,8 @@ public function getMd5() {
 		}
 	}
 
-	return md5($md5);
+	$this->_md5 = md5($md5);
+	return $this->_md5;
 }
 
 public function expandHead($type, $destinationList, $domHead) {
@@ -191,12 +203,16 @@ public function expandHead($type, $destinationList, $domHead) {
 	if($myMeta->length == 0 
 	&& is_null($this->_name)) {
 		// Remove all existing script/link tags from head on this occasion.
-		foreach ($elementType as $type => $typeData) {
+		foreach ($elementType as $elType => $typeData) {
 			$elementList = $domHead[$typeData["TagName"]];
 			foreach ($elementList as $el) {
 				$doNotRemove = false;
 				foreach ($typeData["ReqAttr"] as $key => $value) {
 					if(!$el->hasAttribute($key)) {
+						$doNotRemove = true;
+					}
+					if($el->hasAttribute($key)
+					&& $el->getAttribute($key) != $value) {
 						$doNotRemove = true;
 					}
 				}
@@ -219,6 +235,11 @@ public function expandHead($type, $destinationList, $domHead) {
 		else {
 			$publicPath .= "_" . $this->_name . "/";
 		}
+		
+		if(strpos($destination, "/$type") === 0) {
+			$destination = substr($destination, strlen("/$type"));
+		}
+
 		$publicPath .= $destination;
 		$publicPath = str_replace("//", "/", $publicPath);
 
