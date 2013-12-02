@@ -103,7 +103,7 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 	
-	$domHead = $dom["head"];
+	$domHead = $dom["head"][0];
 	
 	$manifestList = Manifest::getList($domHead);
 	$fileOrganiser = new FileOrganiser($manifestList);

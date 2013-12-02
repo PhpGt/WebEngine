@@ -90,7 +90,9 @@ public function getFiles() {
 			}
 			else {
 				if(!file_exists("$dir/$l")) {
-					throw new Exception("File within Manifest does not exist.");
+					throw new Exception(
+						"File within Manifest or DOM head does not exist: "
+						. "$dir/$l");
 				}
 				$this->_fileListArray[$type][] = $l;				
 			}
