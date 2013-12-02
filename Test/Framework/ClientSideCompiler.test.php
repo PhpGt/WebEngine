@@ -66,6 +66,26 @@ public function testJavaScriptRequires() {
 	$processed = ClientSideCompiler::process(APPROOT . "/Script/Main.js",
 		"Output.js");
 	$processedContents = $processed["Contents"];
+	$processedContents = preg_replace("/\s/", "", $processedContents);
+
+	$expected = "";
+	foreach ($js as $file => $contents) {
+		$lines = explode("\n", $contents);
+		foreach ($lines as $l) {
+			if(strstr($l, "//=")) {
+				continue;
+			}
+			$expected .= preg_replace("/\s/", "", $l) . "\n";
+		}
+	}
+
+	$expectedLines = explode("\n", $expected);
+	foreach ($expectedLines as $l) {
+		if(empty($l)) {
+			continue;
+		}
+		$this->assertContains($l, $processedContents);
+	}
 }
 
 }#

@@ -199,12 +199,6 @@ HTML;
  */
 public function testClientSideProcessing() {
 	$sourceFiles = array(
-		"Script" => [
-			"Main.js" =>
-				"//= require Inc/Script2.js",
-			"Inc/Script2" =>
-				"alert('ohyeah!');"
-		],
 		"Style" => [
 			"Main.scss" => 
 				"\$red = #fd2376;
@@ -232,7 +226,6 @@ public function testClientSideProcessing() {
 	<meta charset="utf-8" />
 	<title>FileOrganiser Test</title>
 	<link rel="stylesheet" href="/Main.scss" />
-	<script src="/Main.js"></script>
 </head>
 <body>
 	<h1>FileOrganiser Test</h1>

@@ -12,7 +12,6 @@
  * file extension) and Contents - the file contents to write.
  */
 public static function process($sourcePath, $destination) {
-	// TODO: For now, return original source.
 	if(!file_exists($sourcePath)) {
 		throw new Exception("Attempt to process missing file: $sourcePath");
 	}
@@ -34,9 +33,62 @@ public static function process($sourcePath, $destination) {
 	];
 }
 
+/**
+ * Recursive function. When null is passed as destination, will return just the
+ * text content of the required JavaScript, including any sub-requires.
+ */
 private static function process_js($sourcePath, $destination) {
-	// TODO: Expand server-side includes.
-	$contents = file_get_contents($sourcePath);
+	$contents = "";
+
+	if(!file_exists($sourcePath)) {
+		throw new Exception(
+			"Attempting to process non-existant js file $sourcePath");
+	}
+
+	$fh = fopen($sourcePath, "r");
+	while(false !== ($line = fgets($fh)) ) {
+		$lineTrim = trim($line);
+		
+		if(strpos($lineTrim, "//= require_tree") === 0) {
+			$path = substr($lineTrim, strlen("//= require_tree") + 1);
+			if($path[0] == "/") {
+				$path = APPROOT . $path;
+			}
+			else {
+				$path = dirname($sourcePath) . "/" . $path;
+			}
+
+			// TODO: Recursive directory requirement.
+			$files = scandir($path);
+			foreach ($files as $f) {
+				if($f[0] == ".") {
+					continue;
+				}
+
+				$contents .= self::process_js("$path/$f", null) . "\n";
+			}
+		}
+		else if(strpos($lineTrim, "//= require") === 0) {
+			$path = substr($lineTrim, strlen("//= require") + 1);
+			if($path[0] == "/") {
+				$path = APPROOT . $path;
+			}
+			else {
+				$path = dirname($sourcePath) . "/" . $path;
+			}
+
+			$contents .= self::process_js($path, null) . "\n";
+		}
+		else {
+			$contents .= $line;
+		}
+	}
+	fclose($fh);
+
+	if(is_null($destination)) {
+		return $contents;
+	}
+
 	return [
 		"Destination" => $destination,
 		"Contents" => $contents,
