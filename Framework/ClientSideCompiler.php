@@ -1,173 +1,109 @@
 <?php final class ClientSideCompiler {
 /**
- * The ClientSideCompiler pre-processes necessary files, converting them into
- * their processed equivalents, removing the originals. If App_Config has the
- * client-side compilation enabled, all resources will be minified and compiled
- * into a single resource.
- *
- * The DOM is updated to only include the necessary files, so the HTML should
- * reference all JS and CSS/SCSS files without the worry of multiple requests
- * or unminified scripts being exposed publicly.
+ * The ClientSideCompiler minifies/obfuscates source files.
  */
-private $_compileFunctionList = array(
-	"js" => "javaScript",
-);
-
-public function __construct() {}
 
 /**
- * Process a client-side file, such as SCSS, and replace the file with its
- * processed couterpart.
- * Only SCSS is supported at this moment.
+ * Perform the processing of files that require server-side processing. This
+ * does not include minification/obfuscation, only the processing/expansion
+ * of files such as scss or JavaScript files with server-side includes.
+ *
+ * Returns an array with two keys: Destination (including possibly-changed
+ * file extension) and Contents - the file contents to write.
  */
-public function process($filePath) {
-	$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-	switch($extension) {
-	case "scss":
-		$filePathProcessed = preg_replace("/\.scss$/i", ".css", $filePath);
-
-		$sass = new Sass($filePath);
-		$parsedString = $sass->parse();
-		if(file_put_contents($filePathProcessed, $parsedString) === false) {
-			return false;
-		} 
-		return true;
-
-		break;
-	default:
-		break;
+public static function process($sourcePath, $destination) {
+	if(!file_exists($sourcePath)) {
+		throw new Exception("Attempt to process missing file: $sourcePath");
 	}
+
+	$ext = pathinfo($sourcePath, PATHINFO_EXTENSION);
+	$ext = trim(strtolower($ext));
+	$processMethod = "process_$ext";
+
+	if(method_exists("ClientSideCompiler", $processMethod)) {
+		return ClientSideCompiler::$processMethod($sourcePath, $destination);
+	}
+
+	// Some files may not need processing:
+	$contents = file_get_contents($sourcePath);
+
+	return [
+		"Destination" => $destination,
+		"Contents" => $contents,
+	];
 }
 
 /**
- * Combines all source files *in order* into a single source file, and placed
- * into the www directory. The order of source files is taken from their order
- * in the DOM head. All source files that don't exist in the DOM head will be
- * kept in their original place, for you to combine yourself.
- *
- * All source files will be removed after combining.
+ * Recursive function. When null is passed as destination, will return just the
+ * text content of the required JavaScript, including any sub-requires.
  */
-public function combine($domHead) {
-	$wwwDir = APPROOT . "/www";
-	$tagNameArray = array(
-		"script" => [
-			"sourceAttribute" => "src",
-			"requiredAttributes" => [],
-			"combinedFile" => "Script.js",
-		],
-		"link" => [
-			"sourceAttribute" => "href",
-			"requiredAttributes" => ["rel" => "stylesheet"],
-			"combinedFile" => "Style.css",
-		],
-	);
+private static function process_js($sourcePath, $destination) {
+	$contents = "";
 
-	foreach ($tagNameArray as $tagName => $tagDetails) {
-		$elementArray = array();
-		if(!is_null($domHead)) {
-			$elementArray = $domHead[$tagName];		
-		}
+	if(!file_exists($sourcePath)) {
+		throw new Exception(
+			"Attempting to process non-existant js file $sourcePath");
+	}
 
-		$fileName = "$wwwDir/{$tagDetails["combinedFile"]}";
-		if(file_exists($fileName)) {
-			unlink($fileName);
-		}
-
-		foreach ($elementArray as $element) {
-			if(!$element->hasAttribute($tagDetails["sourceAttribute"])) {
-				continue;
+	$fh = fopen($sourcePath, "r");
+	while(false !== ($line = fgets($fh)) ) {
+		$lineTrim = trim($line);
+		
+		if(strpos($lineTrim, "//= require_tree") === 0) {
+			$path = substr($lineTrim, strlen("//= require_tree") + 1);
+			if($path[0] == "/") {
+				$path = APPROOT . $path;
 			}
-			foreach ($element["requiredAttributes"] as $requiredAttribute) {
-				if(!$element->hasAttribute($requiredAttribute)) {
+			else {
+				$path = dirname($sourcePath) . "/" . $path;
+			}
+
+			// TODO: Recursive directory requirement.
+			$files = scandir($path);
+			foreach ($files as $f) {
+				if($f[0] == ".") {
 					continue;
 				}
+
+				$contents .= self::process_js("$path/$f", null) . "\n";
 			}
-
-			$source = $element->getAttribute($tagDetails["sourceAttribute"]);
-			if(!file_exists("$wwwDir/$source")) {
-				continue;
-			}
-
-			$fileContents = file_get_contents("$wwwDir/$source");
-			file_put_contents("$wwwDir/{$tagDetails["combinedFile"]}", 
-				$fileContents . "\n", FILE_APPEND);
-
-			unlink("$wwwDir/$source");
 		}
-
-		if(!is_null($domHead)) {
-			$elementArray->remove();
-			$newElement = new DomEl($domHead->_dom, $tagName);
-			foreach ($tagDetails["requiredAttributes"] as $key => $value) {
-				$newElement->setAttribute($key, $value);
+		else if(strpos($lineTrim, "//= require") === 0) {
+			$path = substr($lineTrim, strlen("//= require") + 1);
+			if($path[0] == "/") {
+				$path = APPROOT . $path;
+			}
+			else {
+				$path = dirname($sourcePath) . "/" . $path;
 			}
 
-			$newElement->setAttribute(
-				$tagDetails["sourceAttribute"], 
-				"/" . $tagDetails["combinedFile"]
-			);
-			$domHead->appendChild($newElement);			
+			$contents .= self::process_js($path, null) . "\n";
+		}
+		else {
+			$contents .= $line;
 		}
 	}
+	fclose($fh);
+
+	if(is_null($destination)) {
+		return $contents;
+	}
+
+	return [
+		"Destination" => $destination,
+		"Contents" => $contents,
+	];
 }
 
-public function compile() {
-	$wwwDir = APPROOT . "/www";
-	$fileNameArray = array(
-		"Script.js",
-		"Style.css",
-	);
+private static function process_scss($sourcePath, $destination) {
+	$sass = new Sass($sourcePath);
+	$contents = $sass->parse();
 
-	foreach ($fileNameArray as $fileName) {
-		$filePath = "$wwwDir/$fileName";
-		$extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-		if(!file_exists($filePath)) {
-			continue;
-		}
-
-		if(!array_key_exists($extension, $this->_compileFunctionList)) {
-			continue;
-		}
-
-		$compiledString = call_user_func_array(
-			[$this, $this->_compileFunctionList[$extension]],
-			[$filePath]
-		);
-
-		file_put_contents($filePath, $compiledString);
-	}
-
-	return true;
-}
-
-private function javaScript($path) {
-	$js = file_get_contents($path);
-	if(strlen(trim($js)) === 0) {
-		return $js;
-	}
-
-	$http = new Http();
-	$http->setOption("timeout", 10);
-	$http->setHeader("Content-Type: application/x-www-form-urlencoded");
-	// Google Closure service does not support multipart/form-data POST request,
-	// which is very odd. Instead, data has to be in the query string.
-	$response = $http->execute(
-		// "http://g105b.com/PostTest.php",
-		"http://closure-compiler.appspot.com/compile"
-			. "?output_info=compiled_code"
-			. "&output_format=text"
-			. "&compilation_level=SIMPLE_OPTIMIZATIONS"
-			. "&js_code=" . urlencode($js),
-		"POST"
-	);
-
-	$js_c = $response["body"];
-
-	if(!empty($js_c)) {
-		return $js_c;
-	}
-
-	return $js;
+	$destination = preg_replace("/\.scss$/", ".css", $destination);
+	return [
+		"Destination" => $destination,
+		"Contents" => $contents,
+	];
 }
 
 }#

@@ -5,7 +5,6 @@ private $_html = <<<HTML
 <head>
 	<meta charset="utf-8" />
 	<title>Manifest Test</title>
-	<meta name="manifest" content="_Default" />
 </head>
 <body>
 	<h1>Manifest Test</h1>
@@ -22,227 +21,283 @@ public function setup() {
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
 	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
 	require_once(GTROOT . "/Framework/Manifest.php");
+	require_once(GTROOT . "/Framework/FileOrganiser.php");
+	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
 }
 
 public function tearDown() {
 	removeTestApp();
 }
 
-public function testManifestRemovesMetaManifestTag() {
-	$html = $this->_html;
-	$dom = new Dom($html);
-	
+private function createManifestFiles($name, $manifestContents, $fileContents) {
+	$sourceFileList = [];
+	// Create the contents of the .manifest file:
+	$manifestFile = "$name.manifest";
+	foreach ($manifestContents as $type => $contents) {
+		$manifestFilePath = APPROOT . "/$type/$manifestFile";
+		if(!is_dir(dirname($manifestFilePath))) {
+			mkdir(dirname($manifestFilePath), 0775, true);
+		}
+		file_put_contents($manifestFilePath, $contents);
+	}
+
+	// Create the contents of the refrenced source files:
+	foreach ($fileContents as $type => $fileList) {
+		$typePath = APPROOT . "/$type";
+		foreach ($fileList as $fileName => $contents) {
+			$filePath = "$typePath/$fileName";
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+
+			file_put_contents($filePath, $contents);
+			$sourceFileList[] = "$type/$fileName";
+		}
+	}
+
+	return $sourceFileList;
+}
+
+private function getDomHead($manifests = ["TestManifest"]) {
+	$dom = new Dom($this->_html);
 	$domHead = $dom["html > head"][0];
 
-	$manifest = new Manifest($domHead);
+	foreach ($manifests as $m) {
+		$metaEl = $dom->createElement("meta", [
+			"name" => "manifest",
+			"content" => $m,
+		]);
+		$domHead->appendChild($metaEl);
+	}
 
-	$metaList = $dom["head > meta"];
-	$metaManifestArray = array();
-	foreach ($metaList as $meta) {
-		if($meta->hasAttribute("name")) {
-			if($meta->getAttribute("name") == "manifest") {
-				$metaManifestArray[] = $meta;
+	return $domHead;
+}
+
+/**
+ * Counts the manifests created by the getList static function. Note that there
+ * is always one manifest that represents the dom head itself, so there should
+ * always be 1 more manifest than there are meta tags for manifests.
+ */
+public function testManifestGetsList() {
+	$domHead = $this->getDomHead();
+
+	$manifestList = Manifest::getList($domHead);
+	$this->assertEquals(2, count($manifestList));
+
+	// Add another manifest file.
+	$dom = $domHead->_dom;
+	$metaEl = $dom->createElement("meta", [
+		"name" => "manifest",
+		"content" => "AnotherTestManifest",
+	]);
+	$domHead->appendChild($metaEl);
+
+	$manifestList = Manifest::getList($domHead);
+	$this->assertEquals(3, count($manifestList));
+}
+
+/**
+ * Ensures that the files listed inside .manifest files are read correctly,
+ * as well as checking for misreads on blank lines and comments.
+ */
+public function testManifestFilesRead() {
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Main.css",
+		"Script" => "Main.js
+			#This is a comment, followed by a new line.
+
+			Go/*",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+		],
+		"Script" => [
+			"Main.js" => "Just a test",
+			"Go/Test1.js" => "Some content here",
+			"Go/Test2.js" => "it doesn't need to be valid javascript",
+			"Go/Test3.js" => "as we're just testing if the file list is built.",
+		],
+	]);
+
+	$domHead = $this->getDomHead();
+
+	$manifestList = Manifest::getList($domHead);
+	// Get index 1, as [0] always equals the nameless manifest.
+	$fileList = $manifestList[1]->getFiles();
+
+	$this->assertCount(1, $fileList["Style"], "List of Style files");
+	$this->assertCount(4, $fileList["Script"], "List of Script files");
+}
+
+/**
+ * Ensures that files that are referenced to in manifests that don't exist throw
+ * an appropriate error.
+ */
+public function testManifestFileNotFound() {
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Main.css",
+		"Script" => "Main.js",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+		],
+		"Script" => [
+		//       ↓ Note missing .js!
+			"Main" => "Just a test",
+		],
+	]);
+
+	$domHead = $this->getDomHead();
+	$manifestList = Manifest::getList($domHead);
+	
+	$exceptionThrown = false;
+	try {
+		$fileList = $manifestList[1]->getFiles();		
+	}
+	catch(Exception $e) {
+		$exceptionThrown = true;
+	}
+
+	$this->assertTrue($exceptionThrown, "Manifest throws exception");
+}
+
+/**
+ * Ensures that the md5 returned by the getMd5 function matches the md5 of
+ * actual files mentioned in a .manifest file.
+ */
+public function testManifestMd5() {
+	$md5 = "";
+
+	$sourceContents = [
+		"Script" => [
+			"Main.js" => "Just a test",
+			"Go/Test1.js" => "Some content here",
+			"Go/Test2.js" => "it doesn't need to be valid javascript",
+			"Go/Test3.js" => "as we're just testing if the file list is built.",
+		],
+	];
+
+	$this->createManifestFiles("TestManifest", [
+		"Script" => "Main.js
+			Go/*"
+	], $sourceContents);
+
+	foreach ($sourceContents["Script"] as $fileName => $contents) {
+		// Store the md5 of actual contents:
+		$md5 .= md5($contents);
+	}
+
+	$md5 = md5($md5);
+
+	$manifest = new Manifest("TestManifest");
+	$testMd5 = $manifest->getMd5();
+
+	$this->assertEquals($testMd5, $md5);
+}
+
+/**
+ * Ensures that after the processing has taken place that the end result in the
+ * DOM head actually has the meta tag replaced with the correct elements.
+ */
+public function testManifestHeadTagsReplaced() {
+	// Test with just one manifest first:
+	$sourceFiles = $this->createManifestFiles("TestManifest", [
+		"Style" => "Main.css",
+		"Script" => "Main.js
+			#This is a comment, followed by a new line.
+
+			Go/*",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+		],
+		"Script" => [
+			"Main.js" => "Just a test",
+			"Go/Test1.js" => "Some content here",
+			"Go/Test2.js" => "it doesn't need to be valid javascript",
+			"Go/Test3.js" => "as we're just testing if the file list is built.",
+		],
+	]);
+
+	$domHead = $this->getDomHead();
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(1, $metaList->length);
+	$scriptStyleList = $domHead["script, link"];
+	$this->assertEquals(0, $scriptStyleList->length);
+	
+	$manifestList = Manifest::getList($domHead);
+	// Even though FileOrganiser is used, actual injection of head elements is
+	// done in the Manifest still (file organiser is used to get processed 
+	// names of files as their extensions may have to change).
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organiseManifest($domHead);
+
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(0, $metaList->length);
+
+	$scriptStyleList = $domHead["script, link"];
+	$this->assertEquals(5, $scriptStyleList->length);
+
+	foreach ($scriptStyleList as $el) {
+		$source = "";
+		if($el->hasAttribute("href")) {
+			$source = $el->getAttribute("href");
+		}
+		else {
+			$source = $el->getAttribute("src");
+		}
+
+		// Obtain source without extension (for matching against originals).
+		$sourceSubstr = substr($source, 0, stripos($source, "."));
+		$sourceSubstr = substr($sourceSubstr, strpos($sourceSubstr, "/") + 1);
+		$sourceSubstr = substr($sourceSubstr, strpos($sourceSubstr, "/") + 1);
+		$match = false;
+
+		foreach ($sourceFiles as $sourceFile) {
+			$sourceFileSubstr = substr(
+				$sourceFile, 0, stripos($sourceFile, "."));
+			$sourceFileSubstr = substr(
+				$sourceFileSubstr, strpos($sourceFileSubstr, "/") + 1);
+
+			if($sourceSubstr == $sourceFileSubstr) {
+				$match = true;
 			}
 		}
-	}
-	$this->assertEquals(0, count($metaManifestArray),
-		"Number of meta manifest elements in head.");
-}
 
-/**
- * Tests that the manifest for given files renders a DOM head with the
- * appropriate elements, in the correct order.
- */
-public function testManifestCreatesDomHead() {
-	// First create the manifest files:
-	$mfFiles = array(
-		APPROOT . "/Script/_Default.manifest" => 
-			"/Main.js\n"
-			. "/Another.js\n",
-		APPROOT . "/Style/_Default.manifest" =>
-			"\n" // Ensure that new lines don't break things.
-			. "/Main.css\n"
-			. "/_Common.css\n"
-			. "/Index.css\n",
-	);
-	foreach ($mfFiles as $path => $content) {
-		if(!is_dir(dirname($path))) {
-			mkdir(dirname($path), 0775, true);
-		}
-		file_put_contents($path, $content);
+		$this->assertTrue($match, "Head source found in original source");
 	}
 
-	$html = $this->_html;
+	// Test with more than one manifest:
+	$sourceFiles = $this->createManifestFiles("TestManifestTwo", [
+		"Style" => "Main.css
+			AnotherStyleSheet.css",
+		"Script" => "Main.js",
+	], [
+		"Style" => [
+			"Main.css" => "* { color: red; }",
+			"AnotherStyleSheet.css" => "* { font-family: 'Comic Sans MS'; }",
+		],
+		"Script" => [
+			"Main.js" => "Just a test",
+		],
+	]);
 
-	$dom = new Dom($html);
-	$manifest = new Manifest($dom["head"]);
+	$domHead = $this->getDomHead(["TestManifest", "TestManifestTwo"]);
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(2, $metaList->length);
+	$scriptStyleList = $domHead["script, link"];
+	$this->assertEquals(0, $scriptStyleList->length);
 
-	$scriptList = $dom["head > script"];
-	$styleList = $dom["head > link"];
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organiseManifest($domHead);
 
-	$this->assertEquals(2, $scriptList->length, "Number of scripts in head.");
-	$this->assertEquals(3, $styleList->length, "Number of styles in head.");
-}
+	$metaList = $domHead->xPath(".//meta[@name='manifest']");
+	$this->assertEquals(0, $metaList->length);
 
-public function testManifestLinksMatch() {
-	// First create the manifest files:
-	$mfFiles = array(
-		APPROOT . "/Script/_Default.manifest" => 
-			"/Main.js\n"
-			. "/Another.js\n",
-		APPROOT . "/Style/_Default.manifest" =>
-			"/Main.css\n"
-			. "/_Common.css\n"
-			. "/Index.css\n",
-	);
-	foreach ($mfFiles as $path => $content) {
-		if(!is_dir(dirname($path))) {
-			mkdir(dirname($path), 0775, true);
-		}
-		file_put_contents($path, $content);
-	}
+	$scriptStyleList = $domHead["script, link"];
 
-	$html = $this->_html;
-
-	$dom = new Dom($html);
-	$manifest = new Manifest($dom["head"]);
-
-	$scriptList = $dom["head > script"];
-	$styleList = $dom["head > link"];
-
-	$expectedLines = explode("\n", 
-		$mfFiles[APPROOT . "/Script/_Default.manifest"]);
-	foreach ($scriptList as $i => $script) {
-		$expected = $expectedLines[$i];
-		$this->assertEquals(
-			$expected,
-			$script->src);
-	}
-
-	$expectedLines = explode("\n", 
-		$mfFiles[APPROOT . "/Style/_Default.manifest"]);
-	foreach ($styleList as $i => $style) {
-		$expected = $expectedLines[$i];
-		$this->assertEquals(
-			$expected,
-			$style->href);
-	}
-}
-
-/**
- * Tests that comments within manifest files are ignored.
- */
-public function testManifestComments() {
-	// First create the manifest files:
-	$mfFiles = array(
-		APPROOT . "/Script/_Default.manifest" => 
-			"# This is a comment\n"
-			. "/Main.js\n"
-			. "   #   This is a comment with spaces\n"
-			. "/Another.js\n",
-	);
-	foreach ($mfFiles as $path => $content) {
-		if(!is_dir(dirname($path))) {
-			mkdir(dirname($path), 0775, true);
-		}
-		file_put_contents($path, $content);
-	}
-
-	$html = $this->_html;
-
-	$dom = new Dom($html);
-	$manifest = new Manifest($dom["head"]);
-
-	$scriptList = $dom["head > script"];
-	$this->assertEquals(2, $scriptList->length, "Number of scripts in head.");
-}
-
-/**
- * Tests that the manifest when using a different named manifest.
- */
-public function testManifestNonDefault() {
-	// First create the manifest files:
-	$mfFiles = array(
-		APPROOT . "/Script/TestName.manifest" => 
-			"/One.js\n"
-			. "/Two.js\n"
-			. "/Three.js\n"
-			. "/Four.js\n",
-		APPROOT . "/Style/TestName.manifest" =>
-			"/One.css\n"
-			. "/Two.css\n"
-			. "/Three.css\n",
-	);
-	foreach ($mfFiles as $path => $content) {
-		if(!is_dir(dirname($path))) {
-			mkdir(dirname($path), 0775, true);
-		}
-		file_put_contents($path, $content);
-	}
-
-	$html = str_replace("_Default", "TestName", $this->_html);
-
-	$dom = new Dom($html);
-	$manifest = new Manifest($dom["head"]);
-
-	$scriptList = $dom["head > script"];
-	$styleList = $dom["head > link"];
-	$this->assertEquals(4, $scriptList->length, "Number of scripts in head.");
-	$this->assertEquals(3, $styleList->length, "Number of styles in head.");
-}
-
-/**
- * Tests that the order of elements in the head matches the order specified in
- * the manifest files.
- */
-public function testManifestFileOrderPreserved() {
-	$mfFiles = array(
-		APPROOT . "/Script/_Default.manifest" => 
-			"/1.js\n"
-			. "/2.js\n"
-			. "/3.js\n",
-		APPROOT . "/Style/_Default.manifest" =>
-			"/1.css\n"
-			. "/2.css\n"
-			. "/3.css\n",
-	);
-	foreach ($mfFiles as $path => $content) {
-		if(!is_dir(dirname($path))) {
-			mkdir(dirname($path), 0775, true);
-		}
-		file_put_contents($path, $content);
-	}
-
-	$html = $this->_html;
-
-	$dom = new Dom($html);
-	$manifest = new Manifest($dom["head"]);
-
-	$scriptList = $dom["head > script"];
-	$lastNum = -1;
-	
-	foreach ($scriptList as $script) {
-		$src = $script->getAttribute("src");
-		$matches = [];
-		preg_match("/\d/", $src, $matches);
-		$num = $matches[0];
-
-		$this->assertGreaterThan($lastNum, $num);
-		$lastNum = $num;
-	}
-
-	$styleList = $dom["head > link"];
-	$lastNum = -1;
-	
-	foreach ($styleList as $style) {
-		$href = $style->getAttribute("href");
-		$matches = [];
-		preg_match("/\d/", $href, $matches);
-		$num = $matches[0];
-
-		$this->assertGreaterThan($lastNum, $num);
-		$lastNum = $num;
-	}
+	$this->assertEquals(8, $scriptStyleList->length);
 }
 
 }#

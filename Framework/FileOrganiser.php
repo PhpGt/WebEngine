@@ -1,395 +1,185 @@
 <?php final class FileOrganiser {
 /**
- * This class works closely with ClientSideCompiler to ensure that all source
- * files are stored ouside of the webroot (www directory), but the compiled or
- * minified versions are copied correctly when required.
- *
- * The order of execution is controlled by the Dispatcher.
- *
- * 1) go functions are executed. This will trigger any PageTools' clientSide()
- * function, which adds <script> and <link> elements into the DOM head.
- * 2) FileOrganiser checks if files are needed to be written to www directory.
- * 3) FileOrganiser writes files to www directory.
- * 4) ClientSideCompiler pre-processes any SCSS source files.
- * 5) If client is compiled, FileOrganiser triggers the last step on the
- * ClientSideCompiler, minifying and compiling all files together and removing
- * the originals.
- *
- * All of this is only done if there are modifications to the source files since
- * the modified time within www directory.
+ * This class works closely with Manifest and ClientSideCompiler to ensure that
+ * all source files are stored ouside of the webroot (www directory), but the
+ * compiled or minified versions are copied correctly when required.
  */
+const CACHETYPE_MANIFEST = 1;
+const CACHETYPE_ASSET = 2;
+
+public function __construct($manifestList) {
+	// TODO: Got to know about the manifest here!
+	$this->_wwwDir = APPROOT . "/www";
+	$this->_manifestList = $manifestList;
+}
 
 private $_wwwDir;
-private $_cacheFile;
-
-public function __construct() {
-	$this->_wwwDir = APPROOT . "/www";
-	$this->_cacheFile = "{$this->_wwwDir}/www.cache";
-}
+private $_manifestList;
 
 /**
- * In production, cache is *always* valid if the www.cache file is present.
- * To invalidate, just remove the file.
+ * Checks if all manifest files are already copied to the www directory.
+ * For each Manifest, if MD5 cache file exists, in production treat that as 
+ * valid cache. When not in production, read MD5 cache and compare to source
+ * directory contents. If MD5s differ, cache is invalid.
  *
- * In non-production, creates an md5 hash of all the files within the
- * source directories and compares it to the contents of www.cache. If www.cache
- * does not exist, or the hash is different, the cache is invalid.
- *
- * @return bool True if the www directory needs refreshing.
+ * Returns true for valid cache, false for invalid cache.
  */
-public function checkFiles() {
-	$cacheFileExists = file_exists($this->_cacheFile);
-	if(!$cacheFileExists) {
+public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
+	switch($type) {
+	case FileOrganiser::CACHETYPE_MANIFEST:
+		foreach ($this->_manifestList as $manifest) {
+			$manifestName = $manifest->getName();
+			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
+			if(!file_exists($manifestCache)) {
+				return false;
+			}
+		}
+
+		// All manifest cache files exist so far.
+		if(App_Config::isProduction()) {
+			return true;
+		}
+
+		// Need to check integrity of cache files.
+		foreach ($this->_manifestList as $manifest) {
+			$manifestName = $manifest->getName();
+			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
+			$md5Cache = trim(file_get_contents($manifestCache));
+			$manifestMd5 = $manifest->getMd5();
+
+			if($manifestMd5 !== $md5Cache) {
+				return false;
+			}
+		}
+
 		return true;
+		break;
+
+	case FileOrganiser::CACHETYPE_ASSET;
+		break;
 	}
-	if(App_Config::isProduction()) {
-		return !$cacheFileExists;
-	}
-
-	$sourceDirectoryArray = array("Asset", "Script", "Style");
-	$hashArray = array(
-		md5(""),
-	);
-
-	// First build up the array of files in the source directories.
-	foreach ($sourceDirectoryArray as $sourceDirectory) {
-		// GTROOT comes first in the array, so that they will be overrided by
-		// any files that have the same name in the APPROOT.
-		$directoryPathArray = array(
-			GTROOT . "/$sourceDirectory",
-			APPROOT . "/$sourceDirectory",
-		);
-
-		foreach($directoryPathArray as $directoryPath) {
-			if(!is_dir($directoryPath)) {
-				continue;
-			}
-
-			foreach ($iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($directoryPath,
-					RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-				$pathName = $iterator->getPathName();
-				$subPathName = $iterator->getSubPathName();
-
-				// Don't check on hidden files or directories.
-				if(strpos($item->getFileName(), ".") === 0
-				|| $item->isDir()) {
-					continue;
-				}
-
-				$hashArray[] = md5_file($pathName);
-			}
-		}
-	}
-
-	$md5Str = "";
-	foreach ($hashArray as $hash) {
-		$md5Str .= $hash;
-	}
-	$md5 = md5($md5Str);
-
-	$cacheHash = trim(file_get_contents($this->_cacheFile));
-
-	// Returns if the two hashes are different.
-	return $cacheHash !== $md5;
 }
 
-/**
- * Removes all files within any subdirectories in the www directory. Doesn't 
- * remove any files within the root www directory.
- */
-public function clean() {
-	$directoryArray = array("Asset", "Script", "Style");
-	foreach($directoryArray as $directory) {
-		$directoryPath = "{$this->_wwwDir}/$directory";
+public function organise($domHead) {
+	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
-		if(!is_dir($directoryPath)) {
-			continue;
-		}
-
-		foreach ($iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($directoryPath,
-				RecursiveDirectoryIterator::SKIP_DOTS),
-		RecursiveIteratorIterator::CHILD_FIRST) as $item) {
-
-			$pathName = $iterator->getPathname();
-			if($item->isDir()) {
-				rmdir($pathName);
-			}
-			else {
-				unlink($pathName);
-			}
-		}
-
-		rmdir($directoryPath);
+	if(!$manifestCache) {
+		$this->organiseManifest($domHead);
 	}
-
-	if(file_exists($this->_cacheFile)) {
-		unlink($this->_cacheFile);
+	if(!$assetCache) {
+		$this->organiseAsset($domHead);
 	}
 }
 
 /**
- * Performs the actual copying of resources within the three source directories.
- * Because PageTools can inject client-side resources in the DOM head, a list
- * of matching elements could be passed in to be included in the file copying.
+ * Performs a process & copy operation from source client-side directories into
+ * www directory. Processes any special files such as scss, etc.
  */
-public function update($domHead = null) {
-	$hashArray = array(
-		md5(""),
-	);
+public function organiseManifest($domHead) {
+	foreach ($this->_manifestList as $manifest) {
+		$manifestName = $manifest->getName();
+		$dirTypeArray = ["Script", "Style"];
+		$fileList = $manifest->getFiles();
+		$md5 = "";
 
-	$directoryArray = array("Asset", "Script", "Style");
-	foreach($directoryArray as $directory) {
-		$sourceDirectoryArray = array(
-			GTROOT . "/$directory",
-			APPROOT . "/$directory",
-		);
+		foreach ($dirTypeArray as $dirType) {
+			$baseDir = $this->_wwwDir . "/$dirType";
 
-		foreach ($sourceDirectoryArray as $sourceDirectory) {
-			if(!is_dir($sourceDirectory)) {
-				continue;
+			if(!empty($manifestName)) {
+				$baseDir .= "_$manifestName";
 			}
 			
-			foreach ($iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($sourceDirectory,
-					RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+			$this->recursiveRemove($baseDir);
+			$processResult = $this->processCopy(
+				$fileList[$dirType], $baseDir, $dirType);
+			$md5 .= $processResult["md5"];
 
-				$pathName = $iterator->getPathName();
-				$subPathName = $iterator->getSubPathName();
-				$fileName = $item->getFileName();
-				if($fileName[0] === ".") {
-					continue;
-				}
-
-				$destinationFile = "{$this->_wwwDir}/$directory/$subPathName";
-				$destinationDir = dirname($destinationFile);
-
-				if(!is_dir($destinationDir)) {
-					mkdir($destinationDir, 0775, true);
-				}
-
-				if($item->isDir()) {
-					continue;
-				}
-
-				copy($pathName, $destinationFile);
-				$hashArray[] = md5_file($pathName);
-			}
+			// Expand meta elements in DOM head to their actual files.
+			$manifest->expandHead(
+				$dirType, 
+				$processResult["DestinationList"],
+				$domHead
+			);
 		}
-	}
 
-	$md5Str = "";
-	foreach ($hashArray as $hash) {
-		$md5Str .= $hash;
+		$md5File = (empty($manifestName))
+			? $this->_wwwDir . "/www.cache"
+			: $this->_wwwDir . "/$manifestName.cache";
+		file_put_contents($md5File, md5($md5));
 	}
-	$md5 = md5($md5Str);
-
-	file_put_contents($this->_cacheFile, $md5);
-	return $md5;
 }
 
 /**
- * Script and Link elements in the HEAD can use server-side processing
- * techniques, such as using Sass/Scss and the //= require syntax within
- * JavaScript.
+ * Removes and re-copies all Asset files.
  */
-public function processHead($domHead, $clientSideCompiler = false) {
-	$count = 0;
-	$styleElements = $domHead["link"];
-	foreach ($styleElements as $el) {
-		$pattern = "/\.scss$/i";
-		$href = $el->getAttribute("href");
-		
-		if(!preg_match($pattern, $href)) {
+public function organiseAsset() {
+	// TODO: Copy assets.
+	return true;
+}
+
+/**
+ * For each file referenced in each manifest, process the contents if
+ * required, then write the processed contents to the public www directory.
+ * After all files are processed, return an md5 hash of the *source* files,
+ * to allow for only processing and copying when the source files change.
+ */
+private function processCopy($fileList, $destDir, $type) {
+	$result = array(
+		"md5" => "",
+		"DestinationList" => [],
+	);
+	$sourceDir = APPROOT . "/$type";
+
+	foreach ($fileList as $file) {
+		$sourcePath = "$sourceDir/$file";
+		if(!file_exists($sourcePath)) {
 			continue;
 		}
 
-		$pathArray = array(APPROOT . "/www/$href", GTROOT . "/www/$href");
-		$path = null;
-		foreach ($pathArray as $pathI) {
-			if(is_null($path) && file_exists($pathI)) {
-				$path = $pathI;
-			}
+		$result["md5"] .= md5_file($sourcePath);
+		$fileContents = file_get_contents($sourcePath);
+		$processed = ClientSideCompiler::process($sourcePath, $file);
+
+		$result["DestinationList"][] = $processed["Destination"];
+
+		$destinationPath = $destDir . "/" . $processed["Destination"];
+		if(!is_dir(dirname($destinationPath))) {
+			mkdir(dirname($destinationPath), 0775, true);
 		}
 
-		$href = preg_replace($pattern, ".css", $href);
-		$el->setAttribute("href", $href);
-
-		if(is_null($path)) {
-			continue;
-		}
-
-
-		if($clientSideCompiler !== false) {
-			if($clientSideCompiler->process($path)) {
-				$count++;
-			}
-		}
-	}
-
-	// Include any scripts noted in //=require syntaxes.
-	$scriptElements = $domHead["script"];
-	foreach ($scriptElements as $el) {
-		if(!$el->hasAttribute("src")) {
-			continue;
-		}
-		$src = $el->getAttribute("src");
-		$pathArray = array(
-			APPROOT . $src,
-			GTROOT . $src,
+		file_put_contents(
+			$destinationPath, 
+			$processed["Contents"]
 		);
-
-		foreach ($pathArray as $path) {
-			if(!file_exists($path)) {
-				continue;
-			}
-
-			$fh = fopen($path, "r");
-
-			while(false !== ($line = fgets($fh)) ) {
-				$matches = array();
-				if(preg_match("/^\/\/=[ ]?require(_tree)?[ ]?(.+)$/", $line,
-				$matches) > 0) {
-					$isTree = !empty($matches[1]);
-					$reqPath = trim($matches[2]);
-
-					$subPathArray = array(
-						APPROOT . $reqPath,
-						GTROOT . $reqPath,
-					);
-
-					$dom = $domHead->_dom;
-
-					if($isTree) {
-						foreach ($subPathArray as $subPath) {
-							if(!is_dir($subPath)) {
-								continue;
-							}
-
-							foreach ($iterator = new RecursiveIteratorIterator(
-								new RecursiveDirectoryIterator($subPath,
-									RecursiveDirectoryIterator::SKIP_DOTS),
-							RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-								$extension = strtolower($item->getExtension());
-								if($extension !== "js") {
-									continue;
-								}
-								$pathName = $iterator->getPathName();
-								$newSrc = substr($pathName, 
-									strpos($pathName, "/Script/"));
-
-								$newEl = $dom->createElement("script", [
-									"src" => $newSrc,
-									"data-required" => $src,
-								]);
-								$domHead->node->insertBefore(
-									$newEl->node, $el->node);
-							}
-						}
-					}
-					else {
-						// Require a single JavaScript file.
-						$newEl = $dom->createElement("script", [
-							"src" => $reqPath,
-							"data-required" => $src,
-						]);
-						$domHead->node->insertBefore($newEl->node, $el->node);
-					}
-				}
-			}
-			fclose($fh);
-		}
 	}
 
-	if(App_Config::isClientCompiled()) {
-		$addScript = false;
-		$addLink = false;
-		$elList = $domHead["script, link"];
-		foreach ($elList as $el) {
-			if($el->hasAttribute("data-nocompile")
-			|| $el->hasAttribute("nocompile")) {
-				continue;
-			}
-
-			if($el->tagName == "script") {
-				if($el->hasAttribute("src")) {
-					$el->remove();
-					$addScript = true;
-				}
-			}
-			else {
-				if($el->hasAttribute("href")
-				&& $el->hasAttribute("rel")) {
-					if($el->getAttribute("rel") == "stylesheet") {
-						$el->remove();
-						$addLink = true;
-					}
-				}
-			}
-		}
-
-		if($addLink) {
-			$domHead->appendChild("link", [
-				"rel" => "stylesheet",
-				"href" => "/Style.css"
-			]);
-		}
-		if($addScript) {
-			$domHead->appendChild("script", [
-				"src" => "/Script.js",
-			]);
-		}
-	}
-
-	return $count;
+	return $result;
 }
 
 /**
- * If client-side compilation is turned on in the App_Config file, this function
- * compiles all client-side resources into a single resource and DELETES the
- * original files from the www directory. Note that if the original files do not
- * change, and the dom head stays the same, the check() function will not allow
- * this CPU-intensive function to be fired.
+ * Removes the given directory and all of its contents.
  */
-public function compile($clientSideCompiler, $domHead,
-$combineForce = false, $compileForce = false) {
-	$isCompiled = App_Config::isClientCompiled();
-	if($isCompiled || $combineForce) {
-		$clientSideCompiler->combine($domHead);
+private function recursiveRemove($baseDir) {
+	if(!is_dir($baseDir)) {
+		return true;
 	}
-	if($isCompiled || $compileForce) {
-		if($clientSideCompiler->compile()) {
-			$this->processHead($domHead);
-		}
-	}
-	return;
-}
-
-/**
- * Removes any source files from the public web root.
- */
-public function tidyProcessed() {
-	$sourceExtensions = array("scss");
 
 	foreach ($iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator("$this->_wwwDir",
+		new RecursiveDirectoryIterator($baseDir, 
 			RecursiveDirectoryIterator::SKIP_DOTS),
-	RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		RecursiveIteratorIterator::CHILD_FIRST) as $item) {
+			$subPath = $iterator->getSubPathName();
 
-		$pathName = $iterator->getPathName();
-		$fileName = $item->getFileName();
-		$extension = strtolower($item->getExtension());
-		
-		if(!in_array($extension, $sourceExtensions)) {
-			continue;
-		}
-		unlink($pathName);
+			if($item->isDir()) {
+				rmdir("$baseDir/$subPath");
+			}
+			else {
+				unlink("$baseDir/$subPath");
+			}
 	}
-}
 
+	rmdir($baseDir);
+	return true;
+}
 }#

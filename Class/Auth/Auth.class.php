@@ -196,7 +196,7 @@ public function authenticate($provider) {
 			break;
 		}
 
-		throw new HttpError(500, "HybridAuth error: $error");
+		throw new HttpError(500, "HybridAuth error: $error", $e);
 	}
 }
 
