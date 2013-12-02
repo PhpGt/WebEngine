@@ -20,6 +20,30 @@ public function organise($domHead) {
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
+	foreach ($this->_manifestList as $manifest) {
+		$manifestName = $manifest->getName();
+		$dirTypeArray = ["Script", "Style"];
+		$fileList = $manifest->getFiles();
+
+		foreach ($dirTypeArray as $dirType) {
+			$baseDir = $this->_wwwDir . "/$dirType";
+
+			if(!empty($manifestName)) {
+				$baseDir .= "_$manifestName";
+			}
+
+			$processDestinations = $this->getProcessDestinations(
+				$fileList[$dirType]);
+
+			// Expand meta elements in DOM head to their actual files.
+			$manifest->expandHead(
+				$dirType, 
+				$processDestinations,
+				$domHead
+			);
+		}		
+	}
+
 	if(!$manifestCache) {
 		$this->organiseManifest($domHead);
 	}
@@ -103,15 +127,7 @@ public function organiseManifest($domHead) {
 			$this->recursiveRemove($baseDir);
 			$processResult = $this->processCopy(
 				$fileList[$dirType], $baseDir, $dirType);
-
-			// Expand meta elements in DOM head to their actual files.
-			$manifest->expandHead(
-				$dirType, 
-				$processResult["DestinationList"],
-				$domHead
-			);
 		}
-
 
 		$md5File = (empty($manifestName))
 			? $this->_wwwDir . "/$hash.cache"
@@ -126,6 +142,10 @@ public function organiseManifest($domHead) {
 public function organiseAsset() {
 	// TODO: Copy assets.
 	return true;
+}
+
+private function getProcessedPath($file) {
+	throw new Exception("NYI!");
 }
 
 /**
