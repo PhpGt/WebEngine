@@ -251,7 +251,7 @@ public function testManifestHeadTagsReplaced() {
 	// done in the Manifest still (file organiser is used to get processed 
 	// names of files as their extensions may have to change).
 	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organiseManifest($domHead);
+	$fileOrganiser->organise($domHead);
 
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
 	$this->assertEquals(0, $metaList->length);
@@ -311,7 +311,7 @@ public function testManifestHeadTagsReplaced() {
 
 	$manifestList = Manifest::getList($domHead);
 	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organiseManifest($domHead);
+	$fileOrganiser->organise($domHead);
 
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
 	$this->assertEquals(0, $metaList->length);

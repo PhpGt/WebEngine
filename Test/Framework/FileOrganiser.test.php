@@ -99,25 +99,29 @@ public function testCheckCache() {
 	$styleFileToChange = APPROOT . "/Style/" . $styleFile;
 	$newContents = "* { color: blue; }";
 	file_put_contents($styleFileToChange, $newContents);
-	
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertFalse($cacheValid, "Cache should be invalid");
 
 	// Re-evaluate the cache again.
 	$fileOrganiser->organiseManifest($domHead);
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertTrue($cacheValid, "Cache should be valid");
 
 	// Remove a reference of a file within .manifest file.
 	// (now it doesn't reference Main.js).
 	$scriptManifest = "SubDir/Script.js";
 	file_put_contents($scriptManifestPath, $scriptManifest);
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertFalse($cacheValid, "Cache should be invalid");
 
 	// Re-evaluate the cache again.
 	$fileOrganiser->organiseManifest($domHead);
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertTrue($cacheValid, "Cache should be valid");
 
 	// Remove a source file, expect an exception.
@@ -125,7 +129,7 @@ public function testCheckCache() {
 	$caughtException = false;
 	try {
 		$cacheValid = $fileOrganiser->checkCache(
-			FileOrganiser::CACHETYPE_MANIFEST);		
+			FileOrganiser::CACHETYPE_MANIFEST, true);		
 	}
 	catch(Exception $e) {
 		$caughtException = true;

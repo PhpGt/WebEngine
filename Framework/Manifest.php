@@ -2,6 +2,14 @@
 /**
  * https://github.com/g105b/PHP.Gt/wiki/structure~Manifest
  */
+
+/**
+ * Static cuntion that returns an array of Manifest objects. The first element
+ * is always a nameless manifest, representing the contents of the DOM head's
+ * <link rel="stylesheet"> and <script src="..."> tags. The rest of the array
+ * contains Manifest objects representing each <meta name="manifest"> tags in 
+ * the DOM head (optional).
+ */
 public static function getList($domHead) {
 	$list = array();
 
@@ -106,16 +114,17 @@ public function getFiles() {
 
 private function getFilesFromHead() {
 	$scriptLinkElements = $this->_domHead["script, link"];
+	// var_dump($scriptLinkElements->length);
 	$attributes = [
 		"script" => [
 			"Type" => "Script",
 			"Source" => "src",
-			"Required" => []
+			"Required" => [],
 		],
 		"link" => [
 			"Type" => "Style",
 			"Source" => "href",
-			"Required" => ["rel" => "stylesheet"]
+			"Required" => ["rel" => "stylesheet"],
 		],
 	];
 	$this->_fileListArray = array("Script" => [], "Style" => []);
@@ -150,13 +159,20 @@ private function getFilesFromHead() {
 		$this->_fileListArray[$attributeData["Type"]][] = $source;
 	}
 
+	// var_dump($this->_fileListArray);
+
 	return $this->_fileListArray;
 }
 
 /**
  * Returns the MD5 hash of all files within both Script and Style .manifest.
  */
-public function getMd5() {
+public function getMd5($forceRecalc = false) {
+	if(!empty($this->_md5)
+	&& !$forceRecalc) {
+		return $this->_md5;
+	}
+
 	$md5 = "";
 	$this->getFiles();
 
@@ -184,7 +200,10 @@ public function getMd5() {
 	return $this->_md5;
 }
 
-public function expandHead($type, $destinationList, $domHead) {
+/**
+ * 
+ */
+public function expandHead($type, $pathList, $domHead) {
 	$elementType = array(
 		"Script" => [
 			"TagName" => "script",
@@ -202,32 +221,17 @@ public function expandHead($type, $destinationList, $domHead) {
 		".//meta[@name='manifest' and @content='{$this->_name}']");
 	if($myMeta->length == 0 
 	&& is_null($this->_name)) {
-		// Remove all existing script/link tags from head on this occasion.
-		foreach ($elementType as $elType => $typeData) {
-			$elementList = $domHead[$typeData["TagName"]];
-			foreach ($elementList as $el) {
-				$doNotRemove = false;
-				foreach ($typeData["ReqAttr"] as $key => $value) {
-					if(!$el->hasAttribute($key)) {
-						$doNotRemove = true;
-					}
-					if($el->hasAttribute($key)
-					&& $el->getAttribute($key) != $value) {
-						$doNotRemove = true;
-					}
-				}
-				if(!$el->hasAttribute($typeData["SourceAttr"])) {
-					$doNotRemove = true;
-				}
+		$tagName = $elementType[$type]["TagName"];
+		$sourceAttr = $elementType[$type]["SourceAttr"];
 
-				if(!$doNotRemove) {
-					$el->remove();
-				}
-			}
+		foreach ($pathList as $path) {
+			$source = $path["Source"];
+			$tagMatch = $domHead->xPath(
+				"./{$tagName}[@{$sourceAttr}='{$source}']");
+			$tagMatch->setAttribute($sourceAttr, $path["Destination"]);
 		}
 	}
-
-	foreach ($destinationList as $destination) {
+	else {
 		$publicPath = "/$type";
 		if(empty($this->_name)) {
 			$publicPath .= "/";
@@ -235,23 +239,28 @@ public function expandHead($type, $destinationList, $domHead) {
 		else {
 			$publicPath .= "_" . $this->_name . "/";
 		}
-		
-		if(strpos($destination, "/$type") === 0) {
-			$destination = substr($destination, strlen("/$type"));
+
+		foreach ($pathList as $path) {
+			$destination = $path["Destination"];
+			
+			if(strpos($destination, "/$type") === 0) {
+				$destination = substr($destination, strlen("/$type"));
+			}
+
+			$publicPath .= $destination;
+			$publicPath = str_replace("//", "/", $publicPath);
+
+			$el = $domHead->_dom->createElement($elementType[$type]["TagName"]);
+			$el->setAttribute($elementType[$type]["SourceAttr"], $publicPath);
+
+			foreach ($elementType[$type]["ReqAttr"] as $key => $value) {
+				$el->setAttribute($key, $value);
+			}
+			$domHead->insertBefore($el, $myMeta->node);
 		}
-
-		$publicPath .= $destination;
-		$publicPath = str_replace("//", "/", $publicPath);
-
-		$el = $domHead->_dom->createElement($elementType[$type]["TagName"]);
-		$el->setAttribute($elementType[$type]["SourceAttr"], $publicPath);
-
-		foreach ($elementType[$type]["ReqAttr"] as $key => $value) {
-			$el->setAttribute($key, $value);
-		}
-		$domHead->appendChild($el);
+		$myMeta->remove();
 	}
-	$myMeta->remove();
+
 }
 
 }#

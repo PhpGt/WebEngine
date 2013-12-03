@@ -3,6 +3,10 @@
  * The ClientSideCompiler minifies/obfuscates source files.
  */
 
+private static $_processMatches = array(
+	"/\.scss$/" => ".css",
+);
+
 /**
  * Perform the processing of files that require server-side processing. This
  * does not include minification/obfuscation, only the processing/expansion
@@ -104,6 +108,28 @@ private static function process_scss($sourcePath, $destination) {
 		"Destination" => $destination,
 		"Contents" => $contents,
 	];
+}
+
+public static function getProcessDestinations($fileList) {
+	$result = array();
+
+	foreach ($fileList as $i => $file) {
+		$f = array();
+		$f["Source"] = $file;
+
+		foreach (self::$_processMatches as $match => $replace) {
+			if(preg_match($match, $file)) {
+				$f["Destination"] = preg_replace($match, $replace, $file);
+			}
+			else {
+				$f["Destination"] = $file;
+			}
+		}
+
+		$result[] = $f;
+	}
+
+	return $result;
 }
 
 }#

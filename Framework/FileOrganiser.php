@@ -11,7 +11,6 @@ private $_wwwDir;
 private $_manifestList;
 
 public function __construct($manifestList) {
-	// TODO: Got to know about the manifest here!
 	$this->_wwwDir = APPROOT . "/www";
 	$this->_manifestList = $manifestList;
 }
@@ -20,19 +19,29 @@ public function organise($domHead) {
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
+	// The DOM Head needs expanding to point to the correct location of the 
+	// files within the www directory. This is necessary for these reasons:
+	// 1) Some files, such as .scss, are renamed to .css during processing.
+	// 2) Each individual manifest's files are coppied to self-contained www
+	// directories. 
 	foreach ($this->_manifestList as $manifest) {
 		$manifestName = $manifest->getName();
+		$md5 = $manifest->getMd5();
+
 		$dirTypeArray = ["Script", "Style"];
 		$fileList = $manifest->getFiles();
 
 		foreach ($dirTypeArray as $dirType) {
+			// Build up the www path to the containing directory for each 
+			// manifest's individual Script and Style directories.
 			$baseDir = $this->_wwwDir . "/$dirType";
-
 			if(!empty($manifestName)) {
 				$baseDir .= "_$manifestName";
 			}
 
-			$processDestinations = $this->getProcessDestinations(
+			// Obtain a list of relative paths for all files within the current
+			// type.
+			$processDestinations = ClientSideCompiler::getProcessDestinations(
 				$fileList[$dirType]);
 
 			// Expand meta elements in DOM head to their actual files.
@@ -41,18 +50,19 @@ public function organise($domHead) {
 				$processDestinations,
 				$domHead
 			);
-		}		
+		}
 	}
 
 	if(!$manifestCache) {
-		$this->organiseManifest($domHead);
+		$this->organiseManifest();
 	}
 	if(!$assetCache) {
-		$this->organiseAsset($domHead);
+		$this->organiseAsset();
 	}
 
 	return true;
 }
+
 /**
  * Checks if all manifest files are already copied to the www directory.
  * For each Manifest, if MD5 cache file exists, in production treat that as 
@@ -61,37 +71,31 @@ public function organise($domHead) {
  *
  * Returns true for valid cache, false for invalid cache.
  */
-public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
+public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST, 
+$forceRecalc = false) {
+
+	$isProduction = App_Config::isProduction();
+
 	switch($type) {
 	case FileOrganiser::CACHETYPE_MANIFEST:
 		foreach ($this->_manifestList as $manifest) {
 			$manifestName = $manifest->getName();
+			$manifestMd5 = $manifest->getMd5($forceRecalc);
+
 			if(is_null($manifestName)) {
-				$manifestName = $manifest->getMd5();
+				$manifestName = $manifestMd5;
 			}
 			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
 			if(!file_exists($manifestCache)) {
 				return false;
 			}
-		}
+	
+			if(!$isProduction) {
+				$md5Cache = trim(file_get_contents($manifestCache));
 
-		// All manifest cache files exist so far.
-		if(App_Config::isProduction()) {
-			return true;
-		}
-
-		// Need to check integrity of cache files.
-		foreach ($this->_manifestList as $manifest) {
-			$manifestName = $manifest->getName();
-			if(is_null($manifestName)) {
-				$manifestName = $manifest->getMd5();
-			}
-			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
-			$md5Cache = trim(file_get_contents($manifestCache));
-			$manifestMd5 = $manifest->getMd5();
-
-			if($manifestMd5 !== $md5Cache) {
-				return false;
+				if($manifestMd5 !== $md5Cache) {
+					return false;
+				}
 			}
 		}
 
@@ -109,7 +113,7 @@ public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST) {
  * Performs a process & copy operation from source client-side directories into
  * www directory. Processes any special files such as scss, etc.
  */
-public function organiseManifest($domHead) {
+public function organiseManifest() {
 	foreach ($this->_manifestList as $manifest) {
 		$hash = $manifest->getMd5();
 
@@ -142,10 +146,6 @@ public function organiseManifest($domHead) {
 public function organiseAsset() {
 	// TODO: Copy assets.
 	return true;
-}
-
-private function getProcessedPath($file) {
-	throw new Exception("NYI!");
 }
 
 /**
