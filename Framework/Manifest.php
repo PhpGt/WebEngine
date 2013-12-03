@@ -3,6 +3,21 @@
  * https://github.com/g105b/PHP.Gt/wiki/structure~Manifest
  */
 
+public static $headElementDetails = [
+	"Script" => [
+		"TagName" => "script",
+		"Type" => "Script",
+		"SourceAttr" => "src",
+		"ReqAttr" => [],
+	],
+	"Style" => [
+		"TagName" => "link",
+		"Type" => "Style",
+		"SourceAttr" => "href",
+		"ReqAttr" => ["rel" => "stylesheet"],
+	],
+];
+
 /**
  * Static cuntion that returns an array of Manifest objects. The first element
  * is always a nameless manifest, representing the contents of the DOM head's
@@ -113,20 +128,12 @@ public function getFiles() {
 }
 
 private function getFilesFromHead() {
-	$scriptLinkElements = $this->_domHead["script, link"];
-	// var_dump($scriptLinkElements->length);
 	$attributes = [
-		"script" => [
-			"Type" => "Script",
-			"Source" => "src",
-			"Required" => [],
-		],
-		"link" => [
-			"Type" => "Style",
-			"Source" => "href",
-			"Required" => ["rel" => "stylesheet"],
-		],
+		"script" => self::$headElementDetails["Script"],
+		"link" => self::$headElementDetails["Style"],
 	];
+	
+	$scriptLinkElements = $this->_domHead["script, link"];
 	$this->_fileListArray = array("Script" => [], "Style" => []);
 
 	foreach ($scriptLinkElements as $scriptLink) {
@@ -135,7 +142,7 @@ private function getFilesFromHead() {
 
 		$skipThisElement = false;
 
-		foreach ($attributeData["Required"] as $key => $value) {
+		foreach ($attributeData["ReqAttr"] as $key => $value) {
 			if(!$scriptLink->hasAttribute($key)) {
 				$skipThisElement = true;
 				break;
@@ -147,7 +154,7 @@ private function getFilesFromHead() {
 			}
 		}
 
-		if(!$scriptLink->hasAttribute($attributeData["Source"])) {
+		if(!$scriptLink->hasAttribute($attributeData["SourceAttr"])) {
 			$skipThisElement = true;
 		}
 
@@ -155,7 +162,7 @@ private function getFilesFromHead() {
 			continue;
 		}
 
-		$source = $scriptLink->getAttribute($attributeData["Source"]);
+		$source = $scriptLink->getAttribute($attributeData["SourceAttr"]);
 		$this->_fileListArray[$attributeData["Type"]][] = $source;
 	}
 
@@ -204,25 +211,13 @@ public function getMd5($forceRecalc = false) {
  * 
  */
 public function expandHead($type, $pathList, $domHead) {
-	$elementType = array(
-		"Script" => [
-			"TagName" => "script",
-			"SourceAttr" => "src",
-			"ReqAttr" => [],
-		],
-		"Style" => [
-			"TagName" => "link",
-			"SourceAttr" => "href",
-			"ReqAttr" => ["rel" => "stylesheet"],
-		],
-	);
-
 	$myMeta = $domHead->xPath(
 		".//meta[@name='manifest' and @content='{$this->_name}']");
+	$elDetails = self::$headElementDetails[$type];
 	if($myMeta->length == 0 
 	&& is_null($this->_name)) {
-		$tagName = $elementType[$type]["TagName"];
-		$sourceAttr = $elementType[$type]["SourceAttr"];
+		$tagName = $elDetails["TagName"];
+		$sourceAttr = $elDetails["SourceAttr"];
 
 		foreach ($pathList as $path) {
 			$source = $path["Source"];
@@ -250,10 +245,10 @@ public function expandHead($type, $pathList, $domHead) {
 			$publicPath .= $destination;
 			$publicPath = str_replace("//", "/", $publicPath);
 
-			$el = $domHead->_dom->createElement($elementType[$type]["TagName"]);
-			$el->setAttribute($elementType[$type]["SourceAttr"], $publicPath);
+			$el = $domHead->_dom->createElement($elDetails["TagName"]);
+			$el->setAttribute($elDetails["SourceAttr"], $publicPath);
 
-			foreach ($elementType[$type]["ReqAttr"] as $key => $value) {
+			foreach ($elDetails["ReqAttr"] as $key => $value) {
 				$el->setAttribute($key, $value);
 			}
 			$domHead->insertBefore($el, $myMeta->node);
