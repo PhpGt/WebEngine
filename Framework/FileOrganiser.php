@@ -103,6 +103,28 @@ $forceRecalc = false) {
 		break;
 
 	case FileOrganiser::CACHETYPE_ASSET;
+		$isProduction = App_Config::isProduction();
+		$cacheFile = $this->_wwwDir . "/asset.cache";
+		if($isProduction && file_exists($cacheFile)) {
+			return true;
+		}
+
+		$assetSourceDir = APPROOT . "/Asset";
+		$assetList = $this->getAssetList($assetSourceDir);
+		$md5 = "";
+		foreach ($assetList as $asset) {
+			$md5 .= md5_file("$assetSourceDir/$asset");
+		}
+		$md5 = md5($md5);
+		$currentMd5 = "";
+		if(file_exists($cacheFile)) {
+			$currentMd5 = file_get_contents($cacheFile);
+		}
+
+		if($currentMd5 == $md5) {
+			return true;
+		}
+
 		return false;
 		break;
 	}
@@ -144,8 +166,42 @@ public function organiseManifest() {
  * Removes and re-copies all Asset files.
  */
 public function organiseAsset() {
-	// TODO: Copy assets.
+	$assetSourceDir = APPROOT . "/Asset";
+	$assetWwwDir = APPROOT . "/www/Asset";
+	$assetList = $this->getAssetList($assetSourceDir);
+	$md5 = "";
+
+	foreach ($assetList as $asset) {
+		$sourcePath = "$assetSourceDir/$asset";
+		$wwwPath = "$assetWwwDir/$asset";
+		if(!is_dir(dirname($wwwPath))) {
+			mkdir(dirname($wwwPath), 0775, true);
+		}
+		copy($sourcePath, $wwwPath);
+		$md5 .= md5_file($sourcePath);
+	}
+
+	$md5 = md5($md5);
+	file_put_contents("$assetWwwDir/asset.cache", $md5);
 	return true;
+}
+
+private function getAssetList($dir) {
+	$fileList = array();
+
+	foreach ($iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator($dir,
+			RecursiveDirectoryIterator::SKIP_DOTS),
+		RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		
+		if($item->isDir()) {
+			continue;
+		}
+
+		$fileList[] = $iterator->getSubPathName();
+	}
+
+	return $fileList;
 }
 
 /**

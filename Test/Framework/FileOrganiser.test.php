@@ -249,4 +249,27 @@ HTML;
 	$this->assertEquals("/Style/Main.css", $linkEl->getAttribute("href"));
 }
 
+public function testFileOrganiserAsset() {
+	$assetFiles = array(
+		"/SimpleTextFile.txt" => "This is a test!",
+		"/Directory/AnotherFile.txt" => "Another test!",
+	);
+	$assetSourceDir = APPROOT . "/Asset";
+	foreach ($assetFiles as $fileName => $contents) {
+		$assetPath = $assetSourceDir . $fileName;
+		if(!is_dir(dirname($assetPath))) {
+			mkdir(dirname($assetPath), 0775, true);
+		}
+		file_put_contents($assetPath, $contents);
+	}
+
+	$fileOrganiser = new FileOrganiser([]);
+	$fileOrganiser->organise(null);
+
+	$assetWwwDir = APPROOT . "/www/Asset";
+	foreach ($assetFiles as $fileName => $contents) {
+		$this->assertFileExists("$assetWwwDir/$fileName");
+	}
+}
+
 }#
