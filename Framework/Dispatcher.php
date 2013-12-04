@@ -103,6 +103,7 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 	
+	ini_set("display_errors", "On");
 	$domHead = $dom["head"][0];
 	
 	$manifestList = Manifest::getList($domHead);

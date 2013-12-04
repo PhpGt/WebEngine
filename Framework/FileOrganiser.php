@@ -19,6 +19,12 @@ public function organise($domHead) {
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
+	// Store a reference to each file's source and destination.
+	$manifestSourceDest = array(
+		"Script" => [],
+		"Style" => [],
+	);
+
 	// The DOM Head needs expanding to point to the correct location of the 
 	// files within the www directory. This is necessary for these reasons:
 	// 1) Some files, such as .scss, are renamed to .css during processing.
@@ -43,6 +49,7 @@ public function organise($domHead) {
 			// type.
 			$processDestinations = ClientSideCompiler::getProcessDestinations(
 				$fileList[$dirType]);
+			$manifestSourceDest[$dirType] = $processDestinations;
 
 			// Expand meta elements in DOM head to their actual files.
 			$manifest->expandHead(
@@ -54,7 +61,7 @@ public function organise($domHead) {
 	}
 
 	if(!$manifestCache) {
-		$this->organiseManifest();
+		$this->organiseManifest($manifestSourceDest);
 	}
 	if(!$assetCache) {
 		$this->organiseAsset();
@@ -135,7 +142,9 @@ $forceRecalc = false) {
  * Performs a process & copy operation from source client-side directories into
  * www directory. Processes any special files such as scss, etc.
  */
-public function organiseManifest() {
+public function organiseManifest(
+$sourceDest = array("Script" => [], "Style" => [])) {
+
 	foreach ($this->_manifestList as $manifest) {
 		$hash = $manifest->getMd5();
 
@@ -152,7 +161,7 @@ public function organiseManifest() {
 			
 			$this->recursiveRemove($baseDir);
 			$processResult = $this->processCopy(
-				$fileList[$dirType], $baseDir, $dirType);
+				$fileList[$dirType], $baseDir, $dirType, $sourceDest[$dirType]);
 		}
 
 		$md5File = (empty($manifestName))
@@ -209,7 +218,7 @@ private function getAssetList($dir) {
  * required, then write the processed contents to the public www directory.
  * After all files are processed.
  */
-private function processCopy($fileList, $destDir, $type) {
+private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
 	// TODO: No need for array result any more.
 	$result = array(
 		"DestinationList" => [],
@@ -217,6 +226,17 @@ private function processCopy($fileList, $destDir, $type) {
 	$sourceDir = APPROOT . "/$type";
 
 	foreach ($fileList as $file) {
+		// Because the dom head is already expanded by this point, the filename
+		// stored in $file may not point to the source file - map it using
+		// the $sourceDest array.
+		if(!empty($sourceDest)) {
+			foreach ($sourceDest as $sd) {
+				if($sd["Destination"] == $file) {
+					$file = $sd["Source"];
+				}
+			}
+		}
+
 		if($file[0] == "/") {
 			$sourcePath = APPROOT . "$file";
 		}

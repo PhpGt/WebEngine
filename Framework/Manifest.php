@@ -166,8 +166,6 @@ private function getFilesFromHead() {
 		$this->_fileListArray[$attributeData["Type"]][] = $source;
 	}
 
-	// var_dump($this->_fileListArray);
-
 	return $this->_fileListArray;
 }
 
