@@ -35,7 +35,6 @@ public function organise($domHead) {
 	// directories. 
 	foreach ($this->_manifestList as $manifest) {
 		$manifestName = $manifest->getName();
-		$md5 = $manifest->getMd5();
 
 		$dirTypeArray = ["Script", "Style"];
 		$fileList = $manifest->getFiles();
@@ -65,8 +64,6 @@ public function organise($domHead) {
 
 	// Allow non-css files (such as images, icons, etc.) to be stored in the
 	// Style directory.
-	$this->organiseStyleFiles();
-
 	if(!$manifestCache) {
 		$logger->trace("Manifest cache invalid.");
 		$this->organiseManifest($manifestSourceDest);
@@ -95,11 +92,29 @@ public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST,
 $forceRecalc = false) {
 
 	$isProduction = App_Config::isProduction();
+	$logger = Log::get();
 
 	switch($type) {
 	case FileOrganiser::CACHETYPE_MANIFEST:
 		foreach ($this->_manifestList as $manifest) {
+			// Getting the md5 of a manifest is expensive because the md5 has
+			// to be calculated on the processed content.
+			// The StyleFiles.cache file represents all unprocessed files, in
+			// the APPROOT and GTROOT. If it's modified time is later than that
+			// of any source style file, it can be assumed no files have 
+			// changed.
+			$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
+			if(file_exists($styleFilesCache)) {
+				$mtime_stylefiles = filemtime($styleFilesCache);
+				$mtime_source = $this->getStyleMTime();
+
+				if($mtime_stylefiles > $mtime_source) {
+					return true;
+				}
+			}
+
 			$manifestName = $manifest->getName();
+			$logger->trace("Getting manifest cache for $manifestName");
 			$manifestMd5 = $manifest->getMd5($forceRecalc);
 
 			if(is_null($manifestName)) {
@@ -304,6 +319,33 @@ private function organiseStyleFiles() {
 	$md5 = md5($md5);
 	file_put_contents($hashFile, $md5);
 	return true;
+}
+
+private function getStyleMTime() {
+	$styleDirectoryArray = array(
+		APPROOT . "/Style",
+		GTROOT . "/Style",
+	);
+	$mtimeLatest = 0;
+
+	foreach ($styleDirectoryArray as $styleDirectory) {
+		foreach ($iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($styleDirectory,
+				RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+			if($item->isDir()) {
+				continue;
+			}
+
+			$mtime = filemtime($item->getPathName());
+			if($mtime > $mtimeLatest) {
+				$mtimeLatest = $mtime;
+			}
+		}
+	}
+
+	return $mtimeLatest;
 }
 
 private function getAssetList($dir) {
