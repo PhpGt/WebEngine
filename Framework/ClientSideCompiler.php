@@ -31,6 +31,10 @@ public static function process($sourcePath, $destination) {
 	// Some files may not need processing:
 	$contents = file_get_contents($sourcePath);
 
+	if(is_null($destination)) {
+		return $contents;
+	}
+
 	return [
 		"Destination" => $destination,
 		"Contents" => $contents,
@@ -103,6 +107,9 @@ private static function process_scss($sourcePath, $destination) {
 	$sass = new Sass($sourcePath);
 	$contents = $sass->parse();
 
+	if(is_null($destination)) {
+		return $contents;
+	}
 	$destination = preg_replace("/\.scss$/", ".css", $destination);
 	return [
 		"Destination" => $destination,

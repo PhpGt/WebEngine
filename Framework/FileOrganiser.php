@@ -6,6 +6,7 @@
  */
 const CACHETYPE_MANIFEST = 1;
 const CACHETYPE_ASSET = 2;
+const CACHETYPE_STYLEFILES = 4;
 
 private $_wwwDir;
 private $_manifestList;
@@ -19,6 +20,7 @@ public function organise($domHead) {
 	$logger = Log::get();
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
+	$styleFilesCache = $this->checkCache(FileOrganiser::CACHETYPE_STYLEFILES);
 
 	// Store a reference to each file's source and destination.
 	$manifestSourceDest = array(
@@ -61,13 +63,21 @@ public function organise($domHead) {
 		}
 	}
 
+	// Allow non-css files (such as images, icons, etc.) to be stored in the
+	// Style directory.
+	$this->organiseStyleFiles();
+
 	if(!$manifestCache) {
-		$logger->trace("Manifest cache invalid");
+		$logger->trace("Manifest cache invalid.");
 		$this->organiseManifest($manifestSourceDest);
 	}
 	if(!$assetCache) {
-		$logger->trace("Asset cache invalid");
+		$logger->trace("Asset cache invalid.");
 		$this->organiseAsset();
+	}
+	if(!$styleFilesCache) {
+		$logger->trace("Style file cache invalid.");
+		$this->organiseStyleFiles();
 	}
 
 	return true;
@@ -112,7 +122,7 @@ $forceRecalc = false) {
 		return true;
 		break;
 
-	case FileOrganiser::CACHETYPE_ASSET;
+	case FileOrganiser::CACHETYPE_ASSET:
 		$isProduction = App_Config::isProduction();
 		$cacheFile = $this->_wwwDir . "/asset.cache";
 		if($isProduction && file_exists($cacheFile)) {
@@ -133,6 +143,48 @@ $forceRecalc = false) {
 
 		if($currentMd5 == $md5) {
 			return true;
+		}
+
+		return false;
+		break;
+	case FileOrganiser::CACHETYPE_STYLEFILES:
+		$styleDirectoryArray = array(
+			APPROOT . "/Style",
+			GTROOT . "/Style",
+		);
+		$styleFileArray = array();
+		$hashFile = APPROOT . "/www/StyleFiles.cache";
+		$isProduction = App_Config::isProduction();
+		$md5 = "";
+
+		if($isProduction && file_exists($hashFile)) {
+			return true;
+		}
+
+		foreach ($styleDirectoryArray as $styleDirectory) {
+			foreach ($iterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator($styleDirectory,
+					RecursiveDirectoryIterator::SKIP_DOTS),
+				RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+				if($item->isDir()) {
+					continue;
+				}
+				$pathName = $item->getPathName();
+
+				if(!preg_match("/\..?css$/", $pathName)) {
+					$styleFileArray[] = $pathName;
+					$md5 .= md5_file($pathName);
+				}
+			}
+		}
+
+		$md5 = md5($md5);
+		if(file_exists($hashFile)) {
+			$hash = trim(file_get_contents($hashFile));
+			if($hash == $md5) {
+				return true;
+			}
 		}
 
 		return false;
@@ -195,6 +247,62 @@ public function organiseAsset() {
 
 	$md5 = md5($md5);
 	file_put_contents(APPROOT . "/www/asset.cache", $md5);
+	return true;
+}
+
+/**
+ * All stylesheet files within the source directory will end in css, including
+ * those that are processed. This function copies all non-stylesheet files,
+ * such as images, into the www/Style directory and stores an md5 hash in
+ * www/StyleFiles.cache
+ */
+private function organiseStyleFiles() {
+	$styleDirectoryArray = array(
+		APPROOT . "/Style",
+		GTROOT . "/Style",
+	);
+	$styleFileArray = array();
+	$hashFile = APPROOT . "/www/StyleFiles.cache";
+	$md5 = "";
+
+	foreach ($styleDirectoryArray as $styleDirectory) {
+		foreach ($iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($styleDirectory,
+				RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+			if($item->isDir()) {
+				continue;
+			}
+			$pathName = $item->getPathName();
+
+			if(!preg_match("/\..?css$/", $pathName)) {
+				$styleFileArray[] = $pathName;
+				$md5 .= md5_file($pathName);
+			}
+		}
+	}
+
+	foreach ($styleFileArray as $styleFile) {
+		if(strpos($styleFile, APPROOT) === 0) {
+			$destination = substr($styleFile, strlen(APPROOT));
+		}
+		else if(strpos($styleFile, GTROOT) === 0) {
+			$destination = substr($styleFile, strlen(GTROOT));
+		}
+		else {
+			throw new Exception("Source style file can't be found: $styleFile");
+		}
+		$destination = APPROOT . "/www" . $destination;
+
+		if(!is_dir(dirname($destination))) {
+			mkdir(dirname($destination), 0775, true);
+		}
+		copy($styleFile, $destination);
+	}
+
+	$md5 = md5($md5);
+	file_put_contents($hashFile, $md5);
 	return true;
 }
 

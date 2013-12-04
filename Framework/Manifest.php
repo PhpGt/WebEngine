@@ -197,7 +197,8 @@ public function getMd5($forceRecalc = false) {
 			foreach ($filePathArray as $fp) {
 				if(file_exists($fp)) {
 					$found = true;
-					$md5 .= md5_file($fp);
+					$processed = ClientSideCompiler::process($fp, null);
+					$md5 .= md5($processed);
 				}
 			}
 			
