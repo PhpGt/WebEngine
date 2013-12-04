@@ -183,21 +183,30 @@ public function getMd5($forceRecalc = false) {
 
 	foreach ($this->_fileListArray as $type => $fileList) {
 		foreach ($this->_fileListArray[$type] as $filePath) {
+			$filePathArray = array();
 			if($filePath[0] == "/") {
-				$filePath = APPROOT . $filePath;
+				$filePathArray[] = APPROOT . $filePath;
+				$filePathArray[] = GTROOT . $filePath;
 			}
 			else {
-				$filePath = APPROOT . "/$type/$filePath";
+				$filePathArray[] = APPROOT . "/$type/$filePath";
+				$filePathArray[] = GTROOT . "/$type/$filePath";
 			}
 
-			if(!file_exists($filePath)) {
+			$found = false;
+			foreach ($filePathArray as $fp) {
+				if(file_exists($fp)) {
+					$found = true;
+					$md5 .= md5_file($fp);
+				}
+			}
+			
+			if(!$found) {
 				throw new Exception(
 					"Manifest references file that does not exist (" 
 						. $this->_name
 						. " manifest, $filePath).");
 			}
-
-			$md5 .= md5_file($filePath);
 		}
 	}
 

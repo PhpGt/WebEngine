@@ -16,6 +16,7 @@ public function __construct($manifestList) {
 }
 
 public function organise($domHead) {
+	$logger = Log::get();
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 
@@ -61,9 +62,11 @@ public function organise($domHead) {
 	}
 
 	if(!$manifestCache) {
+		$logger->trace("Manifest cache invalid");
 		$this->organiseManifest($manifestSourceDest);
 	}
 	if(!$assetCache) {
+		$logger->trace("Asset cache invalid");
 		$this->organiseAsset();
 	}
 
@@ -191,7 +194,7 @@ public function organiseAsset() {
 	}
 
 	$md5 = md5($md5);
-	file_put_contents("$assetWwwDir/asset.cache", $md5);
+	file_put_contents(APPROOT . "/www/asset.cache", $md5);
 	return true;
 }
 
@@ -237,19 +240,32 @@ private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
 			}
 		}
 
+		$sourcePathArray = array();
+
 		if($file[0] == "/") {
-			$sourcePath = APPROOT . "$file";
+			$sourcePathArray[] = APPROOT . "$file";
+			$sourcePathArray[] = GTROOT . "$file";
 		}
 		else {
-			$sourcePath = "$sourceDir/$file";
+			$sourcePathArray[] = APPROOT . "/$type/$file";
+			$sourcePathArray[] = GTROOT . "/$type/$file";
 		}
 
-		if(!file_exists($sourcePath)) {
-			continue;
-		}
+		$processed = null;
 
-		$fileContents = file_get_contents($sourcePath);
-		$processed = ClientSideCompiler::process($sourcePath, $file);
+		foreach ($sourcePathArray as $sourcePath) {
+			if(!file_exists($sourcePath)) {
+				continue;
+			}
+
+			$fileContents = file_get_contents($sourcePath);
+			$processed = ClientSideCompiler::process($sourcePath, $file);	
+		}
+		
+		if(is_null($processed)) {
+			throw new Exception("File Organiser's file can't be processed: "
+				. $file);
+		}
 
 		$result["DestinationList"][] = $processed["Destination"];
 
