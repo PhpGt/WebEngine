@@ -64,17 +64,15 @@ public function organise($domHead) {
 
 	// Allow non-css files (such as images, icons, etc.) to be stored in the
 	// Style directory.
-	if(!$manifestCache) {
-		$logger->trace("Manifest cache invalid.");
+	if(!$manifestCache
+	|| !$styleFilesCache) {
+		$logger->trace("Manifest/StyleFiles Cache invalid.");
 		$this->organiseManifest($manifestSourceDest);
+		$this->organiseStyleFiles();
 	}
 	if(!$assetCache) {
 		$logger->trace("Asset cache invalid.");
 		$this->organiseAsset();
-	}
-	if(!$styleFilesCache) {
-		$logger->trace("Style file cache invalid.");
-		$this->organiseStyleFiles();
 	}
 
 	return true;
@@ -108,13 +106,18 @@ $forceRecalc = false) {
 				$mtime_stylefiles = filemtime($styleFilesCache);
 				$mtime_source = $this->getStyleMTime();
 
-				if($mtime_stylefiles > $mtime_source) {
+				if($mtime_source <= $mtime_stylefiles) {
 					return true;
 				}
 			}
 
 			$manifestName = $manifest->getName();
-			$logger->trace("Getting manifest cache for $manifestName");
+			if(empty($manifestName)) {
+				$logger->trace("Getting manifest cache for DOM Head");
+			}
+			else {
+				$logger->trace("Getting manifest cache for $manifestName");
+			}
 			$manifestMd5 = $manifest->getMd5($forceRecalc);
 
 			if(is_null($manifestName)) {
@@ -124,7 +127,7 @@ $forceRecalc = false) {
 			if(!file_exists($manifestCache)) {
 				return false;
 			}
-	
+
 			if(!$isProduction) {
 				$md5Cache = trim(file_get_contents($manifestCache));
 
@@ -139,7 +142,7 @@ $forceRecalc = false) {
 
 	case FileOrganiser::CACHETYPE_ASSET:
 		$isProduction = App_Config::isProduction();
-		$cacheFile = $this->_wwwDir . "/asset.cache";
+		$cacheFile = $this->_wwwDir . "/Asset.cache";
 		if($isProduction && file_exists($cacheFile)) {
 			return true;
 		}
@@ -187,9 +190,11 @@ $forceRecalc = false) {
 				}
 				$pathName = $item->getPathName();
 
+				// We want an md5 of *all* files...
+				$md5 .= md5_file($pathName);
+				// ... but only want to copy non-stylesheets.
 				if(!preg_match("/\..?css$/", $pathName)) {
 					$styleFileArray[] = $pathName;
-					$md5 .= md5_file($pathName);
 				}
 			}
 		}
@@ -214,6 +219,21 @@ $forceRecalc = false) {
  */
 public function organiseManifest(
 $sourceDest = array("Script" => [], "Style" => [])) {
+
+	// Remove old cache files:
+	$skipFiles = ["StyleFiles.cache", "Asset.cache"];
+	$files = scandir($this->_wwwDir);
+	foreach ($files as $f) {
+		$fp = $this->_wwwDir . "/$f";
+		if($f[0] == "."
+		|| is_dir($fp)
+		|| in_array($f, $skipFiles)
+		|| !preg_match("/\.cache$/", $f)) {
+			continue;
+		}
+
+		unlink($fp);
+	}
 
 	foreach ($this->_manifestList as $manifest) {
 		$hash = $manifest->getMd5();
@@ -261,7 +281,7 @@ public function organiseAsset() {
 	}
 
 	$md5 = md5($md5);
-	file_put_contents(APPROOT . "/www/asset.cache", $md5);
+	file_put_contents(APPROOT . "/www/Asset.cache", $md5);
 	return true;
 }
 
@@ -291,9 +311,11 @@ private function organiseStyleFiles() {
 			}
 			$pathName = $item->getPathName();
 
+			// We want an md5 of *all* files...
+			$md5 .= md5_file($pathName);
+			// ... but only want to copy non-stylesheets.
 			if(!preg_match("/\..?css$/", $pathName)) {
 				$styleFileArray[] = $pathName;
-				$md5 .= md5_file($pathName);
 			}
 		}
 	}
@@ -321,6 +343,10 @@ private function organiseStyleFiles() {
 	return true;
 }
 
+/**
+ * Gets the latest time any files within the APPROOT/Style or GTROOT/Style
+ * directories have been modified.
+ */
 private function getStyleMTime() {
 	$styleDirectoryArray = array(
 		APPROOT . "/Style",
