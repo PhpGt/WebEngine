@@ -64,7 +64,6 @@ public function __construct($response, $config) {
 		throw new HttpError(404);
 	}
 
-
 	// Load the DOM from the current buffer, include any externally linked
 	// PageViews from <include> tags. 
 	$dom = new Dom($response->getBuffer());
@@ -89,10 +88,6 @@ public function __construct($response, $config) {
 		$toolWrapper,
 		$config["App"]);
 
-	$fileOrganiser = new FileOrganiser();
-	$clientSideCompiler = new ClientSideCompiler();
-	$cacheInvalid = $fileOrganiser->checkFiles();
-	
 	// Dispatch the all important "go" event, that is the entry point to
 	// each PageCode, and has access to all required components.
 	$response->dispatch(
@@ -107,20 +102,15 @@ public function __construct($response, $config) {
 		$dom,
 		$templateWrapper,
 		$toolWrapper);
-
-	$domHead = $dom["head"];
-	$manifest = new Manifest($domHead);
 	
-	if($cacheInvalid) {
-		$fileOrganiser->clean();
-		$fileOrganiser->update($domHead);
-		$fileOrganiser->processHead($domHead, $clientSideCompiler);
-		$fileOrganiser->tidyProcessed();
-		$fileOrganiser->compile($clientSideCompiler, $domHead);
-	}
-	else {
-		$fileOrganiser->processHead($domHead, $clientSideCompiler);
-	}
+	ini_set("display_errors", "On");
+	$domHead = $dom["head"][0];
+	
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organise($domHead);
+	
+	// TODO: Compile & minify.
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();

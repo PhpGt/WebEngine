@@ -1,5 +1,20 @@
 <?php class FileOrganiserTest extends PHPUnit_Framework_TestCase {
+	private $_html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Manifest Test</title>
+	<meta name="manifest" content="TestFileOrganiser" />
+</head>
+<body>
+	<h1>Manifest Test</h1>
+</body>
+</html>
+HTML;
+
 public function setUp() {
+	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
@@ -7,6 +22,8 @@ public function setUp() {
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
 	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
 	require_once(GTROOT . "/Framework/FileOrganiser.php");
+	require_once(GTROOT . "/Framework/Manifest.php");
+	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
 }
 
 public function tearDown() {
@@ -24,200 +41,235 @@ public function testInitialWebrootIsEmpty() {
 }
 
 /**
- * Test that cache is invalid when the www.cache file hasn't been made.
+ * Ensure that when source files change, the FileOrganiser reports back
+ * correctly that the manifests' caches are invalid.
  */
-public function testCheckFilesNew() {
-	$fileOrganiser = new FileOrganiser();
-	$cacheInvalid = $fileOrganiser->checkFiles();
+public function testCheckCache() {
+	$styleManifestPath = APPROOT . "/Style/TestFileOrganiser.manifest";
+	$styleManifest = "Main.css";
+	$styleContents = ["Main.css" => "* { color: red; }"];
 
-	$this->assertTrue($cacheInvalid, "Cache should be invalid.");
-}
+	$scriptManifestPath = APPROOT . "/Script/TestFileOrganiser.manifest";
+	$scriptManifest = "Main.js\nSubDir/Script.js";
+	$scriptContents = [
+		"Main.js" => "* { alert('Hello!') }",
+		"SubDir/Script.js" => "Stupid idiot, the above script will fail!",
+	];
 
-/**
- * Test that the cache is valid after FileOrganiser's methods have been called.
- * This tests that PHP.Gt places all required files into the www directory that
- * it should.
- */
-public function testCheckFilesWhenCached() {
-	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
-	file_put_contents(APPROOT . "/Script/Main.js", "alert('Script!')");
-	file_put_contents(APPROOT . "/Style/Main.css", "* { color: red; }");
-
-	$fileOrganiser = new FileOrganiser();
-	$cacheInvalid = $fileOrganiser->checkFiles();
-	$this->assertTrue($cacheInvalid);
-
-	if($cacheInvalid) {
-		$fileOrganiser->clean();
-		$fileOrganiser->update();
+	if(!is_dir(dirname($styleManifestPath))) {
+		mkdir(dirname($styleManifestPath, 0775, true));
+	}
+	file_put_contents($styleManifestPath, $styleManifest);
+	foreach ($styleContents as $fileName => $contents) {
+		$fileName = APPROOT . "/Style/$fileName";
+		if(!is_dir(dirname($fileName))) {
+			mkdir(dirname($fileName), 0775, true);
+		}
+		file_put_contents($fileName, $contents);
 	}
 
-	$cacheInvalid = $fileOrganiser->checkFiles();
-	$this->assertFalse($cacheInvalid);
+	if(!is_dir(dirname($scriptManifestPath))) {
+		mkdir(dirname($scriptManifestPath, 0775, true));
+	}
+	file_put_contents($scriptManifestPath, $scriptManifest);
+	foreach ($scriptContents as $fileName => $contents) {
+		$fileName = APPROOT . "/Script/$fileName";
+		if(!is_dir(dirname($fileName))) {
+			mkdir(dirname($fileName), 0775, true);
+		}
+		file_put_contents($fileName, $contents);
+	}
+
+	$html = $this->_html;
+	$dom = new Dom($html);
+	$domHead = $dom["html > head"][0];
+
+	$fileOrganiser = new FileOrganiser([new Manifest("TestFileOrganiser")]);
+
+	// Force the organisation of www directory for the first time.
+	$fileOrganiser->organiseManifest($domHead);
+
+	// Because of the forced organisation, cache muse be valid!
+	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$this->assertTrue($cacheValid, "Cache should be valid");
+
+	// Change a single file, then cache must be false!
+	reset($styleContents);
+	$styleFile = key($styleContents);
+	$styleFileToChange = APPROOT . "/Style/" . $styleFile;
+	$newContents = "* { color: blue; }";
+	file_put_contents($styleFileToChange, $newContents);
+
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
+	$this->assertFalse($cacheValid, "Cache should be invalid");
+
+	// Re-evaluate the cache again.
+	$fileOrganiser->organiseManifest($domHead);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
+	$this->assertTrue($cacheValid, "Cache should be valid");
+
+	// Remove a reference of a file within .manifest file.
+	// (now it doesn't reference Main.js).
+	$scriptManifest = "SubDir/Script.js";
+	file_put_contents($scriptManifestPath, $scriptManifest);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
+	$this->assertFalse($cacheValid, "Cache should be invalid");
+
+	// Re-evaluate the cache again.
+	$fileOrganiser->organiseManifest($domHead);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
+	$this->assertTrue($cacheValid, "Cache should be valid");
+
+	// Remove a source file, expect an exception.
+	unlink($styleFileToChange);
+	$caughtException = false;
+	try {
+		$cacheValid = $fileOrganiser->checkCache(
+			FileOrganiser::CACHETYPE_MANIFEST, true);		
+	}
+	catch(Exception $e) {
+		$caughtException = true;
+	}
+
+	$this->assertTrue($caughtException, "Caught exception");
 }
 
 /**
- * Test that the files in the source directories are actually copied to the
- * www directory.
+ * Ensures that manifests are purely optional.
  */
-public function testFilesAreCopied() {
-	$wwwDir = APPROOT . "/www";
-	$fileContents = array(
-		"Asset/SomeAssetData.dat" => "Asset content",
-		"Script/Main.js" => "alert('Script!')",
-		"Style/Main.css" => "* { color: red; }",
+public function testFileOrganiserNoManifest() {
+	$sourceFiles = array(
+		"Script" => [
+			"Main.js" =>
+				"alert('From main.js!');"
+		],
+		"Style" => [
+			"Main.css" => 
+				"body { background: red; }",
+		],
 	);
-	foreach ($fileContents as $subPath => $contents) {
-		file_put_contents(APPROOT . "/$subPath", $contents);
+	foreach ($sourceFiles as $type => $file) {
+		foreach ($file as $fileName => $contents) {
+			$filePath = APPROOT . "/$type/$fileName";
+
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $contents);
+		}
 	}
 
-	$fileOrganiser = new FileOrganiser();
-	$cacheInvalid = $fileOrganiser->checkFiles();
-
-	if($cacheInvalid) {
-		$fileOrganiser->clean();
-		$fileOrganiser->update();
-	}
-
-	foreach ($fileContents as $subPath => $contents) {
-		$filePath = "$wwwDir/$subPath";
-		$this->assertFileExists($filePath);
-		$actualContents = file_get_contents($filePath);
-		$this->assertEquals($contents, $actualContents);
-	}
-}
-
-/**
- * Test that client side files added to the DOM head by PageTools are handled
- * in the correct way.
- */
-public function testPageToolClientSide() {
-	$wwwDir = APPROOT . "/www";
-	$html = <<<HTML
+	$htmlNoManifest = <<<HTML
 <!doctype html>
 <html>
 <head>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" href="/Style/TheOnlyStyle.css" />
-	<script src="/Script/TheOnlyScript.js"></script>
+	<title>FileOrganiser Test</title>
+	<link rel="stylesheet" href="/Style/Main.css" />
+	<script src="/Script/Main.js"></script>
 </head>
 <body>
-	<h1>Test</h1>
+	<h1>FileOrganiser Test</h1>
 </body>
 </html>
 HTML;
-	$pageToolPhp = <<<PHP
-<?php class TestPT_PageTool extends PageTool {
-public function go(\$api, \$dom, \$template, \$tool) {
-	\$this->clientSide();
-}
-}#
-PHP;
-	$pageToolJs = "alert('This is from PageTool')";
-	$pageToolCss = "a { color: green; }";
+	
+	$dom = new Dom($htmlNoManifest);
+	$domHead = $dom["html > head"][0];
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organise($domHead);
 
-	$styleFile = APPROOT . "/Style/TheOnlyStyle.css";
-	if(!is_dir(dirname($styleFile))) {
-		mkdir(dirname($styleFile), 0775, true);
+	// The two client-side files should exist in www/Script and www/Style
+	// seeing as there is no named manifest declared.
+	foreach ($sourceFiles as $type => $file) {
+		foreach ($file as $fileName => $contents) {
+			$filePath = APPROOT . "/www/$type/$fileName";
+			$filePathSource = APPROOT . "/$type/$fileName";
+
+			$this->assertFileExists($filePath);
+			$this->assertFileEquals($filePathSource, $filePath);
+		}
 	}
-	$css = "p { color: red; }";
-	file_put_contents($styleFile, $css);
-
-	$scriptFile = APPROOT . "/Script/TheOnlyScript.js";
-	if(!is_dir(dirname($scriptFile))) {
-		mkdir(dirname($scriptFile), 0775, true);
-	}
-	$js = "alert('This is from the only script');";
-	file_put_contents($scriptFile, $js);
-
-	$pageToolPhpFile = APPROOT . "/PageTool/TestPT/TestPT.tool.php";
-	if(!is_dir(dirname($pageToolPhpFile))) {
-		mkdir(dirname($pageToolPhpFile), 0775, true);
-	}
-	file_put_contents($pageToolPhpFile, $pageToolPhp);
-
-	$pageToolScriptFile = APPROOT . "/PageTool/TestPT/Script/TestPT.tool.js";
-	if(!is_dir(dirname($pageToolScriptFile))) {
-		mkdir(dirname($pageToolScriptFile), 0775, true);
-	}
-	file_put_contents($pageToolScriptFile, $pageToolJs);
-
-	$pageToolStyleFile = APPROOT . "/PageTool/TestPT/Style/TestPT.tool.css";
-	if(!is_dir(dirname($pageToolStyleFile))) {
-		mkdir(dirname($pageToolStyleFile), 0775, true);
-	}
-	file_put_contents($pageToolStyleFile, $pageToolCss);
-
-	// Perform the basic actions usually performed by the Dispatcher object:
-	require_once(GTROOT . "/Framework/EmptyObject.php");
-	require_once(GTROOT . "/Framework/Component/PageToolWrapper.php");
-	require_once(GTROOT . "/Framework/PageTool.php");
-	$emptyObject = new EmptyObject();
-	$dom = new Dom($html);
-	$tool = new PageToolWrapper($emptyObject, $dom, $emptyObject);
-
-	$fileOrganiser = new FileOrganiser();
-	$clientSideCompiler = new ClientSideCompiler();
-	$cacheInvalid = $fileOrganiser->checkFiles();
-
-	if($cacheInvalid) {
-		$fileOrganiser->clean();
-	}
-	// Call the PageTool as it would be done in the app.
-	// Within the go method, the clientSide() method is called.
-	$testPT = $tool["TestPT"];
-	$testPT->go($emptyObject, $dom, $emptyObject, $emptyObject);
-
-	if($cacheInvalid) {
-		$fileOrganiser->update();
-		$domHead = $dom["head"][0];
-		$fileOrganiser->compile($clientSideCompiler, $domHead, true, false);
-	}
-
-	$combinedScriptFile = "$wwwDir/Script.js";
-	$combinedScript = file_get_contents($combinedScriptFile);
-	$combinedScript = preg_replace('/\s+/', '', $combinedScript);
-	$combinedStyleFile = "$wwwDir/Style.css";
-	$combinedStyle = file_get_contents($combinedStyleFile);
-	$combinedStyle = preg_replace('/\s+/', '', $combinedStyle);
-
-	$expectedScript = preg_replace('/\s+/', '', $js)
-		. preg_replace('/\s+/', '', $pageToolJs);
-	$expectedStyle = preg_replace('/\s+/', '', $css)
-		. preg_replace('/\s+/', '', $pageToolCss);
-
-	$this->assertEquals($expectedScript, $combinedScript);
-	$this->assertEquals($expectedStyle, $combinedStyle);
 }
 
 /**
- * Test that when source files are overwritten, it causes a cache invalidation,
- * and they are re-coppied to the www directory.
+ * Ensure that scss files are processed into css, and that javascript files
+ * expand server-side requirements.
  */
-public function testNewFilesCauseInvalid() {
-	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "Asset contents");
-	file_put_contents(APPROOT . "/Script/Main.js", "alert('Script!')");
-	file_put_contents(APPROOT . "/Style/Main.css", "* { color: red; }");
+public function testClientSideProcessing() {
+	$sourceFiles = array(
+		"Style" => [
+			"Main.scss" => 
+				"\$red = #fd2376;
+				@include SecondStyle",
+			"SecondStyle.scss" => 
+				"body { background \$red; }",
+		],
+	);
 
-	$fileOrganiser = new FileOrganiser();
-	$this->assertTrue($fileOrganiser->checkFiles());
+	foreach ($sourceFiles as $type => $file) {
+		foreach ($file as $fileName => $contents) {
+			$filePath = APPROOT . "/$type/$fileName";
 
-	$fileOrganiser->clean();
-	$fileOrganiser->update();
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $contents);
+		}
+	}
 
-	$cacheInvalid = $fileOrganiser->checkFiles();
-	$this->assertFalse($cacheInvalid);
+	$htmlNoManifest = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>FileOrganiser Test</title>
+	<link rel="stylesheet" href="/Style/Main.scss" />
+</head>
+<body>
+	<h1>FileOrganiser Test</h1>
+</body>
+</html>
+HTML;
+	
+	$dom = new Dom($htmlNoManifest);
+	$domHead = $dom["html > head"][0];
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$fileOrganiser->organise($domHead);
 
-	// Make a change to one of the files:
-	file_put_contents(APPROOT . "/Asset/SomeAssetData.dat", "New contents!");
-	$this->assertTrue($fileOrganiser->checkFiles());
+	// The link in the head should be renamed to css.
+	$linkEl = $domHead["link"][0];
+	$this->assertInstanceOf("DomEl", $linkEl);
+	$this->assertEquals("/Style/Main.css", $linkEl->getAttribute("href"));
+}
 
-	$fileOrganiser->clean();
-	$fileOrganiser->update();
+public function testFileOrganiserAsset() {
+	$assetFiles = array(
+		"/SimpleTextFile.txt" => "This is a test!",
+		"/Directory/AnotherFile.txt" => "Another test!",
+	);
+	$assetSourceDir = APPROOT . "/Asset";
+	foreach ($assetFiles as $fileName => $contents) {
+		$assetPath = $assetSourceDir . $fileName;
+		if(!is_dir(dirname($assetPath))) {
+			mkdir(dirname($assetPath), 0775, true);
+		}
+		file_put_contents($assetPath, $contents);
+	}
 
-	// Add another file:
-	file_put_contents(APPROOT . "/Script/Second.js", "location.reload()");
-	$this->assertTrue($fileOrganiser->checkFiles());
+	$fileOrganiser = new FileOrganiser([]);
+	$fileOrganiser->organise(null);
+
+	$assetWwwDir = APPROOT . "/www/Asset";
+	foreach ($assetFiles as $fileName => $contents) {
+		$this->assertFileExists("$assetWwwDir/$fileName");
+	}
 }
 
 }#
