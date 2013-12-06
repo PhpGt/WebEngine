@@ -79,6 +79,10 @@ public function getFiles() {
 		return $this->getFilesFromHead();
 	}
 
+	if(!empty($this->_fileListArray)) {
+		return $this->_fileListArray;
+	}
+
 	$this->_fileListArray = [
 		"Script" => array(),
 		"Style" => array(),
@@ -108,19 +112,38 @@ public function getFiles() {
 						continue;
 					}
 
+					// TODO: Check files exist before including them here.
+
 					$lf = substr($l, 0, stripos($l, "*"));
 					$this->_fileListArray[$type][] = $lf . $f;
 				}
 			}
 			else {
-				if(!file_exists("$dir/$l")) {
+				$filePathArray = array();
+
+				if($l[0] == "/") {
+					$filePathArray[] = APPROOT . $l;
+					$filePathArray[] = GTROOT . $l;
+				}
+				else {
+					$filePathArray[] = APPROOT . "$type/$l";
+					$filePathArray[] = GTROOT . "$type/$l";
+				}
+				$found = false;
+
+				foreach ($filePathArray as $fp) {
+					if(file_exists($fp)) {
+						$this->_fileListArray[$type][] = $fp;
+						$found = true;
+						break;
+					}
+				}
+				if(!$found) {
 					throw new Exception(
 						"File within Manifest or DOM head does not exist: "
-						. "$dir/$l");
+							. "$l");
 				}
-				$this->_fileListArray[$type][] = $l;				
 			}
-
 		}
 	}
 
