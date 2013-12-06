@@ -62,6 +62,7 @@ public function organise($domHead) {
 		}
 	}
 
+
 	// Allow non-css files (such as images, icons, etc.) to be stored in the
 	// Style directory.
 	if(!$manifestCache
@@ -241,6 +242,7 @@ $sourceDest = array("Script" => [], "Style" => [])) {
 		$manifestName = $manifest->getName();
 		$dirTypeArray = ["Script", "Style"];
 		$fileList = $manifest->getFiles();
+		var_dump($fileList);die("!!!");
 
 		foreach ($dirTypeArray as $dirType) {
 			$baseDir = $this->_wwwDir . "/$dirType";
@@ -403,6 +405,8 @@ private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
 		"DestinationList" => [],
 	);
 	$sourceDir = APPROOT . "/$type";
+
+	var_dump($fileList, $sourceDest);die();
 
 	foreach ($fileList as $file) {
 		// Because the dom head is already expanded by this point, the filename
