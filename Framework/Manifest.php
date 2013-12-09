@@ -46,7 +46,7 @@ public static function getList($domHead) {
 
 private $_name;
 private $_domHead;
-private $_fileListArray;
+private $_fileListArray = null;
 private $_md5;
 
 /**
@@ -75,12 +75,12 @@ public function getName() {
  * optional .manifest files.
  */
 public function getFiles() {
-	if(is_null($this->_name)) {
-		return $this->getFilesFromHead();
+	if(!is_null($this->_fileListArray)) {
+		return $this->_fileListArray;
 	}
 
-	if(!empty($this->_fileListArray)) {
-		return $this->_fileListArray;
+	if(is_null($this->_name)) {
+		return $this->getFilesFromHead();
 	}
 
 	$this->_fileListArray = [
@@ -206,31 +206,15 @@ public function getMd5($forceRecalc = false) {
 
 	foreach ($this->_fileListArray as $type => $fileList) {
 		foreach ($this->_fileListArray[$type] as $filePath) {
-			$filePathArray = array();
-			if($filePath[0] == "/") {
-				$filePathArray[] = APPROOT . $filePath;
-				$filePathArray[] = GTROOT . $filePath;
-			}
-			else {
-				$filePathArray[] = APPROOT . "/$type/$filePath";
-				$filePathArray[] = GTROOT . "/$type/$filePath";
-			}
-
-			$found = false;
-			foreach ($filePathArray as $fp) {
-				if(file_exists($fp)) {
-					$found = true;
-					$processed = ClientSideCompiler::process($fp, null);
-					$md5 .= md5($processed);
-				}
-			}
-			
-			if(!$found) {
+			if(!file_exists($filePath)) {
 				throw new Exception(
 					"Manifest references file that does not exist (" 
 						. $this->_name
 						. " manifest, $filePath).");
 			}
+				
+			$processed = ClientSideCompiler::process($filePath, null);
+			$md5 .= md5($processed);
 		}
 	}
 

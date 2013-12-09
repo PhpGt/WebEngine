@@ -220,7 +220,6 @@ $forceRecalc = false) {
  */
 public function organiseManifest(
 $sourceDest = array("Script" => [], "Style" => [])) {
-
 	// Remove old cache files:
 	$skipFiles = ["StyleFiles.cache", "Asset.cache"];
 	$files = scandir($this->_wwwDir);
@@ -242,7 +241,6 @@ $sourceDest = array("Script" => [], "Style" => [])) {
 		$manifestName = $manifest->getName();
 		$dirTypeArray = ["Script", "Style"];
 		$fileList = $manifest->getFiles();
-		var_dump($fileList);die("!!!");
 
 		foreach ($dirTypeArray as $dirType) {
 			$baseDir = $this->_wwwDir . "/$dirType";
@@ -406,7 +404,6 @@ private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
 	);
 	$sourceDir = APPROOT . "/$type";
 
-	var_dump($fileList, $sourceDest);die();
 
 	foreach ($fileList as $file) {
 		// Because the dom head is already expanded by this point, the filename
@@ -422,30 +419,15 @@ private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
 
 		$sourcePathArray = array();
 
-		if($file[0] == "/") {
-			$sourcePathArray[] = APPROOT . "$file";
-			$sourcePathArray[] = GTROOT . "$file";
-		}
-		else {
-			$sourcePathArray[] = APPROOT . "/$type/$file";
-			$sourcePathArray[] = GTROOT . "/$type/$file";
-		}
-
 		$processed = null;
 
-		foreach ($sourcePathArray as $sourcePath) {
-			if(!file_exists($sourcePath)) {
-				continue;
-			}
-
-			$fileContents = file_get_contents($sourcePath);
-			$processed = ClientSideCompiler::process($sourcePath, $file);	
-		}
-		
-		if(is_null($processed)) {
+		if(!file_exists($file)) {
 			throw new Exception("File Organiser's file can't be processed: "
 				. $file);
 		}
+
+		$fileContents = file_get_contents($file);
+		$processed = ClientSideCompiler::process($file, null);		
 
 		$result["DestinationList"][] = $processed["Destination"];
 
