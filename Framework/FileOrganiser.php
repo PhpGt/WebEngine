@@ -99,7 +99,7 @@ $forceRecalc = false) {
 			// Getting the md5 of a manifest is expensive because the md5 has
 			// to be calculated on the processed content.
 			// The StyleFiles.cache file represents all unprocessed files, in
-			// the APPROOT and GTROOT. If it's modified time is later than that
+			// the APPROOT and GTROOT. If its modified time is later than that
 			// of any source style file, it can be assumed no files have 
 			// changed.
 			$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
