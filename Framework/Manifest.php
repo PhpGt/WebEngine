@@ -16,10 +16,10 @@ public static $headElementDetails = [
 	],
 ];
 
-private static $headElementSourceMap = [
+public static $headElementSourceMap = [
 	"/\.scss$/" => ".css",
 ];
-private static $headElementDestMap = [
+public static $headElementDestMap = [
 	"/\.css$/" => ".scss",
 ];
 

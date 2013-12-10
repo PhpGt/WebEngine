@@ -415,7 +415,6 @@ private function processCopy($fileList, $destDir, $type) {
 			}
 		}
 
-		$fileContents = file_get_contents($file);
 		$processed = ClientSideCompiler::process($file);	
 
 		// $destDir may contain the name of the manifest in the directory name.
@@ -436,15 +435,25 @@ private function processCopy($fileList, $destDir, $type) {
 		$relativeFile = substr($file, strlen($rootAndType));
 
 		$destinationPath = $destDir . $relativeFile;
+		foreach (Manifest::$headElementSourceMap as $match => $replacement) {
+			if(preg_match($match, $destinationPath)) {
+				$destinationPath = preg_replace(
+					$match, $replacement, $destinationPath);
+			}
+		}
+
+		if(strstr($file, "Main.scss")) {
+			// var_dump($file, $destinationPath);die();
+		}
 
 		if(!is_dir(dirname($destinationPath))) {
 			mkdir(dirname($destinationPath), 0775, true);
 		}
 
-		file_put_contents(
-			$destinationPath, 
-			$processed
-		);
+		if(false === file_put_contents($destinationPath, $processed)) {
+			throw new Exception(
+				"File Organiser failed writing file $destinationPath");
+		}
 	}
 }
 
