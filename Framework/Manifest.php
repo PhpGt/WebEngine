@@ -319,10 +319,7 @@ public function getMd5($forceRecalc = false) {
 public function expandHead($type, $domHead, $wwwDir) {
 	$myMeta = $domHead->xPath(
 		".//meta[@name='manifest' and @content='{$this->_name}']");
-
-
 	$elDetails = self::$headElementDetails[$type];
-
 
 	// For manifests that represent actual script/link elements in the head,
 	// without using a .manifest file:
@@ -364,6 +361,13 @@ public function expandHead($type, $domHead, $wwwDir) {
 			}
 
 			$publicPath .= $file;
+
+			foreach(Manifest::$headElementSourceMap as $match => $replacement) {
+				if(preg_match($match, $publicPath)) {
+					$publicPath = preg_replace(
+						$match, $replacement, $publicPath);
+				}
+			}
 			
 			$el = $domHead->_dom->createElement($elDetails["TagName"]);
 			$el->setAttribute($elDetails["SourceAttr"], $publicPath);
