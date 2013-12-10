@@ -20,6 +20,9 @@ public function offsetExists($offset) {
 public function offsetGet($offset) {
 	if($this->offsetExists($offset)) {
 		$domEl = $this->_templateArray[$offset];
+		if($domEl->tagName == "template") {
+			$domEl = $domEl->firstChild;
+		}
 		return $domEl->cloneNode(true);
 	}
 
