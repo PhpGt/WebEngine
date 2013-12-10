@@ -108,7 +108,7 @@ private function displayError($code, $data = array("")) {
 	}
 
 	$logLevel = "INFO";
-	$logger = Log::get("PhpGt");
+	$logger = Log::get();
 	foreach ($this->_errorLogLevels as $key => $value) {
 		if(in_array($code, $value)) {
 			$logLevel = $key;	
