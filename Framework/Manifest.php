@@ -6,17 +6,45 @@
 public static $headElementDetails = [
 	"Script" => [
 		"TagName" => "script",
-		"Type" => "Script",
 		"SourceAttr" => "src",
 		"ReqAttr" => [],
 	],
 	"Style" => [
 		"TagName" => "link",
-		"Type" => "Style",
 		"SourceAttr" => "href",
 		"ReqAttr" => ["rel" => "stylesheet"],
 	],
 ];
+
+private static $headElementSourceMap = [
+	"/\.scss$/" => ".css",
+];
+private static $headElementDestMap = [
+	"/\.css$/" => ".scss",
+];
+
+/**
+ * Rewrites the source attribute of a given DOM element according to the 
+ * $headElementSourceMap lookup.
+ */
+public static function headElementRename($tag) {
+	foreach (self::$headElementDetails as $tagName => $details) {
+		if($details["TagName"] != $tag->tagName) {
+			continue;
+		}
+
+		$source = $tag->getAttribute(self::$headElementDetails["SourceAttr"]);
+		foreach (self::$headElementSourceMap as $match => $replacement) {
+			if (preg_match($match, $source)) {
+				$source = preg_replace($match, $replacement, $source);
+				$tag->setAttribute(
+					self::$headElementDetails["SourceAttr"],
+					$source
+				);
+			}
+		}
+	}
+}
 
 /**
  * Static cuntion that returns an array of Manifest objects. The first element
@@ -75,6 +103,7 @@ public function getName() {
  * optional .manifest files.
  */
 public function getFiles() {
+	// Allow caching the file list from previous calls.
 	if(!is_null($this->_fileListArray)) {
 		return $this->_fileListArray;
 	}
@@ -90,11 +119,13 @@ public function getFiles() {
 
 	foreach ($this->_fileListArray as $type => $fileList) {
 		$dir = APPROOT . "/$type";
-		$mfFile = "$dir/" . $this->_name . ".manifest";
 
+		// Manifest files are not required. If one is not found, continue.
+		$mfFile = "$dir/" . $this->_name . ".manifest";
 		if(!is_file($mfFile)) {
 			continue;
 		}
+
 		$lines = file($mfFile);
 		foreach ($lines as $l) {
 			// Skip empty or comment lines.
@@ -104,45 +135,60 @@ public function getFiles() {
 				continue;
 			}
 
-			if(substr($l, -1) == "*") {
-				// If * has been given, add all files in directory.
-				$innerFiles = scandir("$dir/" . dirname($l));
-				foreach ($innerFiles as $f) {
-					if($f[0] == ".") {
+			$filePathArray = array();
+
+			// If absolute path is given, treat base dir as APP/GT root.
+			if($l[0] == "/") {
+				$filePathArray[] = APPROOT . $l;
+				$filePathArray[] = GTROOT . $l;
+			}
+			// Otherwise treat base dir as Script/Style directory.
+			else {
+				$filePathArray[] = APPROOT . "/$type/$l";
+				$filePathArray[] = GTROOT . "/$type/$l";
+			}
+
+			$found = false;
+
+			// Look in all possible directories, throw exception if missing.
+			foreach ($filePathArray as $fp) {
+				if(substr($l, -1) == "*") {
+					$starDir = "$dir/" . dirname($l);
+					if(!is_dir($starDir)) {
 						continue;
 					}
 
-					// TODO: Check files exist before including them here.
+					// If * has been given, add all files in directory.
+					$innerFiles = scandir($starDir);
+					foreach ($innerFiles as $f) {
+						if($f[0] == ".") {
+							continue;
+						}
 
-					$lf = substr($l, 0, stripos($l, "*"));
-					$this->_fileListArray[$type][] = $lf . $f;
-				}
-			}
-			else {
-				$filePathArray = array();
-
-				if($l[0] == "/") {
-					$filePathArray[] = APPROOT . $l;
-					$filePathArray[] = GTROOT . $l;
+						$innerDir = substr($fp, 0, stripos($fp, "*"));
+						$innerPath = $innerDir . $f;
+						
+						if(!file_exists($innerPath)) {
+							continue;
+						}
+						
+						$this->_fileListArray[$type][] = $innerPath;
+						$found = true;
+					}
 				}
 				else {
-					$filePathArray[] = APPROOT . "$type/$l";
-					$filePathArray[] = GTROOT . "$type/$l";
-				}
-				$found = false;
-
-				foreach ($filePathArray as $fp) {
 					if(file_exists($fp)) {
 						$this->_fileListArray[$type][] = $fp;
 						$found = true;
 						break;
-					}
+					}					
 				}
-				if(!$found) {
-					throw new Exception(
-						"File within Manifest or DOM head does not exist: "
-							. "$l");
-				}
+			}
+
+			if(!$found) {
+				throw new Exception(
+					"File within Manifest or DOM head does not exist: "
+						. "$l");
 			}
 		}
 	}
@@ -150,6 +196,12 @@ public function getFiles() {
 	return $this->_fileListArray;
 }
 
+/**
+ * Like the getFiles() function, this function fills the internal fileListArray
+ * with a list of all files represented by the manifest. The difference is that
+ * this function builds its list of files up from the actual dom head elements.
+ * Only to be used as an internal function, for when a manifest is nameless.
+ */
 private function getFilesFromHead() {
 	$attributes = [
 		"script" => self::$headElementDetails["Script"],
@@ -162,6 +214,7 @@ private function getFilesFromHead() {
 	foreach ($scriptLinkElements as $scriptLink) {
 		$tag = $scriptLink->tagName;
 		$attributeData = $attributes[$tag];
+		$type = array_search($attributeData, self::$headElementDetails);
 
 		$skipThisElement = false;
 
@@ -185,8 +238,33 @@ private function getFilesFromHead() {
 			continue;
 		}
 
-		$source = $scriptLink->getAttribute($attributeData["SourceAttr"]);
-		$this->_fileListArray[$attributeData["Type"]][] = $source;
+		$publicSource = $scriptLink->getAttribute($attributeData["SourceAttr"]);
+		$source = null;
+
+		$sourceDirectoryArray = [
+			APPROOT,
+			GTROOT,
+		];
+		foreach ($sourceDirectoryArray as $sourceDirectory) {
+			$sourcePath = $sourceDirectory . $publicSource;
+			if(file_exists($sourcePath)) {
+				$source = $sourcePath;
+				break;
+			}
+
+			foreach(self::$headElementDestMap as $match => $replacement) {
+				if(preg_match($match, $sourcePath)) {
+					$replacedPath = preg_replace(
+						$match, $replacement, $sourcePath);
+					if(file_exists($replacedPath)) {
+						$source = $replacedPath;
+						break 2;
+					}
+				}
+			}
+		}
+
+		$this->_fileListArray[$type][] = $source;
 	}
 
 	return $this->_fileListArray;
@@ -205,6 +283,7 @@ public function getMd5($forceRecalc = false) {
 	$this->getFiles();
 
 	foreach ($this->_fileListArray as $type => $fileList) {
+
 		foreach ($this->_fileListArray[$type] as $filePath) {
 			if(!file_exists($filePath)) {
 				throw new Exception(
@@ -214,7 +293,7 @@ public function getMd5($forceRecalc = false) {
 			}
 				
 			$processed = ClientSideCompiler::process($filePath, null);
-			$md5 .= md5($processed);
+			$md5 .= md5(trim($processed));
 		}
 	}
 
@@ -223,22 +302,44 @@ public function getMd5($forceRecalc = false) {
 }
 
 /**
- * 
+ * A manifest can be represented by one or more meta tags in the dom head. This
+ * function replaces the meta tag matching the manifest's name with the actual
+ * script and link tags.
+ *
+ * For manifests that represent that _actual_ dom head, without a manifest
+ * file, this function simply renames the file extension of particular paths 
+ * that are to be processed (for example, /Script/Main.scss => /Script/Main.css)
+ *
+ * @param string $type Either 'Script' or 'Style', representing the type of 
+ * manifest expansion to perform.
+ * @param DomEl $domHead The head element in the current DOM.
+ * @param string $wwwDir The output base directory within www root.
  */
-public function expandHead($type, $pathList, $domHead) {
+public function expandHead($type, $domHead, $wwwDir) {
 	$myMeta = $domHead->xPath(
 		".//meta[@name='manifest' and @content='{$this->_name}']");
+
+
 	$elDetails = self::$headElementDetails[$type];
+
+
+	// For manifests that represent actual script/link elements in the head,
+	// without using a .manifest file:
 	if($myMeta->length == 0 
 	&& is_null($this->_name)) {
 		$tagName = $elDetails["TagName"];
 		$sourceAttr = $elDetails["SourceAttr"];
 
-		foreach ($pathList as $path) {
-			$source = $path["Source"];
-			$tagMatch = $domHead->xPath(
-				"./{$tagName}[@{$sourceAttr}='{$source}']");
-			$tagMatch->setAttribute($sourceAttr, $path["Destination"]);
+		// Find all elements with required attributes:
+		$tagMatch = $domHead[$tagName];
+		foreach ($tagMatch as $tag) {
+			foreach ($elDetails["ReqAttr"] as $key => $value) {
+				if($tag->hasAttribute($key)
+				&& $tag->getAttribute($key) == $value) {
+					// Rename the source attribute according to lookup:
+					self::headElementRename($tag);
+				}
+			}
 		}
 	}
 	else {
@@ -250,16 +351,20 @@ public function expandHead($type, $pathList, $domHead) {
 			$publicPath .= "_" . $this->_name . "/";
 		}
 
-		foreach ($pathList as $path) {
-			$destination = $path["Destination"];
-			
-			if(strpos($destination, "/$type") === 0) {
-				$destination = substr($destination, strlen("/$type"));
+		$fileList = $this->getFiles();
+		foreach ($fileList[$type] as $file) {
+			// Each path in $fileList is absolute on disk - need to strip off
+			// the APPROOT or GTROOT prefix.
+
+			if(strpos($file, APPROOT . "/$type/") === 0) {
+				$file = substr($file, strlen(APPROOT . "/$type/"));
+			}
+			else if(strpos($file, GTROOT . "/$type/") === 0) {
+				$file = substr($file, strlen(GTROOT . "/$type/"));
 			}
 
-			$publicPath .= $destination;
-			$publicPath = str_replace("//", "/", $publicPath);
-
+			$publicPath .= $file;
+			
 			$el = $domHead->_dom->createElement($elDetails["TagName"]);
 			$el->setAttribute($elDetails["SourceAttr"], $publicPath);
 
@@ -268,6 +373,7 @@ public function expandHead($type, $pathList, $domHead) {
 			}
 			$domHead->insertBefore($el, $myMeta->node);
 		}
+
 		$myMeta->remove();
 	}
 

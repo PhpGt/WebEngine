@@ -17,6 +17,8 @@ public function setUp() {
 	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
+	require_once(GTROOT . "/Class/Log/Log.class.php");
+	require_once(GTROOT . "/Class/Log/Logger.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
 	require_once(GTROOT . "/Framework/Component/DomEl.php");
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");

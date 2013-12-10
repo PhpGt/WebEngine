@@ -9,13 +9,20 @@ private static $_processMatches = array(
 
 /**
  * Perform the processing of files that require server-side processing. This
- * does not include minification/obfuscation, only the processing/expansion
- * of files such as scss or JavaScript files with server-side includes.
+ * does not include a minification/obfuscation step; only the processing and 
+ * expansion of files such as Sass CSS or JavaScript files with server-side 
+ * includes is processed.
  *
- * Returns an array with two keys: Destination (including possibly-changed
- * file extension) and Contents - the file contents to write.
+ * This function calls separate functions for each file type to process. This
+ * allows for easy future development.
+ *
+ * @param string $sourcePath Absolute path to source file on disk ready to 
+ * process.
+ *
+ * Returns a string representing the processed file's contents, ready to be 
+ * written to disk.
  */
-public static function process($sourcePath, $destination) {
+public static function process($sourcePath) {
 	if(!file_exists($sourcePath)) {
 		throw new Exception("Attempt to process missing file: $sourcePath");
 	}
@@ -25,27 +32,17 @@ public static function process($sourcePath, $destination) {
 	$processMethod = "process_$ext";
 
 	if(method_exists("ClientSideCompiler", $processMethod)) {
-		return ClientSideCompiler::$processMethod($sourcePath, $destination);
+		return ClientSideCompiler::$processMethod($sourcePath);
 	}
 
-	// Some files may not need processing:
-	$contents = file_get_contents($sourcePath);
-
-	if(is_null($destination)) {
-		return $contents;
-	}
-
-	return [
-		"Destination" => $destination,
-		"Contents" => $contents,
-	];
+	return file_get_contents($sourcePath);
 }
 
 /**
- * Recursive function. When null is passed as destination, will return just the
+ * Recursive function. When true is passed as recurse, will return just the
  * text content of the required JavaScript, including any sub-requires.
  */
-private static function process_js($sourcePath, $destination) {
+private static function process_js($sourcePath, $recurse = false) {
 	$contents = "";
 
 	if(!file_exists($sourcePath)) {
@@ -73,7 +70,7 @@ private static function process_js($sourcePath, $destination) {
 					continue;
 				}
 
-				$contents .= self::process_js("$path/$f", null) . "\n";
+				$contents .= self::process_js("$path/$f", true) . "\n";
 			}
 		}
 		else if(strpos($lineTrim, "//= require") === 0) {
@@ -85,7 +82,7 @@ private static function process_js($sourcePath, $destination) {
 				$path = dirname($sourcePath) . "/" . $path;
 			}
 
-			$contents .= self::process_js($path, null) . "\n";
+			$contents .= self::process_js($path, true) . "\n";
 		}
 		else {
 			$contents .= $line;
@@ -93,17 +90,11 @@ private static function process_js($sourcePath, $destination) {
 	}
 	fclose($fh);
 
-	if(is_null($destination)) {
-		return $contents;
-	}
-
-	return [
-		"Destination" => $destination,
-		"Contents" => $contents,
-	];
+	return $contents;
 }
 
 private static function process_scss($sourcePath, $destination) {
+	die("FIX SCSS PROCESSOR");
 	$sass = new Sass($sourcePath);
 	$contents = $sass->parse();
 
@@ -115,28 +106,6 @@ private static function process_scss($sourcePath, $destination) {
 		"Destination" => $destination,
 		"Contents" => $contents,
 	];
-}
-
-public static function getProcessDestinations($fileList) {
-	$result = array();
-
-	foreach ($fileList as $i => $file) {
-		$f = array();
-		$f["Source"] = $file;
-
-		foreach (self::$_processMatches as $match => $replace) {
-			if(preg_match($match, $file)) {
-				$f["Destination"] = preg_replace($match, $replace, $file);
-			}
-			else {
-				$f["Destination"] = $file;
-			}
-		}
-
-		$result[] = $f;
-	}
-
-	return $result;
 }
 
 }#

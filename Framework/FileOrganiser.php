@@ -22,12 +22,6 @@ public function organise($domHead) {
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 	$styleFilesCache = $this->checkCache(FileOrganiser::CACHETYPE_STYLEFILES);
 
-	// Store a reference to each file's source and destination.
-	$manifestSourceDest = array(
-		"Script" => [],
-		"Style" => [],
-	);
-
 	// The DOM Head needs expanding to point to the correct location of the 
 	// files within the www directory. This is necessary for these reasons:
 	// 1) Some files, such as .scss, are renamed to .css during processing.
@@ -47,17 +41,11 @@ public function organise($domHead) {
 				$baseDir .= "_$manifestName";
 			}
 
-			// Obtain a list of relative paths for all files within the current
-			// type.
-			$processDestinations = ClientSideCompiler::getProcessDestinations(
-				$fileList[$dirType]);
-			$manifestSourceDest[$dirType] = $processDestinations;
-
 			// Expand meta elements in DOM head to their actual files.
 			$manifest->expandHead(
-				$dirType, 
-				$processDestinations,
-				$domHead
+				$dirType,
+				$domHead,
+				$baseDir
 			);
 		}
 	}
@@ -68,7 +56,7 @@ public function organise($domHead) {
 	if(!$manifestCache
 	|| !$styleFilesCache) {
 		$logger->trace("Manifest/StyleFiles Cache invalid.");
-		$this->organiseManifest($manifestSourceDest);
+		$this->organiseManifest();
 		$this->organiseStyleFiles();
 	}
 	if(!$assetCache) {
@@ -218,8 +206,7 @@ $forceRecalc = false) {
  * Performs a process & copy operation from source client-side directories into
  * www directory. Processes any special files such as scss, etc.
  */
-public function organiseManifest(
-$sourceDest = array("Script" => [], "Style" => [])) {
+public function organiseManifest() {
 	// Remove old cache files:
 	$skipFiles = ["StyleFiles.cache", "Asset.cache"];
 	$files = scandir($this->_wwwDir);
@@ -250,8 +237,7 @@ $sourceDest = array("Script" => [], "Style" => [])) {
 			}
 			
 			$this->recursiveRemove($baseDir);
-			$processResult = $this->processCopy(
-				$fileList[$dirType], $baseDir, $dirType, $sourceDest[$dirType]);
+			$this->processCopy($fileList[$dirType], $baseDir, $dirType);
 		}
 
 		$md5File = (empty($manifestName))
@@ -394,50 +380,62 @@ private function getAssetList($dir) {
 
 /**
  * For each file referenced in each manifest, process the contents if
- * required, then write the processed contents to the public www directory.
- * After all files are processed.
+ * required, then write the processed contents into the public www directory.
+ *
+ * @param array $fileList A list of script/style files, already matched to an
+ * existing source file on disk. Source file may be in APPROOT or GTROOT, but
+ * may have a processed file extension (which will need re-mapping to original).
+ * @param string $destDir Full absolute path of the directory to output the 
+ * processed file to. This is a www/Script or www/Style directory, but may
+ * contain the name of the manifest.
+ * @param string $type Either "Script" or "Style".
  */
-private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
-	// TODO: No need for array result any more.
-	$result = array(
-		"DestinationList" => [],
-	);
-	$sourceDir = APPROOT . "/$type";
-
-
+private function processCopy($fileList, $destDir, $type) {
 	foreach ($fileList as $file) {
-		// Because the dom head is already expanded by this point, the filename
-		// stored in $file may not point to the source file - map it using
-		// the $sourceDest array.
-		if(!empty($sourceDest)) {
-			foreach ($sourceDest as $sd) {
-				if($sd["Destination"] == $file) {
-					$file = $sd["Source"];
-				}
-			}
-		}
-
-		$sourcePathArray = array();
-
 		$processed = null;
 
 		if(!file_exists($file)) {
-			throw new Exception("File Organiser's file can't be processed: "
-				. $file);
+			$found = false;
+			// Because the dom head is already expanded by this point, the 
+			// filename stored in $file may not point to the source file - 
+			// attempt to map it using the $headElementDestMap array.
+			foreach (Manifest::$headElementDestMap as $match => $replacement) {
+				if(preg_match($match, $file)) {
+					$fileReplaced = preg_replace($match, $replacement, $file);
+
+					if(file_exists($file)) {
+						$found = true;
+						$file = $fileReplaced;
+					}
+				}
+			}
+			if(!$found) {
+				throw new Exception("File Organiser's file can't be processed: "
+					. $file);				
+			}
 		}
 
 		$fileContents = file_get_contents($file);
-		$processed = ClientSideCompiler::process($file, null);		
+		$processed = ClientSideCompiler::process($file);	
 
-		$result["DestinationList"][] = $processed["Destination"];
-
-		if($processed["Destination"][0] == "/") {
-			$destinationPath = substr($destDir, 0, stripos($destDir, "/$type"))
-				. $processed["Destination"];
+		// $destDir may contain the name of the manifest in the directory name.
+		// $file is the absolute path to the source file.
+		// Manipulate $destDir and $file to point to the absolute path to the 
+		// public www file.
+		$relativeFile = "";
+		if(strpos($file, APPROOT) === 0) {
+			$rootAndType = APPROOT . "/$type";
+		}
+		else if(strpos($file, GTROOT) === 0) {
+			$rootAndType = GTROOT . "/$type";
 		}
 		else {
-			$destinationPath = $destDir . "/" . $processed["Destination"];			
+			throw new Exception("File Organiser can't find processed file: "
+				. $file);
 		}
+		$relativeFile = substr($file, strlen($rootAndType));
+
+		$destinationPath = $destDir . $relativeFile;
 
 		if(!is_dir(dirname($destinationPath))) {
 			mkdir(dirname($destinationPath), 0775, true);
@@ -445,11 +443,9 @@ private function processCopy($fileList, $destDir, $type, $sourceDest = null) {
 
 		file_put_contents(
 			$destinationPath, 
-			$processed["Contents"]
+			$processed
 		);
 	}
-
-	return $result;
 }
 
 /**
