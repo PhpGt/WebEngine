@@ -29,8 +29,8 @@ public function testSassProcesses() {
 	}
 	file_put_contents($scssFile, $scss);
 
-	$processed = ClientSideCompiler::process($scssFile, $scssFile . ".css");
-	$this->assertContains("body h1", $processed["Contents"]);
+	$processed = ClientSideCompiler::process($scssFile);
+	$this->assertContains("body h1", $processed);
 }
 
 
@@ -65,8 +65,7 @@ public function testJavaScriptRequires() {
 
 	$processed = ClientSideCompiler::process(APPROOT . "/Script/Main.js",
 		"Output.js");
-	$processedContents = $processed["Contents"];
-	$processedContents = preg_replace("/\s/", "", $processedContents);
+	$processed = preg_replace("/\s/", "", $processed);
 
 	$expected = "";
 	foreach ($js as $file => $contents) {
@@ -84,7 +83,7 @@ public function testJavaScriptRequires() {
 		if(empty($l)) {
 			continue;
 		}
-		$this->assertContains($l, $processedContents);
+		$this->assertContains($l, $processed);
 	}
 }
 

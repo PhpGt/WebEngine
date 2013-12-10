@@ -33,14 +33,11 @@ public static function headElementRename($tag) {
 			continue;
 		}
 
-		$source = $tag->getAttribute(self::$headElementDetails["SourceAttr"]);
+		$source = $tag->getAttribute($details["SourceAttr"]);
 		foreach (self::$headElementSourceMap as $match => $replacement) {
 			if (preg_match($match, $source)) {
 				$source = preg_replace($match, $replacement, $source);
-				$tag->setAttribute(
-					self::$headElementDetails["SourceAttr"],
-					$source
-				);
+				$tag->setAttribute($details["SourceAttr"],$source);
 			}
 		}
 	}
@@ -102,7 +99,11 @@ public function getName() {
  * Returns a list of all Script and Style files that are present within the
  * optional .manifest files.
  */
-public function getFiles() {
+public function getFiles($forceRecalc = false) {
+	if($forceRecalc) {
+		$this->_fileListArray = null;
+	}
+
 	// Allow caching the file list from previous calls.
 	if(!is_null($this->_fileListArray)) {
 		return $this->_fileListArray;
@@ -280,7 +281,7 @@ public function getMd5($forceRecalc = false) {
 	}
 
 	$md5 = "";
-	$this->getFiles();
+	$this->getFiles($forceRecalc);
 
 	foreach ($this->_fileListArray as $type => $fileList) {
 

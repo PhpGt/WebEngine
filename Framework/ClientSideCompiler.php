@@ -93,19 +93,9 @@ private static function process_js($sourcePath, $recurse = false) {
 	return $contents;
 }
 
-private static function process_scss($sourcePath, $destination) {
-	die("FIX SCSS PROCESSOR");
+private static function process_scss($sourcePath) {
 	$sass = new Sass($sourcePath);
-	$contents = $sass->parse();
-
-	if(is_null($destination)) {
-		return $contents;
-	}
-	$destination = preg_replace("/\.scss$/", ".css", $destination);
-	return [
-		"Destination" => $destination,
-		"Contents" => $contents,
-	];
+	return $sass->parse();
 }
 
 }#
