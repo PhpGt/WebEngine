@@ -344,18 +344,17 @@ public function expandHead($type, $domHead, $wwwDir) {
 		}
 	}
 	else {
-		$publicPath = "/$type";
-		if(empty($this->_name)) {
-			$publicPath .= "/";
-		}
-		else {
-			$publicPath .= "_" . $this->_name . "/";
-		}
-
 		$fileList = $this->getFiles();
 		foreach ($fileList[$type] as $file) {
 			// Each path in $fileList is absolute on disk - need to strip off
 			// the APPROOT or GTROOT prefix.
+			$publicPath = "/$type";
+			if(empty($this->_name)) {
+				$publicPath .= "/";
+			}
+			else {
+				$publicPath .= "_" . $this->_name . "/";
+			}
 
 			if(strpos($file, APPROOT . "/$type/") === 0) {
 				$file = substr($file, strlen(APPROOT . "/$type/"));
