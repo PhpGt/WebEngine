@@ -17,6 +17,8 @@ public function setUp() {
 	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
+	require_once(GTROOT . "/Class/Log/Log.class.php");
+	require_once(GTROOT . "/Class/Log/Logger.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
 	require_once(GTROOT . "/Framework/Component/DomEl.php");
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
@@ -99,25 +101,29 @@ public function testCheckCache() {
 	$styleFileToChange = APPROOT . "/Style/" . $styleFile;
 	$newContents = "* { color: blue; }";
 	file_put_contents($styleFileToChange, $newContents);
-	
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertFalse($cacheValid, "Cache should be invalid");
 
 	// Re-evaluate the cache again.
 	$fileOrganiser->organiseManifest($domHead);
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertTrue($cacheValid, "Cache should be valid");
 
 	// Remove a reference of a file within .manifest file.
 	// (now it doesn't reference Main.js).
 	$scriptManifest = "SubDir/Script.js";
 	file_put_contents($scriptManifestPath, $scriptManifest);
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertFalse($cacheValid, "Cache should be invalid");
 
 	// Re-evaluate the cache again.
 	$fileOrganiser->organiseManifest($domHead);
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
+	$cacheValid = $fileOrganiser->checkCache(
+		FileOrganiser::CACHETYPE_MANIFEST, true);
 	$this->assertTrue($cacheValid, "Cache should be valid");
 
 	// Remove a source file, expect an exception.
@@ -125,7 +131,7 @@ public function testCheckCache() {
 	$caughtException = false;
 	try {
 		$cacheValid = $fileOrganiser->checkCache(
-			FileOrganiser::CACHETYPE_MANIFEST);		
+			FileOrganiser::CACHETYPE_MANIFEST, true);		
 	}
 	catch(Exception $e) {
 		$caughtException = true;
@@ -165,8 +171,8 @@ public function testFileOrganiserNoManifest() {
 <head>
 	<meta charset="utf-8" />
 	<title>FileOrganiser Test</title>
-	<link rel="stylesheet" href="/Main.css" />
-	<script src="/Main.js"></script>
+	<link rel="stylesheet" href="/Style/Main.css" />
+	<script src="/Script/Main.js"></script>
 </head>
 <body>
 	<h1>FileOrganiser Test</h1>
@@ -225,7 +231,7 @@ public function testClientSideProcessing() {
 <head>
 	<meta charset="utf-8" />
 	<title>FileOrganiser Test</title>
-	<link rel="stylesheet" href="/Main.scss" />
+	<link rel="stylesheet" href="/Style/Main.scss" />
 </head>
 <body>
 	<h1>FileOrganiser Test</h1>
@@ -241,9 +247,31 @@ HTML;
 
 	// The link in the head should be renamed to css.
 	$linkEl = $domHead["link"][0];
+	$this->assertInstanceOf("DomEl", $linkEl);
 	$this->assertEquals("/Style/Main.css", $linkEl->getAttribute("href"));
 }
 
-//public function testClientSideProcessingWithManifest() {
+public function testFileOrganiserAsset() {
+	$assetFiles = array(
+		"/SimpleTextFile.txt" => "This is a test!",
+		"/Directory/AnotherFile.txt" => "Another test!",
+	);
+	$assetSourceDir = APPROOT . "/Asset";
+	foreach ($assetFiles as $fileName => $contents) {
+		$assetPath = $assetSourceDir . $fileName;
+		if(!is_dir(dirname($assetPath))) {
+			mkdir(dirname($assetPath), 0775, true);
+		}
+		file_put_contents($assetPath, $contents);
+	}
+
+	$fileOrganiser = new FileOrganiser([]);
+	$fileOrganiser->organise(null);
+
+	$assetWwwDir = APPROOT . "/www/Asset";
+	foreach ($assetFiles as $fileName => $contents) {
+		$this->assertFileExists("$assetWwwDir/$fileName");
+	}
+}
 
 }#

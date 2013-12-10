@@ -16,6 +16,8 @@ public function setup() {
 	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
+	require_once(GTROOT . "/Class/Log/Log.class.php");
+	require_once(GTROOT . "/Class/Log/Logger.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
 	require_once(GTROOT . "/Framework/Component/DomEl.php");
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
@@ -162,6 +164,27 @@ public function testManifestFileNotFound() {
 }
 
 /**
+ * Client side files should be loadable between APPROOT and GTROOT
+ */
+public function testManifestSharesPhpGtFiles() {
+	$this->createManifestFiles("TestManifest", [
+		"Style" => "Gt.css",
+		"Script" => "Gt.js",
+	], []);
+
+	$domHead = $this->getDomHead();
+	$manifestList = Manifest::getList($domHead);
+	$fileOrganiser = new FileOrganiser($manifestList);
+	$success = false;
+	try {
+		$success = $fileOrganiser->organise($domHead);		
+	}
+	catch(Exception $e) {}
+
+	$this->assertTrue($success, "Organisation of Gt files.");
+}
+
+/**
  * Ensures that the md5 returned by the getMd5 function matches the md5 of
  * actual files mentioned in a .manifest file.
  */
@@ -184,7 +207,7 @@ public function testManifestMd5() {
 
 	foreach ($sourceContents["Script"] as $fileName => $contents) {
 		// Store the md5 of actual contents:
-		$md5 .= md5($contents);
+		$md5 .= md5(trim($contents));
 	}
 
 	$md5 = md5($md5);
@@ -220,6 +243,7 @@ public function testManifestHeadTagsReplaced() {
 	]);
 
 	$domHead = $this->getDomHead();
+	// Ensure we have one meta manifest tag, and NO script or link tags (yet!).
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
 	$this->assertEquals(1, $metaList->length);
 	$scriptStyleList = $domHead["script, link"];
@@ -230,11 +254,12 @@ public function testManifestHeadTagsReplaced() {
 	// done in the Manifest still (file organiser is used to get processed 
 	// names of files as their extensions may have to change).
 	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organiseManifest($domHead);
+	$fileOrganiser->organise($domHead);
 
+	// Ensure the meta manifest tag is now removed...
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
 	$this->assertEquals(0, $metaList->length);
-
+	// ...and that the correct number of script and link tags are created. 
 	$scriptStyleList = $domHead["script, link"];
 	$this->assertEquals(5, $scriptStyleList->length);
 
@@ -290,7 +315,7 @@ public function testManifestHeadTagsReplaced() {
 
 	$manifestList = Manifest::getList($domHead);
 	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organiseManifest($domHead);
+	$fileOrganiser->organise($domHead);
 
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
 	$this->assertEquals(0, $metaList->length);
