@@ -36,48 +36,7 @@ public $config = array(
 					// Set to another URL if a specific page deals with auth
 					// e.g. /Login.html so Login_PageCode performs auth.
 
-	"providers" => array( 
-		// openid providers
-		"OpenID" => array(
-			"enabled" => true
-		),
-
-		"Yahoo" => array( 
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ),
-		),
-		"AOL"  => array( 
-			"enabled" => true 
-		),
-		"Google" => array( 
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ), 
-		),
-		"Facebook" => array( 
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ), 
-		),
-		"Twitter" => array( 
-			"enabled" => true,
-			"keys"    => array ( "key" => "", "secret" => "" ) 
-		),
-		"Live" => array( // windows live
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ) 
-		),
-		"MySpace" => array( 
-			"enabled" => true,
-			"keys"    => array ( "key" => "", "secret" => "" ) 
-		),
-		"LinkedIn" => array( 
-			"enabled" => true,
-			"keys"    => array ( "key" => "", "secret" => "" ) 
-		),
-		"Foursquare" => array(
-			"enabled" => true,
-			"keys"    => array ( "id" => "", "secret" => "" ) 
-		),
-	),
+	"providers" => array(),
 
 	// if you want to enable logging, set 'debug_mode' to true then provide a 
 	// writable file by the web server on "debug_file"
