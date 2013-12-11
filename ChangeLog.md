@@ -3,6 +3,7 @@ v0.2.1
 Not yet released
 
 * Updated bundled PhpSass processor.
+* HTML5 <template> element introduced.
 * DomEl objects can call all native DOMNode methods correctly.
 * Session class implemented for easy namespace-setting within $_SESSION.
 * IDs used in the database are all signed integers.
