@@ -37,7 +37,7 @@ $code, $data = null, Exception $previous = null) {
 	}
 
 	if(is_null($data)
-	|| empty($_SESSION["PhpGt_Development"])) {
+	|| App_Config::isProduction()) {
 		if(array_key_exists($code, $this->_errorCodeMessage)) {
 			$data = $this->_errorCodeMessage[$code];
 		}		
@@ -155,7 +155,7 @@ private function displayError($code, $data = array("")) {
 					$ipNode->nodeValue = $_SERVER["REMOTE_ADDR"];
 				}
 				if(!is_null($traceNode)) {
-					if(!empty($_SESSION["PhpGt_Development"])) {
+					if(!App_Config::isProduction()) {
 						if(function_exists("xdebug_get_function_stack")) {
 							$stack = array_reverse(xdebug_get_function_stack());
 							foreach ($stack as $stackI) {

@@ -14,19 +14,10 @@ public $contentType;
 public $pageCodeStop = false;
 
 public function __construct($config, $t) {
+	$_SESSION["PhpGt_StartTime"] = $t;
 	date_default_timezone_set($config["App"]::getTimezone());
 	$this->contentType = "text/html";
 	session_start();
-	$_SESSION["PhpGt_StartTime"] = $t;
-
-	if($config["App"]::isProduction()) {
-		if(isset($_SESSION["PhpGt_Development"])) {
-			unset($_SESSION["PhpGt_Development"]);
-		}
-	}
-	else {
-		$_SESSION["PhpGt_Development"] = true;
-	}
 
 	// Allow language selection through special URI syntax.
 	$bd = BASEDIR;
