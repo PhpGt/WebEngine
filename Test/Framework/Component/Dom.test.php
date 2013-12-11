@@ -5,6 +5,8 @@ public function setup() {
 	require_once(GTROOT . "/Framework/Component/DomEl.php");
 	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
+	require_once(GTROOT . "/Class/Log/Log.class.php");
+	require_once(GTROOT . "/Class/Log/Logger.class.php");
 }
 
 public function testDomElInDom() {
@@ -41,6 +43,24 @@ public function testDomElNodeArgumentsAreConvertedToNodes() {
 
 	$this->assertEquals("child2", $paragraphs[0]->id);
 	$this->assertEquals("child1", $paragraphs[1]->id);
+}
+
+/**
+ * The $dom object can be used to xpath or css select inner dom nodes, but what
+ * if it is misused?
+ * $dom[""] or $dom[123] for example.
+ */
+public function testDomSelectorErrors() {
+	$dom = new Dom();
+	$caughtException = false;
+	try {
+		$nothing = $dom[""];		
+	}
+	catch(Exception $e) {
+		$caughtException = true;
+	}
+
+	$this->assertTrue($caughtException);
 }
 
 }#

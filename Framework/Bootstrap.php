@@ -79,6 +79,7 @@ while($filePath[0] == DS) {
 	$filePath = substr($filePath, 1);
 }
 $fileClass = str_replace(DS, "_", $filePath);
+$fileClass = str_replace("-", "", $fileClass);
 define("FILEPATH", $filePath);
 
 $appName = strstr($cwd, ".")
