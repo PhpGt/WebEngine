@@ -83,6 +83,15 @@ $forceRecalc = false) {
 
 	switch($type) {
 	case FileOrganiser::CACHETYPE_MANIFEST:
+		$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
+		$mtime_stylefiles = 0;
+		if(file_exists($styleFilesCache)) {
+			$mtime_stylefiles = filemtime($styleFilesCache);
+
+			if(Session::get("Gt.PageView.mtime") > $mtime_stylefiles) {
+				return false;
+			}
+		}
 		foreach ($this->_manifestList as $manifest) {
 			// Getting the md5 of a manifest is expensive because the md5 has
 			// to be calculated on the processed content.
@@ -90,14 +99,10 @@ $forceRecalc = false) {
 			// the APPROOT and GTROOT. If its modified time is later than that
 			// of any source style file, it can be assumed no files have 
 			// changed.
-			$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
-			if(file_exists($styleFilesCache)) {
-				$mtime_stylefiles = filemtime($styleFilesCache);
-				$mtime_source = $this->getStyleMTime();
-
-				if($mtime_source <= $mtime_stylefiles) {
-					return true;
-				}
+			$mtime_source = $this->getStyleMTime();
+			if($mtime_source <= $mtime_stylefiles) {
+				// When nothing in entire style directory has changed.
+				return true;
 			}
 
 			$manifestName = $manifest->getName();
