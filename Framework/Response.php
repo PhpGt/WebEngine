@@ -39,6 +39,11 @@ public function __construct($request) {
 	$mtimeFooter = $this->bufferPageView("Footer");
 
 	$mtimeMax = max($mtimeHeader, $mtimeView, $mtimeFooter);
+	Session::set("Gt.PageView.mtime", $mtimeMax);
+
+	// TODO: Storing directly on the session like this is deprecated. Use 
+	// Session::set instead. Leaving this here for now as there are 
+	// dependencies on this key elsewhere.
 	if(empty($_SESSION["PhpGt_Cache"])) {
 		$_SESSION["PhpGt_Cache"] = array();
 	}

@@ -10,6 +10,7 @@ const CACHETYPE_STYLEFILES = 4;
 
 private $_wwwDir;
 private $_manifestList;
+private $_mtime_stylefiles = 0;
 
 public function __construct($manifestList) {
 	$this->_wwwDir = APPROOT . "/www";
@@ -18,6 +19,7 @@ public function __construct($manifestList) {
 
 public function organise($domHead) {
 	$logger = Log::get();
+
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 	$styleFilesCache = $this->checkCache(FileOrganiser::CACHETYPE_STYLEFILES);
@@ -50,15 +52,22 @@ public function organise($domHead) {
 		}
 	}
 
+	// No need to do any organising if no style files have changed on disk.
+	if($this->haveStyleFilesChanged()) {
+		// Allow non-css files (such as images, icons, etc.) to be stored in the
+		// Style directory.
+		if(!$manifestCache
+		|| !$styleFilesCache) {
+			$logger->trace("Manifest/StyleFiles Cache invalid.");
+			$this->organiseManifest();
+			$this->organiseStyleFiles();
+		}
 
-	// Allow non-css files (such as images, icons, etc.) to be stored in the
-	// Style directory.
-	if(!$manifestCache
-	|| !$styleFilesCache) {
-		$logger->trace("Manifest/StyleFiles Cache invalid.");
-		$this->organiseManifest();
-		$this->organiseStyleFiles();
+		if(App_Config::isClientCompiled()) {
+			$this->compileManifest();
+		}
 	}
+
 	if(!$assetCache) {
 		$logger->trace("Asset cache invalid.");
 		$this->organiseAsset();
@@ -83,23 +92,17 @@ $forceRecalc = false) {
 
 	switch($type) {
 	case FileOrganiser::CACHETYPE_MANIFEST:
+		// Getting the md5 of a manifest is expensive because the md5 has
+		// to be calculated on the processed content.
+		// The StyleFiles.cache file represents all unprocessed files, in
+		// the APPROOT and GTROOT. If its modified time is later than that
+		// of any source style file, it can be assumed no files have 
+		// changed.
+		if(!$this->haveStyleFilesChanged()) {
+			return true;
+		}
+
 		foreach ($this->_manifestList as $manifest) {
-			// Getting the md5 of a manifest is expensive because the md5 has
-			// to be calculated on the processed content.
-			// The StyleFiles.cache file represents all unprocessed files, in
-			// the APPROOT and GTROOT. If its modified time is later than that
-			// of any source style file, it can be assumed no files have 
-			// changed.
-			$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
-			if(file_exists($styleFilesCache)) {
-				$mtime_stylefiles = filemtime($styleFilesCache);
-				$mtime_source = $this->getStyleMTime();
-
-				if($mtime_source <= $mtime_stylefiles) {
-					return true;
-				}
-			}
-
 			$manifestName = $manifest->getName();
 			if(empty($manifestName)) {
 				$logger->trace("Getting manifest cache for DOM Head");
@@ -329,6 +332,25 @@ private function organiseStyleFiles() {
 	return true;
 }
 
+private function haveStyleFilesChanged() {
+	if(App_Config::isClientCompiled()) {
+		if(!file_exists(APPROOT . "/www/" . ClientSideCompiler::CACHEFILE)) {
+			return true;
+		}
+	}
+	$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
+	if(!file_exists($styleFilesCache)) {
+		return true;
+	}
+
+	$this->_mtime_stylefiles = filemtime($styleFilesCache);
+	if(Session::get("Gt.PageView.mtime") > $this->_mtime_stylefiles) {
+		return true;
+	}
+
+	return false;
+}
+
 /**
  * Gets the latest time any files within the APPROOT/Style or GTROOT/Style
  * directories have been modified.
@@ -450,6 +472,12 @@ private function processCopy($fileList, $destDir, $type) {
 			throw new Exception(
 				"File Organiser failed writing file $destinationPath");
 		}
+	}
+}
+
+private function compileManifest() {
+	// TODO: MAKE IT COMPILE!
+	foreach($this->_manifestList as $manifest) {
 	}
 }
 

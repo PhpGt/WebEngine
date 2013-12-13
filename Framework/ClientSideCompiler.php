@@ -3,6 +3,8 @@
  * The ClientSideCompiler minifies/obfuscates source files.
  */
 
+const CACHEFILE = "Compiled.cache";
+
 private static $_processMatches = array(
 	"/\.scss$/" => ".css",
 );
