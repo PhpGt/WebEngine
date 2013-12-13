@@ -442,10 +442,6 @@ private function processCopy($fileList, $destDir, $type) {
 			}
 		}
 
-		if(strstr($file, "Main.scss")) {
-			// var_dump($file, $destinationPath);die();
-		}
-
 		if(!is_dir(dirname($destinationPath))) {
 			mkdir(dirname($destinationPath), 0775, true);
 		}
