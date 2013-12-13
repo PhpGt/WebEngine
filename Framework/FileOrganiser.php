@@ -444,6 +444,11 @@ private function processCopy($fileList, $destDir, $type) {
 		// Manipulate $destDir and $file to point to the absolute path to the 
 		// public www file.
 		$relativeFile = "";
+
+		// To test which directory the file resides in, strip APPROOT out of the
+		// path and then check if the 
+		// $testPath
+
 		if(strpos($file, APPROOT) === 0) {
 			$rootAndType = APPROOT . "/$type";
 		}
