@@ -348,7 +348,40 @@ private function haveStyleFilesChanged() {
 		return true;
 	}
 
-	return false;
+	$styleDirectoryArray = array(
+		APPROOT . "/Style",
+		GTROOT . "/Style",
+	);
+	$styleFileArray = array();
+	$md5 = "";
+	foreach ($styleDirectoryArray as $styleDirectory) {
+		foreach ($iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($styleDirectory,
+				RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+			if($item->isDir()) {
+				continue;
+			}
+			$pathName = $item->getPathName();
+
+			// We want an md5 of *all* files...
+			$md5 .= md5_file($pathName);
+			// ... but only want to copy non-stylesheets.
+			if(!preg_match("/\..?css$/", $pathName)) {
+				$styleFileArray[] = $pathName;
+			}
+		}
+	}
+
+	$md5 = md5($md5);
+	$md5_actual = trim(file_get_contents($styleFilesCache));
+
+	if($md5 == $md5_actual) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
