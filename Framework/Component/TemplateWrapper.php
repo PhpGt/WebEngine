@@ -23,7 +23,7 @@ public function offsetGet($offset) {
 		return $domEl->cloneNode(true);
 	}
 
-	return new EmptyObject();
+	throw new Exception("Template $offset does not exist.");
 }
 
 public function offsetSet($offset, $value) {
