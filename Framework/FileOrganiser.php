@@ -418,6 +418,10 @@ private function getStyleMTime() {
 private function getAssetList($dir) {
 	$fileList = array();
 
+	if(!is_dir($dir)) {
+		return $fileList;
+	}
+
 	foreach ($iterator = new RecursiveIteratorIterator(
 		new RecursiveDirectoryIterator($dir,
 			RecursiveDirectoryIterator::SKIP_DOTS),
