@@ -310,15 +310,13 @@ private function organiseStyleFiles() {
 	}
 
 	foreach ($styleFileArray as $styleFile) {
-		if(strpos($styleFile, APPROOT) === 0) {
-			$destination = substr($styleFile, strlen(APPROOT));
-		}
-		else if(strpos($styleFile, GTROOT) === 0) {
+		if(strpos($styleFile, GTROOT) === 0) {
 			$destination = substr($styleFile, strlen(GTROOT));
 		}
-		else {
-			throw new Exception("Source style file can't be found: $styleFile");
+		else if(strpos($styleFile, APPROOT) === 0) {
+			$destination = substr($styleFile, strlen(APPROOT));
 		}
+		
 		$destination = APPROOT . "/www" . $destination;
 
 		if(!is_dir(dirname($destination))) {
@@ -486,15 +484,11 @@ private function processCopy($fileList, $destDir, $type) {
 		// path and then check if the 
 		// $testPath
 
-		if(strpos($file, APPROOT) === 0) {
-			$rootAndType = APPROOT . "/$type";
-		}
-		else if(strpos($file, GTROOT) === 0) {
+		if(strpos($file, GTROOT) === 0) {
 			$rootAndType = GTROOT . "/$type";
 		}
-		else {
-			throw new Exception("File Organiser can't find processed file: "
-				. $file);
+		else if(strpos($file, APPROOT) === 0) {
+			$rootAndType = APPROOT . "/$type";
 		}
 		$relativeFile = substr($file, strlen($rootAndType));
 
