@@ -16,10 +16,10 @@ public static $headElementDetails = [
 	],
 ];
 
-private static $headElementSourceMap = [
+public static $headElementSourceMap = [
 	"/\.scss$/" => ".css",
 ];
-private static $headElementDestMap = [
+public static $headElementDestMap = [
 	"/\.css$/" => ".scss",
 ];
 
@@ -33,14 +33,11 @@ public static function headElementRename($tag) {
 			continue;
 		}
 
-		$source = $tag->getAttribute(self::$headElementDetails["SourceAttr"]);
+		$source = $tag->getAttribute($details["SourceAttr"]);
 		foreach (self::$headElementSourceMap as $match => $replacement) {
 			if (preg_match($match, $source)) {
 				$source = preg_replace($match, $replacement, $source);
-				$tag->setAttribute(
-					self::$headElementDetails["SourceAttr"],
-					$source
-				);
+				$tag->setAttribute($details["SourceAttr"],$source);
 			}
 		}
 	}
@@ -102,7 +99,11 @@ public function getName() {
  * Returns a list of all Script and Style files that are present within the
  * optional .manifest files.
  */
-public function getFiles() {
+public function getFiles($forceRecalc = false) {
+	if($forceRecalc) {
+		$this->_fileListArray = null;
+	}
+
 	// Allow caching the file list from previous calls.
 	if(!is_null($this->_fileListArray)) {
 		return $this->_fileListArray;
@@ -280,7 +281,7 @@ public function getMd5($forceRecalc = false) {
 	}
 
 	$md5 = "";
-	$this->getFiles();
+	$this->getFiles($forceRecalc);
 
 	foreach ($this->_fileListArray as $type => $fileList) {
 
@@ -318,10 +319,7 @@ public function getMd5($forceRecalc = false) {
 public function expandHead($type, $domHead, $wwwDir) {
 	$myMeta = $domHead->xPath(
 		".//meta[@name='manifest' and @content='{$this->_name}']");
-
-
 	$elDetails = self::$headElementDetails[$type];
-
 
 	// For manifests that represent actual script/link elements in the head,
 	// without using a .manifest file:
@@ -343,18 +341,17 @@ public function expandHead($type, $domHead, $wwwDir) {
 		}
 	}
 	else {
-		$publicPath = "/$type";
-		if(empty($this->_name)) {
-			$publicPath .= "/";
-		}
-		else {
-			$publicPath .= "_" . $this->_name . "/";
-		}
-
 		$fileList = $this->getFiles();
 		foreach ($fileList[$type] as $file) {
 			// Each path in $fileList is absolute on disk - need to strip off
 			// the APPROOT or GTROOT prefix.
+			$publicPath = "/$type";
+			if(empty($this->_name)) {
+				$publicPath .= "/";
+			}
+			else {
+				$publicPath .= "_" . $this->_name . "/";
+			}
 
 			if(strpos($file, APPROOT . "/$type/") === 0) {
 				$file = substr($file, strlen(APPROOT . "/$type/"));
@@ -364,6 +361,13 @@ public function expandHead($type, $domHead, $wwwDir) {
 			}
 
 			$publicPath .= $file;
+
+			foreach(Manifest::$headElementSourceMap as $match => $replacement) {
+				if(preg_match($match, $publicPath)) {
+					$publicPath = preg_replace(
+						$match, $replacement, $publicPath);
+				}
+			}
 			
 			$el = $domHead->_dom->createElement($elDetails["TagName"]);
 			$el->setAttribute($elDetails["SourceAttr"], $publicPath);

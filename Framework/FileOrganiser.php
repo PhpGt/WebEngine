@@ -10,6 +10,7 @@ const CACHETYPE_STYLEFILES = 4;
 
 private $_wwwDir;
 private $_manifestList;
+private $_mtime_stylefiles = 0;
 
 public function __construct($manifestList) {
 	$this->_wwwDir = APPROOT . "/www";
@@ -18,6 +19,7 @@ public function __construct($manifestList) {
 
 public function organise($domHead) {
 	$logger = Log::get();
+
 	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
 	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
 	$styleFilesCache = $this->checkCache(FileOrganiser::CACHETYPE_STYLEFILES);
@@ -50,15 +52,22 @@ public function organise($domHead) {
 		}
 	}
 
+	// No need to do any organising if no style files have changed on disk.
+	if($this->haveStyleFilesChanged()) {
+		// Allow non-css files (such as images, icons, etc.) to be stored in the
+		// Style directory.
+		if(!$manifestCache
+		|| !$styleFilesCache) {
+			$logger->trace("Manifest/StyleFiles Cache invalid.");
+			$this->organiseManifest();
+			$this->organiseStyleFiles();
+		}
 
-	// Allow non-css files (such as images, icons, etc.) to be stored in the
-	// Style directory.
-	if(!$manifestCache
-	|| !$styleFilesCache) {
-		$logger->trace("Manifest/StyleFiles Cache invalid.");
-		$this->organiseManifest();
-		$this->organiseStyleFiles();
+		if(App_Config::isClientCompiled()) {
+			$this->compileManifest();
+		}
 	}
+
 	if(!$assetCache) {
 		$logger->trace("Asset cache invalid.");
 		$this->organiseAsset();
@@ -83,23 +92,17 @@ $forceRecalc = false) {
 
 	switch($type) {
 	case FileOrganiser::CACHETYPE_MANIFEST:
+		// Getting the md5 of a manifest is expensive because the md5 has
+		// to be calculated on the processed content.
+		// The StyleFiles.cache file represents all unprocessed files, in
+		// the APPROOT and GTROOT. If its modified time is later than that
+		// of any source style file, it can be assumed no files have 
+		// changed.
+		if(!$this->haveStyleFilesChanged()) {
+			return true;
+		}
+
 		foreach ($this->_manifestList as $manifest) {
-			// Getting the md5 of a manifest is expensive because the md5 has
-			// to be calculated on the processed content.
-			// The StyleFiles.cache file represents all unprocessed files, in
-			// the APPROOT and GTROOT. If its modified time is later than that
-			// of any source style file, it can be assumed no files have 
-			// changed.
-			$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
-			if(file_exists($styleFilesCache)) {
-				$mtime_stylefiles = filemtime($styleFilesCache);
-				$mtime_source = $this->getStyleMTime();
-
-				if($mtime_source <= $mtime_stylefiles) {
-					return true;
-				}
-			}
-
 			$manifestName = $manifest->getName();
 			if(empty($manifestName)) {
 				$logger->trace("Getting manifest cache for DOM Head");
@@ -329,6 +332,58 @@ private function organiseStyleFiles() {
 	return true;
 }
 
+private function haveStyleFilesChanged() {
+	if(App_Config::isClientCompiled()) {
+		if(!file_exists(APPROOT . "/www/" . ClientSideCompiler::CACHEFILE)) {
+			return true;
+		}
+	}
+	$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
+	if(!file_exists($styleFilesCache)) {
+		return true;
+	}
+
+	$this->_mtime_stylefiles = filemtime($styleFilesCache);
+	if(Session::get("Gt.PageView.mtime") > $this->_mtime_stylefiles) {
+		return true;
+	}
+
+	$styleDirectoryArray = array(
+		APPROOT . "/Style",
+		GTROOT . "/Style",
+	);
+	$styleFileArray = array();
+	$md5 = "";
+	foreach ($styleDirectoryArray as $styleDirectory) {
+		foreach ($iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($styleDirectory,
+				RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST) as $item) {
+
+			if($item->isDir()) {
+				continue;
+			}
+			$pathName = $item->getPathName();
+
+			// We want an md5 of *all* files...
+			$md5 .= md5_file($pathName);
+			// ... but only want to copy non-stylesheets.
+			if(!preg_match("/\..?css$/", $pathName)) {
+				$styleFileArray[] = $pathName;
+			}
+		}
+	}
+
+	$md5 = md5($md5);
+	$md5_actual = trim(file_get_contents($styleFilesCache));
+
+	if($md5 == $md5_actual) {
+		return false;
+	}
+
+	return true;
+}
+
 /**
  * Gets the latest time any files within the APPROOT/Style or GTROOT/Style
  * directories have been modified.
@@ -362,6 +417,10 @@ private function getStyleMTime() {
 
 private function getAssetList($dir) {
 	$fileList = array();
+
+	if(!is_dir($dir)) {
+		return $fileList;
+	}
 
 	foreach ($iterator = new RecursiveIteratorIterator(
 		new RecursiveDirectoryIterator($dir,
@@ -415,7 +474,6 @@ private function processCopy($fileList, $destDir, $type) {
 			}
 		}
 
-		$fileContents = file_get_contents($file);
 		$processed = ClientSideCompiler::process($file);	
 
 		// $destDir may contain the name of the manifest in the directory name.
@@ -423,6 +481,11 @@ private function processCopy($fileList, $destDir, $type) {
 		// Manipulate $destDir and $file to point to the absolute path to the 
 		// public www file.
 		$relativeFile = "";
+
+		// To test which directory the file resides in, strip APPROOT out of the
+		// path and then check if the 
+		// $testPath
+
 		if(strpos($file, APPROOT) === 0) {
 			$rootAndType = APPROOT . "/$type";
 		}
@@ -436,15 +499,27 @@ private function processCopy($fileList, $destDir, $type) {
 		$relativeFile = substr($file, strlen($rootAndType));
 
 		$destinationPath = $destDir . $relativeFile;
+		foreach (Manifest::$headElementSourceMap as $match => $replacement) {
+			if(preg_match($match, $destinationPath)) {
+				$destinationPath = preg_replace(
+					$match, $replacement, $destinationPath);
+			}
+		}
 
 		if(!is_dir(dirname($destinationPath))) {
 			mkdir(dirname($destinationPath), 0775, true);
 		}
 
-		file_put_contents(
-			$destinationPath, 
-			$processed
-		);
+		if(false === file_put_contents($destinationPath, $processed)) {
+			throw new Exception(
+				"File Organiser failed writing file $destinationPath");
+		}
+	}
+}
+
+private function compileManifest() {
+	// TODO: MAKE IT COMPILE!
+	foreach($this->_manifestList as $manifest) {
 	}
 }
 
