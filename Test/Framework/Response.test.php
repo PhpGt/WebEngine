@@ -1,8 +1,13 @@
 <?php class ResponseTest extends PHPUnit_Framework_TestCase {
 
+private $_response;
+
 public function setup() {
 	removeTestApp();
 	createTestApp();
+
+	require_once GTROOT . "/Framework/Response.php";
+	$this->_response = new Response(null);
 }
 
 public function tearDown() {
@@ -21,8 +26,17 @@ public function testUrlFixed() {
 	}
 	file_put_contents($pageViewFile, "Contact page");
 
+	$originalPath = "/contact.html";
+	$fixedUrl = $this->_response->tryFixUrl($originalPath);
+	$this->assertEquals("/Contact.html", $fixedUrl);
+
 	$originalPath = "/contact";
-	header("Location: Test");
+	$fixedUrl = $this->_response->tryFixUrl($originalPath);
+	$this->assertEquals("/Contact.html", $fixedUrl);
+
+	$originalPath = "/cOnTaCt";
+	$fixedUrl = $this->_response->tryFixUrl($originalPath);
+	$this->assertEquals("/Contact.html", $fixedUrl);
 }
 
 }#

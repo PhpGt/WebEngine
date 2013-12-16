@@ -14,6 +14,10 @@ private $_pageCodeStop;
 public  $mtimeView;
 
 public function __construct($request) {
+	if(is_null($request)) {
+		return;
+	}
+
 	header("Content-Type: {$request->contentType}; charset=utf-8");
 	header("X-Powered-By: PHP.Gt Version " . VER);
 
@@ -34,7 +38,12 @@ public function __construct($request) {
 		// There will be a 404 error thrown after potential PageCode is invoked.
 		$ob = ob_get_contents();
 		ob_clean();
-		return $this->tryFixUrl();
+		$fixedUrl = $this->tryFixUrl();
+		if(false !== $fixedUrl) {
+			header("Location: $fixedUrl");
+			exit;
+		}
+		return;
 	}
 	$mtimeFooter = $this->bufferPageView("Footer");
 
@@ -61,8 +70,11 @@ public function __construct($request) {
  * 2) If directory is requested, try file of same name in parent directory (case
  * insensitive).
  */
-private function tryFixUrl() {
-	$path = $_SERVER["REQUEST_URI"];
+public function tryFixUrl($path = null) {
+	if(is_null($path)) {
+		$path = $_SERVER["REQUEST_URI"];
+	}
+
 	$currentPath = "/";
 
 	if(!empty(DIR)) {
@@ -88,7 +100,8 @@ private function tryFixUrl() {
 		// Explode DIR, fix case of each element.
 	}
 	// Fix case of 
-	var_dump(DIR);die();
+	// var_dump(DIR);die();
+	return false;
 }
 
 /**
