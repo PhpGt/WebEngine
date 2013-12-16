@@ -34,7 +34,7 @@ public function __construct($request) {
 		// There will be a 404 error thrown after potential PageCode is invoked.
 		$ob = ob_get_contents();
 		ob_clean();
-		return;
+		return $this->tryFixUrl();
 	}
 	$mtimeFooter = $this->bufferPageView("Footer");
 
@@ -52,6 +52,43 @@ public function __construct($request) {
 	$this->storeBuffer();
 
 	return;
+}
+
+/**
+ * Called internally when a PageView is not found for the requested URL.
+ * Look for PageViews matching the following conditions:
+ * 1) Same name, different case.
+ * 2) If directory is requested, try file of same name in parent directory (case
+ * insensitive).
+ */
+private function tryFixUrl() {
+	$path = $_SERVER["REQUEST_URI"];
+	$currentPath = "/";
+
+	if(!empty(DIR)) {
+		$dirArray = explode("/", DIR);
+		foreach ($dirArray as $dir) {
+			if(is_dir(APPROOT . "/PageView" . "$currentPath/$dir")) {
+				$currentPath .= "/$dir";
+				continue;
+			}
+
+			$fileArray = scandir($currentDir);
+			foreach ($fileArray as $f) {
+				if($f[0] == ".") {
+					continue;
+				}
+
+				$f = strtolower($f);
+				if(is_dir($f)) {
+					
+				}
+			}
+		}
+		// Explode DIR, fix case of each element.
+	}
+	// Fix case of 
+	var_dump(DIR);die();
 }
 
 /**
