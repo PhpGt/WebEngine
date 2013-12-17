@@ -256,9 +256,9 @@ public function testManifestHeadTagsReplaced() {
 	$fileOrganiser = new FileOrganiser($manifestList);
 	$fileOrganiser->organise($domHead);
 
-	// Ensure the meta manifest tag is now removed...
+	// Ensure the meta manifest tag is NOT removed...
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
-	$this->assertEquals(0, $metaList->length);
+	$this->assertEquals(1, $metaList->length);
 	// ...and that the correct number of script and link tags are created. 
 	$scriptStyleList = $domHead["script, link"];
 	$this->assertEquals(5, $scriptStyleList->length);
@@ -317,6 +317,9 @@ public function testManifestHeadTagsReplaced() {
 	$fileOrganiser = new FileOrganiser($manifestList);
 	$fileOrganiser->organise($domHead);
 
+	$toRemove = $domHead->xPath(
+		".//meta[@name='manifest' and @data-for-removal]");
+	$toRemove->remove();
 	$metaList = $domHead->xPath(".//meta[@name='manifest']");
 	$this->assertEquals(0, $metaList->length);
 

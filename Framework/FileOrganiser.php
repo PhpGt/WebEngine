@@ -56,8 +56,11 @@ public function organise($domHead) {
 
 	// The expand head function sets an attribute of data-for-removal when
 	// completed with the manifest.
-	$myMeta = $domHead->xPath(
-		".//meta[@name='manifest' and @data-for-removal]");
+	if(!is_null($domHead)) {
+		$toRemove = $domHead->xPath(
+			".//meta[@name='manifest' and @data-for-removal]");		
+		$toRemove->remove();
+	}
 
 	// No need to do any organising if no style files have changed on disk.
 	if($this->haveStyleFilesChanged()) {
