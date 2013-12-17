@@ -350,6 +350,7 @@ private function haveStyleFilesChanged() {
 
 	$this->_mtime_stylefiles = filemtime($styleFilesCache);
 	if(Session::get("Gt.PageView.mtime") > $this->_mtime_stylefiles) {
+		touch($styleFilesCache);
 		return true;
 	}
 
