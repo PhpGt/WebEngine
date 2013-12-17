@@ -378,7 +378,7 @@ public function expandHead($type, $domHead, $wwwDir) {
 			$domHead->insertBefore($el, $myMeta->node);
 		}
 
-		$myMeta->remove();
+		$myMeta->setAttribute("data-for-removal", true);
 	}
 
 }

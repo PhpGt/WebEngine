@@ -32,7 +32,9 @@ public function organise($domHead) {
 	foreach ($this->_manifestList as $manifest) {
 		$manifestName = $manifest->getName();
 
-		$dirTypeArray = ["Script", "Style"];
+		// This way round, because <link> elements should appear before 
+		// <script> elements in the dom head.
+		$dirTypeArray = ["Style", "Script"];
 		$fileList = $manifest->getFiles();
 
 		foreach ($dirTypeArray as $dirType) {
@@ -51,6 +53,11 @@ public function organise($domHead) {
 			);
 		}
 	}
+
+	// The expand head function sets an attribute of data-for-removal when
+	// completed with the manifest.
+	$myMeta = $domHead->xPath(
+		".//meta[@name='manifest' and @data-for-removal]");
 
 	// No need to do any organising if no style files have changed on disk.
 	if($this->haveStyleFilesChanged()) {
