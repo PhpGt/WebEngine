@@ -265,6 +265,11 @@ private function getFilesFromHead() {
 			}
 		}
 
+		if(is_null($source)) {
+			throw new Exception("File referenced in DOM head does not exist ("
+				. $publicSource . ")");
+		}
+
 		$this->_fileListArray[$type][] = $source;
 	}
 
@@ -353,11 +358,11 @@ public function expandHead($type, $domHead, $wwwDir) {
 				$publicPath .= "_" . $this->_name . "/";
 			}
 
-			if(strpos($file, APPROOT . "/$type/") === 0) {
-				$file = substr($file, strlen(APPROOT . "/$type/"));
-			}
-			else if(strpos($file, GTROOT . "/$type/") === 0) {
+			if(strpos($file, GTROOT . "/$type/") === 0) {
 				$file = substr($file, strlen(GTROOT . "/$type/"));
+			}
+			else if(strpos($file, APPROOT . "/$type/") === 0) {
+				$file = substr($file, strlen(APPROOT . "/$type/"));
 			}
 
 			$publicPath .= $file;
