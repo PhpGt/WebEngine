@@ -496,7 +496,7 @@ private function processCopy($fileList, $destDir, $type) {
 		// $testPath
 
 		if(strpos($file, GTROOT) === 0
-		&& !strstr($file, APPROOT)) {
+		&& strstr($file, APPROOT) !== 0) {
 			$rootAndType = GTROOT . "/$type";
 		}
 		else if(strpos($file, APPROOT) === 0) {
