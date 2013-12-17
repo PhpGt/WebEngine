@@ -220,6 +220,9 @@ private function getFilesFromHead() {
 		$skipThisElement = false;
 
 		foreach ($attributeData["ReqAttr"] as $key => $value) {
+			if($scriptLink->hasAttribute("data-manifest-ignore")) {
+				$skipThisElement = true;
+			}
 			if(!$scriptLink->hasAttribute($key)) {
 				$skipThisElement = true;
 				break;
