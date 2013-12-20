@@ -100,13 +100,32 @@ public function testCacheInvalidates() {
 		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
 	]);
 
-	$this->assertFalse($manifest->isCacheValid());
-
 	$fileOrganiser = new FileOrganiser($manifest);
+
+	$this->assertFalse($manifest->isCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleFilesCacheValid());
+
 	$fileOrganiser->organise();
 
 	$this->assertTrue($manifest->isCacheValid());
-	
+	$this->assertTrue($manifest->isCacheValid());
+	$this->assertTrue($fileOrganiser->isStyleFilesCacheValid());
+	$this->assertTrue($fileOrganiser->isStyleFilesCacheValid());
+
+	ManifestTest::putApprootFile([
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: blue;
+				}
+			}",
+	]);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
+	]);
+	$fileOrganiser = new FileOrganiser($manifest);
+	$this->assertFalse($fileOrganiser->isStyleFilesCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleFilesCacheValid());
 }
 
 /**
@@ -132,7 +151,56 @@ public function testCopyStyleFiles() {
  * StyleFiles cache along with all fingerprint directories should be removed.
  */
 public function testStyleFileModificationRemovesAllCaches() {
+	ManifestTest::putApprootFile([
+		"/Style/RedBody.css" => 
+			"body#red {
+				background: red;
+			}",
+		"/Style/BlueBody.css" =>
+			"body#blue {
+				background: blue;
+			}"
+	]);
+	$manifestRed = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/RedBody.css",],
+	]);
+	$manifestBlue = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/BlueBody.css",],
+	]);
 
+	$fingerprintRed = $manifestRed->getFingerprint();
+	$fileOrganiserRed = new FileOrganiser($manifestRed);
+	$copyDoneRed = $fileOrganiserRed->organise();
+
+	$this->assertTrue($manifestRed->isCacheValid());
+	$this->assertTrue($fileOrganiserRed->isStyleFilesCacheValid());
+	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintRed");
+
+	$fingerprintBlue = $manifestBlue->getFingerprint();
+	$fileOrganiserBlue = new FileOrganiser($manifestBlue);
+	$copyDoneBlue = $fileOrganiserBlue->organise();
+
+	$this->assertTrue($manifestBlue->isCacheValid());
+	$this->assertTrue($fileOrganiserBlue->isStyleFilesCacheValid());
+	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintRed");
+	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintBlue");
+
+	// Only change red's content.
+	ManifestTest::putApprootFile([
+		"/Style/RedBody.css" => 
+			"body#red {
+				background: red;
+				color: white;
+			}",
+	]);
+
+	$this->assertFalse($fileOrganiserRed->isStyleFilesCacheValid());
+	$this->assertFalse($fileOrganiserBlue->isStyleFilesCacheValid());
+
+	$copyDoneRed = $fileOrganiserRed->organise();
+
+	$this->assertTrue($manifestRed->isCacheValid());
+	$this->assertFalse($manifestBlue->isCacheValid());
 }
 
 /**
