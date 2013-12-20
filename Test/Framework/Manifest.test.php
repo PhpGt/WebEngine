@@ -281,7 +281,7 @@ public function testCacheValidity() {
 	$fingerprint = $manifest->getFingerprint();
 	
 	$this->assertFalse($manifest->isCacheValid());
-	mkdir(APPROOT . "/www/$fingerprint", 0775, true);
+	mkdir(APPROOT . "/www/Style_$fingerprint", 0775, true);
 	$this->assertTrue($manifest->isCacheValid());
 }
 

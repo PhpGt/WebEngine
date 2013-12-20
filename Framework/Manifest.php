@@ -85,7 +85,8 @@ public function getFingerprint() {
 		}
 	}
 
-	return md5($fingerprint);
+	$this->_fingerprint = md5($fingerprint);
+	return $this->_fingerprint;
 }
 
 /**
@@ -124,8 +125,16 @@ public function getFingerprintPath($source) {
  * as this manifest's fingerprint.
  */
 public function isCacheValid() {
-	$fingerprintDirectory = APPROOT . "/www/" . $this->getFingerprint();
-	return is_dir($fingerprintDirectory);
+	$fingerprintDirectoryArray = [
+		APPROOT . "/www/Script_" . $this->getFingerprint(),
+		APPROOT . "/www/Style_" . $this->getFingerprint(),
+	];
+	foreach ($fingerprintDirectoryArray as $fingerprintDirectory) {
+		if(is_dir($fingerprintDirectory)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**

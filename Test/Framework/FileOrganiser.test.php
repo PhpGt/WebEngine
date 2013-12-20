@@ -88,7 +88,25 @@ public function testProcessCopy() {
  * www directory.
  */
 public function testCacheInvalidates() {
+	ManifestTest::putApprootFile([
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: red;
+				}
+			}",
+	]);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
+	]);
 
+	$this->assertFalse($manifest->isCacheValid());
+
+	$fileOrganiser = new FileOrganiser($manifest);
+	$fileOrganiser->organise();
+
+	$this->assertTrue($manifest->isCacheValid());
+	
 }
 
 /**
