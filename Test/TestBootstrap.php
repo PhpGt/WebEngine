@@ -14,6 +14,8 @@ define("FILE",      "Index");
 define("EXT",       "html");
 
 require(GTROOT . "/Framework/Autoloader.php");
+require(GTROOT . "/Class/Log/Log.class.php");
+require(GTROOT . "/Class/Log/Logger.class.php");
 require(GTROOT . "/Config/Config.cfg.php");
 require(GTROOT . "/Config/App.cfg.php");
 require(GTROOT . "/Config/Database.cfg.php");

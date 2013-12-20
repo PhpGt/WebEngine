@@ -38,7 +38,7 @@ public function __construct($dom, $elArray = array()) {
 			}
 		}
 		else {
-			throw new HttpError(500, "Error creating DomElCollection.");
+			throw new Exception("Error creating DomElCollection.");
 			exit;
 		}
 	}

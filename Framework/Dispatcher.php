@@ -103,12 +103,10 @@ public function __construct($response, $config) {
 		$templateWrapper,
 		$toolWrapper);
 	
-	ini_set("display_errors", "On");
 	$domHead = $dom["head"][0];
-	
-	$manifestList = Manifest::getList($domHead);
-	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organise($domHead);
+	$manifest = new Manifest($domHead);
+	$fileOrganiser = new FileOrganiser($manifest);
+	$fileOrganiser->organise();
 
 	$dom->templateOutput($templateWrapper);
 	return $dom->flush();

@@ -1,14 +1,28 @@
 <?php final class ClientSideCompiler {
+
+public static $sourceMap = [
+	"/^(.+)\.scss$/" => "\$1.css",
+];
+
 /**
- * The ClientSideCompiler minifies/obfuscates source files.
+ * Loops over all matching patterns in the sourceMap above and replaces the
+ * given source with the corresponding replacement.
+ *
+ * Used to remove filenames that browsers can't understand, such as .scss=>.css
+ *
+ * @param $source string The input string to replace.
+ * @return string The replaced string, or original string if no replacement
+ * is necessary.
  */
+public static function renameSource($source) {
+	foreach (self::$sourceMap as $match => $replace) {
+		if(preg_match($match, $source)) {
+			return preg_replace($match, $replace, $source);
+		}
+	}
 
-const CACHEFILE = "Compiled.cache";
-
-private static $_processMatches = array(
-	"/\.scss$/" => ".css",
-);
-
+	return $source;
+}
 /**
  * Perform the processing of files that require server-side processing. This
  * does not include a minification/obfuscation step; only the processing and 
@@ -65,15 +79,17 @@ private static function process_js($sourcePath, $recurse = false) {
 				$path = dirname($sourcePath) . "/" . $path;
 			}
 
-			// TODO: Recursive directory requirement.
-			$files = scandir($path);
-			foreach ($files as $f) {
-				if($f[0] == ".") {
-					continue;
+			// Recursive directory requirement.
+			FileSystem::loopDir($path, $contents,
+			function($item, $iterator, &$contents) {
+				if($item->isDir()) {
+					return;
 				}
-
-				$contents .= self::process_js("$path/$f", true) . "\n";
-			}
+				if($item->getExtension() == "js") {
+					$contents .= ClientSideCompiler::process_js(
+						$item->getPathname(), true) . "\n";
+				}
+			});
 		}
 		else if(strpos($lineTrim, "//= require") === 0) {
 			$path = substr($lineTrim, strlen("//= require") + 1);
@@ -95,9 +111,13 @@ private static function process_js($sourcePath, $recurse = false) {
 	return $contents;
 }
 
-private static function process_scss($sourcePath) {
+private static function process_sass($sourcePath) {
 	$sass = new Sass($sourcePath);
-	return $sass->parse();
+	return $sass->parse();	
+}
+
+private static function process_scss($sourcePath) {
+	return self::process_sass($sourcePath);
 }
 
 }#
