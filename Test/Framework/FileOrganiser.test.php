@@ -219,9 +219,12 @@ public function testCopyAsset() {
 	$manifest = ManifestTest::createManifest();
 	$fileOrganiser = new FileOrganiser($manifest);
 
+	$this->assertFalse($fileOrganiser->isAssetFilesCacheValid());
+
 	$this->assertFileNotExists(APPROOT . "/www/Asset/ChristmasList.txt");
 	$fileOrganiser->organise();
 	$this->assertFileExists(APPROOT . "/www/Asset/ChristmasList.txt");
+	$this->assertTrue($fileOrganiser->isAssetFilesCacheValid());
 
 	removeTestApp();
 	createTestApp();
@@ -244,6 +247,19 @@ public function testCopyAsset() {
 	$this->assertFileExists(APPROOT . "/www/Asset/ChristmasList.txt");
 	$this->assertFileExists(
 		APPROOT . "/www/Asset/InnerDirectory/ShoppingList.txt");
+	$this->assertTrue($fileOrganiser->isAssetFilesCacheValid());
+
+	ManifestTest::putApprootFile([
+		"/Asset/InnerDirectory/ShoppingList.txt" =>
+			"Milk,
+			Pie,
+			Chocolate,
+			Pancakes!",
+	]);
+	$this->assertFalse($fileOrganiser->isAssetFilesCacheValid());
+
+	unlink(APPROOT . "/Asset/ChristmasList.txt");
+	$this->assertFalse($fileOrganiser->isAssetFilesCacheValid());
 }
 
 }#
