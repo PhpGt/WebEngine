@@ -32,4 +32,54 @@ $riFlags = RecursiveIteratorIterator::SELF_FIRST) {
 	return $returnArray;
 }
 
+/**
+ * Removes the provided file. If the file is a directory, remove it along with
+ * all of its contents.
+ *
+ * @param $file string The absolute path to remove.
+ * @return int|bool False on failure, otherwise will return the count of files
+ * removed.
+ */
+public static function remove($file) {
+	if(!file_exists($file)) {
+		return 0;
+	}
+
+	if(is_dir($file)) {
+		$count = 0;
+
+		self::loopDir($file, $count, 
+		function($item, $iterator, &$count) {
+			$pathname = $item->getPathname();
+			if($item->isDir()) {
+				if(rmdir($pathname)) {
+					$count++;
+				}
+			}
+			else {
+				if(unlink($pathname)) {
+					$count++;
+				}				
+			}
+		}, null,
+			RecursiveDirectoryIterator::SKIP_DOTS,
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		if(rmdir($file)) {
+			$count++;
+		}
+
+		return $count;
+	}
+	else {
+		if(unlink($file)) {
+			return 1;
+		}
+		else {
+			return false;
+		}
+	}
+}
+
 }#

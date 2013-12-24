@@ -265,7 +265,9 @@ public function testPathArray() {
 	$manifest = self::createManifest([], ["TestThree"]);
 	$pathArray = $manifest->getPathArray();
 
-	$this->assertEquals($originalPathArray, $pathArray);
+	foreach ($pathArray as $path) {
+		$this->assertContains($path, $originalPathArray);
+	}
 }
 
 /**

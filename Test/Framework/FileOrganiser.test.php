@@ -209,7 +209,7 @@ public function testStyleFileModificationRemovesAllCaches() {
  * be skipped.
  */
 public function testCopyAsset() {
-
+	
 }
 
 }#

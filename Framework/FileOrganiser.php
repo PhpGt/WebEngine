@@ -92,10 +92,9 @@ private function flushCache() {
 	];
 	foreach ($globArray as $glob) {
 		$dirArray = glob($glob);
-		var_dump($dirArray);
 
 		foreach ($dirArray as $dir) {
-			die("SDGKNSKDGNSKDNG");
+			FileSystem::remove($dir);
 		}
 	}
 }
