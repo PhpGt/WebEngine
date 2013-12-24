@@ -58,7 +58,10 @@ public function isAssetFilesCacheValid() {
  * directory.
  */
 private function copyAssets() {
-	
+	$assetDir = APPROOT . "/Asset";
+	$assetWwwDir = APPROOT . "/www/Asset";
+
+	FileSystem::copy($assetDir, $assetWwwDir);
 }
 
 /**

@@ -209,7 +209,41 @@ public function testStyleFileModificationRemovesAllCaches() {
  * be skipped.
  */
 public function testCopyAsset() {
-	
+	ManifestTest::putApprootFile([
+		"/Asset/ChristmasList.txt" => 
+			"Socks,
+			Gloves,
+			Pants",
+	]);
+
+	$manifest = ManifestTest::createManifest();
+	$fileOrganiser = new FileOrganiser($manifest);
+
+	$this->assertFileNotExists(APPROOT . "/www/Asset/ChristmasList.txt");
+	$fileOrganiser->organise();
+	$this->assertFileExists(APPROOT . "/www/Asset/ChristmasList.txt");
+
+	removeTestApp();
+	createTestApp();
+
+	ManifestTest::putApprootFile([
+		"/Asset/ChristmasList.txt" => 
+			"Socks,
+			Gloves,
+			Pants",
+		"/Asset/InnerDirectory/ShoppingList.txt" =>
+			"Milk,
+			Pie,
+			Chocolate",
+	]);
+
+	$manifest = ManifestTest::createManifest();
+	$fileOrganiser = new FileOrganiser($manifest);
+
+	$fileOrganiser->organise();
+	$this->assertFileExists(APPROOT . "/www/Asset/ChristmasList.txt");
+	$this->assertFileExists(
+		APPROOT . "/www/Asset/InnerDirectory/ShoppingList.txt");
 }
 
 }#

@@ -82,4 +82,37 @@ public static function remove($file) {
 	}
 }
 
+/**
+ * Recursive copy.
+ */
+public static function copy($source, $destination) {
+	$count = 0;
+
+	self::loopDir($source, $count, 
+	function($item, $iterator, &$count, $destination) {
+		if($item->isDir()) {
+			return;
+		}
+		
+		if(substr($destination, -1) == "/") {
+			$destination = substr($destination, 0, -1);
+		}
+
+		$pathname = $item->getPathname();
+		$subpath = $iterator->getSubPathname();
+		$destinationPath = $destination . "/" . $subpath;
+
+		if(!is_dir(dirname($destinationPath))) {
+			mkdir(dirname($destinationPath), 0775, true);
+		}
+
+		if(copy($pathname, $destinationPath)) {
+			$count++;
+		}
+
+	}, $destination);
+
+	return $count;
+}
+
 }#
