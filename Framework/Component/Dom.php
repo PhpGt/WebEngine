@@ -309,20 +309,25 @@ public function cacheOutput($output) {
 public function template($attribute = "data-template") {
 	$this->_templateAttribute = $attribute;
 	$xpath = new DOMXPath($this->_domDoc);
-	$domNodeList = $xpath->query("//*[@{$attribute}]");
+	$domNodeList = $xpath->query("//*[@{$attribute}] | //template");
 	$domNodeListLength = $domNodeList->length;
 
 	$domNodeArray = array();
 
 	for($i = 0; $i < $domNodeListLength; $i++) {
 		$item = $domNodeList->item($i);
-		$attr = $item->getAttribute($attribute);
-		if(isset($domNodeArray[$attr])) {
+		if($item->tagName == "template") {
+			$templateName = $item->getAttribute("id");
+		}
+		else {
+			$templateName = $item->getAttribute($attribute);			
+		}
+
+		if(isset($domNodeArray[$templateName])) {
 			$item->parentNode->removeChild($item);
 		}
 		else {
-			$domNodeArray[$attr] = 
-				new DomEl($this, $item);
+			$domNodeArray[$templateName] = new DomEl($this, $item);
 		}
 	}
 
