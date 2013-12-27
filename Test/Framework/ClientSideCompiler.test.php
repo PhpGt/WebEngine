@@ -197,7 +197,40 @@ public function testMinifyCss() {
  * preprocessed files from the public webroot.
  */
 public function testMinifyJs() {
+	$js = "";
 
+	$jsFileArray = [
+		GTROOT  . "/Script/Gt.js" => null,
+		APPROOT . "/Script/Main.js" => ';go(function() {
+		var one,
+			two,
+			three,
+
+		e_click_button = function(e) {
+			e.preventDefault();
+			var onePlusTwoPlusThree = one + two + three;
+
+			alert("One + two + three = " + onePlusTwoPlusThree);
+		};
+
+		dom("button#btn_clicker").addEventListener(
+			"click", e_click_button);
+		});'
+	];
+
+	$fileArray = array();
+
+	foreach ($jsFileArray as $file => $contents) {
+		if(!is_null($contents)) {
+			if(!is_dir(dirname($file))) {
+				mkdir(dirname($file), 0775, true);
+			}
+			file_put_contents($file, $contents);
+		}
+		$fileArray[] = $file;
+	}
+
+	Minifier::minify($fileArray);
 }
 
 /**
