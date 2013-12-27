@@ -81,6 +81,10 @@ private function copyAssets($dryRun = false) {
 	$assetDir = APPROOT . "/Asset";
 	$assetWwwDir = APPROOT . "/www/Asset";
 
+	if(!is_dir($assetDir)) {
+		return;
+	}
+
 	$md5 = "";
 	$md5Array = FileSystem::loopDir($assetDir, $assetWwwDir, 
 	[$this, "iterateMd5"], !$dryRun);
