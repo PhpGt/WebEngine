@@ -11,6 +11,7 @@
  * 1) The SplFileInfo object.
  * 2) The iterator object.
  * 3) The output variable.
+ * 4) The context variable.
  * @param $recursiveDirectoryIteratorFlags int Optional.
  * @param $recursiveIteratorIteratorFlags int Optional.
  * @return array An array contining the output of each callback.

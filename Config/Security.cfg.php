@@ -11,7 +11,9 @@ protected static $_domain;
 protected static $_remoteIp;
 
 public static function init() {
-	define("APPSALT", hash("sha512", static::$_salt));
+	if(!defined("APPSALT")) {
+		define("APPSALT", hash("sha512", static::$_salt));		
+	}
 	static::$_remoteIp = isset($_SERVER["REMOTE_ADDR"])
 		? $_SERVER["REMOTE_ADDR"]
 		: null;

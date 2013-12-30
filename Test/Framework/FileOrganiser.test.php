@@ -11,6 +11,8 @@ public function setUp() {
 	require_once(GTROOT . "/Framework/Manifest.php");
 	require_once(GTROOT . "/Framework/FileOrganiser.php");
 	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
+
+	require_once(__DIR__ . "/Manifest.test.php");
 }
 
 public function tearDown() {
@@ -103,14 +105,14 @@ public function testCacheInvalidates() {
 	$fileOrganiser = new FileOrganiser($manifest);
 
 	$this->assertFalse($manifest->isCacheValid());
-	$this->assertFalse($fileOrganiser->isStyleFilesCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleScriptFilesCacheValid());
 
 	$fileOrganiser->organise();
 
 	$this->assertTrue($manifest->isCacheValid());
 	$this->assertTrue($manifest->isCacheValid());
-	$this->assertTrue($fileOrganiser->isStyleFilesCacheValid());
-	$this->assertTrue($fileOrganiser->isStyleFilesCacheValid());
+	$this->assertTrue($fileOrganiser->isStyleScriptFilesCacheValid());
+	$this->assertTrue($fileOrganiser->isStyleScriptFilesCacheValid());
 
 	ManifestTest::putApprootFile([
 		"/Style/Main.scss" => 
@@ -124,33 +126,69 @@ public function testCacheInvalidates() {
 		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
 	]);
 	$fileOrganiser = new FileOrganiser($manifest);
-	$this->assertFalse($fileOrganiser->isStyleFilesCacheValid());
-	$this->assertFalse($fileOrganiser->isStyleFilesCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleScriptFilesCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleScriptFilesCacheValid());
 }
 
 /**
  * Should take all pre-processed files in the www/fingerprint directory, 
  * then combine and minify them into a single file, then remove the originals.
+ *
+ * @runInSeparateProcess
  */
-public function testMinifyClean() {
+public function testMinify() {
+	$approotFileDetails = [
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: red;
+				}
+			}",
+		"/Style/Another.scss" => 
+			"body {
+				> h1.blue {
+					color: blue;
+				}
+			}",
+		"/Script/One.js" =>
+			"alert('one');",
+		"/Script/Subdir/Two.js" =>
+			"alert('two');",
+	];
+	ManifestTest::putApprootFile($approotFileDetails);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss", "/Style/Another.scss"],
+		"Script" => ["/Script/Gt.js", "/Script/One.js", "/Script/Subdir/Two.js"]
+	]);
 
-}
+	$fileOrganiser = new FileOrganiser($manifest);
+	$fileOrganiser->organise(true);
 
-/**
- * All non-css files should be copied into the www/Style directory recursively,
- * and a cachefile should be used to represent the entire contents of the 
- * style directory. 
- */
-public function testCopyStyleFiles() {
+	foreach ($approotFileDetails as $file => $contents) {
+		foreach (ClientSideCompiler::$sourceMap as $match => $replace) {
+			if(preg_match($match, $file)) {
+				$file = preg_replace($match, $replace, $file);				
+			}
+		}
+		$this->assertFileNotExists($file);
+	}
 
+	// Last check the www minified files are created.
+	$fingerprint = $manifest->getFingerprint();
+	$scriptMinFilePath = APPROOT . "www/Script_$fingerprint/Min.js";
+	$styleMinFilePath = APPROOT . "www/Style_$fingerprint/Min.css";
+
+	$this->assertFileExists($scriptMinFilePath);
+	$this->assertFileExists($styleMinFilePath);
 }
 
 /**
  * If any files change in either APPROOT or GTROOT's Style
- * directory, this should cause the StyleFiles cache to be invalid, and the
- * StyleFiles cache along with all fingerprint directories should be removed.
+ * directory, this should cause the StyleScriptFiles cache to be invalid, and 
+ * the StyleScriptFiles cache along with all fingerprint directories should be 
+ * removed.
  */
-public function testStyleFileModificationRemovesAllCaches() {
+public function testStyleScriptFileModificationRemovesAllCaches() {
 	ManifestTest::putApprootFile([
 		"/Style/RedBody.css" => 
 			"body#red {
@@ -159,13 +197,16 @@ public function testStyleFileModificationRemovesAllCaches() {
 		"/Style/BlueBody.css" =>
 			"body#blue {
 				background: blue;
-			}"
+			}",
+		"/Script/Test.js" =>
+			"alert('Just a test...');",
 	]);
 	$manifestRed = ManifestTest::createManifest([
 		"Style" => ["/Style/Gt.css", "/Style/RedBody.css",],
 	]);
 	$manifestBlue = ManifestTest::createManifest([
 		"Style" => ["/Style/Gt.css", "/Style/BlueBody.css",],
+		"Script" => ["/Script/Test.js"],
 	]);
 
 	$fingerprintRed = $manifestRed->getFingerprint();
@@ -173,7 +214,7 @@ public function testStyleFileModificationRemovesAllCaches() {
 	$copyDoneRed = $fileOrganiserRed->organise();
 
 	$this->assertTrue($manifestRed->isCacheValid());
-	$this->assertTrue($fileOrganiserRed->isStyleFilesCacheValid());
+	$this->assertTrue($fileOrganiserRed->isStyleScriptFilesCacheValid());
 	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintRed");
 
 	$fingerprintBlue = $manifestBlue->getFingerprint();
@@ -181,7 +222,7 @@ public function testStyleFileModificationRemovesAllCaches() {
 	$copyDoneBlue = $fileOrganiserBlue->organise();
 
 	$this->assertTrue($manifestBlue->isCacheValid());
-	$this->assertTrue($fileOrganiserBlue->isStyleFilesCacheValid());
+	$this->assertTrue($fileOrganiserBlue->isStyleScriptFilesCacheValid());
 	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintRed");
 	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintBlue");
 
@@ -194,8 +235,22 @@ public function testStyleFileModificationRemovesAllCaches() {
 			}",
 	]);
 
-	$this->assertFalse($fileOrganiserRed->isStyleFilesCacheValid());
-	$this->assertFalse($fileOrganiserBlue->isStyleFilesCacheValid());
+	$this->assertFalse($fileOrganiserRed->isStyleScriptFilesCacheValid());
+	$this->assertFalse($fileOrganiserBlue->isStyleScriptFilesCacheValid());
+
+	$copyDoneRed = $fileOrganiserRed->organise();
+
+	$this->assertTrue($manifestRed->isCacheValid());
+	$this->assertFalse($manifestBlue->isCacheValid());
+
+	// Change blue's scropt content.
+	ManifestTest::putApprootFile([
+		"/Script/Test.js" => 
+			"alert('Modified');",
+	]);
+
+	$this->assertFalse($fileOrganiserRed->isStyleScriptFilesCacheValid());
+	$this->assertFalse($fileOrganiserBlue->isStyleScriptFilesCacheValid());
 
 	$copyDoneRed = $fileOrganiserRed->organise();
 
