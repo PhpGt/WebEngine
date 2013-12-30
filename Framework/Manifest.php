@@ -130,7 +130,22 @@ public function isCacheValid() {
 	$fingerprint = $this->getFingerprint();
 	$minifiedDir = APPROOT . "/www/Min";
 	if(App_Config::isClientCompiled()) {
-		return is_dir($minifiedDir);
+		if(!is_dir($minifiedDir)) {
+			return false;
+		}
+
+		$minifiedFileArray = [
+			APPROOT . "/www/Min/$fingerprint.css",
+			APPROOT . "/www/Min/$fingerprint.js",
+		];
+
+		foreach ($minifiedFileArray as $minifiedFile) {
+			if(file_exists($minifiedFile)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	$fingerprintDirectoryArray = [
@@ -290,6 +305,11 @@ public function minifyDomHead() {
 
 		foreach($elementList as $element) {
 
+			if($element->hasAttribute("data-pagetool")
+			|| $element->hasAttribute("data-nocompile")) {
+				continue;
+			}
+			
 			foreach ($typeDetails["ReqAttr"] as $key => $value) {
 				if(!$element->hasAttribute($key)) {
 					continue 2;
