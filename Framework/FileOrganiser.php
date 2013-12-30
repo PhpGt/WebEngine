@@ -31,7 +31,12 @@ public function organise($forceCompile = false) {
 	}
 	
 	$manifestCacheValid = $this->_manifest->isCacheValid();
-	if(!$manifestCacheValid) {
+	if($manifestCacheValid) {
+		if(App_Config::isClientCompiled()) {
+			$this->_manifest->minifyDomHead();
+		}
+	}
+	else {
 		$this->processCopy($forceCompile);
 		$copyingDone = true;
 	}
@@ -213,7 +218,7 @@ public function iterateMd5($item, $iterator, $innerDir, $doCopy) {
  */
 private function processCopy($forceCompile = false) {
 	$manifestPathArray = $this->_manifest->getPathArray();
-	$destinationPathArray = [];
+	$processedArray = [];
 
 	foreach ($manifestPathArray as $source) {
 		// Allow referenced file to exist in either APPROOT or GTROOT, while
@@ -245,40 +250,39 @@ private function processCopy($forceCompile = false) {
 			mkdir(dirname($destinationPath), 0775, true);
 		}
 		file_put_contents($destinationPath, $processed);
-		$destinationPathArray[] = $destinationPath;
+
+		$ext = pathinfo($destinationPath, PATHINFO_EXTENSION);
+
+		if(!isset($processedArray[$ext])) {
+			$processedArray[$ext] = array();
+		}
+		$processedArray[$ext][] = $destinationPath;
 	}
 
 	if(App_Config::isClientCompiled()
 	|| $forceCompile) {
-		var_dump($destinationPathArray);die("FILEORGANISER HERE: " . __LINE__);
-		Minifier::minify($destinationPathArray);
+		foreach ($processedArray as $extension => $destinationPathArray) {
+			$min = Minifier::minify($destinationPathArray);
+			$fingerprint = $this->_manifest->getFingerprint();
+			$minDir = APPROOT . "/www/Min";
+			$minFile = "$fingerprint.$extension";
+			$minFilePath = "$minDir/$minFile";
 
-		$keepFilenames = ["Min.js", "Min.css"];
-		$fingerprint = $this->_manifest->getFingerprint();
+			if(!is_dir(dirname($minFilePath))) {
+				mkdir(dirname($minFilePath), 0775, true);
+			}
+			file_put_contents($minFilePath, $min);
+		}
+
 		$dirArray = [
 			APPROOT . "/www/Script_$fingerprint",
 			APPROOT . "/www/Style_$fingerprint",
 		];
-
 		foreach ($dirArray as $dir) {
-			FileSystem::loopDir($dir, $output, 
-			function($item, $iterator, &$output, $context) {
-				$filename = $item->getFilename();
-				if(in_array($filename, $keepFilenames)) {
-					return;
-				}
-
-				if($item->isDir()) {
-					rmdir($filename);
-				}
-				else {
-					unlink($filename);
-				}
-			}, null, 
-				RecursiveDirectoryIterator::SKIP_DOTS,
-				RecursiveIteratorIterator::CHILD_FIRST
-			);
+			FileSystem::remove($dir);
 		}
+
+		$this->_manifest->minifyDomHead();
 	}
 }
 

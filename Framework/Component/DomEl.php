@@ -446,7 +446,7 @@ public function __call($name, $args = array()) {
 			);
 		}
 		catch(Exception $e) {
-			throw new HttpError(500, null, $e);
+			throw $e;
 		}
 		return $result;
 	}

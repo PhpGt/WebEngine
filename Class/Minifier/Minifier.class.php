@@ -3,7 +3,7 @@
 /**
  * Minifies
  */
-public static function minify(array $fileArray) {
+public static function minify($fileArray) {
 	// Allow accepting a single file, not in an array.
 	if(!is_array($fileArray)) {
 		$fileArray = [$fileArray];
@@ -18,9 +18,19 @@ public static function minify(array $fileArray) {
 			throw new Exception("Attemptint to Minify a non-existant file: "
 				. $file);
 		}
-		
+
 		$input = file_get_contents($file);
-		// $output .= JShrink/Minifier->minify($input);		
+		$extension = pathinfo($file, PATHINFO_EXTENSION);
+
+		switch ($extension) {
+		case "js":
+			$output .= JShrink\Minifier::minify($input);		
+			break;
+		default:
+			$output .= $input;
+			break;
+		}
+		
 	}
 
 	return $output;

@@ -6,12 +6,14 @@
 public static $elementDetails = [
 	"Script" => [
 		"TagName" => "script",
+		"Extension" => "js",
 		"EndTag" => true,
 		"Source" => "src",
 		"ReqAttr" => [],
 	],
 	"Style" => [
 		"TagName" => "link",
+		"Extension" => "css",
 		"EndTag" => false,
 		"Source" => "href",
 		"ReqAttr" => ["rel" => "stylesheet"],
@@ -125,9 +127,30 @@ public function getFingerprintPath($source) {
  * as this manifest's fingerprint.
  */
 public function isCacheValid() {
+	$fingerprint = $this->getFingerprint();
+	$minifiedDir = APPROOT . "/www/Min";
+	if(App_Config::isClientCompiled()) {
+		if(!is_dir($minifiedDir)) {
+			return false;
+		}
+
+		$minifiedFileArray = [
+			APPROOT . "/www/Min/$fingerprint.css",
+			APPROOT . "/www/Min/$fingerprint.js",
+		];
+
+		foreach ($minifiedFileArray as $minifiedFile) {
+			if(file_exists($minifiedFile)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	$fingerprintDirectoryArray = [
-		APPROOT . "/www/Script_" . $this->getFingerprint(),
-		APPROOT . "/www/Style_" . $this->getFingerprint(),
+		APPROOT . "/www/Script_" . $fingerprint,
+		APPROOT . "/www/Style_" . $fingerprint,
 	];
 	foreach ($fingerprintDirectoryArray as $fingerprintDirectory) {
 		if(is_dir($fingerprintDirectory)) {
@@ -267,6 +290,66 @@ public function expandDomHead() {
 				$element->setAttribute($typeDetails["Source"], $source);
 			}
 		}
+	}
+}
+
+/**
+ * When isClientCompiled is true, the dom head should have its contents replaced
+ * with the minified version of client-side files.
+ */
+public function minifyDomHead() {
+	// Find reference point to current head elements.
+	foreach (self::$elementDetails as $type => $typeDetails) {
+		$prevNode = null;
+		$elementList = $this->_domHead[$typeDetails["TagName"]];
+
+		foreach($elementList as $element) {
+
+			if($element->hasAttribute("data-pagetool")
+			|| $element->hasAttribute("data-nocompile")) {
+				continue;
+			}
+			
+			foreach ($typeDetails["ReqAttr"] as $key => $value) {
+				if(!$element->hasAttribute($key)) {
+					continue 2;
+				}
+				if($element->getAttribute($key) != $value) {
+					continue 2;
+				}
+			}
+
+			if($element->hasAttribute($typeDetails["Source"])) {
+				if(is_null($prevNode)) {
+					$prevNode = $element->previousSibling;
+				}
+
+				$element->remove();
+			}
+			else {
+				continue;
+			}
+		}
+
+		$minSource = "/Min/"
+			. $this->getFingerprint()
+			. "."
+			. $typeDetails["Extension"];
+
+		$minElement = $this->_domHead->_dom->createElement(
+			$typeDetails["TagName"],
+			[$typeDetails["Source"] => $minSource]
+		);
+		foreach ($typeDetails["ReqAttr"] as $key => $value) {
+			$minElement->setAttribute($key, $value);
+		}
+
+		$nextNode = null;
+		if(!is_null($prevNode)) {
+			$nextNode = $prevNode->nextSibling;
+		}
+
+		$this->_domHead->insertBefore($minElement, $nextNode);
 	}
 }
 
