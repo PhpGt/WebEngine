@@ -20,7 +20,7 @@ public static function minify(array $fileArray) {
 		}
 		
 		$input = file_get_contents($file);
-		$output .= JShrink/Minifier->minify($input);		
+		// $output .= JShrink/Minifier->minify($input);		
 	}
 
 	return $output;

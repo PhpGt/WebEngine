@@ -1,10 +1,10 @@
 <?php final class FileOrganiser {
 private $_manifest;
-private $_styleFilesCache;
+private $_styleScriptFilesCache;
 
 public function __construct($manifest) {
 	$this->_manifest = $manifest;
-	$this->_styleFilesCache = APPROOT . "/www/StyleFiles.cache";
+	$this->_styleScriptFilesCache = APPROOT . "/www/StyleScriptFiles.cache";
 	$this->_assetFilesCache = APPROOT . "/www/AssetFiles.cache";
 }
 
@@ -14,7 +14,7 @@ public function __construct($manifest) {
  *
  * @return bool True if any copying was made, false if all caches were valid.
  */
-public function organise() {
+public function organise($forceCompile = false) {
 	$copyingDone = false;
 	$logger = Log::get();
 
@@ -23,16 +23,16 @@ public function organise() {
 		$this->copyAssets();
 	}
 
-	$styleFilesCacheValid = $this->isStyleFilesCacheValid();
-	if(!$styleFilesCacheValid) {
+	$styleScriptFilesCacheValid = $this->isStyleScriptFilesCacheValid();
+	if(!$styleScriptFilesCacheValid) {
 		$this->flushCache();
-		$this->organiseStyleFiles();
+		$this->organiseStyleScriptFiles();
 		$copyingDone = true;
 	}
 	
 	$manifestCacheValid = $this->_manifest->isCacheValid();
 	if(!$manifestCacheValid) {
-		$this->processCopy();
+		$this->processCopy($forceCompile);
 		$copyingDone = true;
 	}
 
@@ -103,13 +103,13 @@ private function copyAssets($dryRun = false) {
  *
  * @return bool True for valid cache, false for invalid.
  */
-public function isStyleFilesCacheValid() {
-	if(!is_file($this->_styleFilesCache)) {
+public function isStyleScriptFilesCacheValid() {
+	if(!is_file($this->_styleScriptFilesCache)) {
 		return false;
 	}
 
-	$currentMd5 = trim(file_get_contents($this->_styleFilesCache));
-	$md5 = $this->organiseStyleFiles(true);
+	$currentMd5 = trim(file_get_contents($this->_styleScriptFilesCache));
+	$md5 = $this->organiseStyleScriptFiles(true);
 
 	return $currentMd5 === $md5;
 }
@@ -118,8 +118,8 @@ public function isStyleFilesCacheValid() {
  * Removes all cached Script & Style files from within www.
  */
 private function flushCache() {
-	if(file_exists($this->_styleFilesCache)) {
-		unlink($this->_styleFilesCache);
+	if(file_exists($this->_styleScriptFilesCache)) {
+		unlink($this->_styleScriptFilesCache);
 	}
 
 	$globArray = [
@@ -148,10 +148,13 @@ private function flushCache() {
  * @param $dryRun bool Optional. True to skip copy action.
  * @return string The md5 representation of source Style directories.
  */
-private function organiseStyleFiles($dryRun = false) {
+private function organiseStyleScriptFiles($dryRun = false) {
 	$dirArray = [
 		APPROOT . "/Style",
 		GTROOT . "/Style",
+		
+		APPROOT . "/Script",
+		GTROOT . "/Script",
 	];
 	$wwwStyleDir = APPROOT . "/www/Style";
 
@@ -175,7 +178,7 @@ private function organiseStyleFiles($dryRun = false) {
 	$md5 = md5($md5);
 
 	if(!$dryRun) {
-		file_put_contents($this->_styleFilesCache, $md5);
+		file_put_contents($this->_styleScriptFilesCache, $md5);
 	}
 
 	return $md5;
@@ -208,8 +211,9 @@ public function iterateMd5($item, $iterator, $innerDir, $doCopy) {
  * while at the same time processing their contents using the 
  * ClientSideCompiler.
  */
-private function processCopy() {
+private function processCopy($forceCompile = false) {
 	$manifestPathArray = $this->_manifest->getPathArray();
+	$destinationPathArray = [];
 
 	foreach ($manifestPathArray as $source) {
 		// Allow referenced file to exist in either APPROOT or GTROOT, while
@@ -241,6 +245,40 @@ private function processCopy() {
 			mkdir(dirname($destinationPath), 0775, true);
 		}
 		file_put_contents($destinationPath, $processed);
+		$destinationPathArray[] = $destinationPath;
+	}
+
+	if(App_Config::isClientCompiled()
+	|| $forceCompile) {
+		var_dump($destinationPathArray);die("FILEORGANISER HERE: " . __LINE__);
+		Minifier::minify($destinationPathArray);
+
+		$keepFilenames = ["Min.js", "Min.css"];
+		$fingerprint = $this->_manifest->getFingerprint();
+		$dirArray = [
+			APPROOT . "/www/Script_$fingerprint",
+			APPROOT . "/www/Style_$fingerprint",
+		];
+
+		foreach ($dirArray as $dir) {
+			FileSystem::loopDir($dir, $output, 
+			function($item, $iterator, &$output, $context) {
+				$filename = $item->getFilename();
+				if(in_array($filename, $keepFilenames)) {
+					return;
+				}
+
+				if($item->isDir()) {
+					rmdir($filename);
+				}
+				else {
+					unlink($filename);
+				}
+			}, null, 
+				RecursiveDirectoryIterator::SKIP_DOTS,
+				RecursiveIteratorIterator::CHILD_FIRST
+			);
+		}
 	}
 }
 
