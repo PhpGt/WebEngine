@@ -348,4 +348,67 @@ public function testExpandDomHead() {
 	}
 }
 
+public function testMinifiedHead() {
+	$manifest = self::createManifest([
+		"Script" => ["/Script/One.js"], 
+		"Style" => ["/Style/One.css"],
+	]);
+
+	$domHead = $manifest->getDomHead();
+
+	$scriptLinkList = $domHead["script, link"];
+	$this->assertEquals(2, $scriptLinkList->length);
+
+	$manifest->minifyDomHead();
+
+	$scriptLinkList = $domHead["script, link"];
+	$this->assertEquals(2, $scriptLinkList->length);
+
+	$fingerprint = $manifest->getFingerprint();
+
+	foreach (Manifest::$elementDetails as $type => $typeDetails) {
+		$elementList = $domHead[$typeDetails["TagName"]];
+		$this->assertEquals(1, $elementList->length);
+
+		$expectedMinPath = "/Min/" 
+			. $fingerprint 
+			. "." 
+			. $typeDetails["Extension"];
+
+		$this->assertEquals($expectedMinPath, 
+			$elementList[0]->getAttribute($typeDetails["Source"]));
+	}
+
+	// Try again, with more elements:
+	$manifest = self::createManifest([
+		"Script" => ["/Script/One.js", "/Script/Two.js", "/Script/Three.js", ], 
+		"Style" => ["/Style/One.css", "/Style/Two.css", ],
+	]);
+
+	$domHead = $manifest->getDomHead();
+
+	$scriptLinkList = $domHead["script, link"];
+	$this->assertEquals(5, $scriptLinkList->length);
+
+	$manifest->minifyDomHead();
+
+	$scriptLinkList = $domHead["script, link"];
+	$this->assertEquals(2, $scriptLinkList->length);
+
+	$fingerprint = $manifest->getFingerprint();
+
+	foreach (Manifest::$elementDetails as $type => $typeDetails) {
+		$elementList = $domHead[$typeDetails["TagName"]];
+		$this->assertEquals(1, $elementList->length);
+
+		$expectedMinPath = "/Min/" 
+			. $fingerprint 
+			. "." 
+			. $typeDetails["Extension"];
+
+		$this->assertEquals($expectedMinPath, 
+			$elementList[0]->getAttribute($typeDetails["Source"]));
+	}
+}
+
 }#

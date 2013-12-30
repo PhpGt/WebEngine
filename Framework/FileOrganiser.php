@@ -276,6 +276,8 @@ private function processCopy($forceCompile = false) {
 		foreach ($dirArray as $dir) {
 			FileSystem::remove($dir);
 		}
+
+		$this->_manifest->minifyDomHead();
 	}
 }
 
