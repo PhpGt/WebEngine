@@ -133,8 +133,6 @@ public function testCacheInvalidates() {
 /**
  * Should take all pre-processed files in the www/fingerprint directory, 
  * then combine and minify them into a single file, then remove the originals.
- *
- * @runInSeparateProcess
  */
 public function testMinify() {
 	$approotFileDetails = [
@@ -175,11 +173,25 @@ public function testMinify() {
 
 	// Last check the www minified files are created.
 	$fingerprint = $manifest->getFingerprint();
-	$scriptMinFilePath = APPROOT . "www/Script_$fingerprint/Min.js";
-	$styleMinFilePath = APPROOT . "www/Style_$fingerprint/Min.css";
+	$scriptMinFilePath = APPROOT . "/www/Min/$fingerprint.js";
+	$styleMinFilePath = APPROOT  . "/www/Min/$fingerprint.css";
 
 	$this->assertFileExists($scriptMinFilePath);
 	$this->assertFileExists($styleMinFilePath);
+
+	$scriptMinContents = file_get_contents($scriptMinFilePath);
+	$styleMinContents = file_get_contents($styleMinFilePath);
+
+	$this->assertContains("alert('one')", $scriptMinContents);
+	$this->assertContains("alert('two')", $scriptMinContents);
+	$this->assertContains("body > h1", $styleMinContents);
+	$this->assertContains("body > h1.blue", $styleMinContents);
+
+	$this->assertNotContains("alert('one')", $styleMinContents);
+	$this->assertNotContains("alert('two')", $styleMinContents);
+
+	$this->assertNotContains("body > h1", $scriptMinContents);
+	$this->assertNotContains("body > h1.blue", $scriptMinContents);
 }
 
 /**
