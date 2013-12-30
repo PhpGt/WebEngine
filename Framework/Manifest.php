@@ -130,10 +130,7 @@ public function isCacheValid() {
 	$fingerprint = $this->getFingerprint();
 	$minifiedDir = APPROOT . "/www/Min";
 	if(App_Config::isClientCompiled()) {
-		if(!is_dir($minifiedDir)) {
-			die("nodir");
-			return false;
-		}
+		return is_dir($minifiedDir);
 	}
 
 	$fingerprintDirectoryArray = [

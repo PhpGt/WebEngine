@@ -31,7 +31,12 @@ public function organise($forceCompile = false) {
 	}
 	
 	$manifestCacheValid = $this->_manifest->isCacheValid();
-	if(!$manifestCacheValid) {
+	if($manifestCacheValid) {
+		if(App_Config::isClientCompiled()) {
+			$this->_manifest->minifyDomHead();
+		}
+	}
+	else {
 		$this->processCopy($forceCompile);
 		$copyingDone = true;
 	}
