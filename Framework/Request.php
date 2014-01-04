@@ -48,9 +48,14 @@ public function __construct($config, $t) {
 	}
 
 	// Useful for faking slow connections on AJAX calls.
-	if(isset($_GET["FakeSlow"])) {
+	if(isset($_GET["FakeSlow"])
+	|| isset($_SESSION["FakeSlow"])) {
 		$seconds = empty($_GET["FakeSlow"])
 			? 2 : $_GET["FakeSlow"];
+
+		if(isset($_GET["FakeSlow"])) {
+			$_SESSION["FakeSlow"] = $_GET["FakeSlow"];			
+		}
 		sleep($seconds);
 	}
 
