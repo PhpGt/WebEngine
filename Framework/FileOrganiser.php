@@ -130,6 +130,7 @@ private function flushCache() {
 	$globArray = [
 		APPROOT . "/www/Script*",
 		APPROOT . "/www/Style*",
+		APPROOT . "/www/Min*",
 	];
 	foreach ($globArray as $glob) {
 		$dirArray = glob($glob);

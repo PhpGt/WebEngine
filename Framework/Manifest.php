@@ -165,7 +165,15 @@ public function isCacheValid() {
  * link and script tags, then removes the meta manifest tags.
  */
 private function expandMetaTags() {
+	if(is_null($this->_domHead)) {
+		return;
+	}
+
 	$metaTagList = $this->_domHead["meta[name='manifest']"];
+
+	if($metaTagList->length <= 0) {
+		return;
+	}
 
 	foreach ($metaTagList as $metaTag) {
 		if(!$metaTag->hasAttribute("content")) {
@@ -251,6 +259,10 @@ private function getFileList($name) {
  * DOM head that have the required tag names.
  */
 private function getAllHeadElements() {
+	if(is_null($this->_domHead)) {
+		return array();
+	}
+	
 	$cssSelector = "";
 	foreach (Manifest::$elementDetails as $type => $typeDetails) {
 		if(!empty($cssSelector)) {
@@ -300,7 +312,6 @@ public function expandDomHead() {
 public function minifyDomHead() {
 	// Find reference point to current head elements.
 	foreach (self::$elementDetails as $type => $typeDetails) {
-		$prevNode = null;
 		$elementList = $this->_domHead[$typeDetails["TagName"]];
 
 		foreach($elementList as $element) {
@@ -320,10 +331,6 @@ public function minifyDomHead() {
 			}
 
 			if($element->hasAttribute($typeDetails["Source"])) {
-				if(is_null($prevNode)) {
-					$prevNode = $element->previousSibling;
-				}
-
 				$element->remove();
 			}
 			else {
@@ -344,12 +351,22 @@ public function minifyDomHead() {
 			$minElement->setAttribute($key, $value);
 		}
 
-		$nextNode = null;
-		if(!is_null($prevNode)) {
-			$nextNode = $prevNode->nextSibling;
+		// Ensure that the link element is added before other elements (apart
+		// from inline scripts), and the script element is added after other 
+		// elements, to allow parallel HTTP requests.
+		if($typeDetails["TagName"] == "script") {
+			$this->_domHead->insertBefore($minElement, null);
 		}
+		else {
+			$firstInlineScript = $this->_domHead->firstChild;
 
-		$this->_domHead->insertBefore($minElement, $nextNode);
+			while($firstInlineScript->tagName == "script") {
+				$firstInlineScript = $firstInlineScript->nextSibling;
+			}
+
+			$this->_domHead->insertBefore(
+				$minElement, $firstInlineScript);
+		}
 	}
 }
 
