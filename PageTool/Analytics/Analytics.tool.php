@@ -19,7 +19,7 @@ public function track($trackingCode) {
 		throw new HttpError(500, "Google Analytics script failure");
 	}
 	$js = str_replace("{ANALYTICS_CODE}", $trackingCode, $js);
-	$this->_dom["head"]->append(
+	$this->_dom["head"]->prependChild(
 		"script", 
 		["data-PageTool" => "Analytics"], 
 		$js
