@@ -577,6 +577,34 @@ http = function(url /*,[method],[properties],[callback],[xhr],[responseType]*/){
 },
 
 /**
+ * Returns a random number between two numbers. Optionally return only integers
+ * by passing true as the third parameter.
+ */
+rand = function(min, max, intsOnly) {
+	var r = (Math.random() * max) + min;
+
+	if(intsOnly) {
+		r = Math.floor(r);
+	}
+
+	return r;
+},
+
+/**
+ * Deviates a number randomly by a given amount. Optionally return only integers
+ * by passing true as the third parameter.
+ */
+randDeviation = function(num, deviation, intsOnly) {
+	var r = num + ((Math.random() * deviation) - (deviation / 2));
+
+	if(intsOnly) {
+		r = Math.floor(r);
+	}
+
+	return r;
+},
+
+/**
  * Extracts all elements from the DOM that have the data-template attribute,
  * or elements that are children of the PhpGt_Template_Element element (added 
  * by PHP.Gt projects). Elements are stored in the _templateMap	object.
@@ -760,6 +788,8 @@ window.dom = dom;
 window.template = template;
 window.tool = tool;
 window.http = http;
+window.rand = rand;
+window.randDeviation = randDeviation;
 
 // Invoke functions to start.
 go(_templateLoad);
