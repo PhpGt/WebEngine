@@ -1,31 +1,18 @@
 <?php class FileOrganiserTest extends PHPUnit_Framework_TestCase {
-	private $_html = <<<HTML
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8" />
-	<title>Manifest Test</title>
-	<meta name="manifest" content="TestFileOrganiser" />
-</head>
-<body>
-	<h1>Manifest Test</h1>
-</body>
-</html>
-HTML;
 
 public function setUp() {
 	removeTestApp();
 	createTestApp();
 	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
-	require_once(GTROOT . "/Class/Log/Log.class.php");
-	require_once(GTROOT . "/Class/Log/Logger.class.php");
 	require_once(GTROOT . "/Framework/Component/Dom.php");
 	require_once(GTROOT . "/Framework/Component/DomEl.php");
 	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
 	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
-	require_once(GTROOT . "/Framework/FileOrganiser.php");
 	require_once(GTROOT . "/Framework/Manifest.php");
+	require_once(GTROOT . "/Framework/FileOrganiser.php");
 	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
+
+	require_once(__DIR__ . "/Manifest.test.php");
 }
 
 public function tearDown() {
@@ -43,235 +30,303 @@ public function testInitialWebrootIsEmpty() {
 }
 
 /**
- * Ensure that when source files change, the FileOrganiser reports back
- * correctly that the manifests' caches are invalid.
+ * Takes all files represented by the manifest, processes them using the 
+ * ClientSideCompiler, and writes them to the manifest's fingerprint directory,
+ * only if the manifest's cache is invalid.
  */
-public function testCheckCache() {
-	$styleManifestPath = APPROOT . "/Style/TestFileOrganiser.manifest";
-	$styleManifest = "Main.css";
-	$styleContents = ["Main.css" => "* { color: red; }"];
-
-	$scriptManifestPath = APPROOT . "/Script/TestFileOrganiser.manifest";
-	$scriptManifest = "Main.js\nSubDir/Script.js";
-	$scriptContents = [
-		"Main.js" => "* { alert('Hello!') }",
-		"SubDir/Script.js" => "Stupid idiot, the above script will fail!",
+public function testProcessCopy() {
+	$approotFileDetails = [
+		"/Style/Main.css" => 
+			"body {
+				background: black;
+			}",
 	];
+	ManifestTest::putApprootFile($approotFileDetails);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.css",],
+	]);
 
-	if(!is_dir(dirname($styleManifestPath))) {
-		mkdir(dirname($styleManifestPath, 0775, true));
-	}
-	file_put_contents($styleManifestPath, $styleManifest);
-	foreach ($styleContents as $fileName => $contents) {
-		$fileName = APPROOT . "/Style/$fileName";
-		if(!is_dir(dirname($fileName))) {
-			mkdir(dirname($fileName), 0775, true);
-		}
-		file_put_contents($fileName, $contents);
-	}
+	$fileOrganiser = new FileOrganiser($manifest);
+	$fileOrganiser->organise();
+	// Get actual public path from dom head, ensure corresponding file exists.
+	$domHead = $manifest->getDomHead();
+	$linkElement = $domHead["link[rel='stylesheet']"];
+	$wwwSource = $linkElement->href;
+	$this->assertNotEquals(key($approotFileDetails), $wwwSource);
+	$wwwFullPath = APPROOT . "/www" . $wwwSource;
+	$this->assertFileExists($wwwFullPath);
 
-	if(!is_dir(dirname($scriptManifestPath))) {
-		mkdir(dirname($scriptManifestPath, 0775, true));
-	}
-	file_put_contents($scriptManifestPath, $scriptManifest);
-	foreach ($scriptContents as $fileName => $contents) {
-		$fileName = APPROOT . "/Script/$fileName";
-		if(!is_dir(dirname($fileName))) {
-			mkdir(dirname($fileName), 0775, true);
-		}
-		file_put_contents($fileName, $contents);
-	}
+	// Same test, this time with SCSS.
+	removeTestApp();
+	createTestApp();
 
-	$html = $this->_html;
-	$dom = new Dom($html);
-	$domHead = $dom["html > head"][0];
+	ManifestTest::putApprootFile([
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: red;
+				}
+			}",
+	]);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
+	]);
 
-	$fileOrganiser = new FileOrganiser([new Manifest("TestFileOrganiser")]);
-
-	// Force the organisation of www directory for the first time.
-	$fileOrganiser->organiseManifest($domHead);
-
-	// Because of the forced organisation, cache muse be valid!
-	$cacheValid = $fileOrganiser->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
-	$this->assertTrue($cacheValid, "Cache should be valid");
-
-	// Change a single file, then cache must be false!
-	reset($styleContents);
-	$styleFile = key($styleContents);
-	$styleFileToChange = APPROOT . "/Style/" . $styleFile;
-	$newContents = "* { color: blue; }";
-	file_put_contents($styleFileToChange, $newContents);
-
-	$cacheValid = $fileOrganiser->checkCache(
-		FileOrganiser::CACHETYPE_MANIFEST, true);
-	$this->assertFalse($cacheValid, "Cache should be invalid");
-
-	// Re-evaluate the cache again.
-	$fileOrganiser->organiseManifest($domHead);
-	$cacheValid = $fileOrganiser->checkCache(
-		FileOrganiser::CACHETYPE_MANIFEST, true);
-	$this->assertTrue($cacheValid, "Cache should be valid");
-
-	// Remove a reference of a file within .manifest file.
-	// (now it doesn't reference Main.js).
-	$scriptManifest = "SubDir/Script.js";
-	file_put_contents($scriptManifestPath, $scriptManifest);
-	$cacheValid = $fileOrganiser->checkCache(
-		FileOrganiser::CACHETYPE_MANIFEST, true);
-	$this->assertFalse($cacheValid, "Cache should be invalid");
-
-	// Re-evaluate the cache again.
-	$fileOrganiser->organiseManifest($domHead);
-	$cacheValid = $fileOrganiser->checkCache(
-		FileOrganiser::CACHETYPE_MANIFEST, true);
-	$this->assertTrue($cacheValid, "Cache should be valid");
-
-	// Remove a source file, expect an exception.
-	unlink($styleFileToChange);
-	$caughtException = false;
-	try {
-		$cacheValid = $fileOrganiser->checkCache(
-			FileOrganiser::CACHETYPE_MANIFEST, true);		
-	}
-	catch(Exception $e) {
-		$caughtException = true;
-	}
-
-	$this->assertTrue($caughtException, "Caught exception");
+	$fileOrganiser = new FileOrganiser($manifest);
+	$fileOrganiser->organise();
+	// Get actual public path from dom head, ensure corresponding file exists.
+	// This time, ensure the path is to a processed css file, not scss.
+	$domHead = $manifest->getDomHead();
+	$linkElement = $domHead["link[rel='stylesheet']"];
+	$wwwSource = $linkElement->href;
+	$this->assertNotEquals(key($approotFileDetails), $wwwSource);
+	$this->assertNotRegexp("/\.scss$/", $wwwSource);
+	$wwwFullPath = APPROOT . "/www" . $wwwSource;
+	$this->assertFileExists($wwwFullPath);
 }
 
 /**
- * Ensures that manifests are purely optional.
+ * When a source file changes it should invalidate and flush all caches in the
+ * www directory.
  */
-public function testFileOrganiserNoManifest() {
-	$sourceFiles = array(
-		"Script" => [
-			"Main.js" =>
-				"alert('From main.js!');"
-		],
-		"Style" => [
-			"Main.css" => 
-				"body { background: red; }",
-		],
-	);
-	foreach ($sourceFiles as $type => $file) {
-		foreach ($file as $fileName => $contents) {
-			$filePath = APPROOT . "/$type/$fileName";
+public function testCacheInvalidates() {
+	ManifestTest::putApprootFile([
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: red;
+				}
+			}",
+	]);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
+	]);
 
-			if(!is_dir(dirname($filePath))) {
-				mkdir(dirname($filePath), 0775, true);
-			}
-			file_put_contents($filePath, $contents);
-		}
-	}
+	$fileOrganiser = new FileOrganiser($manifest);
 
-	$htmlNoManifest = <<<HTML
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8" />
-	<title>FileOrganiser Test</title>
-	<link rel="stylesheet" href="/Style/Main.css" />
-	<script src="/Script/Main.js"></script>
-</head>
-<body>
-	<h1>FileOrganiser Test</h1>
-</body>
-</html>
-HTML;
-	
-	$dom = new Dom($htmlNoManifest);
-	$domHead = $dom["html > head"][0];
-	$manifestList = Manifest::getList($domHead);
-	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organise($domHead);
+	$this->assertFalse($manifest->isCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleScriptFilesCacheValid());
 
-	// The two client-side files should exist in www/Script and www/Style
-	// seeing as there is no named manifest declared.
-	foreach ($sourceFiles as $type => $file) {
-		foreach ($file as $fileName => $contents) {
-			$filePath = APPROOT . "/www/$type/$fileName";
-			$filePathSource = APPROOT . "/$type/$fileName";
+	$fileOrganiser->organise();
 
-			$this->assertFileExists($filePath);
-			$this->assertFileEquals($filePathSource, $filePath);
-		}
-	}
+	$this->assertTrue($manifest->isCacheValid());
+	$this->assertTrue($manifest->isCacheValid());
+	$this->assertTrue($fileOrganiser->isStyleScriptFilesCacheValid());
+	$this->assertTrue($fileOrganiser->isStyleScriptFilesCacheValid());
+
+	ManifestTest::putApprootFile([
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: blue;
+				}
+			}",
+	]);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss",],
+	]);
+	$fileOrganiser = new FileOrganiser($manifest);
+	$this->assertFalse($fileOrganiser->isStyleScriptFilesCacheValid());
+	$this->assertFalse($fileOrganiser->isStyleScriptFilesCacheValid());
 }
 
 /**
- * Ensure that scss files are processed into css, and that javascript files
- * expand server-side requirements.
+ * Should take all pre-processed files in the www/fingerprint directory, 
+ * then combine and minify them into a single file, then remove the originals.
  */
-public function testClientSideProcessing() {
-	$sourceFiles = array(
-		"Style" => [
-			"Main.scss" => 
-				"\$red = #fd2376;
-				@include SecondStyle",
-			"SecondStyle.scss" => 
-				"body { background \$red; }",
-		],
-	);
+public function testMinify() {
+	$approotFileDetails = [
+		"/Style/Main.scss" => 
+			"body {
+				> h1 {
+					color: red;
+				}
+			}",
+		"/Style/Another.scss" => 
+			"body {
+				> h1.blue {
+					color: blue;
+				}
+			}",
+		"/Script/One.js" =>
+			"alert('one');",
+		"/Script/Subdir/Two.js" =>
+			"alert('two');",
+	];
+	ManifestTest::putApprootFile($approotFileDetails);
+	$manifest = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/Main.scss", "/Style/Another.scss"],
+		"Script" => ["/Script/Gt.js", "/Script/One.js", "/Script/Subdir/Two.js"]
+	]);
 
-	foreach ($sourceFiles as $type => $file) {
-		foreach ($file as $fileName => $contents) {
-			$filePath = APPROOT . "/$type/$fileName";
+	$fileOrganiser = new FileOrganiser($manifest);
+	$fileOrganiser->organise(true);
 
-			if(!is_dir(dirname($filePath))) {
-				mkdir(dirname($filePath), 0775, true);
+	foreach ($approotFileDetails as $file => $contents) {
+		foreach (ClientSideCompiler::$sourceMap as $match => $replace) {
+			if(preg_match($match, $file)) {
+				$file = preg_replace($match, $replace, $file);				
 			}
-			file_put_contents($filePath, $contents);
 		}
+		$this->assertFileNotExists($file);
 	}
 
-	$htmlNoManifest = <<<HTML
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8" />
-	<title>FileOrganiser Test</title>
-	<link rel="stylesheet" href="/Style/Main.scss" />
-</head>
-<body>
-	<h1>FileOrganiser Test</h1>
-</body>
-</html>
-HTML;
-	
-	$dom = new Dom($htmlNoManifest);
-	$domHead = $dom["html > head"][0];
-	$manifestList = Manifest::getList($domHead);
-	$fileOrganiser = new FileOrganiser($manifestList);
-	$fileOrganiser->organise($domHead);
+	// Last check the www minified files are created.
+	$fingerprint = $manifest->getFingerprint();
+	$scriptMinFilePath = APPROOT . "/www/Min/$fingerprint.js";
+	$styleMinFilePath = APPROOT  . "/www/Min/$fingerprint.css";
 
-	// The link in the head should be renamed to css.
-	$linkEl = $domHead["link"][0];
-	$this->assertInstanceOf("DomEl", $linkEl);
-	$this->assertEquals("/Style/Main.css", $linkEl->getAttribute("href"));
+	$this->assertFileExists($scriptMinFilePath);
+	$this->assertFileExists($styleMinFilePath);
+
+	$scriptMinContents = file_get_contents($scriptMinFilePath);
+	$styleMinContents = file_get_contents($styleMinFilePath);
+
+	$this->assertContains("alert('one')", $scriptMinContents);
+	$this->assertContains("alert('two')", $scriptMinContents);
+	$this->assertContains("body > h1", $styleMinContents);
+	$this->assertContains("body > h1.blue", $styleMinContents);
+
+	$this->assertNotContains("alert('one')", $styleMinContents);
+	$this->assertNotContains("alert('two')", $styleMinContents);
+
+	$this->assertNotContains("body > h1", $scriptMinContents);
+	$this->assertNotContains("body > h1.blue", $scriptMinContents);
 }
 
-public function testFileOrganiserAsset() {
-	$assetFiles = array(
-		"/SimpleTextFile.txt" => "This is a test!",
-		"/Directory/AnotherFile.txt" => "Another test!",
-	);
-	$assetSourceDir = APPROOT . "/Asset";
-	foreach ($assetFiles as $fileName => $contents) {
-		$assetPath = $assetSourceDir . $fileName;
-		if(!is_dir(dirname($assetPath))) {
-			mkdir(dirname($assetPath), 0775, true);
-		}
-		file_put_contents($assetPath, $contents);
-	}
+/**
+ * If any files change in either APPROOT or GTROOT's Style
+ * directory, this should cause the StyleScriptFiles cache to be invalid, and 
+ * the StyleScriptFiles cache along with all fingerprint directories should be 
+ * removed.
+ */
+public function testStyleScriptFileModificationRemovesAllCaches() {
+	ManifestTest::putApprootFile([
+		"/Style/RedBody.css" => 
+			"body#red {
+				background: red;
+			}",
+		"/Style/BlueBody.css" =>
+			"body#blue {
+				background: blue;
+			}",
+		"/Script/Test.js" =>
+			"alert('Just a test...');",
+	]);
+	$manifestRed = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/RedBody.css",],
+	]);
+	$manifestBlue = ManifestTest::createManifest([
+		"Style" => ["/Style/Gt.css", "/Style/BlueBody.css",],
+		"Script" => ["/Script/Test.js"],
+	]);
 
-	$fileOrganiser = new FileOrganiser([]);
-	$fileOrganiser->organise(null);
+	$fingerprintRed = $manifestRed->getFingerprint();
+	$fileOrganiserRed = new FileOrganiser($manifestRed);
+	$copyDoneRed = $fileOrganiserRed->organise();
 
-	$assetWwwDir = APPROOT . "/www/Asset";
-	foreach ($assetFiles as $fileName => $contents) {
-		$this->assertFileExists("$assetWwwDir/$fileName");
-	}
+	$this->assertTrue($manifestRed->isCacheValid());
+	$this->assertTrue($fileOrganiserRed->isStyleScriptFilesCacheValid());
+	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintRed");
+
+	$fingerprintBlue = $manifestBlue->getFingerprint();
+	$fileOrganiserBlue = new FileOrganiser($manifestBlue);
+	$copyDoneBlue = $fileOrganiserBlue->organise();
+
+	$this->assertTrue($manifestBlue->isCacheValid());
+	$this->assertTrue($fileOrganiserBlue->isStyleScriptFilesCacheValid());
+	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintRed");
+	$this->assertFileExists(APPROOT . "/www/Style_$fingerprintBlue");
+
+	// Only change red's content.
+	ManifestTest::putApprootFile([
+		"/Style/RedBody.css" => 
+			"body#red {
+				background: red;
+				color: white;
+			}",
+	]);
+
+	$this->assertFalse($fileOrganiserRed->isStyleScriptFilesCacheValid());
+	$this->assertFalse($fileOrganiserBlue->isStyleScriptFilesCacheValid());
+
+	$copyDoneRed = $fileOrganiserRed->organise();
+
+	$this->assertTrue($manifestRed->isCacheValid());
+	$this->assertFalse($manifestBlue->isCacheValid());
+
+	// Change blue's scropt content.
+	ManifestTest::putApprootFile([
+		"/Script/Test.js" => 
+			"alert('Modified');",
+	]);
+
+	$this->assertFalse($fileOrganiserRed->isStyleScriptFilesCacheValid());
+	$this->assertFalse($fileOrganiserBlue->isStyleScriptFilesCacheValid());
+
+	$copyDoneRed = $fileOrganiserRed->organise();
+
+	$this->assertTrue($manifestRed->isCacheValid());
+	$this->assertFalse($manifestBlue->isCacheValid());
+}
+
+/**
+ * APPROOT/Asset directory should be copied to the www/Asset directory, an 
+ * Asset cache should be created. If the Asset cache is valid, copying should
+ * be skipped.
+ */
+public function testCopyAsset() {
+	ManifestTest::putApprootFile([
+		"/Asset/ChristmasList.txt" => 
+			"Socks,
+			Gloves,
+			Pants",
+	]);
+
+	$manifest = ManifestTest::createManifest();
+	$fileOrganiser = new FileOrganiser($manifest);
+
+	$this->assertFalse($fileOrganiser->isAssetFilesCacheValid());
+
+	$this->assertFileNotExists(APPROOT . "/www/Asset/ChristmasList.txt");
+	$fileOrganiser->organise();
+	$this->assertFileExists(APPROOT . "/www/Asset/ChristmasList.txt");
+	$this->assertTrue($fileOrganiser->isAssetFilesCacheValid());
+
+	removeTestApp();
+	createTestApp();
+
+	ManifestTest::putApprootFile([
+		"/Asset/ChristmasList.txt" => 
+			"Socks,
+			Gloves,
+			Pants",
+		"/Asset/InnerDirectory/ShoppingList.txt" =>
+			"Milk,
+			Pie,
+			Chocolate",
+	]);
+
+	$manifest = ManifestTest::createManifest();
+	$fileOrganiser = new FileOrganiser($manifest);
+
+	$fileOrganiser->organise();
+	$this->assertFileExists(APPROOT . "/www/Asset/ChristmasList.txt");
+	$this->assertFileExists(
+		APPROOT . "/www/Asset/InnerDirectory/ShoppingList.txt");
+	$this->assertTrue($fileOrganiser->isAssetFilesCacheValid());
+
+	ManifestTest::putApprootFile([
+		"/Asset/InnerDirectory/ShoppingList.txt" =>
+			"Milk,
+			Pie,
+			Chocolate,
+			Pancakes!",
+	]);
+	$this->assertFalse($fileOrganiser->isAssetFilesCacheValid());
+
+	unlink(APPROOT . "/Asset/ChristmasList.txt");
+	$this->assertFalse($fileOrganiser->isAssetFilesCacheValid());
 }
 
 }#

@@ -1,551 +1,290 @@
 <?php final class FileOrganiser {
-/**
- * This class works closely with Manifest and ClientSideCompiler to ensure that
- * all source files are stored ouside of the webroot (www directory), but the
- * compiled or minified versions are copied correctly when required.
- */
-const CACHETYPE_MANIFEST = 1;
-const CACHETYPE_ASSET = 2;
-const CACHETYPE_STYLEFILES = 4;
+private $_manifest;
+private $_styleScriptFilesCache;
 
-private $_wwwDir;
-private $_manifestList;
-private $_mtime_stylefiles = 0;
-
-public function __construct($manifestList) {
-	$this->_wwwDir = APPROOT . "/www";
-	$this->_manifestList = $manifestList;
+public function __construct($manifest) {
+	$this->_manifest = $manifest;
+	$this->_styleScriptFilesCache = APPROOT . "/www/StyleScriptFiles.cache";
+	$this->_assetFilesCache = APPROOT . "/www/AssetFiles.cache";
 }
 
-public function organise($domHead) {
+/**
+ * A call to this metehod ensures that all client-side files within the www
+ * directory are up-to-date with the source files.
+ *
+ * @return bool True if any copying was made, false if all caches were valid.
+ */
+public function organise($forceCompile = false) {
+	$copyingDone = false;
 	$logger = Log::get();
 
-	$manifestCache = $this->checkCache(FileOrganiser::CACHETYPE_MANIFEST);
-	$assetCache = $this->checkCache(FileOrganiser::CACHETYPE_ASSET);
-	$styleFilesCache = $this->checkCache(FileOrganiser::CACHETYPE_STYLEFILES);
-
-	// The DOM Head needs expanding to point to the correct location of the 
-	// files within the www directory. This is necessary for these reasons:
-	// 1) Some files, such as .scss, are renamed to .css during processing.
-	// 2) Each individual manifest's files are coppied to self-contained www
-	// directories. 
-	foreach ($this->_manifestList as $manifest) {
-		$manifestName = $manifest->getName();
-
-		$dirTypeArray = ["Script", "Style"];
-		$fileList = $manifest->getFiles();
-
-		foreach ($dirTypeArray as $dirType) {
-			// Build up the www path to the containing directory for each 
-			// manifest's individual Script and Style directories.
-			$baseDir = $this->_wwwDir . "/$dirType";
-			if(!empty($manifestName)) {
-				$baseDir .= "_$manifestName";
-			}
-
-			// Expand meta elements in DOM head to their actual files.
-			$manifest->expandHead(
-				$dirType,
-				$domHead,
-				$baseDir
-			);
-		}
+	$assetFilesCache = $this->isAssetFilesCacheValid();
+	if(!$assetFilesCache) {
+		$this->copyAssets();
 	}
 
-	// No need to do any organising if no style files have changed on disk.
-	if($this->haveStyleFilesChanged()) {
-		// Allow non-css files (such as images, icons, etc.) to be stored in the
-		// Style directory.
-		if(!$manifestCache
-		|| !$styleFilesCache) {
-			$logger->trace("Manifest/StyleFiles Cache invalid.");
-			$this->organiseManifest();
-			$this->organiseStyleFiles();
-		}
-
+	$styleScriptFilesCacheValid = $this->isStyleScriptFilesCacheValid();
+	if(!$styleScriptFilesCacheValid) {
+		$this->flushCache();
+		$this->organiseStyleScriptFiles();
+		$copyingDone = true;
+	}
+	
+	$manifestCacheValid = $this->_manifest->isCacheValid();
+	if($manifestCacheValid) {
 		if(App_Config::isClientCompiled()) {
-			$this->compileManifest();
+			$this->_manifest->minifyDomHead();
 		}
 	}
-
-	if(!$assetCache) {
-		$logger->trace("Asset cache invalid.");
-		$this->organiseAsset();
+	else {
+		$this->processCopy($forceCompile);
+		$copyingDone = true;
 	}
 
-	return true;
+	$this->_manifest->expandDomHead();
+
+	return $copyingDone;
 }
 
 /**
- * Checks if all manifest files are already copied to the www directory.
- * For each Manifest, if MD5 cache file exists, in production treat that as 
- * valid cache. When not in production, read MD5 cache and compare to source
- * directory contents. If MD5s differ, cache is invalid.
+ * Checks the asset's cache file against source asset files for cache validity.
+ * If all assets have been copied and are up to date, return true.
  *
- * Returns true for valid cache, false for invalid cache.
+ * @return bool True for valid cache, false for invalid.
  */
-public function checkCache($type = FileOrganiser::CACHETYPE_MANIFEST, 
-$forceRecalc = false) {
-
-	$isProduction = App_Config::isProduction();
-	$logger = Log::get();
-
-	switch($type) {
-	case FileOrganiser::CACHETYPE_MANIFEST:
-		// Getting the md5 of a manifest is expensive because the md5 has
-		// to be calculated on the processed content.
-		// The StyleFiles.cache file represents all unprocessed files, in
-		// the APPROOT and GTROOT. If its modified time is later than that
-		// of any source style file, it can be assumed no files have 
-		// changed.
-		if(!$this->haveStyleFilesChanged()) {
-			return true;
-		}
-
-		foreach ($this->_manifestList as $manifest) {
-			$manifestName = $manifest->getName();
-			if(empty($manifestName)) {
-				$logger->trace("Getting manifest cache for DOM Head");
-			}
-			else {
-				$logger->trace("Getting manifest cache for $manifestName");
-			}
-			$manifestMd5 = $manifest->getMd5($forceRecalc);
-
-			if(is_null($manifestName)) {
-				$manifestName = $manifestMd5;
-			}
-			$manifestCache = $this->_wwwDir . "/$manifestName.cache";
-			if(!file_exists($manifestCache)) {
-				return false;
-			}
-
-			if(!$isProduction) {
-				$md5Cache = trim(file_get_contents($manifestCache));
-
-				if($manifestMd5 !== $md5Cache) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-		break;
-
-	case FileOrganiser::CACHETYPE_ASSET:
-		$isProduction = App_Config::isProduction();
-		$cacheFile = $this->_wwwDir . "/Asset.cache";
-		if($isProduction && file_exists($cacheFile)) {
-			return true;
-		}
-
-		$assetSourceDir = APPROOT . "/Asset";
-		$assetList = $this->getAssetList($assetSourceDir);
-		$md5 = "";
-		foreach ($assetList as $asset) {
-			$md5 .= md5_file("$assetSourceDir/$asset");
-		}
-		$md5 = md5($md5);
-		$currentMd5 = "";
-		if(file_exists($cacheFile)) {
-			$currentMd5 = file_get_contents($cacheFile);
-		}
-
-		if($currentMd5 == $md5) {
-			return true;
-		}
-
-		return false;
-		break;
-	case FileOrganiser::CACHETYPE_STYLEFILES:
-		$styleDirectoryArray = array(
-			APPROOT . "/Style",
-			GTROOT . "/Style",
-		);
-		$styleFileArray = array();
-		$hashFile = APPROOT . "/www/StyleFiles.cache";
-		$isProduction = App_Config::isProduction();
-		$md5 = "";
-
-		if($isProduction && file_exists($hashFile)) {
-			return true;
-		}
-
-		foreach ($styleDirectoryArray as $styleDirectory) {
-			foreach ($iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($styleDirectory,
-					RecursiveDirectoryIterator::SKIP_DOTS),
-				RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-				if($item->isDir()) {
-					continue;
-				}
-				$pathName = $item->getPathName();
-
-				// We want an md5 of *all* files...
-				$md5 .= md5_file($pathName);
-				// ... but only want to copy non-stylesheets.
-				if(!preg_match("/\..?css$/", $pathName)) {
-					$styleFileArray[] = $pathName;
-				}
-			}
-		}
-
-		$md5 = md5($md5);
-		if(file_exists($hashFile)) {
-			$hash = trim(file_get_contents($hashFile));
-			if($hash == $md5) {
-				return true;
-			}
-		}
-
-		return false;
-		break;
-	}
-}
-
-
-/**
- * Performs a process & copy operation from source client-side directories into
- * www directory. Processes any special files such as scss, etc.
- */
-public function organiseManifest() {
-	// Remove old cache files:
-	$skipFiles = ["StyleFiles.cache", "Asset.cache"];
-	$files = scandir($this->_wwwDir);
-	foreach ($files as $f) {
-		$fp = $this->_wwwDir . "/$f";
-		if($f[0] == "."
-		|| is_dir($fp)
-		|| in_array($f, $skipFiles)
-		|| !preg_match("/\.cache$/", $f)) {
-			continue;
-		}
-
-		unlink($fp);
-	}
-
-	foreach ($this->_manifestList as $manifest) {
-		$hash = $manifest->getMd5();
-
-		$manifestName = $manifest->getName();
-		$dirTypeArray = ["Script", "Style"];
-		$fileList = $manifest->getFiles();
-
-		foreach ($dirTypeArray as $dirType) {
-			$baseDir = $this->_wwwDir . "/$dirType";
-
-			if(!empty($manifestName)) {
-				$baseDir .= "_$manifestName";
-			}
-			
-			$this->recursiveRemove($baseDir);
-			$this->processCopy($fileList[$dirType], $baseDir, $dirType);
-		}
-
-		$md5File = (empty($manifestName))
-			? $this->_wwwDir . "/$hash.cache"
-			: $this->_wwwDir . "/$manifestName.cache";
-		file_put_contents($md5File, $hash);
-	}
-}
-
-/**
- * Removes and re-copies all Asset files.
- */
-public function organiseAsset() {
-	$assetSourceDir = APPROOT . "/Asset";
+public function isAssetFilesCacheValid() {
+	$assetDir = APPROOT . "/Asset";
 	$assetWwwDir = APPROOT . "/www/Asset";
-	$assetList = $this->getAssetList($assetSourceDir);
-	$md5 = "";
-
-	foreach ($assetList as $asset) {
-		$sourcePath = "$assetSourceDir/$asset";
-		$wwwPath = "$assetWwwDir/$asset";
-		if(!is_dir(dirname($wwwPath))) {
-			mkdir(dirname($wwwPath), 0775, true);
-		}
-		copy($sourcePath, $wwwPath);
-		$md5 .= md5_file($sourcePath);
+	if(!is_dir($assetWwwDir)) {
+		return false;
 	}
-
-	$md5 = md5($md5);
-	file_put_contents(APPROOT . "/www/Asset.cache", $md5);
-	return true;
-}
-
-/**
- * All stylesheet files within the source directory will end in css, including
- * those that are processed. This function copies all non-stylesheet files,
- * such as images, into the www/Style directory and stores an md5 hash in
- * www/StyleFiles.cache
- */
-private function organiseStyleFiles() {
-	$styleDirectoryArray = array(
-		APPROOT . "/Style",
-		GTROOT . "/Style",
-	);
-	$styleFileArray = array();
-	$hashFile = APPROOT . "/www/StyleFiles.cache";
-	$md5 = "";
-
-	foreach ($styleDirectoryArray as $styleDirectory) {
-		foreach ($iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($styleDirectory,
-				RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-			if($item->isDir()) {
-				continue;
-			}
-			$pathName = $item->getPathName();
-
-			// We want an md5 of *all* files...
-			$md5 .= md5_file($pathName);
-			// ... but only want to copy non-stylesheets.
-			if(!preg_match("/\..?css$/", $pathName)) {
-				$styleFileArray[] = $pathName;
-			}
-		}
-	}
-
-	foreach ($styleFileArray as $styleFile) {
-		if(strpos($styleFile, APPROOT) === 0) {
-			$destination = substr($styleFile, strlen(APPROOT));
-		}
-		else if(strpos($styleFile, GTROOT) === 0) {
-			$destination = substr($styleFile, strlen(GTROOT));
-		}
-		else {
-			throw new Exception("Source style file can't be found: $styleFile");
-		}
-		$destination = APPROOT . "/www" . $destination;
-
-		if(!is_dir(dirname($destination))) {
-			mkdir(dirname($destination), 0775, true);
-		}
-		copy($styleFile, $destination);
-	}
-
-	$md5 = md5($md5);
-	file_put_contents($hashFile, $md5);
-	return true;
-}
-
-private function haveStyleFilesChanged() {
-	if(App_Config::isClientCompiled()) {
-		if(!file_exists(APPROOT . "/www/" . ClientSideCompiler::CACHEFILE)) {
-			return true;
-		}
-	}
-	$styleFilesCache = APPROOT . "/www/StyleFiles.cache";
-	if(!file_exists($styleFilesCache)) {
-		return true;
-	}
-
-	$this->_mtime_stylefiles = filemtime($styleFilesCache);
-	if(Session::get("Gt.PageView.mtime") > $this->_mtime_stylefiles) {
-		return true;
-	}
-
-	$styleDirectoryArray = array(
-		APPROOT . "/Style",
-		GTROOT . "/Style",
-	);
-	$styleFileArray = array();
-	$md5 = "";
-	foreach ($styleDirectoryArray as $styleDirectory) {
-		foreach ($iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($styleDirectory,
-				RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-			if($item->isDir()) {
-				continue;
-			}
-			$pathName = $item->getPathName();
-
-			// We want an md5 of *all* files...
-			$md5 .= md5_file($pathName);
-			// ... but only want to copy non-stylesheets.
-			if(!preg_match("/\..?css$/", $pathName)) {
-				$styleFileArray[] = $pathName;
-			}
-		}
-	}
-
-	$md5 = md5($md5);
-	$md5_actual = trim(file_get_contents($styleFilesCache));
-
-	if($md5 == $md5_actual) {
+	if(!is_file($this->_assetFilesCache)) {
 		return false;
 	}
 
-	return true;
+	$currentMd5 = trim(file_get_contents($this->_assetFilesCache));
+	$md5 = "";
+
+	$md5Array = array();
+	$outputArray = FileSystem::loopDir($assetDir, $assetWwwDir, 
+	[$this, "iterateMd5"], false);
+
+	$md5Array = array_merge($md5Array, $outputArray);
+	foreach ($md5Array as $m) {
+		$md5 .= $m;
+	}
+	$md5 = md5($md5);
+
+	return $currentMd5 == $md5;
 }
 
 /**
- * Gets the latest time any files within the APPROOT/Style or GTROOT/Style
- * directories have been modified.
+ * Performs the recursive copy process for all files in the source asset 
+ * directory.
  */
-private function getStyleMTime() {
-	$styleDirectoryArray = array(
-		APPROOT . "/Style",
-		GTROOT . "/Style",
-	);
-	$mtimeLatest = 0;
+private function copyAssets($dryRun = false) {
+	$assetDir = APPROOT . "/Asset";
+	$assetWwwDir = APPROOT . "/www/Asset";
 
-	foreach ($styleDirectoryArray as $styleDirectory) {
-		foreach ($iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($styleDirectory,
-				RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST) as $item) {
-
-			if($item->isDir()) {
-				continue;
-			}
-
-			$mtime = filemtime($item->getPathName());
-			if($mtime > $mtimeLatest) {
-				$mtimeLatest = $mtime;
-			}
-		}
+	if(!is_dir($assetDir)) {
+		return;
 	}
 
-	return $mtimeLatest;
+	$md5 = "";
+	$md5Array = FileSystem::loopDir($assetDir, $assetWwwDir, 
+	[$this, "iterateMd5"], !$dryRun);
+
+	foreach ($md5Array as $m) {
+		$md5 .= $m;
+	}
+
+	$md5 = md5($md5);
+	file_put_contents($this->_assetFilesCache, $md5);
 }
 
-private function getAssetList($dir) {
-	$fileList = array();
-
-	if(!is_dir($dir)) {
-		return $fileList;
+/**
+ * Checks that any file in either APPROOT/Style or GTROOT/Style has not changed
+ * in the source directories, compared to the www/Style copy.
+ *
+ * @return bool True for valid cache, false for invalid.
+ */
+public function isStyleScriptFilesCacheValid() {
+	if(!is_file($this->_styleScriptFilesCache)) {
+		return false;
 	}
 
-	foreach ($iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator($dir,
-			RecursiveDirectoryIterator::SKIP_DOTS),
-		RecursiveIteratorIterator::SELF_FIRST) as $item) {
+	$currentMd5 = trim(file_get_contents($this->_styleScriptFilesCache));
+	$md5 = $this->organiseStyleScriptFiles(true);
+
+	return $currentMd5 === $md5;
+}
+
+/**
+ * Removes all cached Script & Style files from within www.
+ */
+private function flushCache() {
+	if(file_exists($this->_styleScriptFilesCache)) {
+		unlink($this->_styleScriptFilesCache);
+	}
+
+	$globArray = [
+		APPROOT . "/www/Script*",
+		APPROOT . "/www/Style*",
+		APPROOT . "/www/Min*",
+	];
+	foreach ($globArray as $glob) {
+		$dirArray = glob($glob);
+
+		foreach ($dirArray as $dir) {
+			FileSystem::remove($dir);
+		}
+	}
+}
+
+/**
+ * Copies all non-.css files from APPROOT/Style and GTROOT/Style into the 
+ * www/Style directory. This is necessary so that style assets such as images
+ * and fonts can be referenced from within client-side files themselves.
+ *
+ * A hash file is left in the www directory, representing all source files.
+ *
+ * If dryRun is true, the copy action will be skipped, allowing for a check of
+ * the md5 representing the directories.
+ *
+ * @param $dryRun bool Optional. True to skip copy action.
+ * @return string The md5 representation of source Style directories.
+ */
+private function organiseStyleScriptFiles($dryRun = false) {
+	$dirArray = [
+		APPROOT . "/Style",
+		GTROOT . "/Style",
 		
-		if($item->isDir()) {
+		APPROOT . "/Script",
+		GTROOT . "/Script",
+	];
+	$wwwStyleDir = APPROOT . "/www/Style";
+
+	$md5Array = array();
+	$md5 = "";
+
+	foreach ($dirArray as $dir) {
+		if(!is_dir($dir)) {
 			continue;
 		}
 
-		$fileList[] = $iterator->getSubPathName();
+		$outputArray = FileSystem::loopDir($dir, $wwwStyleDir, 
+		[$this, "iterateMd5"], !$dryRun);
+
+		$md5Array = array_merge($md5Array, $outputArray);
+	}
+	
+	foreach ($md5Array as $m) {
+		$md5 .= $m;
+	}
+	$md5 = md5($md5);
+
+	if(!$dryRun) {
+		file_put_contents($this->_styleScriptFilesCache, $md5);
 	}
 
-	return $fileList;
+	return $md5;
+}
+
+public function iterateMd5($item, $iterator, $innerDir, $doCopy) {
+	if($item->isDir()) {
+		return;
+	}
+
+	$sourcePath = $item->getPathname();
+	$md5 = md5_file($sourcePath);
+
+	if(!preg_match("/\..*css$/", $sourcePath)) {
+		$wwwPath = "$innerDir/" . $iterator->getSubpathname();
+
+		if($doCopy) {
+			if(!is_dir(dirname($wwwPath))) {
+				mkdir(dirname($wwwPath), 0775, true);
+			}
+			copy($sourcePath, $wwwPath);				
+		}
+	}
+
+	return $md5;
 }
 
 /**
- * For each file referenced in each manifest, process the contents if
- * required, then write the processed contents into the public www directory.
- *
- * @param array $fileList A list of script/style files, already matched to an
- * existing source file on disk. Source file may be in APPROOT or GTROOT, but
- * may have a processed file extension (which will need re-mapping to original).
- * @param string $destDir Full absolute path of the directory to output the 
- * processed file to. This is a www/Script or www/Style directory, but may
- * contain the name of the manifest.
- * @param string $type Either "Script" or "Style".
+ * Copies all files referenced by the manifest to their public www location,
+ * while at the same time processing their contents using the 
+ * ClientSideCompiler.
  */
-private function processCopy($fileList, $destDir, $type) {
-	foreach ($fileList as $file) {
-		$processed = null;
+private function processCopy($forceCompile = false) {
+	$manifestPathArray = $this->_manifest->getPathArray();
+	$processedArray = [];
 
-		if(!file_exists($file)) {
-			$found = false;
-			// Because the dom head is already expanded by this point, the 
-			// filename stored in $file may not point to the source file - 
-			// attempt to map it using the $headElementDestMap array.
-			foreach (Manifest::$headElementDestMap as $match => $replacement) {
-				if(preg_match($match, $file)) {
-					$fileReplaced = preg_replace($match, $replacement, $file);
-
-					if(file_exists($file)) {
-						$found = true;
-						$file = $fileReplaced;
-					}
-				}
-			}
-			if(!$found) {
-				throw new Exception("File Organiser's file can't be processed: "
-					. $file);				
+	foreach ($manifestPathArray as $source) {
+		// Allow referenced file to exist in either APPROOT or GTROOT, while
+		// prefering the APPROOT's version if file exists in both locations.
+		$sourcePathArray = [
+			APPROOT . $source,
+			GTROOT . $source,
+		];
+		$sourcePath = null;
+		foreach ($sourcePathArray as $sp) {
+			if(file_exists($sp)) {
+				$sourcePath = $sp;
+				break;
 			}
 		}
-
-		$processed = ClientSideCompiler::process($file);	
-
-		// $destDir may contain the name of the manifest in the directory name.
-		// $file is the absolute path to the source file.
-		// Manipulate $destDir and $file to point to the absolute path to the 
-		// public www file.
-		$relativeFile = "";
-
-		// To test which directory the file resides in, strip APPROOT out of the
-		// path and then check if the 
-		// $testPath
-
-		if(strpos($file, APPROOT) === 0) {
-			$rootAndType = APPROOT . "/$type";
-		}
-		else if(strpos($file, GTROOT) === 0) {
-			$rootAndType = GTROOT . "/$type";
-		}
-		else {
-			throw new Exception("File Organiser can't find processed file: "
-				. $file);
-		}
-		$relativeFile = substr($file, strlen($rootAndType));
-
-		$destinationPath = $destDir . $relativeFile;
-		foreach (Manifest::$headElementSourceMap as $match => $replacement) {
-			if(preg_match($match, $destinationPath)) {
-				$destinationPath = preg_replace(
-					$match, $replacement, $destinationPath);
-			}
+		// If sourcePath is null at this point, the source file can't be found.
+		// Do not throw an exception though - treat it as it would in a static
+		// website; the browser will show a 404 error in the console.
+		if(is_null($sourcePath)) {
+			continue;
 		}
 
+		$destination = $this->_manifest->getFingerprintPath($source);
+		$destinationPath = APPROOT . "/www" . $destination;
+		$destinationPath = ClientSideCompiler::renameSource($destinationPath);
+
+		$processed = ClientSideCompiler::process($sourcePath);
 		if(!is_dir(dirname($destinationPath))) {
 			mkdir(dirname($destinationPath), 0775, true);
 		}
+		file_put_contents($destinationPath, $processed);
 
-		if(false === file_put_contents($destinationPath, $processed)) {
-			throw new Exception(
-				"File Organiser failed writing file $destinationPath");
+		$ext = pathinfo($destinationPath, PATHINFO_EXTENSION);
+
+		if(!isset($processedArray[$ext])) {
+			$processedArray[$ext] = array();
 		}
-	}
-}
-
-private function compileManifest() {
-	// TODO: MAKE IT COMPILE!
-	foreach($this->_manifestList as $manifest) {
-	}
-}
-
-/**
- * Removes the given directory and all of its contents.
- */
-private function recursiveRemove($baseDir) {
-	if(!is_dir($baseDir)) {
-		return true;
+		$processedArray[$ext][] = $destinationPath;
 	}
 
-	foreach ($iterator = new RecursiveIteratorIterator(
-		new RecursiveDirectoryIterator($baseDir, 
-			RecursiveDirectoryIterator::SKIP_DOTS),
-		RecursiveIteratorIterator::CHILD_FIRST) as $item) {
-			$subPath = $iterator->getSubPathName();
+	if(App_Config::isClientCompiled()
+	|| $forceCompile) {
+		foreach ($processedArray as $extension => $destinationPathArray) {
+			$min = Minifier::minify($destinationPathArray);
+			$fingerprint = $this->_manifest->getFingerprint();
+			$minDir = APPROOT . "/www/Min";
+			$minFile = "$fingerprint.$extension";
+			$minFilePath = "$minDir/$minFile";
 
-			if($item->isDir()) {
-				rmdir("$baseDir/$subPath");
+			if(!is_dir(dirname($minFilePath))) {
+				mkdir(dirname($minFilePath), 0775, true);
 			}
-			else {
-				unlink("$baseDir/$subPath");
-			}
-	}
+			file_put_contents($minFilePath, $min);
+		}
 
-	rmdir($baseDir);
-	return true;
+		$dirArray = [
+			APPROOT . "/www/Script_$fingerprint",
+			APPROOT . "/www/Style_$fingerprint",
+		];
+		foreach ($dirArray as $dir) {
+			FileSystem::remove($dir);
+		}
+
+		$this->_manifest->minifyDomHead();
+	}
 }
+
 }#

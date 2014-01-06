@@ -3,13 +3,6 @@
 public function setup() {
 	removeTestApp();
 	createTestApp();
-	require_once(GTROOT . "/Class/Css2Xpath/Css2Xpath.class.php");
-	require_once(GTROOT . "/Framework/Component/Dom.php");
-	require_once(GTROOT . "/Framework/Component/DomEl.php");
-	require_once(GTROOT . "/Framework/Component/DomElClassList.php");
-	require_once(GTROOT . "/Framework/Component/DomElCollection.php");
-	require_once(GTROOT . "/Framework/Manifest.php");
-	require_once(GTROOT . "/Framework/FileOrganiser.php");
 	require_once(GTROOT . "/Framework/ClientSideCompiler.php");
 }
 
@@ -17,74 +10,237 @@ public function tearDown() {
 	removeTestApp();
 }
 
-/**
- * Loads an .scss file and makes sure that it processes to proper CSS.
- */
-public function testSassProcesses() {
-	$scss = "\$myColour = rgba(red, 0.8);
-		body { h1 { background: \$myColour; } }";
-	$scssFile = APPROOT . "/Style/Main.scss";
-	if(!is_dir(dirname($scssFile))) {
-		mkdir(dirname($scssFile), 0775, true);
-	}
-	file_put_contents($scssFile, $scss);
-
-	$processed = ClientSideCompiler::process($scssFile);
-	$this->assertContains("body h1", $processed);
+private function putApprootFileContents($fileArray /*, [$fileArrayN ..] */ ) {
+	$fileArrayArray = func_get_args();
+	foreach ($fileArrayArray as $fileArray) {
+		if(array_keys($fileArray) !== range(0, count($fileArray) - 1)) {
+			// Array is associative.
+			foreach ($fileArray as $file => $content) {
+				$filePath = APPROOT . $file;
+				if(!is_dir(dirname($filePath))) {
+					mkdir(dirname($filePath), 0775, true);
+				}
+				file_put_contents($filePath, $content);
+			}
+		}
+		else {
+			// Array is not associative.
+			foreach ($fileArray as $file) {
+				$filePath = APPROOT . $file;
+				if(!is_dir(dirname($filePath))) {
+					mkdir(dirname($filePath), 0775, true);
+				}
+				touch($filePath);
+			}
+		}
+	}		
 }
 
+/**
+ * Shorthand function that creates physical source files within APPROOT, fills
+ * with the given contents, and also runs assertions of expected contents
+ * against the processed files' contents.
+ */
+private function makeAssetAssertions($approotFileAssertionArray) {
+	foreach ($approotFileAssertionArray as $approotFile => $contentsArray) {
+		$sourceContents = is_array($contentsArray)
+			? $contentsArray[0]
+			: $contentsArray;
+
+		$this->putApprootFileContents([$approotFile => $sourceContents]);
+
+		if(is_array($contentsArray)) {
+			$processed = ClientSideCompiler::process(APPROOT . $approotFile);
+
+			// Allow testing arrays and regexes.
+			if(is_array($contentsArray[1])) {
+				foreach ($contentsArray[1] as $contentToCheck) {
+					$this->assertContains($contentToCheck, $processed);
+				}
+			}
+			else if(preg_match("/^\/.*\/[a-z]*$/", $contentsArray[1])) {
+				$this->assertRegExp($contentsArray[1], $processed);
+			}
+			else {
+				$this->assertContains($contentsArray[1], $processed);
+			}
+		}
+	}
+}
 
 /**
- * Test the various "//= require" syntax within JavaScript files:
- * From https://github.com/BrightFlair/PHP.Gt/issues/111
- *
- * //= require /Script/Lib/jquery.js
- * //= require_tree /Script/Go/
- * //= require_tree /Script/Namespace/
+ * The process function on the ClientSideCompiler calls a process function
+ * according to  the file extension. Scss should use the SassParser class.
  */
-public function testJavaScriptRequires() {
-	$js = [
-		"/Script/Main.js" => "alert('Just a test, from Main.js');
-			//= require Relative/Path/Include.js
-			alert('Is everything working?');
-			//= require /Script/IncludeAbsolute.js
-			alert('One last requirement...');
-			//= require_tree /Script/Inc",
-		"/Script/Relative/Path/Include.js" => "alert('testing from relative');",
-		"/Script/IncludeAbsolute.js" => "alert('absolute');",
-		"/Script/Inc/1.js" => "alert('First inc');",
-		"/Script/Inc/2.js" => "alert('Second inc');",
+public function testProcessScss() {
+	$this->makeAssetAssertions([
+		"/Style/Main.scss" => [
+			"\$red = rgba(red, 0.8);
+			body {
+				> h1 {
+					color: \$red;
+				}
+			}", "body > h1 {"],
+
+		"/Style/InnerDir/IncludeMe.scss" => [
+			"a#special {
+				background: lighten(blue, 1.5);
+			}", "a#special"],
+
+		"/Style/Includer.scss" =>
+			"@import InnerDir/IncludeMe;
+			div.container {
+				background: blue;
+			}",
+	]);
+}
+
+/**
+ * The process function on the ClientSideCompiler calls a process function
+ * according to  the file extension. Sass should use the SassParser class.
+ */
+public function testProcessSass() {
+	$this->makeAssetAssertions([
+		"/Style/Main.sass" => [
+			"#main
+				color: blue
+				font-size: 0.3em", "#main {"],
+	]);
+}
+
+/**
+ * The process function on the ClientSideCompiler calls a process function
+ * according to  the file extension. Js should use the JsParser class.
+ */
+public function testProcessJs() {
+	$this->makeAssetAssertions([
+		"/Script/Inc/IncludeMe.js" => 
+			"msg += 'Included from IncludeMe';",
+		"/Script/Inc/SubDir/InnerInclude.js" =>
+			"msg += 'Included from the deeper directory';",
+		"/Script/Inc/SubDir/InnerInclude2.js" =>
+			"msg += 'Another deep include';",
+		"/Script/Main.js" => [
+			"var msg = 'Initialised message.';
+			// Going to require them all individually,
+			// the first done relatively...
+			//= require Inc/IncludeMe.js
+			//= require /Script/Inc/SubDir/InnerInclude.js
+			//= require /Script/Inc/SubDir/InnerInclude2.js"
+			, [
+				"Initialised message.",
+				"Included from IncludeMe",
+				"Included from the deeper directory",
+				"Another deep include",
+			]],
+	]);
+
+	// Same test, but with require_tree this time.
+	removeTestApp();
+	createTestApp();
+	$this->makeAssetAssertions([
+		"/Script/Inc/IncludeMe.js" => 
+			"msg += 'Included from IncludeMe';",
+		"/Script/Inc/SubDir/InnerInclude.js" =>
+			"msg += 'Included from the deeper directory';",
+		"/Script/Inc/SubDir/InnerInclude2.js" =>
+			"msg += 'Another deep include';",
+		"/Script/Main.js" => [
+			"var msg = 'Initialised message.';
+			// Going to require them all individually,
+			// the first done relatively...
+			//= require_tree /Script/Inc"
+			, [
+				"Initialised message.",
+				"Included from IncludeMe",
+				"Included from the deeper directory",
+				"Another deep include",
+			]],
+	]);
+
+	// Same test again, but with require_tree being relative this time.
+	removeTestApp();
+	createTestApp();
+	$this->makeAssetAssertions([
+		"/Script/Inc/IncludeMe.js" => 
+			"msg += 'Included from IncludeMe';",
+		"/Script/Inc/SubDir/InnerInclude.js" =>
+			"msg += 'Included from the deeper directory';",
+		"/Script/Inc/SubDir/InnerInclude2.js" =>
+			"msg += 'Another deep include';",
+		"/Script/Main.js" => [
+			"var msg = 'Initialised message.';
+			// Going to require them all individually,
+			// the first done relatively...
+			//= require_tree Inc"
+			, [
+				"Initialised message.",
+				"Included from IncludeMe",
+				"Included from the deeper directory",
+				"Another deep include",
+			]],
+	]);
+}
+
+/**
+ * Given an array of preprocessed css files and an output filename, the
+ * ClientSideCompiler should minify the css into a single file and remove the
+ * preprocessed files from the public webroot.
+ */
+public function testMinifyCss() {
+	
+}
+
+/**
+ * Given an array of preprocessed js files and an output filename, the 
+ * ClientSideCompiler should minify the js into a single file and remove the
+ * preprocessed files from the public webroot.
+ */
+public function testMinifyJs() {
+	$js = "";
+
+	$jsFileArray = [
+		GTROOT  . "/Script/Gt.js" => null,
+		APPROOT . "/Script/Main.js" => ';go(function() {
+		var one,
+			two,
+			three,
+
+		e_click_button = function(e) {
+			e.preventDefault();
+			var onePlusTwoPlusThree = one + two + three;
+
+			alert("One + two + three = " + onePlusTwoPlusThree);
+		};
+
+		dom("button#btn_clicker").addEventListener(
+			"click", e_click_button);
+		});'
 	];
-	foreach ($js as $file => $contents) {
-		$filePath = APPROOT . $file;
-		if(!is_dir(dirname($filePath))) {
-			mkdir(dirname($filePath), 0775, true);
-		}
-		file_put_contents($filePath, $contents);
-	}
 
-	$processed = ClientSideCompiler::process(APPROOT . "/Script/Main.js",
-		"Output.js");
-	$processed = preg_replace("/\s/", "", $processed);
+	$fileArray = array();
 
-	$expected = "";
-	foreach ($js as $file => $contents) {
-		$lines = explode("\n", $contents);
-		foreach ($lines as $l) {
-			if(strstr($l, "//=")) {
-				continue;
+	foreach ($jsFileArray as $file => $contents) {
+		if(!is_null($contents)) {
+			if(!is_dir(dirname($file))) {
+				mkdir(dirname($file), 0775, true);
 			}
-			$expected .= preg_replace("/\s/", "", $l) . "\n";
+			file_put_contents($file, $contents);
 		}
+		$fileArray[] = $file;
 	}
 
-	$expectedLines = explode("\n", $expected);
-	foreach ($expectedLines as $l) {
-		if(empty($l)) {
-			continue;
-		}
-		$this->assertContains($l, $processed);
-	}
+	Minifier::minify($fileArray);
+}
+
+/**
+ * The ClientSideCompiler should provide a map between source filenames and 
+ * destination filenames (after processing), according to the file extension.
+ * For example, /Style/Main.scss will want to be mapped to /Style/Main.css
+ * before it is rendered in the DOM head.
+ */
+public function testSourceMap() {
+
 }
 
 }#
