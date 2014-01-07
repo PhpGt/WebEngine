@@ -70,28 +70,13 @@ public function __toString() {
 }
 
 public function serialize() {
-	$this->storeResult(true);
-	$obj = array(
-		"InsertId" => $this->_insertId,
-		"OriginalSql" => $this->_originalSql,
-		"TableName" => $this->_tableName,
-		"Position" => $this->_position,
-		"Result" => $this->result,
-		"Stmt" => "This object is from the PHP.Gt cache, so the PDO "
-		. "statement is not accessible."
-	);
-	
-	return serialize($obj);
+	$this->storeResult(true);	
+	var_dump($this->result);
+	return serialize($this->result);
 }
 
 public function unserialize($string) {
-	$obj = unserialize($string);
-	$this->_insertId = $obj["InsertId"];
-	$this->_originalSql = $obj["OriginalSql"];
-	$this->_tableName = $obj["TableName"];
-	$this->_position = $obj["Position"];
-	$this->result = $obj["Result"];
-	$this->_stmt = $obj["Stmt"];
+	$this->result = unserialize($string);
 }
 
 // Iterator ----------------------------------------------------------------
