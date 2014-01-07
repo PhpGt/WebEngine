@@ -71,7 +71,6 @@ public function __toString() {
 
 public function serialize() {
 	$this->storeResult(true);	
-	var_dump($this->result);
 	return serialize($this->result);
 }
 
