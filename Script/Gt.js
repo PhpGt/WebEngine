@@ -549,7 +549,18 @@ http = function(url /*,[method],[properties],[callback],[xhr],[responseType]*/){
 
 	if(callback) {
 		xhr.addEventListener("readystatechange", function() {
+			var responseObj;
+
 			if(this.readyState === 4) {
+				try {
+					responseObj = JSON.parse(this.responseText);
+					Object.defineProperty(xhr, "responseObject", {
+						"enumerable": true,
+						"value": responseObj,
+					});
+				}
+				catch(e) {}
+
 				callback.call(xhr);
 			}
 		});
