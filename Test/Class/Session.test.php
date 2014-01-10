@@ -55,18 +55,6 @@ public function testSessionGetsNamespaceArray() {
 	$this->assertEquals("bar4", $value);
 }
 
-public function testSessionExtendsStorage() {
-	Session::set("Test.Session", ["foo5" => "bar5"]);
-	Session::set("Test.Session", ["foo6" => "bar6"]);
-	Session::set("Test.Session.foo7", "bar7");
-
-	$array = Session::get("Test.Session");
-
-	$this->assertEquals("bar5", $array["foo5"]);
-	$this->assertEquals("bar6", $array["foo6"]);
-	$this->assertEquals("bar7", $array["foo7"]);
-}
-
 public function testSessionUnsets() {
 	Session::set("Test.Session", ["foo8", "bar8"]);
 	Session::set("Test.Session.Deep.Deeper.Namespace", ["foo9" => "bar9"]);
@@ -75,6 +63,32 @@ public function testSessionUnsets() {
 
 	$this->assertTrue(Session::exists("Test.Session"));
 	$this->assertFalse(Session::exists("Test.Session.Deep.Deeper"));
+}
+
+public function testSessionPush() {
+	Session::set("Test.pushable", ["Array with single element"]);
+	Session::push("Test.pushable", "New element to push");
+
+	$this->assertCount(2, Session::get("Test.pushable"));
+
+	Session::push("Test.pushable", ["Sub-array"]);
+
+	$this->assertCount(3, Session::get("Test.pushable"));
+
+	$subArray = Session::pop("Test.pushable");
+	$this->assertCount(2, Session::get("Test.pushable"));
+	$this->assertCount(1, $subArray);
+
+	Session::unshift("Test.pushable", "Element to test with");
+	$this->assertCount(3, Session::get("Test.pushable"));
+	$this->assertEquals(
+		"Element to test with", Session::shift("Test.pushable"));
+	$this->assertCount(2, Session::get("Test.pushable"));
+
+	// Try to push on a namespace that isn't an array. Should become array.
+	Session::set("Test.notArray", "This is not an array");
+	Session::push("Test.notArray", "But now it should be");
+	$this->assertCount(2, Session::get("Test.notArray"));
 }
 
 }#

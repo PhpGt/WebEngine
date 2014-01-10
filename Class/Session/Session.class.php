@@ -44,6 +44,51 @@ public static function check($ns) {
 	return self::exists($ns);
 }
 
+public static function push($ns, $data) {
+	$existing = self::get($ns);
+	if(!is_array($existing)) {
+		$existing = [$existing];
+	}
+
+	$count = array_push($existing, $data);
+
+	self::set($ns, $existing);
+	return $count;
+}
+public static function pop($ns) {
+	$existing = self::get($ns);
+	if(!is_array($existing)) {
+		$existing = [$existing];
+	}
+
+	$result = array_pop($existing);
+
+	self::set($ns, $existing);
+	return $result;
+}
+public static function unshift($ns, $data) {
+	$existing = self::get($ns);
+	if(!is_array($existing)) {
+		$existing = [$existing];
+	}
+
+	$count = array_unshift($existing, $data);
+
+	self::set($ns, $existing);
+	return $count;
+}
+public static function shift($ns) {
+	$existing = self::get($ns);
+	if(!is_array($existing)) {
+		$existing = [$existing];
+	}
+
+	$result = array_shift($existing);
+
+	self::set($ns, $existing);
+	return $result;
+}
+
 private static function &getKey(&$ns, $nsArray, $key = null) {
 	if(empty($nsArray)) {
 		return $ns[$key];
@@ -55,12 +100,7 @@ private static function &getKey(&$ns, $nsArray, $key = null) {
 
 private static function setData(&$ns, $nsArray, $data) {
 	if(count($nsArray) === 1) {
-		if(is_array($data)) {
-			$ns[$nsArray[0]] = array_merge($ns[$nsArray[0]], $data);
-		}
-		else {
-			$ns[$nsArray[0]] = $data;			
-		}
+		$ns[$nsArray[0]] = $data;			
 		return $data;
 	}
 
