@@ -26,17 +26,43 @@ public function testUrlFixed() {
 	}
 	file_put_contents($pageViewFile, "Contact page");
 
+	$pageViewFile = APPROOT . "/PageView/SubPath/Index.html";
+	if(!is_dir(dirname($pageViewFile))) {
+		mkdir(dirname($pageViewFile), 0775, true);
+	}
+	file_put_contents($pageViewFile, "This is 'Index', within 'SubPath'");
+
+	$pageViewFile = APPROOT . "/PageView/SubPath/MyPage.html";
+	if(!is_dir(dirname($pageViewFile))) {
+		mkdir(dirname($pageViewFile), 0775, true);
+	}
+	file_put_contents($pageViewFile, "This is 'MyPage', within 'SubPath'");
+
 	$originalPath = "/contact.html";
-	$fixedUrl = $this->_response->tryFixUrl($originalPath);
-	$this->assertEquals("/Contact.html", $fixedUrl);
+	$this->assertEquals("/Contact.html", 
+		$this->_response->tryFixUrl($originalPath));
 
 	$originalPath = "/contact";
-	$fixedUrl = $this->_response->tryFixUrl($originalPath);
-	$this->assertEquals("/Contact.html", $fixedUrl);
+	$this->assertEquals("/Contact.html", 
+		$this->_response->tryFixUrl($originalPath));
+
+	$originalPath = "/contact/";
+	$this->assertEquals("/Contact.html", 
+		$this->_response->tryFixUrl($originalPath));
 
 	$originalPath = "/cOnTaCt";
-	$fixedUrl = $this->_response->tryFixUrl($originalPath);
-	$this->assertEquals("/Contact.html", $fixedUrl);
+	$this->assertEquals("/Contact.html", 
+		$this->_response->tryFixUrl($originalPath));
+
+	$originalPath = "/subpath";
+	$this->assertEquals("/SubPath/Index.html", 
+		$this->_response->tryFixUrl($originalPath));
+
+	// Try something that can't be fixed.
+	$originalPath = "/NonExistant";
+	$this->assertFalse($this->_response->tryFixUrl($originalPath));
+	$originalPath = "/contact/nothing.html";
+	$this->assertFalse($this->_response->tryFixUrl($originalPath));
 }
 
 }#

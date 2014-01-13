@@ -75,33 +75,54 @@ public function tryFixUrl($path = null) {
 		$path = $_SERVER["REQUEST_URI"];
 	}
 
-	$currentPath = "/";
+	$currentPath = "";
 
-	if(!empty(DIR)) {
-		$dirArray = explode("/", DIR);
+	// Treat the entire path as an array, ignoring the first slash.
+	$pathArray = explode("/", $path);
+	array_shift($pathArray);
+
+	$pageViewFile = APPROOT . "/PageView/";
+
+	// Find a case-insensitive match for each level inside the directory tree.
+	foreach ($pathArray as $i => $p) {
+		$dirArray = scandir($pageViewFile);
 		foreach ($dirArray as $dir) {
-			if(is_dir(APPROOT . "/PageView" . "$currentPath/$dir")) {
-				$currentPath .= "/$dir";
+			if($dir[0] == ".") {
 				continue;
 			}
 
-			$fileArray = scandir($currentDir);
-			foreach ($fileArray as $f) {
-				if($f[0] == ".") {
-					continue;
-				}
+			$dirLower = strtolower($dir);
+			$pLower = strtolower($p);
 
-				$f = strtolower($f);
-				if(is_dir($f)) {
-					
-				}
+			if($dirLower == $pLower) {
+				$pathArray[$i] = $dir;
+			}
+
+			if($dirLower == $pLower . ".html") {
+				$pathArray[$i] = $dir;
 			}
 		}
-		// Explode DIR, fix case of each element.
 	}
-	// Fix case of 
-	// var_dump(DIR);die();
-	return false;
+
+	$result = rtrim(implode("/", $pathArray), "/");
+
+	// If file doesn't exist after case is fixed, attempt to find Index.html
+	// in the next directory.
+	$pageViewFile .= $result;
+	if(file_exists($pageViewFile)
+	&& !is_file($pageViewFile)) {
+		$pageViewFile .= "/Index.html";
+		if(is_file($pageViewFile)) {
+			$result .= "/Index.html";
+		}
+	}
+
+	if(is_file($pageViewFile)) {
+		return "/" . $result;		
+	}
+	else {
+		return false;
+	}
 }
 
 /**
