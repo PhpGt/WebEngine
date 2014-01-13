@@ -14,6 +14,10 @@ private $_pageCodeStop;
 public  $mtimeView;
 
 public function __construct($request) {
+	if(is_null($request)) {
+		return;
+	}
+
 	header("Content-Type: {$request->contentType}; charset=utf-8");
 	header("X-Powered-By: PHP.Gt Version " . VER);
 
@@ -34,6 +38,11 @@ public function __construct($request) {
 		// There will be a 404 error thrown after potential PageCode is invoked.
 		$ob = ob_get_contents();
 		ob_clean();
+		$fixedUrl = $this->tryFixUrl();
+		if(false !== $fixedUrl) {
+			header("Location: $fixedUrl");
+			exit;
+		}
 		return;
 	}
 	$mtimeFooter = $this->bufferPageView("Footer");
@@ -52,6 +61,68 @@ public function __construct($request) {
 	$this->storeBuffer();
 
 	return;
+}
+
+/**
+ * Called internally when a PageView is not found for the requested URL.
+ * Look for PageViews matching the following conditions:
+ * 1) Same name, different case.
+ * 2) If directory is requested, try file of same name in parent directory (case
+ * insensitive).
+ */
+public function tryFixUrl($path = null) {
+	if(is_null($path)) {
+		$path = $_SERVER["REQUEST_URI"];
+	}
+
+	$currentPath = "";
+
+	// Treat the entire path as an array, ignoring the first slash.
+	$pathArray = explode("/", $path);
+	array_shift($pathArray);
+
+	$pageViewFile = APPROOT . "/PageView/";
+
+	// Find a case-insensitive match for each level inside the directory tree.
+	foreach ($pathArray as $i => $p) {
+		$dirArray = scandir($pageViewFile);
+		foreach ($dirArray as $dir) {
+			if($dir[0] == ".") {
+				continue;
+			}
+
+			$dirLower = strtolower($dir);
+			$pLower = strtolower($p);
+
+			if($dirLower == $pLower) {
+				$pathArray[$i] = $dir;
+			}
+
+			if($dirLower == $pLower . ".html") {
+				$pathArray[$i] = $dir;
+			}
+		}
+	}
+
+	$result = rtrim(implode("/", $pathArray), "/");
+
+	// If file doesn't exist after case is fixed, attempt to find Index.html
+	// in the next directory.
+	$pageViewFile .= $result;
+	if(file_exists($pageViewFile)
+	&& !is_file($pageViewFile)) {
+		$pageViewFile .= "/Index.html";
+		if(is_file($pageViewFile)) {
+			$result .= "/Index.html";
+		}
+	}
+
+	if(is_file($pageViewFile)) {
+		return "/" . $result;		
+	}
+	else {
+		return false;
+	}
 }
 
 /**

@@ -181,15 +181,6 @@ public function __construct($config, $t) {
 		}
 	}
 
-	// Check whether whole request is cached.
-	if($config["App"]::isCached()) {
-		// ALPHATODO:
-		// TODO: Cache output.
-		// A file per URL can be created in the Cache directory. This file's
-		// filemtime signifies whether the URL is cached. This can be modified
-		// from within code, or even with a MySQL trigger!
-	}
-
 	// Check for framework-reserved requests.
 	if(in_array(FILE, $config["App"]::getReserved())
 	|| in_array(BASEDIR, $config["App"]::getReserved() )) {
