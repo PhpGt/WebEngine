@@ -75,7 +75,7 @@ private function makeAssetAssertions($approotFileAssertionArray) {
 public function testProcessScss() {
 	$this->makeAssetAssertions([
 		"/Style/Main.scss" => [
-			"\$red = rgba(red, 0.8);
+			"\$red: rgba(red, 0.8);
 			body {
 				> h1 {
 					color: \$red;
@@ -92,19 +92,6 @@ public function testProcessScss() {
 			div.container {
 				background: blue;
 			}",
-	]);
-}
-
-/**
- * The process function on the ClientSideCompiler calls a process function
- * according to  the file extension. Sass should use the SassParser class.
- */
-public function testProcessSass() {
-	$this->makeAssetAssertions([
-		"/Style/Main.sass" => [
-			"#main
-				color: blue
-				font-size: 0.3em", "#main {"],
 	]);
 }
 
