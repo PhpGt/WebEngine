@@ -58,6 +58,10 @@ public function testUrlFixed() {
 	$this->assertEquals("/SubPath/Index.html", 
 		$this->_response->tryFixUrl($originalPath));
 
+	$originalPath = "/subpath/mypage";
+	$this->assertEquals("/SubPath/MyPage.html", 
+		$this->_response->tryFixUrl($originalPath));
+
 	// Try something that can't be fixed.
 	$originalPath = "/NonExistant";
 	$this->assertFalse($this->_response->tryFixUrl($originalPath));

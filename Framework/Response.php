@@ -82,10 +82,11 @@ public function tryFixUrl($path = null) {
 	array_shift($pathArray);
 
 	$pageViewFile = APPROOT . "/PageView/";
+	$pathRead = "";
 
 	// Find a case-insensitive match for each level inside the directory tree.
 	foreach ($pathArray as $i => $p) {
-		$dirArray = scandir($pageViewFile);
+		$dirArray = scandir($pageViewFile . $pathRead);
 		foreach ($dirArray as $dir) {
 			if($dir[0] == ".") {
 				continue;
@@ -96,6 +97,7 @@ public function tryFixUrl($path = null) {
 
 			if($dirLower == $pLower) {
 				$pathArray[$i] = $dir;
+				$pathRead .= "$dir/";
 			}
 
 			if($dirLower == $pLower . ".html") {
