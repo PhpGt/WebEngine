@@ -2,9 +2,12 @@ v0.2.1
 ------
 15th Jan 2014
 
+* Manifest introduced to handle client-side assets.
+* JShrink added to ClientSideCompiler to minify JavaScript.
 * Using Composer to manage class dependencies.
 * Replaced bundled PhpSass processor with SCSSPHP.
 * HTML5 <template> element introduced.
+* URLs are intuitive & case-insensitive.
 * DomEl objects can call all native DOMNode methods correctly.
 * Session class implemented for easy namespace-setting within $_SESSION.
 * IDs used in the database are all signed integers.
