@@ -2,7 +2,8 @@ v0.2.1
 ------
 Not yet released
 
-* Updated bundled PhpSass processor.
+* Using Composer to manage class dependencies.
+* Replaced bundled PhpSass processor with SCSSPHP.
 * HTML5 <template> element introduced.
 * DomEl objects can call all native DOMNode methods correctly.
 * Session class implemented for easy namespace-setting within $_SESSION.
