@@ -1,6 +1,6 @@
 v0.2.1
 ------
-Not yet released
+15th Jan 2014
 
 * Using Composer to manage class dependencies.
 * Replaced bundled PhpSass processor with SCSSPHP.
