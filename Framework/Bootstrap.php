@@ -52,7 +52,7 @@ if(!empty($pathInfo["filename"])) {
 
 $extension = (isset($pathInfo["extension"]) )
 	? trim($pathInfo["extension"])
-	: $_GET["Ext"];
+	: "";
 if(empty($extension) && $fileName == "Index") {
 	$extension = "html";
 }

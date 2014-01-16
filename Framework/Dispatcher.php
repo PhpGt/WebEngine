@@ -13,35 +13,7 @@ public function __construct($response, $config) {
 		return;
 	}
 
-	// On root URLs, the query string may be used as the "url" key.
-	// Ensure the $_GET variable is consistant across different webservers,
-	// also, remove the GET parameters that are used by PHP.Gt's internals.
-	$mapDataArr = array(&$_GET, &$_REQUEST);
-	foreach($mapDataArr as &$mapData) {
-		$data = $mapData;
-		if(array_key_exists("url", $data)) {
-			if(strstr($data["url"], "?")) {
-				$keyValuePair = substr($data["url"],
-					strpos($data["url"], "?") + 1);
-				
-				$keyValuePair = explode("=", $keyValuePair);
-				if(empty($keyValuePair[1])) {
-					$data[$keyValuePair[0]] = null;
-				}
-				else {
-					$data[$keyValuePair[0]] = $keyValuePair[1];
-				}
-			}
-			unset($data["url"]);
-		}
-		if(array_key_exists("ext", $data)) {
-			unset($data["ext"]);
-		}
-		$mapData = $data;
-	}
-
 	// Start building the objects used across the PageCodes...
-	
 	$apiWrapper = new ApiWrapper($dal);
 	$emptyObject = new EmptyObject();
 	
