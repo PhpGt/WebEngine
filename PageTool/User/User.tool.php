@@ -46,6 +46,10 @@ public function __get($name) {
 	}
 }
 
+public function get() {
+	return call_user_func_array([$this, "getUser"], func_get_args());
+}
+
 /**
  * Used like checkAuth(), but doesn't require authorisation. GetUser can be 
  * used to allow anonymous users to use the application, and be treated as
@@ -269,6 +273,16 @@ private function userSession($input, $anonUuid = null) {
 	}
 
 	return null;
+}
+
+
+public function auth() {
+	return call_user_func_array([$this, "login"], func_get_args());
+}
+public function login($auth) {
+	$params = func_get_args();
+	array_shift($params);
+	return call_user_func_array([$auth, "login"], $params);
 }
 
 /**
