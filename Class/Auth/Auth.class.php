@@ -63,23 +63,14 @@ public function __construct($providerConfig = array()) {
 		if(isset($pDetails["ID"])) {
 			// Lower-case the ID key if supplied in upper-case.
 			$pDetails["id"] = $pDetails["ID"];
-			unset($pDetails["ID"]);
 		}
 		
 		// Remove the id/key ambiguity.
 		if(isset($pDetails["id"])) {
-			if(!isset($this->config["providers"][$pName]["keys"]["id"])
-			&&  isset($this->config["providers"][$pName]["keys"]["key"])) {
-				$pDetails["key"] = $pDetails["id"];
-				unset($pDetails["id"]);
-			}
+			$pDetails["key"] = $pDetails["id"];
 		}
 		if(isset($pDetails["key"])) {
-			if(!isset($this->config["providers"][$pName]["keys"]["key"])
-			&&  isset($this->config["providers"][$pName]["keys"]["id"])) {
-				$pDetails["id"] = $pDetails["key"];
-				unset($pDetails["key"]);
-			}
+			$pDetails["id"] = $pDetails["key"];
 		}
 
 		$this->config["providers"][$pName] = array(
