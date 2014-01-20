@@ -1,3 +1,10 @@
+v0.2.2
+------
+Not yet released
+
+* Gt.css updated. New normalize.css, vanilla style as standard.
+* FontAwesome updated to version 4
+
 v0.2.1
 ------
 15th Jan 2014
