@@ -169,6 +169,7 @@ public function __construct($config, $t) {
 		//  for and load the page's specific PageCode.
 		$pageCodeFile  = APPROOT . "/PageCode/" . FILEPATH . ".php";
 		$pageCodeClass = FILECLASS;
+		var_dump($pageCodeClass);die();
 		if(file_exists($pageCodeFile)) {
 			require($pageCodeFile);
 			if(class_exists($pageCodeClass)) {

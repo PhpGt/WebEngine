@@ -80,7 +80,7 @@ while($filePath[0] == DS) {
 }
 $fileClass = str_replace(DS, "_", $filePath);
 $fileClass = str_replace("-", "", $fileClass);
-define("FILEPATH", $filePath . "_PageCode");
+$fileClass = $fileClass . "_PageCode";
 
 $appName = strstr($cwd, ".")
 	? substr($cwd, 0, strrpos($cwd, "."))
@@ -105,16 +105,17 @@ else {
 }
 
 define("URL",		$pageUrl);
-define("VER",       "1.0");
-define("APPNAME",   $appName);
-define("GTROOT",    dirname(dirname(__FILE__)));
-define("APPROOT",   getcwd());
-define("DIR",       $dirName);
-define("BASEDIR",   $baseDir);
+define("VER",		"1.0");
+define("APPNAME",	$appName);
+define("GTROOT",	dirname(dirname(__FILE__)));
+define("APPROOT",	getcwd());
+define("DIR",		$dirName);
+define("BASEDIR",	$baseDir);
 define("PATH",		$path);
-define("FILE",      $fileName);
-define("EXT",       $extension);
-define("FILECLASS", $fileClass);
+define("FILE",		$fileName);
+define("EXT",		$extension);
+define("FILECLASS",	$fileClass);
+define("FILEPATH",	$filePath);
 
 // Define the minimum required files to run the framework. The path of each
 // requirement can be an array of paths, in order of priority (for version 
