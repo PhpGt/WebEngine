@@ -80,7 +80,7 @@ while($filePath[0] == DS) {
 }
 $fileClass = str_replace(DS, "_", $filePath);
 $fileClass = str_replace("-", "", $fileClass);
-define("FILEPATH", $filePath);
+define("FILEPATH", $filePath . "_PageCode");
 
 $appName = strstr($cwd, ".")
 	? substr($cwd, 0, strrpos($cwd, "."))
