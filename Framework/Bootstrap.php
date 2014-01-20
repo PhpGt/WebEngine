@@ -97,7 +97,12 @@ else {
 	$pageUrl .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
 }
 
-$path = str_replace("//", "/", "/$dirName/$fileName");
+if(empty($dirName)) {
+	$path = "$fileName";	
+}
+else {
+	$path = "$dirName/$fileName";
+}
 
 define("URL",		$pageUrl);
 define("VER",       "1.0");
