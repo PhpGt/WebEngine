@@ -19,12 +19,15 @@ public function __construct($dal, $tableName, $isTool = false) {
 }
 
 public function __call($name, $args) {
-	while(isset($args[0])) {
-		if(!is_array($args[0])) {
-			break;
-		}
+	if(is_array($args[0]) && count($args[0]) === 1) {
 		$args = $args[0];
 	}
+
+	$argsMerged = $args;
+	foreach($args as $arg) {
+		$argsMerged = array_merge($argsMerged, $arg);
+	}
+	$args = $argsMerged;
 
 	// Find the appropriate SQL file, perform SQL using $this->_dal;
 	$pathArray = array(
@@ -120,12 +123,6 @@ private function query($sqlFile, $paramArray = array()) {
 		try {
 			$stmt->closeCursor();
 			$result = $stmt->execute();
-
-			// Find out the number of affected rows.
-			$rowCount = $stmt->rowCount();
-			if($rowCount > 0) {
-				$this->touchCache();
-			}
 			return new DalResult(
 				$stmt,
 				$this->_dal->lastInsertID(), 
@@ -139,34 +136,6 @@ private function query($sqlFile, $paramArray = array()) {
 	}
 	// Database can't be deployed.
 	return false;
-}
-
-/**
- * Every time a table changes in the database, a file is touched in the Cache
- * directory. The file has the name of the changed table. This is used by the 
- * caching system to defer connecting to the database if nothing has changed.
- */
-private function touchCache() {
-	$cacheDir = APPROOT . "/Cache/Database";
-	$cacheFile = $this->_tableName . ".dbtouch";
-
-	if(!is_dir($cacheDir)) {
-		mkdir($cacheDir, 0777, true);
-	}
-	
-	touch("$cacheDir/$cacheFile");
-
-	// In some situations i.e. unit testing, a cache miss is directly followed
-	// by a cache hit, but the filemtime set by touching the file is only
-	// measured in seconds... Setting a session variable allows more exact 
-	// cache measurement.
-	if(empty($_SESSION["PhpGt_Cache"])) {
-		$_SESSION["PhpGt_Cache"] = array();
-	}
-	if(empty($_SESSION["PhpGt_Cache"]["Database"])) {
-		$_SESSION["PhpGt_Cache"]["Database"] = array();
-	}
-	$_SESSION["PhpGt_Cache"]["Database"][$this->_tableName] = microtime(true);
 }
 
 }#
