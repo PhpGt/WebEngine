@@ -33,6 +33,9 @@ public function __construct($html = "<!doctype html>") {
 	}
 
 	$html = $this->includeHtml($html);
+	if(strlen(trim($html)) <= 0) {
+		$html = "<!doctype html>";
+	}
 
 	$this->_domDoc = new DomDocument("1.0", "utf-8");
 	libxml_use_internal_errors(true);
