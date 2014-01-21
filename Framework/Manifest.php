@@ -358,14 +358,15 @@ public function minifyDomHead() {
 			$this->_domHead->insertBefore($minElement, null);
 		}
 		else {
-			$firstInlineScript = $this->_domHead->firstChild;
+			$nodeToInsertBefore = null;
+			$scriptElementList = $this->_domHead["script"];
 
-			while($firstInlineScript->tagName == "script") {
-				$firstInlineScript = $firstInlineScript->nextSibling;
+			if($scriptElementList->length > 0) {
+				$nodeToInsertBefore = $scriptElementList[0];
 			}
 
 			$this->_domHead->insertBefore(
-				$minElement, $firstInlineScript);
+				$minElement, $nodeToInsertBefore);
 		}
 	}
 }

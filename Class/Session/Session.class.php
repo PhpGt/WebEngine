@@ -26,7 +26,6 @@ public static function set($ns, $data) {
 
 	self::init($_SESSION, $nsArray);
 	return self::setData($_SESSION, $nsArray, $data);
-
 }
 
 public static function delete($ns) {
