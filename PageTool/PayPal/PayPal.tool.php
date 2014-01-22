@@ -1,54 +1,68 @@
 <?php class PayPal_PageTool extends PageTool {
-private $_apiUsername;
-private $_apiPassword;
-private $_apiSignature;
-private $_sandbox = false;
 
-private $_gateway;
+private $_apiVer = "v1";
+private $_sessionNS = "PhpGt.Tool.PayPal";
+private $_sessionToken = "PhpGt.Tool.PayPal.token";
+private $_sessionTokenExpiry = "PhpGt.Tool.PayPal.tokenExpiry";
+private $_host = null;
+
+public function go($api, $dom, $template, $tool) {}
 
 /**
- * This function requires extra parameters!
- * Username, password, API signature, [Optional] Sandbox.
+ * Gets an access token and stores it to the Session.
  */
-public function go($api, $dom, $template, $tool) {
-	require_once(dirname(__FILE__) . "/PayPal.class.php");
-	require_once(dirname(__FILE__) . "/PayPal_ExpressCheckout.class.php");
-	
-	$this->_apiUsername  = func_get_arg(4);
-	$this->_apiPassword  = func_get_arg(5);
-	$this->_apiSignature = func_get_arg(6);
+public function init($clientID, $secret, $sandbox = false) {
+	$this->_host = $sandbox
+		? "https://api.sandbox.paypal.com/" . $this->_apiVer . "/"
+		: "https://api.paypal.com/" . $this->_apiVer . "/";
 
-	if(func_num_args() > 7) {
-		$this->_sandbox = func_get_arg(7) == "Sandbox";
+	$token = null;
+
+	if(Session::exists($this->_sessionToken)
+	&& Session::get($this->_sessionTokenExpiry) > time()) {
+		$token = Session::get($this->_sessionToken)
+	}
+	else {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->_host . "oauth2/token");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			"Accept: application/json",
+			"Accept-Language: en_GB",
+		]);
+		curl_setopt($ch, CURLOPT_USERPWD, "$clientID:$secret");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, [
+			"grant_type" => "client_credentials",
+		]);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$curl_result = curl_exec($ch);
+		curl_close($ch);
+
+		$obj = json_decode($curl_result);
+		if(isset($obj->access_token)
+		&& isset($obj->expires_in)
+		&& isset($obj->token_type)
+		&& $obj->token_type == "Bearer") {
+			Session::set($this->_sessionToken, $obj->access_token);
+			Session::set($this->_sessionTokenExpiry, time() + $obj->expires_in);
+		}
+		else {
+			Session::delete($this->_sessionNS);
+			return false;
+		}
 	}
 
-	$this->_gateway = $this->getGateway();
-
-	// Catch any POSTed data from the buttons that are created using the
-	// functions below.
+	return $token;
 }
 
-private function getGateway() {
-	$this->_gateway = new PayPalGateway();
-	$this->_gateway->apiUsername  = $this->_apiUsername;
-	$this->_gateway->apiPassword  = $this->_apiPassword;
-	$this->_gateway->apiSignature = $this->_apiSignature;
-	$this->_gateway->testMode = $this->_sandbox;
-}
+private check() {
+	if(!Session::exists($this->_sessionNS)) {
+		throw new Exception("PayPal Auth token is not initialised");
+	}
 
-public function setPages($successUrl, $cancelUrl) {
-	$this->_gateway->returnUrl = $successUrl;
-	$this->_gateway->cancelUrl = $cancelUrl;
-}
-
-/**
- * Transforms a regular button or input into a PayPal buy now button.
- * If there is no form surrounding the button, a form will automatically
- * be created.
- */
-public function buyNow($domButton, $itemDetails = array()) {
-	var_dump(xdebug_get_function_stack());
-	die("HERE!!!");
+	if(time() > Session::get($this->_sessionTokenExpiry)) {
+		throw new Exception("PayPal token is expired");
+	}
 }
 
 }#
