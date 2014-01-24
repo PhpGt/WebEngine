@@ -54,6 +54,11 @@ public function __construct($config, $t) {
 		$seconds = empty($_GET["FakeSlow"])
 			? 2 : $_GET["FakeSlow"];
 
+		if($_GET["FakeSlow"] == 0) {
+			unset($_GET["FakeSlow"]);
+			$seconds = 0;
+		}
+
 		if(isset($_GET["FakeSlow"])) {
 			$_SESSION["FakeSlow"] = $_GET["FakeSlow"];			
 		}
