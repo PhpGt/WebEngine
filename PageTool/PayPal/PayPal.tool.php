@@ -1,5 +1,7 @@
 <?php class PayPal_PageTool extends PageTool {
 
+const STATE_APPROVED = "approved";
+
 private $_apiVer = "v1";
 private $_sessionNS = "PhpGt.Tool.PayPal";
 private $_sessionToken = "PhpGt.Tool.PayPal.token";
@@ -90,7 +92,12 @@ public function init($clientID, $secret, $production = false) {
  */
 public function pay($itemName, $price, $currency, 
 $returnUrl = null, $cancelUrl = null) {
-	$this->executePayment();
+	$logger = Log::get("PayPal");
+
+	if(false !== ($obj = $this->executePayment()) ) {
+		return $obj;
+	}
+
 	$this->check();
 
 	$defaultUrl = "http"
@@ -149,6 +156,7 @@ $returnUrl = null, $cancelUrl = null) {
 		}
 	}
 	else {
+		$logger->error($curl_result);
 		throw new Exception("Payment failed to be created.");
 	}
 }
