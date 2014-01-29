@@ -89,8 +89,22 @@ public function init($clientID, $secret, $production = false) {
  *
  * The second step of this function is to consume the token/PayerID parameters
  * and execute the payment, by calling executePayment method.
+ *
+ * @param $item array The transaction's item details. The array can be an
+ * array of item arrays, or a single item array. Item array keys can
+ * include: "name", "quantity", "price", "tax" (amount), "sku"
+ * (stock keeping unit).
+ * @param $details array The transaction's details. The array keys can include:
+ * "description" (transaction's description), "shipping" (amount), 
+ * "tax" (amount), "address" (if different to payment address).
+ * @param $currency string Three letter currency code.
+ * @param $returnUrl string The full URL to the page where the user should be
+ * forwarded upon successful transaction (for processing by your application).
+ * Defaults to the current URL.
+ * @param $cancelUrl string The full URL to the page where the user should be
+ * forwarded upon cancelling the transaction.
  */
-public function pay($itemName, $price, $currency, 
+public function pay($item, $details, $currency,
 $returnUrl = null, $cancelUrl = null) {
 	$logger = Log::get("PayPal");
 
@@ -98,17 +112,66 @@ $returnUrl = null, $cancelUrl = null) {
 		return $obj;
 	}
 
+	// Check the access token is fresh.
 	$this->check();
 
+	// Build up the endpoint's base URL.
 	$defaultUrl = "http"
 		. (empty($_SERVER["HTTPS"]) ? "" : "s")
 		. "://"
 		. $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
 
+	// Build the transaction object for item(s).
 	$transaction = new StdClass();
+
+	$transaction->item_list = new StdClass();
+	$transaction->item_list->items = [];
 	$transaction->amount = new StdClass();
-	$transaction->amount->total = $price;
 	$transaction->amount->currency = $currency;
+	$transaction->amount->details = new StdClass();
+	$transaction->amount->details->subtotal = 0.00;
+
+	// Check if the $item parameter is an accociative/indexed array.
+	if(array_keys($item) !== range(0, count($arr) - 1)) {
+		// Associative array - wrap the item in an array.
+		$item = [$item];
+	}
+
+	foreach ($item as $i) {
+		$itemObj = new StdClass();
+		$itemObj->quantity = isset($i["quantity"])
+			? (string)$i["quantity"]
+			: "1";
+		if(!isset($i["name"])) {
+			throw new Exception("Item name not supplied");
+		}
+		if(!isset($i["price"])) {
+			throw new Exception("Item price not supplied");
+		}
+		$itemObj->name = $i["name"];
+		$itemObj->price = (string)$i["price"];
+
+		if(isset($i["sku"])) {
+			$itemObj->sku = (string)$i["sku"];
+		}
+
+		$transaction->amount->details->subtotal += $i["price"];
+		$transaction->amount->total += $i["price"];
+		$transaction->item_list->items[] = $itemObj;
+	}
+
+	if(isset($details["description"])) {
+		$transaction->description = $details["description"];
+	}
+	if(isset($details["shipping"])) {
+		$transaction->amount->details->shipping = $details["shipping"];
+		$transaction->amount->total += $details["shipping"];
+	}
+	if(isset($details["tax"])) {
+		$transaction->amount->details->shipping = $details["tax"];
+		$transaction->amount->total += $details["tax"];
+	}
+
 
 	$obj = new StdClass();
 	$obj->intent = "sale";
