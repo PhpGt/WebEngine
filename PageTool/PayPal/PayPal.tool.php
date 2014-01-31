@@ -21,7 +21,7 @@ public function go($api, $dom, $template, $tool) {}
  * Gets an access token and stores it to the Session.
  */
 public function init($clientID, $secret, $production = false) {
-	
+
 	if(Session::exists($this->_sessionClientID)
 	&& Session::get($this->_sessionClientID) != $clientID) {
 		Session::delete($this->_sessionNS);
@@ -142,6 +142,7 @@ $returnUrl = null, $cancelUrl = null) {
 	$transaction->amount->total = 0;
 	$transaction->amount->currency = $currency;
 	$transaction->amount->details = new StdClass();
+	$transaction->amount->details->tax = 0.00;
 	$transaction->amount->details->subtotal = 0.00;
 
 	if(!is_array($item)) {
@@ -174,6 +175,11 @@ $returnUrl = null, $cancelUrl = null) {
 			$itemObj->sku = (string)$i["sku"];
 		}
 
+		if(isset($i["tax"])) {
+			$transaction->amount->details->tax += $i["tax"];
+			$transaction->amount->total += $i["tax"];
+		}
+
 		$transaction->amount->details->subtotal += $i["price"];
 		$transaction->amount->total += $i["price"];
 		$transaction->item_list->items[] = $itemObj;
@@ -186,11 +192,6 @@ $returnUrl = null, $cancelUrl = null) {
 		$transaction->amount->details->shipping = $details["shipping"];
 		$transaction->amount->total += $details["shipping"];
 	}
-	if(isset($details["tax"])) {
-		$transaction->amount->details->shipping = $details["tax"];
-		$transaction->amount->total += $details["tax"];
-	}
-
 
 	$obj = new StdClass();
 	$obj->intent = "sale";
