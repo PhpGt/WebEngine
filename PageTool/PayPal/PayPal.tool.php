@@ -131,6 +131,11 @@ $returnUrl = null, $cancelUrl = null) {
 	$transaction->amount->details = new StdClass();
 	$transaction->amount->details->subtotal = 0.00;
 
+	if(!is_array($item)) {
+		throw new Exception(
+			"PayPal PageTool pay() expects parameter 1 to be an item array.");
+	}
+
 	// Check if the $item parameter is an accociative/indexed array.
 	if(array_keys($item) !== range(0, count($arr) - 1)) {
 		// Associative array - wrap the item in an array.
