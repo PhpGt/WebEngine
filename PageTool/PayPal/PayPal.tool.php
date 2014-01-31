@@ -5,6 +5,7 @@ const STATE_PENDING = "pending";
 
 private $_apiVer = "v1";
 private $_sessionNS = "PhpGt.Tool.PayPal";
+private $_sessionClientID = "PhpGt.Tool.PayPal.clientID";
 private $_sessionToken = "PhpGt.Tool.PayPal.token";
 private $_sessionTokenExpiry = "PhpGt.Tool.PayPal.tokenExpiry";
 private $_sessionLinks = "PhpGt.Tool.PayPal.Payment.links";
@@ -20,9 +21,16 @@ public function go($api, $dom, $template, $tool) {}
  * Gets an access token and stores it to the Session.
  */
 public function init($clientID, $secret, $production = false) {
+	
+	if(Session::exists($this->_sessionClientID)
+	&& Session::get($this->_sessionClientID) != $clientID) {
+		Session::delete($this->_sessionNS);
+	}
+
 	// Store clientID and secret internally to allow for automatic 
 	// refreshing of OAuth2 token.
 	$this->_clientID = $clientID;
+
 	$this->_secret = $secret;
 	$this->_production = $production;
 
