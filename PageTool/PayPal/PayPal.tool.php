@@ -1,6 +1,7 @@
 <?php class PayPal_PageTool extends PageTool {
 
 const STATE_APPROVED = "approved";
+const STATE_PENDING = "pending";
 
 private $_apiVer = "v1";
 private $_sessionNS = "PhpGt.Tool.PayPal";
@@ -8,6 +9,7 @@ private $_sessionToken = "PhpGt.Tool.PayPal.token";
 private $_sessionTokenExpiry = "PhpGt.Tool.PayPal.tokenExpiry";
 private $_sessionLinks = "PhpGt.Tool.PayPal.Payment.links";
 private $_sessionPaymentID = "PhpGt.Tool.PayPal.Payment.ID";
+private $_sessionHost = "PhpGt.Tool.PayPal.host";
 private $_clientID = null;
 private $_secret = null;
 private $_host = null;
@@ -28,6 +30,8 @@ public function init($clientID, $secret, $production = false) {
 	$this->_host = $production
 		? "https://api.paypal.com/" . $this->_apiVer . "/"
 		: "https://api.sandbox.paypal.com/" . $this->_apiVer . "/";
+
+	Session::set($this->_sessionHost, $this->_host);
 
 	$token = null;
 
@@ -104,7 +108,7 @@ public function init($clientID, $secret, $production = false) {
  * @param $cancelUrl string The full URL to the page where the user should be
  * forwarded upon cancelling the transaction.
  */
-public function pay($item, $details, $currency,
+public function createPayment($item, $details, $currency,
 $returnUrl = null, $cancelUrl = null) {
 	$logger = Log::get("PayPal");
 
@@ -127,6 +131,7 @@ $returnUrl = null, $cancelUrl = null) {
 	$transaction->item_list = new StdClass();
 	$transaction->item_list->items = [];
 	$transaction->amount = new StdClass();
+	$transaction->amount->total = 0;
 	$transaction->amount->currency = $currency;
 	$transaction->amount->details = new StdClass();
 	$transaction->amount->details->subtotal = 0.00;
@@ -137,7 +142,7 @@ $returnUrl = null, $cancelUrl = null) {
 	}
 
 	// Check if the $item parameter is an accociative/indexed array.
-	if(array_keys($item) !== range(0, count($arr) - 1)) {
+	if(array_keys($item) !== range(0, count($item) - 1)) {
 		// Associative array - wrap the item in an array.
 		$item = [$item];
 	}
@@ -155,6 +160,7 @@ $returnUrl = null, $cancelUrl = null) {
 		}
 		$itemObj->name = $i["name"];
 		$itemObj->price = (string)$i["price"];
+		$itemObj->currency = $currency;
 
 		if(isset($i["sku"])) {
 			$itemObj->sku = (string)$i["sku"];
@@ -230,10 +236,19 @@ $returnUrl = null, $cancelUrl = null) {
 }
 
 /**
+ * Synonym for createPayment.
+ */
+public function pay() {
+	return call_user_func_array([$this, "createPayment"], func_get_args());
+}
+
+/**
  * Looks for token and PayerID parameters in the querystring, which is added
  * by PayPal after approving a payment's creation.
  */
 public function executePayment() {
+	$logger = Log::get("PayPal");
+
 	if(!isset($_GET["token"])
 	|| !isset($_GET["PayerID"])) {
 		return false;
@@ -249,9 +264,10 @@ public function executePayment() {
 	$obj = new StdClass();
 	$obj->payer_id = $_GET["PayerID"];
 
-	$url = $this->_host . "payments/payment/$ID/execute";
+	$url = Session::get($this->_sessionHost) . "payments/payment/$ID/execute";
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_POST, true);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, [
 		"Content-Type: application/json",
 		"Authorization: Bearer " . Session::get($this->_sessionToken),
@@ -260,15 +276,20 @@ public function executePayment() {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 	$curl_result = curl_exec($ch);
+	$curl_info = curl_getinfo($ch);
 	curl_close($ch);
 
 	$obj = json_decode($curl_result);
 
-	if(isset($obj->state)
-	&& $obj->state = "approved") {
+	if(isset($obj->state)) {
 		return $obj;
 	}
+	else if($obj->name == "PAYMENT_STATE_INVALID") {
+		throw new Exception("Payment state invalid. "
+			. "Are you trying to execute the payment twice?");
+	}
 	else {
+		$logger->fatal($curl_result);
 		throw new Exception("PayPal PageTool payment execution error.");
 	}
 }
