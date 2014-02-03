@@ -55,6 +55,10 @@ public function organise($forceCompile = false) {
 public function isAssetFilesCacheValid() {
 	$assetDir = APPROOT . "/Asset";
 	$assetWwwDir = APPROOT . "/www/Asset";
+	if(!is_dir($assetDir)) {
+		// Nothing to copy if there is no asset directory.
+		return true;
+	}
 	if(!is_dir($assetWwwDir)) {
 		return false;
 	}
