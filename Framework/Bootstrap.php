@@ -189,7 +189,9 @@ $toLoad["Required"] = array(
 	"Empty object" =>
 		GTROOT."/Framework/EmptyObject.php",
 	"Main PHP.Gt object" =>
-		GTROOT."/Framework/Gt.php"
+		GTROOT."/Framework/Gt.php",
+	"PHP.Gt's Composer autoloader file" =>
+		GTROOT . "/Class/vendor/autoload.php",
 );
 
 $toLoad["Optional"] = array(
@@ -199,6 +201,8 @@ $toLoad["Optional"] = array(
 		APPROOT."/Config/Database.cfg.php",
 	"Application-specific security config" => 
 		APPROOT."/Config/Security.cfg.php",
+	"The application's Composer autoloader file" =>
+		APPROOT . "/Class/vendor/autoload.php",
 );
 
 foreach($toLoad as $requirement => $loadArray) {
