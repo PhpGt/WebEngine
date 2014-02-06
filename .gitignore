@@ -8,3 +8,4 @@ Test/*.tap
 Test/PhpUnit*
 Test/TestApp/*
 *.scss.css
+componser.phar
