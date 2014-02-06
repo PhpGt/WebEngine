@@ -3,9 +3,9 @@ www/*
 Cache/
 Upload/
 PHP.Gt.sublime-*
-Test/*.json
-Test/*.tap
-Test/PhpUnit*
 Test/TestApp/*
 *.scss.css
-componser.phar
+composer.phar
+Test/bin/
+Test/installer
+Test/vendor/
