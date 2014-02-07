@@ -21,7 +21,6 @@ public function go($api, $dom, $template, $tool) {}
  * Gets an access token and stores it to the Session.
  */
 public function init($clientID, $secret, $production = false) {
-
 	if(Session::exists($this->_sessionClientID)
 	&& Session::get($this->_sessionClientID) != $clientID) {
 		Session::delete($this->_sessionNS);
@@ -40,7 +39,6 @@ public function init($clientID, $secret, $production = false) {
 		: "https://api.sandbox.paypal.com/" . $this->_apiVer . "/";
 
 	Session::set($this->_sessionHost, $this->_host);
-
 	$token = null;
 
 	// Return early with cached auth token if expiry is valid.
@@ -142,7 +140,6 @@ $returnUrl = null, $cancelUrl = null) {
 	$transaction->amount->total = 0;
 	$transaction->amount->currency = $currency;
 	$transaction->amount->details = new StdClass();
-	$transaction->amount->details->tax = 0.00;
 	$transaction->amount->details->subtotal = 0.00;
 
 	if(!is_array($item)) {
@@ -189,9 +186,14 @@ $returnUrl = null, $cancelUrl = null) {
 		$transaction->description = $details["description"];
 	}
 	if(isset($details["shipping"])) {
-		$transaction->amount->details->shipping = $details["shipping"];
 		$transaction->amount->total += $details["shipping"];
+		$transaction->amount->details->shipping = $details["shipping"];
 	}
+	if(isset($details["tax"])) {
+		$transaction->amount->total += $details["tax"];
+		$transaction->amount->details->tax = $details["tax"];
+	}
+
 
 	$obj = new StdClass();
 	$obj->intent = "sale";

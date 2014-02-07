@@ -16,18 +16,6 @@ if(class_exists("ClassDependencies")
 	return;
 }
 
-$composerAutoloader = "/vendor/autoload.php";
-$composerSearchPaths = array(
-	APPROOT . "/Class",
-	GTROOT . "/Class",
-	);
-foreach ($composerSearchPaths as $root) {
-	$pathToAutoloader = $root . $composerAutoloader;
-	if(file_exists($pathToAutoloader)) {
-		require_once($pathToAutoloader);
-	}
-}
-
 $configSuffix = "_Config";
 if(substr($className, -strlen($configSuffix)) === $configSuffix) {
 	$configFile = APPROOT . "/Config/$className.cfg.php";
