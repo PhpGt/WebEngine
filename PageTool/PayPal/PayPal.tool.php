@@ -19,8 +19,12 @@ public function go($api, $dom, $template, $tool) {}
 
 /**
  * Gets an access token and stores it to the Session.
+ * @param $clientID string PayPal API Client ID.
+ * @param $secret string PayPal API secret.
+ * @param $production bool True to use paypal.com's endpoint, false to use
+ * sandbox.paypal.com .
  */
-public function init($clientID, $secret, $production = false) {
+public function init($clientID, $secret, $production) {
 	if(Session::exists($this->_sessionClientID)
 	&& Session::get($this->_sessionClientID) != $clientID) {
 		Session::delete($this->_sessionNS);
