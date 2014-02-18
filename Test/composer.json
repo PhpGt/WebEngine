@@ -1,0 +1,16 @@
+{
+    "require-dev": {
+        "behat/behat": "2.*",
+        "behat/mink": "*",
+        "behat/mink-extension": "*",
+	    "sensiolabs/behat-page-object-extension": "*",
+        "behat/mink-goutte-driver": "*",
+        "behat/mink-browserkit-driver": "*",
+        "behat/mink-selenium2-driver": "*",
+        "phpunit/phpunit": "*"
+    },
+    "prefer-stable": true,
+    "config": {
+        "bin-dir": "bin/"
+    }
+}

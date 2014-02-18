@@ -3,8 +3,11 @@ www/*
 Cache/
 Upload/
 PHP.Gt.sublime-*
-Test/*.json
-Test/*.tap
-Test/PhpUnit*
 Test/TestApp/*
 *.scss.css
+composer.phar
+Test/bin/
+Test/installer
+Test/vendor/
+Test/chromedriver
+Test/selenium-server-standalone-*.jar
