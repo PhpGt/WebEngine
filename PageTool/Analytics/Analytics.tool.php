@@ -14,6 +14,10 @@ public function go($api, $dom, $template, $tool) { }
  * this: UA-12345678-1
  */
 public function track($trackingCode) {
+	if(!$this->_dom instanceof Dom) {
+		// No dom initialised... can't track.
+		return;
+	}
 	$js = file_get_contents(dirname(__FILE__) . "/Include/Analytics.tool.js");
 	if($js === false) {
 		throw new HttpError(500, "Google Analytics script failure");
