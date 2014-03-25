@@ -438,17 +438,10 @@ public function __call($name, $args = array()) {
 	}
 
 	if(method_exists($this->node, $name)) {
-		$result = null;
-		try {
-			$result = call_user_func_array(
-				array($this->node, $name),
-				$args
-			);
-		}
-		catch(Exception $e) {
-			throw $e;
-		}
-		return $result;
+		return call_user_func_array(
+			array($this->node, $name),
+			$args
+		);
 	}
 	else {
 		throw new HttpError(500, __CLASS__ . "::$name method doesn't exist");

@@ -94,8 +94,12 @@ private function displayError($code, $data = array("")) {
 	}
 	if(isset($data["Context"])) {
 		$message .= "\n";
-		foreach($data["Context"] as $contextLine) {
-			$message .= "\n$contextLine";
+		if(is_array($data["Context"])) {
+			foreach($data["Context"] as $contextLine) {
+				$message .= "\n$contextLine";
+			}
+		} else {
+			$message .= $data["Context"] . "\n";
 		}
 	}
 
