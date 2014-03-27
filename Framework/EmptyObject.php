@@ -1,4 +1,5 @@
 <?php final class EmptyObject implements ArrayAccess {
+public $length = 0;
 /**
  * EmptyObject acts as a dummy object with infinite properties and keys for
  * special cases where the $dom, $template and $tool objects are not able to be
