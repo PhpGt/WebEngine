@@ -128,6 +128,9 @@ private function log($backtrace, $level, $msg, $throwable = null) {
 	$logLine = str_replace("%LINE%", $backtrace[0]["line"], $logLine);
 	$logLine = str_replace("%CLASS%", $backtrace[2]["class"], $logLine);
 	$logLine = str_replace("%MESSAGE%", $msg, $logLine);
+	$logLine = str_replace("%IP%", $_SERVER["REMOTE_ADDR"], $logLine);
+	$logLine = str_replace("%PORT%", $_SERVER["REMOTE_PORT"], $logLine);
+	$logLine = str_replace("%REFERER%", $_SERVER["HTTP_REFERER"], $logLine);
 	if(!is_null($throwable)) {
 		str_replace("%EXCEPTION%", $throwable->getMessage());
 	}
