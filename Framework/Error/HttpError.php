@@ -103,10 +103,6 @@ private function displayError($code, $data = array("")) {
 		}
 	}
 
-
-	if(count($data) === 1) {
-		$message = $data[0];
-	}
 	if(is_string($data)) {
 		$message = $data;
 	}
