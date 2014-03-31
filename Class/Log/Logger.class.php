@@ -130,7 +130,12 @@ private function log($backtrace, $level, $msg, $throwable = null) {
 	$logLine = str_replace("%MESSAGE%", $msg, $logLine);
 	$logLine = str_replace("%IP%", $_SERVER["REMOTE_ADDR"], $logLine);
 	$logLine = str_replace("%PORT%", $_SERVER["REMOTE_PORT"], $logLine);
-	$logLine = str_replace("%REFERER%", $_SERVER["HTTP_REFERER"], $logLine);
+	$logLine = str_replace(
+		"%REFERER%", 
+		isset($_SERVER["HTTP_REFERER"]) 
+			? $_SERVER["HTTP_REFERER"] 
+			: "referer-not-set", 
+		$logLine);
 	if(!is_null($throwable)) {
 		str_replace("%EXCEPTION%", $throwable->getMessage());
 	}
