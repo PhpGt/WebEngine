@@ -23,6 +23,7 @@ require_once(GTROOT . "/Config/App.cfg.php");
 require_once(GTROOT . "/Config/Database.cfg.php");
 require_once(GTROOT . "/Config/Security.cfg.php");
 require_once(GTROOT . "/Framework/Gt.php");
+require_once(GTROOT . "/Class/vendor/autoload.php");
 
 date_default_timezone_set("UTC");
 $gt = new Gt(microtime(), true);
