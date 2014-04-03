@@ -89,6 +89,9 @@ public function testSessionPush() {
 	Session::set("Test.notArray", "This is not an array");
 	Session::push("Test.notArray", "But now it should be");
 	$this->assertCount(2, Session::get("Test.notArray"));
+
+	Session::push("Test.newProperty", "First item");
+	$this->assertCount(1, Session::get("Test.newProperty"));
 }
 
 }#
