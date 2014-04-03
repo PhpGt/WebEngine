@@ -1,4 +1,4 @@
-<?php final class EmptyObject implements ArrayAccess {
+<?php final class EmptyObject implements ArrayAccess, Iterator {
 /**
  * EmptyObject acts as a dummy object with infinite properties and keys for
  * special cases where the $dom, $template and $tool objects are not able to be
@@ -16,6 +16,18 @@ public function offsetSet($offset, $value) {
 }
 public function offsetUnset($offset) {
 	return true;
+}
+
+public function next() {}
+public function rewind() {}
+public function valid() {
+	return false;
+}
+public function current() {
+	throw new \Exception("EmptyObject has no members");
+}
+public function key() {
+	throw new \Exception("EmptyObject has no key");
 }
 
 public function __call($name, $args) {
