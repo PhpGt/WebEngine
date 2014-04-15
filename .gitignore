@@ -16,3 +16,6 @@ Test/installer
 Test/vendor/
 Test/chromedriver
 Test/selenium-server-standalone-*.jar
+Test/PhpUnit-JUnit.xml
+Test/PhpUnit.json
+Test/PhpUnit.tap
