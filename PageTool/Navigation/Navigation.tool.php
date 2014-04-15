@@ -6,7 +6,7 @@
 private $_navElements;
 
 public function go($api, $dom, $template, $tool) {
-	$this->_navElements = $dom["body nav"];
+	$this->_navElements = $dom["body nav, body menu"];
 
 	$target = strtok($_SERVER['REQUEST_URI'], '?');
 	$target = strtok($target, '#');
@@ -17,7 +17,7 @@ public function go($api, $dom, $template, $tool) {
 	$targetBase = str_replace("/", "\/", $targetBase);
 
 	foreach($this->_navElements as $nav) {
-		$navLiTags = $nav["ul li, ol li, menu li"];
+		$navLiTags = $nav["li"];
 
 		foreach($navLiTags as $li) {
 			$pattern = $patternBase = null;
