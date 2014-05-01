@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+<?php class ${1:PageName}_PageCode extends PageCode {
+public function go(\$api, \$dom, \$template, \$tool) {
+	${2:die("${1} PageCode");}${0}
+}	
+}#
+]]></content>
+	<tabTrigger>pagecode</tabTrigger>
+</snippet>

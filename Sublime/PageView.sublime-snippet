@@ -1,0 +1,28 @@
+<!-- The perfect empty HTML document, based on html5boilerplate -->
+<snippet>
+	<content><![CDATA[
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<title>${1:Page Title}</title>
+	<meta name="description" content="${2}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	${4:<link rel="stylesheet" href="/Style/${3:Main.scss}" />
+	}${6:<script src="/Script/${5:Main.js}"></script>
+}</head>
+<body>
+
+${7:<header>
+	<h1>${1}</h1>
+</header>
+
+<p>${8:Hello, World!}</p>}
+${0}
+</body>
+</html>
+]]></content>
+	<tabTrigger>pageview</tabTrigger>
+</snippet>

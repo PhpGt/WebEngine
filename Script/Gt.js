@@ -801,6 +801,7 @@ window.tool = tool;
 window.http = http;
 window.rand = rand;
 window.randDeviation = randDeviation;
+window.goInvoke = _goInvoke;
 
 // Invoke functions to start.
 go(_templateLoad);
