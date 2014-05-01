@@ -47,12 +47,18 @@ public function __construct($t, $skipRequestResponse = false) {
 		return;
 	}
 
-	// Compute the request, instantiating the relavent PageCode/Api.
-	$request       = new Request($config, $t);
-	$response      = new Response($request);
+	try {
+		// Compute the request, instantiating the relavent PageCode/Api.
+		$request       = new Request($config, $t);
+		$response      = new Response($request);
 
-	// Execute the page lifecycle from the Dispatcher.
-	return new Dispatcher($response, $config);
+		// Execute the page lifecycle from the Dispatcher.
+		return new Dispatcher($response, $config);
+
+	} catch (Exception $e) {
+		$handler = new GtExceptionHandler();
+		$handler->handle($e);
+	}
 }
 
 }#

@@ -5,6 +5,9 @@
  * used, such as when there is a missing PageView file, but code is required to
  * be invoked before the 404 is emitted.
  */
+
+public $length = 0;
+
 public function offsetExists($offset) {
 	return true;
 }
