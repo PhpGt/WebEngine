@@ -94,13 +94,17 @@ private function displayError($code, $data = array("")) {
 	}
 	if(isset($data["Context"])) {
 		$message .= "\n";
-		foreach($data["Context"] as $contextLine) {
-			$message .= "\n$contextLine";
+		if(is_array($data["Context"])) {
+			foreach($data["Context"] as $contextLine) {
+				$message .= "\n$contextLine";
+			}
+		} else {
+			$message .= $data["Context"] . "\n";
 		}
 	}
 
 
-	if(count($data) == 1) {
+	if(count($data) === 1) {
 		$message = $data[0];
 	}
 	if(is_string($data)) {
