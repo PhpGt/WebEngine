@@ -13,18 +13,22 @@ $contentTypeOverrideArray = [
 ];
 
 if(php_sapi_name() == "cli-server") {
-	$cwd = getcwd();
-	if(substr($cwd, -strlen($cwd)) == "PHP.Gt") {
-		chdir("..");
-		$cwd = getcwd();
+	chdir(__DIR__);
+	chdir("..");
+	
+	// Get the appname from the domain
+	$appName = strtok($_SERVER["HTTP_HOST"], ".");
+
+	// check to see if PHP.Gt is included as a submodule
+	if(is_dir("./www")) {
+		chdir("./www");
+	}
+	// otherwise check for app as a sibling of PHP.Gt
+	else if(is_dir("$appName/www")) {
+		chdir("$appName/www");
 	}
 
-	$appName = strtok($_SERVER["HTTP_HOST"], ".");
-	if(is_dir("$appName/www")) {
-		chdir("$appName/www");
-		$cwd = getcwd();
-		$_SERVER["DOCUMENT_ROOT"] = $cwd;
-	}
+	$_SERVER["DOCUMENT_ROOT"] = getcwd();
 
 	if(preg_match($serverPattern, $_SERVER["REQUEST_URI"], $matches)) {
 		require $bootstrap;
