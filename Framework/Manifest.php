@@ -71,6 +71,9 @@ public function getFingerprint() {
 			if(!$element->hasAttribute($typeDetails["Source"])) {
 				break;
 			}
+			if(strstr($element->getAttribute($typeDetails["Source"]), "//")) {
+				break;
+			}
 			// Skip elements that don't have all the required attributes.
 			foreach ($typeDetails["ReqAttr"] as $key => $value) {
 				if(!$element->hasAttribute($key)
