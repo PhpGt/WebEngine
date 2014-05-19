@@ -1,0 +1,19 @@
+{
+    "name":         "brightflair/php.gt",
+    "description":  "Rapid web application development toolkit.",
+    "keywords":     ["PHP", "framework", "web", "toolkit"],
+    "homepage":     "http://php.gt/",
+    "type":         "library",
+    "license":      "Apache-2.0",
+    "authors":      [
+        {
+            "name":      "Greg Bowler",
+            "email":     "greg.bowler@g105b.com",
+            "homepage":  "http://g105b.com"
+        }
+    ],
+
+    "require": {
+        "php":                           ">=5.4"
+    }
+}
