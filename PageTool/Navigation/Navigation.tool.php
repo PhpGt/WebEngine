@@ -16,6 +16,8 @@ public function go($api, $dom, $template, $tool) {
 	$target = str_replace("/", "\/", $target);
 	$targetBase = str_replace("/", "\/", $targetBase);
 
+	$selected = false;
+
 	foreach($this->_navElements as $nav) {
 		$navLiTags = $nav["li"];
 
@@ -35,18 +37,22 @@ public function go($api, $dom, $template, $tool) {
 			if(preg_match($pattern, $href) > 0
 			|| ($href === "/" && $target === "\/Index") ) {
 				$li->addClass("selected");
+				$selected = true;
 				if($li->hasClass("tree")) {
 					$li->addClass("open");
 				}
 			}
 			else if(preg_match($patternBase, $href) > 0) {
 				$li->addClass("selected");
+				$selected = true;
 				if($li->hasClass("tree")) {
 					$li->addClass("open");
 				}
 			}
 		}
 	}
+
+	return $selected;
 }
 
 }#
