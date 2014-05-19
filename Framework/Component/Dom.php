@@ -149,6 +149,11 @@ public function __call($name, $args) {
 		$result = call_user_func_array(
 			array($this->_domDoc, $name),
 			$args);
+
+		// if($name == "getElementById") {
+		// 	var_dump($result);
+		// 	die("!!!");
+		// }
 		if($result instanceof DOMElement) {
 			return new DomEl($this->_domDoc, $result);
 		}
