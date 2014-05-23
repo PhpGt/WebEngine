@@ -14,19 +14,29 @@ $contentTypeOverrideArray = [
 
 if(php_sapi_name() == "cli-server") {
 	chdir(__DIR__);
-	chdir("..");
-	
-	// Get the appname from the domain
-	$appName = strtok($_SERVER["HTTP_HOST"], ".");
 
-	// check to see if PHP.Gt is included as a submodule
-	if(is_dir("./www")) {
-		chdir("./www");
+	$hostRequested = strtok($_SERVER["HTTP_HOST"], ":");
+
+	if($hostRequested == "localhost" 
+	|| filter_var($hostRequested, FILTER_VALIDATE_IP)) {
+		chdir("..");
+	} 
+	else {
+		// Get the appname from the host name requested
+		$appName = strtok($hostRequested, ".");
+		if(!is_dir("../$appName")) {
+			die("PHP.Gt project $appName's directory cannot be found in " . dirname("."));
+		}
+
+		chdir("../$appName");
 	}
-	// otherwise check for app as a sibling of PHP.Gt
-	else if(is_dir("$appName/www")) {
-		chdir("$appName/www");
+
+	if(!is_dir("./www")) {
+		error_log("Creating " . getcwd() . "/www directory");
+		mkdir("./www");
 	}
+
+	chdir("./www");
 
 	$_SERVER["DOCUMENT_ROOT"] = getcwd();
 
