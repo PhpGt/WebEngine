@@ -12,6 +12,7 @@ public function go($api, $dom, $template, $tool) {
 	$target = strtok($target, '#');
 	$target = strtok($target, ".");
 	$targetBase = strtok($target, "/");
+
 	
 	$target = str_replace("/", "\/", $target);
 	$targetBase = str_replace("/", "\/", $targetBase);
@@ -28,8 +29,8 @@ public function go($api, $dom, $template, $tool) {
 				$pattern = $li->getAttribute("data-selected-pattern");
 			}
 			else {
-				$pattern = "/$target(.html)?$/";
-				$patternBase = "/$targetBase(.html)?$/";
+				$pattern = "/$target(.html)?/";
+				$patternBase = "/$targetBase(.html)?/";
 			}
 
 			// Match the current URL with the anchor's href.
