@@ -12,7 +12,6 @@ public function go($api, $dom, $template, $tool) {
 	$target = strtok($target, '#');
 	$target = strtok($target, ".");
 	$targetBase = strtok($target, "/");
-
 	
 	$target = str_replace("/", "\/", $target);
 	$targetBase = str_replace("/", "\/", $targetBase);
@@ -27,6 +26,15 @@ public function go($api, $dom, $template, $tool) {
 
 			if($li->hasAttribute("data-selected-pattern")) {
 				$pattern = $li->getAttribute("data-selected-pattern");
+
+				if(preg_match($pattern, $_SERVER['REQUEST_URI'])) {
+					$li->addClass("selected");
+					if($li->hasClass("tree")) {
+						$li->addClass("open");
+					}
+					$selected = true;
+				}
+				continue;
 			}
 			else {
 				$pattern = "/$target(.html)?/";
