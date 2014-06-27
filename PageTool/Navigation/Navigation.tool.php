@@ -5,8 +5,10 @@
  */
 private $_navElements;
 
+public $selector = "body nav, body menu";
+
 public function go($api, $dom, $template, $tool) {
-	$this->_navElements = $dom["body nav, body menu"];
+	$this->_navElements = $dom[$this->selector];
 
 	$target = strtok($_SERVER['REQUEST_URI'], '?');
 	$target = strtok($target, '#');
