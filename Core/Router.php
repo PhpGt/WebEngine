@@ -6,3 +6,8 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
+if(php_sapi_name() !== "cli-server") {
+	echo "ERROR: Script must be called from cli-server.\n";
+	exit(1);
+}
+
