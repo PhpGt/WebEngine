@@ -1,6 +1,8 @@
-[PHP.Gt](http://www.php.gt)
-===========================
-A lightweight application development toolkit aimed at automating deployment, streamlining development and respecting web technologies.
+<img align="right" src="https://raw.githubusercontent.com/BrightFlair/PHP.Gt/master/Logo.png" alt="PHP.Gt logo" />
+
+Welcome to PHP.Gt — a lightweight application development toolkit aimed at automating deployment, streamlining development and respecting web technologies.
+
+PHP frameworks offer many features, and often come with steep learning curves. The motivation behind PHP.Gt is the belief that what a framework can offer can be achieved by **eliminating code rather than adding more**.
 
 [Head over to the Github Wiki for documentation](https://github.com/g105b/PHP.Gt/wiki)
 
