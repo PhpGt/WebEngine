@@ -134,7 +134,7 @@ foreach($opts as $opt_type => $opt_array) {
 }
 
 $fp = popen(
-	"php -S localhost:$PORT -t $APPROOT/www $GTROOT/Go.php 1>&0", 
+	"php -S localhost:$PORT -t $APPROOT/www $GTROOT/Core/Router.php 1>&0", 
 	"r"
 );
 
