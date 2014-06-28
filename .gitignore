@@ -1,2 +1,5 @@
 *.sublime-project
 *.sublime-workspace
+composer.lock
+composer.phar
+Packages/*
