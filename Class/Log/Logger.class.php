@@ -38,14 +38,7 @@ public function __construct($name, $config) {
 	$this->_file = "$name.log";
 	$this->_path = APPROOT;
 
-	// Import config variables here if they exist.
-	if(!empty($config)) {
-		foreach ($config as $key => $value) {
-			$var = "_$key";
-			$this->$var = $value;
-		}
-	}
-	else if(class_exists("Log_Config")) {
+	if(class_exists("Log_Config")) {
 		$this->importConfig();
 		if(isset(Log_Config::$logLevel)) {
 			$this->_logLevel = Log_Config::$logLevel;			
@@ -55,6 +48,14 @@ public function __construct($name, $config) {
 		}
 		if(isset(Log_Config::$datePattern)) {
 			$this->_datePattern = Log_Config::$datePattern;			
+		}
+	}
+
+	// Override them with the ones passed-in (if they exist)
+	if(!empty($config)) {
+		foreach ($config as $key => $value) {
+			$var = "_$key";
+			$this->$var = $value;
 		}
 	}
 }
