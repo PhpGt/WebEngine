@@ -6,12 +6,7 @@
  * This script should be executed from the base directory of the PHP.Gt
  * application wishing to be served (the "approot"), either by referencing the
  * script absolutely, or by having it within the user's environment path.
- * Alternatively, the base directory of the PHP.Gt application (the "gtroot")
- * can be passed as the --approot argument.
- *
- * This script is intended to be run from CLI, so a self-instantiating class is
- * required. When not run from CLI, the constructor does not call inner methods.
- * This allows for proper unit testing.
+ * Alternatively, the base directory can be passed as the --approot argument.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -24,48 +19,19 @@ private $gtroot;
 private $approot;
 private $port = 8080;
 
-// Used by getopt for parsing cli arguments.
-// See php.net/manual/en/function.getopt.php
-private $opt_char = [
-	"no-value" => "",
-	"required" => ":",
-	"optional" => "::",
-];
+private $process;
 
-// Define each option and associated short-option character(s):
-private $opts = [
-	"no-value" => [
-		"help" => [
-			"shortopt" => "h",
-			"description" => "Displays this help message",
-		],
-	],
-	"required" => [
-		// No required arguments.
-	],
-	"optional" => [
-		"approot" => [
-			"shortopt" => "a",
-			"description" => "Application root directory",
-			"value" => null,
-		],
-		"port" => [
-			"shortopt" => "p",
-			"description" => "Port to bind webserver on",
-			"value" => 8080,
-		],
-	],
-];
-
-public function __construct() {
+public function __construct(Arguments $arguments) {
 	$this->gtroot = dirname(__DIR__);
 	$this->approot = getcwd();
 
-	// Only automatically run when being executed from cli, to allow testing.
-	if(php_sapi_name() === "cli") {
-		$this->getOptions();
-		$this->run();
+	// Pass all provided arguments to call function to handle.
+	foreach ($arguments as $key => $value) {
+		$this->call($key, $value);
 	}
+
+	$this->process = new Process();
+	$this->process->run();
 }
 
 /**
@@ -161,32 +127,6 @@ public function getOptions() {
 			}
 		}
 	}
-}
-
-/**
- * Runs the PHP process with built-in server mode enabled.
- */
-public function run() {
-	$fp = popen(
-		"php -S localhost:{$this->port} "
-		. "-t {$this->approot}/www "
-		. "{$this->gtroot}/Core/Router.php "
-		// Redirect STDOUT to this process's STDIN.
-		. "1>&0", 
-		"r"
-	);
-
-	if(!is_resource($fp)) {
-		echo "ERROR: Could not open php built-in server.\n";
-		exit(1);
-	}
-
-	// Pass back all output from newly-spawned process.
-	while(false !== ($s = fread($fp, 1024)) ) {
-		echo $s;
-	}
-
-	pclose($fp);	
 }
 
 }#

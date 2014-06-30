@@ -10,10 +10,11 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Cli;
-class Arguments {
+class Arguments implements \ArrayAccess, \Iterator {
 
 // List holds an associative array to all passed-in arguments and their values.
 public $list = [];
+private $iteratorIndex = 0;
 
 // Used by getopt for parsing cli arguments.
 // See php.net/manual/en/function.getopt.php
@@ -112,4 +113,41 @@ private function parse() {
 	}
 }
 
+public function offsetExists($offset) {
+	return isset($this->list[$offset]);
+}
+
+public function offsetGet($offset) {
+	return $this->list[$offset];
+}
+
+public function offsetSet($offset, $value) {
+	throw new Gt\Exception\UnsupportedOperationException(
+		"Trying to set the read-only arguments list.");
+}
+
+public function offsetUnset($offset) {
+	throw new Gt\Exception\UnsupportedOperationException(
+		"Trying to unset the read-only arguments list.");
+}
+
+public function current() {
+	return current($this->list);
+}
+
+public function key() {
+	return key($this->list);
+}
+
+public function next() {
+	return next($this->list);
+}
+
+public function rewind() {
+	return reset($this->list);
+}
+
+public function valid() {
+	return false !== current($this->list);
+}
 }#
