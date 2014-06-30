@@ -2,4 +2,4 @@
 *.sublime-workspace
 composer.lock
 composer.phar
-Packages/*
+vendor/*
