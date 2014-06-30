@@ -10,5 +10,28 @@
 namespace Gt\Cli;
 require(__DIR__ . "/../vendor/autoload.php");
 
-$options = new Options();
-// return new Server($options->getArgs());
+$arguments = new Arguments([
+	"no-value" => [
+		"help" => [
+			"shortopt" => "h",
+			"description" => "Displays this help message",
+		],
+	],
+	"required" => [
+		// No required arguments.
+	],
+	"optional" => [
+		"approot" => [
+			"shortopt" => "a",
+			"description" => "Application root directory",
+			"value" => null,
+		],
+		"port" => [
+			"shortopt" => "p",
+			"description" => "Port to bind webserver on",
+			"value" => 8080,
+		],
+	],
+]);
+new Server($arguments);
+exit(1);
