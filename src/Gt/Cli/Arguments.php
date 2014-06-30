@@ -12,6 +12,9 @@
 namespace Gt\Cli;
 class Arguments {
 
+// List holds an associative array to all passed-in arguments and their values.
+public $list = [];
+
 // Used by getopt for parsing cli arguments.
 // See php.net/manual/en/function.getopt.php
 private $opt_char = [
@@ -19,54 +22,94 @@ private $opt_char = [
 	"required" => ":",
 	"optional" => "::",
 ];
+private $opt_short = "";
+private $opt_long = [];
 
 // Define each option and associated short-option character(s):
-private $opts = [
-	"no-value" => [
-		"help" => [
-			"shortopt" => "h",
-			"description" => "Displays this help message",
-		],
+private $options = [
+	// Arrays must match this pattern:
+	"no-value" => [ 
+	/*
+		"argumentname" => [
+			"shortopt" => "a", // list of characters, in string form.
+			"description" => "Help message associated with argument",
+			"value" => "test", // optional default value.
+		]
+	*/
 	],
-	"required" => [
-		// No required arguments.
-	],
-	"optional" => [
-		"approot" => [
-			"shortopt" => "a",
-			"description" => "Application root directory",
-			"value" => null,
-		],
-		"port" => [
-			"shortopt" => "p",
-			"description" => "Port to bind webserver on",
-			"value" => 8080,
-		],
-	],
+	"required" => [],
+	"optional" => [],
 ];
 
 /**
  * The constructor automatically builds the public $list variable from either
  * the invoking script's arguments, or the passed-in $list array.
  * 
+ * @param array $options list of allowed arguments, matching the pattern
+ * described in private $options variable comments.
  * @param array $list OPTIONAL list of override arguments.
  */
-public function __construct(array $list = null) {
-	if(!is_null($list)) {
+public function __construct(array $options, array $list = null) {
+	if (!is_null($list)) {
 		$this->list = $list;
 		return;
 	}
+
+	$this->options = $options;
 
 	$this->build();
 	$this->parse();
 }
 
+/**
+ * Build the long and short parameters as required by the getopt function.
+ * Short argument parameters are stored in a string, long argument parameters
+ * are stored in an array. See getopt documentation for more information:
+ * php.net/manual/en/function.getopt.php#refsect1-function.getopt-parameters
+ */
 private function build() {
-
+	// Loop over each allowed option type to build short and long option list.
+	foreach ($this->options as $opt_type => $opt_array) {
+		foreach ($opt_array as $opt_name => $opt_detail) {
+			$this->opt_long []= $opt_name . $this->opt_char[$opt_type];
+			$this->opt_short .= implode(
+				$this->opt_char[$opt_type],
+				str_split($opt_detail["shortopt"])
+			) . $this->opt_char[$opt_type];
+		}
+	}
 }
 
+/**
+ * Parses the command line interface arguments, using the generated short and
+ * long options, and stores the result in the public $list array.
+ * 
+ * $list will always be an associative array of full-length keys, even if the
+ * shortoptions were used.
+ */
 private function parse() {
+	$gotopt = getopt($this->opt_short, $this->opt_long);
 
+	foreach ($this->options as $opt_type => $opt_array) {
+		foreach ($opt_array as $opt_name => $opt_detail) {
+			$argValue = null;
+
+			if (isset($gotopt[$opt_name])) {
+				$argValue = $gotopt[$opt_name];
+			}
+			else {
+				foreach (str_split($opt_detail["shortopt"]) as $opt_char) {
+					if (isset($gotopt[$opt_char])) {
+						$argValue = $gotopt[$opt_char];
+					}
+				}
+			}
+
+			if(!is_null($argValue)) {
+				$this->list[$opt_name] = $argValue;				
+			}
+		}
+	}
 }
 
 }#
