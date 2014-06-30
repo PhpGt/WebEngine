@@ -3,7 +3,12 @@
 		"phpunit/phpunit": "4.1.*",
 		"leafo/scssphp": "*"
 	},
-	"config": {
-		"vendor-dir": "Packages"
+	
+	"prefer-stable": true,
+
+	"autoload": {
+		"psr-4": {
+			"Gt\\": "./src/Gt/"
+		}
 	}
 }
