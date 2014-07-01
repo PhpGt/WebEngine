@@ -10,4 +10,4 @@
  */
 
 chdir(__DIR__);
-system("../vendor/bin/phpunit");
+system("../vendor/bin/phpunit --colors");
