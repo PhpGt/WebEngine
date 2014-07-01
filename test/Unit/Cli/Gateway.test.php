@@ -21,6 +21,7 @@ private $uriTestArray = [
 private $tempDir;
 
 public function setUp() {
+	// Temporary directory required to serve static files from.
 	$this->tempDir = $this->createTempDir();
 }
 
@@ -29,9 +30,12 @@ public function tearDown() {
 }
 
 public function testStaticFileRequest() {
+	// Check that Gateway understands strange queryStrings.
 	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg"));
 	$this->assertTrue(Gateway::isStaticFileRequest("/directory/image.jpg"));
 	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg?query=string"));
+	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg?query=string"));
+	$this->assertTrue(Gateway::isStaticFileRequest("/t.txt?a=1/2/3/"));	
 }
 
 public function testDynamicRequest() {
@@ -40,6 +44,8 @@ public function testDynamicRequest() {
 	$this->assertFalse(Gateway::isStaticFileRequest("/directory/page"));
 	$this->assertFalse(Gateway::isStaticFileRequest("/?query=string"));
 	$this->assertFalse(Gateway::isStaticFileRequest("/example?query=string"));
+	// Default pathinfo function is confused by this request. strtok is now 
+	// used within Gateway.
 	$this->assertFalse(Gateway::isStaticFileRequest(
 		"/example?query=string&file=picture.jpg"));
 }
@@ -51,8 +57,11 @@ public function testGetAbsoluteFilePath() {
 	$_SERVER = ["DOCUMENT_ROOT" => $docRoot];
 
 	foreach ($this->uriTestArray as $uri) {
+		// Build expected full path to check against.
+		$fullPath = $docRoot . $uri;
+
 		$this->assertEquals(
-			$docRoot . $uri,
+			$fullPath,
 			Gateway::getAbsoluteFilePath($uri)
 		);
 	}
@@ -62,14 +71,23 @@ public function testServeStaticFile() {
 	foreach ($this->uriTestArray as $uri) {
 		$path = $this->getTempFilePath($uri);
 
-		Gateway::serveStaticFile($path);
+		// Second parameter tells Gateway to return the bytes as a string, 
+		// rather than streaming to STDOUT.
+		// This is done by reading the output buffer, so the output generation
+		// is the same in real world usage to test usage.
+		$output = Gateway::serveStaticFile($path, true);
 
-		// TODO: Test stdout...
-		$this->assertEquals(self::DUMMY_CONTENT, trim(fread(STDOUT, 1024)));
-		fclose($fh);
+		$expected = self::DUMMY_CONTENT . " (from $uri).";
+		$this->assertEquals($expected, $output);
 	}
 }
 
+/**
+ * Creates a directory in the system's tmp, stores the directory path in 
+ * $this->tempDir.
+ * 
+ * @return string Temporary directroy path.
+ */
 private function createTempDir() {
 	$tmp = sys_get_temp_dir();
 	$this->tempDir = tempnam($tmp, self::TEMP_PREFIX);
@@ -81,9 +99,15 @@ private function createTempDir() {
 	return $this->tempDir;
 }
 
+/**
+ * Recursive function to empty and remove a whole directory.
+ * 
+ * @param string $dir Path to directory to remove.
+ * @return bool True if directory is successfully removed, otherwise false.
+ */
 private function cleanup($dir) {
 	if(empty($dir)) {
-		return;
+		return true;
 	}
 
 	if(is_file($dir)) {
@@ -103,6 +127,13 @@ private function cleanup($dir) {
 	return rmdir($dir); 
 }
 
+/**
+ * Creates a temp file in the current tempDir location named with the provided
+ * uri parameter. Content is filled with dummy content suffixed with the uri.
+ * 
+ * @param string $uri Temp directory path suffix.
+ * @return string Absolute path to newly created file.
+ */
 private function getTempFilePath($uri) {
 	$tempDir = $this->createTempDir();
 	$path = $tempDir . $uri;
@@ -110,7 +141,7 @@ private function getTempFilePath($uri) {
 	if(!is_dir(dirname($path)) ) {
 		mkdir(dirname($path), 0775, true);
 	}
-	file_put_contents($path, self::DUMMY_CONTENT);
+	file_put_contents($path, self::DUMMY_CONTENT . " (from $uri).");
 
 	return $path;
 }
