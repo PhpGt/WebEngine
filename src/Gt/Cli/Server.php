@@ -31,7 +31,7 @@ public function __construct(ArgvInput $arguments) {
 		"php", [
 		"S" => "localhost:{$this->port}",
 		"t" => "{$this->approot}/www",
-		"{$this->gtroot}/Cli/Gateway.php",
+		"{$this->gtroot}/Cli/Gatekeeper.php",
 	]);
 	$this->process->run();
 }

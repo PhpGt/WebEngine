@@ -6,19 +6,26 @@
  */
 namespace Gt\Cli;
 
-require_once(__DIR__ . "/../../../src/Gt/Cli/Gateway.php");
-
 class Gateway_Test extends \PHPUnit_Framework_TestCase {
 
 public function setUp() {}
+
 public function tearDown() {}
 
-public function testTrue() {
-	$this->assertTrue(true);
+public function testStaticFileRequest() {
+	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg"));
+	$this->assertTrue(Gateway::isStaticFileRequest("/directory/image.jpg"));
+	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg?query=string"));
 }
 
-public function testTrueAgain() {
-	$this->assertTrue(true);
+public function testDynamicRequest() {
+	$this->assertFalse(Gateway::isStaticFileRequest("/"));
+	$this->assertFalse(Gateway::isStaticFileRequest("/page"));
+	$this->assertFalse(Gateway::isStaticFileRequest("/directory/page"));
+	$this->assertFalse(Gateway::isStaticFileRequest("/?query=string"));
+	$this->assertFalse(Gateway::isStaticFileRequest("/example?query=string"));
+	$this->assertFalse(Gateway::isStaticFileRequest(
+		"/example?query=string&file=picture.jpg"));
 }
 
 }#

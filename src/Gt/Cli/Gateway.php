@@ -11,31 +11,34 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-require_once(__DIR__ . "/../../../vendor/autoload.php");
+namespace Gt\Cli;
+
+class Gateway {
 
 /**
  * 
  */
-function isStaticFileRequest($uri) {
-	$pathinfo_ext = pathinfo($uri, PATHINFO_EXTENSION);
+public static function isStaticFileRequest($uri) {
+	$pathinfo_ext = pathinfo(strtok($uri, "?"), PATHINFO_EXTENSION);
 	return !empty($pathinfo_ext);
 }
 
-function getAbsoluteFilePath($uri) {
+/**
+ * 
+ */
+public static function getAbsoluteFilePath($uri) {
 
 }
 
-function serveFile($filePath) {
+/**
+ * 
+ */
+public static function serveFile($filePath) {
 
 }
 
-if(php_sapi_name() === "cli-server") {
-	$uri = $_SERVER["REQUEST_URI"];
-	if(isStaticFileRequest($uri)) {
-		$filePath = getAbsoluteFilePath();
-		serveFile($filePath);
-	}
-	else {
-		return new Gt\Core\Go();
-	}
+public static function serveDynamic() {
+	return new Gt\Core\Go();
 }
+
+}#
