@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * Used by lazy developers.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
