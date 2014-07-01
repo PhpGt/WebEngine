@@ -10,4 +10,4 @@
  */
 
 chdir(__DIR__);
-system("../Packages/bin/phpunit");
+system("../vendor/bin/phpunit");
