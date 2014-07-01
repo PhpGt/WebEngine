@@ -11,34 +11,31 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-require(__DIR__ . "/../../../vendor/autoload.php");
+require_once(__DIR__ . "/../../../vendor/autoload.php");
 
-if(php_sapi_name() !== "cli-server") {
-	echo "ERROR: Script must be called from cli-server.\n";
-	exit(1);
+/**
+ * 
+ */
+function isStaticFileRequest($uri) {
+	$pathinfo_ext = pathinfo($uri, PATHINFO_EXTENSION);
+	return !empty($pathinfo_ext);
 }
 
-$pathinfo = pathinfo($_SERVER["REQUEST_URI"]);
-if(!empty($pathinfo["extension"])) {
-	// Non-empty extension is served as static file.
-	$request = explode("?", 
-		$_SERVER["DOCUMENT_ROOT"]
-		.
-		$_SERVER["REQUEST_URI"]
-	);
+function getAbsoluteFilePath($uri) {
 
-	if(!is_file($request[0])) {
-		return false;
+}
+
+function serveFile($filePath) {
+
+}
+
+if(php_sapi_name() === "cli-server") {
+	$uri = $_SERVER["REQUEST_URI"];
+	if(isStaticFileRequest($uri)) {
+		$filePath = getAbsoluteFilePath();
+		serveFile($filePath);
 	}
-
-	$ext = pathinfo($request[0], PATHINFO_EXTENSION);
-	$finfo = new Finfo(FILEINFO_MIME_TYPE);
-	$mime = $finfo->file($request[0]);
-
-	header("Content-type: $mime");
-	readfile($request[0]);
-	return true;
+	else {
+		
+	}
 }
-
-// Request is to a PageView or WebService - pass responsibility to PHP.Gt core.
-return new Gt\Core\Go();
