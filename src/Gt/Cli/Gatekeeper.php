@@ -14,10 +14,10 @@ require_once(__DIR__ . "/../../../vendor/autoload.php");
 if(php_sapi_name() === "cli-server") {
 	if(Gateway::isStaticFileRequest($_SERVER["REQUEST_URI"])) {
 		$filePath = Gateway::getAbsoluteFilePath($_SERVER["REQUEST_URI"]);
-		Gateway::serveFile($filePath);
+		Gateway::serveStaticFile($filePath);
 	}
 	else {
-		return Gateway::serveDynamic();
+		return Gateway::serveDynamicRequest();
 	}
 }
 else {

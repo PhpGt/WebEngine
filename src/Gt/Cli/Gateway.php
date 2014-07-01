@@ -27,17 +27,21 @@ public static function isStaticFileRequest($uri) {
  * 
  */
 public static function getAbsoluteFilePath($uri) {
-
+	return $_SERVER["DOCUMENT_ROOT"] . $uri;
 }
 
 /**
  * 
  */
-public static function serveFile($filePath) {
+public static function serveStaticFile($filePath) {
+	if(!file_exists($filePath)) {
+		throw new \Gt\Response\NotFoundException();
+	}
 
+	return readfile($filePath);
 }
 
-public static function serveDynamic() {
+public static function serveDynamicRequest() {
 	return new Gt\Core\Go();
 }
 
