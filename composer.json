@@ -1,6 +1,7 @@
 {
 	"require": {
 		"phpunit/phpunit": "4.1.*",
+		"symfony/console": "2.5.*",
 		"leafo/scssphp": "*"
 	},
 	

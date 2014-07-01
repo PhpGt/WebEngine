@@ -7,31 +7,33 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-namespace Gt\Cli;
+use Gt\Cli\Server,
+	Symfony\Component\Console\Input\InputDefinition,
+	Symfony\Component\Console\Input\InputArgument,
+	Symfony\Component\Console\Input\InputOption,
+	Symfony\Component\Console\Input\ArgvInput;
+
 require(__DIR__ . "/../vendor/autoload.php");
 
-$arguments = new Arguments([
-	"no-value" => [
-		"help" => [
-			"shortopt" => "h",
-			"description" => "Displays this help message",
-		],
-	],
-	"required" => [
-		// No required arguments.
-	],
-	"optional" => [
-		"approot" => [
-			"shortopt" => "a",
-			"description" => "Application root directory",
-			"value" => null,
-		],
-		"port" => [
-			"shortopt" => "p",
-			"description" => "Port to bind webserver on",
-			"value" => 8080,
-		],
-	],
+$definition = new InputDefinition([
+	new InputOption("approot", "a", 
+		InputOption::VALUE_OPTIONAL, "Application root directory"),
+	new InputOption("port", "p", 
+		InputOption::VALUE_OPTIONAL, "Port to bind webserver to"),
 ]);
-new Server($arguments);
+
+try {
+	$input = new ArgvInput($argv, $definition);	
+}
+catch(Exception $e) {
+	echo "\ngtserver shell script usage:\n";
+	echo $definition->getSynopsis();
+	echo "\n\n";
+	echo strip_tags($definition->asText());
+
+	echo "\n";
+	exit(0);
+}
+
+// new Server($input);
 exit(1);
