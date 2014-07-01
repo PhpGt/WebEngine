@@ -3,10 +3,7 @@
  * Used as a wrapper to the PHP built-in server to handle directory paths and
  * alert the developer if directories do not exist, before starting the server.
  *
- * This script should be executed from the base directory of the PHP.Gt
- * application wishing to be served (the "approot"), either by referencing the
- * script absolutely, or by having it within the user's environment path.
- * Alternatively, the base directory can be passed as the --approot argument.
+ * Used from the PHP.Gt/bin/gtserver shell script.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -22,6 +19,14 @@ private $approot;
 private $port;
 private $process;
 
+/**
+ * Sets the gtroot (allowing Gatekeeper to be found), and sets approot and port
+ * with values from the ArgvInput object, then creates and runs the php 
+ * inbuilt server in a new Process.
+ * 
+ * @param ArgvInput $arguments The arguments passed to the gtserver shell script
+ * or default values if none are provided.
+ */
 public function __construct(ArgvInput $arguments) {
 	$this->gtroot = dirname(__DIR__);
 	$this->approot = $arguments->getOption("approot");

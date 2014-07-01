@@ -1,7 +1,7 @@
 <?php
 /**
  * Executes a system command and arguments in a separate process
- * and writes back to specified output stream.
+ * and writes back to STDOUT.
  * 
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
