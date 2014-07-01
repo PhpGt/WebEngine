@@ -6,4 +6,4 @@
  */
 namespace Gt\Cli;
 
-class ProcessFailedException extends \Gt\Core\GtException {}#
+class ProcessFailedException extends \Gt\Core\Exception\GtException {}#
