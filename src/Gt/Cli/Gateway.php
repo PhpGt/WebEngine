@@ -36,6 +36,6 @@ if(php_sapi_name() === "cli-server") {
 		serveFile($filePath);
 	}
 	else {
-		
+		return new Gt\Core\Go();
 	}
 }
