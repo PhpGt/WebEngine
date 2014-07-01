@@ -15,15 +15,22 @@ use Gt\Cli\Server,
 
 require(__DIR__ . "/../vendor/autoload.php");
 
+$defaults = [
+	"approot" => getcwd(),
+	"port" => 8080,
+];
+
 $definition = new InputDefinition([
-	new InputOption("approot", "a", 
-		InputOption::VALUE_OPTIONAL, "Application root directory"),
-	new InputOption("port", "p", 
-		InputOption::VALUE_OPTIONAL, "Port to bind webserver to"),
+	new InputOption("approot", "a", InputOption::VALUE_OPTIONAL,
+		"Application root directory", $defaults["approot"]),
+	new InputOption("port", "p", InputOption::VALUE_OPTIONAL,
+		"Port to bind webserver to", $defaults["port"]),
 ]);
 
 try {
-	$input = new ArgvInput($argv, $definition);	
+	$input = new ArgvInput($argv, $definition);
+	new Server($input);
+	exit(1);
 }
 catch(Exception $e) {
 	echo "\ngtserver shell script usage:\n";
@@ -34,6 +41,3 @@ catch(Exception $e) {
 	echo "\n";
 	exit(0);
 }
-
-// new Server($input);
-exit(1);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Router script used by gtserver.php.
+ * Router script used by gtserver shell script.
  *
  * Will serve all directory-style URLs through PHP.Gt. Files (URLs with 
  * file extensions) will have their bytes streamed and correct HTTP headers set.

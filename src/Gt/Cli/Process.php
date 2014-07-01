@@ -11,44 +11,41 @@ namespace Gt\Cli;
 class Process {
 
 private $fp;
+private $processString;
 
 public function __construct($processName, array $processArgs) {
-	$processArgs = implode(" ", $processArgs);
+	$this->processString = $processName;
 
+	foreach ($processArgs as $key => $value) {
+		$this->processString .= " ";
+		if(!empty($key)) {
+			$this->processString .= "-$key=";
+		}
+		$this->processString .= $value;
+	}
+
+	
 }
 
 public function __destruct() {
 	pclose($fp);
 }
 
-public function run($stream = STDOUT) {
+public function run() {
 	$this->fp = popen(
-		$this->processName
-		. " "
-		. $this->processArgs
-		. " "
+		$this->processString
 		// Redirect STDOUT to this process's STDIN.
-		. "1>&0",
-
-		"r"
-	);
-
-	$fp = popen(
-		"php -S localhost:{$this->port} "
-		. "-t {$this->approot}/www "
-		. "{$this->gtroot}/Core/Router.php "
-		
-		. "1>&0", 
+		. " 1>&0",
 		"r"
 	);
 
 	if(!is_resource($this->fp)) {
-		throw new Gt\Exception\
+		throw new ProcessFailedException();
 	}
 
 	// Pass back all output from newly-spawned process.
 	while(false !== ($s = fread($this->fp, 1024)) ) {
-		fwrite($stream, $s);
+		fwrite(STDOUT, $s);
 	}
 }
 

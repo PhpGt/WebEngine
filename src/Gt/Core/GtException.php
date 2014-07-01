@@ -12,28 +12,6 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-namespace Gt\Cli;
-use \Symfony\Component\Console\Input\ArgvInput;
+namespace Gt\Core;
 
-final class Server {
-
-private $gtroot;
-private $approot;
-private $port;
-private $process;
-
-public function __construct(ArgvInput $arguments) {
-	$this->gtroot = dirname(__DIR__);
-	$this->approot = $arguments->getOption("approot");
-	$this->port = $arguments->getOption("port");
-
-	$this->process = new Process(
-		"php", [
-		"S" => "localhost:{$this->port}",
-		"t" => "{$this->approot}/www",
-		"{$this->gtroot}/Cli/Router.php",
-	]);
-	$this->process->run();
-}
-
-}#
+class GtException extends \Exception {}#
