@@ -19,6 +19,10 @@ final class Go {
 
 public function __construct() {
 	$this->startTime = microtime();
+	if(empty($_SERVER)) {
+		throw new \Gt\Core\Exception\UndefinedVariableException(
+			"\$_SERVER is not defined. Are you running from cli?");
+	}
 
 	$this->defineConstants();
 	$this->initialiseConfiguration();
