@@ -8,4 +8,10 @@
  */
 namespace Gt\Response;
 
-class NotFoundException extends \Gt\Core\Exception\GtException {}#
+class NotFoundException extends \Gt\Core\Exception\GtException {
+
+public function __construct() {
+	http_response_code(404);
+}
+
+}#
