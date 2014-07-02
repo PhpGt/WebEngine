@@ -11,6 +11,16 @@ namespace Gt\Cli;
 
 class Gateway {
 
+public static function serve($uri, $phpgt = "\Gt\Core\Go") {
+	if(self::isStaticFileRequest($_SERVER["REQUEST_URI"])) {
+		$filePath = self::getAbsoluteFilePath($_SERVER["REQUEST_URI"]);
+		self::serveStaticFile($filePath);
+	}
+	else {
+		new $phpgt;
+	}
+}
+
 /**
  * Returns whether the requested uri shall be treated as a static file.
  * Static files are intended to be served directly by the webserver, rather than
@@ -49,16 +59,6 @@ public static function serveStaticFile($filePath) {
 	}
 
 	return readfile($filePath);
-}
-
-/**
- * Passes the request to the core Go class, used to carry out the whole 
- * request / response pipeline.
- * 
- * @return \Gt\Core\Go New instance of the Go class, for debugging purposes.
- */
-public static function serveDynamicRequest() {
-	return new \Gt\Core\Go();
 }
 
 }#

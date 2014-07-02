@@ -16,13 +16,7 @@ require_once(__DIR__ . "/../../../vendor/autoload.php");
 
 // Only allow this script to be invoked from inbuilt webserver.
 if(php_sapi_name() === "cli-server") {
-	if(Gateway::isStaticFileRequest($_SERVER["REQUEST_URI"])) {
-		$filePath = Gateway::getAbsoluteFilePath($_SERVER["REQUEST_URI"]);
-		Gateway::serveStaticFile($filePath);
-	}
-	else {
-		return Gateway::serveDynamicRequest();
-	}
+	return Gateway::serve($_SERVER["REQUEST_URI"]);
 }
 else {
 	throw new InvalidContextException(php_sapi_name());
