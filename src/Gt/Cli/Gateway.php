@@ -36,37 +36,19 @@ public static function getAbsoluteFilePath($uri) {
 }
 
 /**
- * Streams the raw bytes of a static file to STDOUT or a string if returnBytes
- * is set to true.
+ * Streams the raw bytes of a static file to STDOUT.
  * 
  * @throws \Gt\Response\NotFoundException if the file does not exist on disk.
  * @param string $filePath Absolute path to file on disk.
- * @param bool $returnBytes Optional. Set to true to return the contents of 
- * the file as a string of bytes, rather than the default streaming to STDOUT.
- * Defaults to false.
  * 
- * @return int|string The number of bytes served, or the bytes as a string if
- * $returnBytes is set to true.
+ * @return int The number of bytes served.
  */
-public static function serveStaticFile($filePath, $returnBytes = false) {
+public static function serveStaticFile($filePath) {
 	if(!file_exists($filePath)) {
 		throw new \Gt\Response\NotFoundException();
 	}
 
-	if($returnBytes) {
-		ob_start();
-	}
-	
-	$bytesRead = readfile($filePath);
-
-	if($returnBytes) {
-		$bytes = ob_get_contents();
-		ob_end_clean();
-		return $bytes;
-	}
-	else {
-		return $bytesRead;
-	}
+	return readfile($filePath);
 }
 
 /**

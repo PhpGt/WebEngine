@@ -68,18 +68,69 @@ public function testGetAbsoluteFilePath() {
 }
 
 public function testServeStaticFile() {
+	$expected = "";
+
 	foreach ($this->uriTestArray as $uri) {
 		$path = $this->getTempFilePath($uri);
 
-		// Second parameter tells Gateway to return the bytes as a string, 
-		// rather than streaming to STDOUT.
-		// This is done by reading the output buffer, so the output generation
-		// is the same in real world usage to test usage.
-		$output = Gateway::serveStaticFile($path, true);
-
-		$expected = self::DUMMY_CONTENT . " (from $uri).";
-		$this->assertEquals($expected, $output);
+		$expected .= self::DUMMY_CONTENT . " (from $uri).";
+		Gateway::serveStaticFile($path);
 	}
+	$this->expectOutputString($expected);
+}
+
+public function testServeFakeFile() {
+	// Count the number of exceptions caught.
+	$exceptionCount = 0;
+	$attempts = 0;
+
+	foreach ($this->uriTestArray as $uri) {
+		$path = $this->getTempFilePath($uri);
+
+		// Attempts is used as a multiplier on the uriTestArray count, as 
+		// multiple attempts are made on the same uri.
+		$attempts = 1;
+		try {
+			Gateway::serveStaticFile($path . "/");
+		}
+		catch(\Gt\Response\NotFoundException $e) {
+			// If the exception isn't caught, the exceptionCount will not match.
+			++ $exceptionCount;
+		}
+
+		$attempts = 2;
+		try {
+			Gateway::serveStaticFile("?" . $path);
+		}
+		catch(\Gt\Response\NotFoundException $e) {
+			++ $exceptionCount;
+		}
+
+		$attempts = 3;
+		try {
+			Gateway::serveStaticFile("\\" . $path);
+		}
+		catch(\Gt\Response\NotFoundException $e) {
+			++ $exceptionCount;
+		}
+
+		$attempts = 4;
+		try {
+			Gateway::serveStaticFile(strtoupper($path));
+		}
+		catch(\Gt\Response\NotFoundException $e) {
+			++ $exceptionCount;
+		}
+	}
+
+	$this->assertEquals(
+		count($this->uriTestArray) * $attempts,
+		$exceptionCount
+	);
+}
+
+public function testServingDynamicRequest() {
+
 }
 
 /**
