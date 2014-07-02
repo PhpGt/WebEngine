@@ -65,6 +65,8 @@ public function testGetAbsoluteFilePath() {
 			Gateway::getAbsoluteFilePath($uri)
 		);
 	}
+
+	unset($_SERVER);
 }
 
 public function testServeStaticFile() {
@@ -79,58 +81,25 @@ public function testServeStaticFile() {
 	$this->expectOutputString($expected);
 }
 
-public function testServeFakeFile() {
-	// Count the number of exceptions caught.
-	$exceptionCount = 0;
-	$attempts = 0;
-
+public function brokenPathList() {
+	$pathList = [];
 	foreach ($this->uriTestArray as $uri) {
 		$path = $this->getTempFilePath($uri);
-
-		// Attempts is used as a multiplier on the uriTestArray count, as 
-		// multiple attempts are made on the same uri.
-		$attempts = 1;
-		try {
-			Gateway::serveStaticFile($path . "/");
-		}
-		catch(\Gt\Response\NotFoundException $e) {
-			// If the exception isn't caught, the exceptionCount will not match.
-			++ $exceptionCount;
-		}
-
-		$attempts = 2;
-		try {
-			Gateway::serveStaticFile("?" . $path);
-		}
-		catch(\Gt\Response\NotFoundException $e) {
-			++ $exceptionCount;
-		}
-
-		$attempts = 3;
-		try {
-			Gateway::serveStaticFile("\\" . $path);
-		}
-		catch(\Gt\Response\NotFoundException $e) {
-			++ $exceptionCount;
-		}
-
-		$attempts = 4;
-		try {
-			Gateway::serveStaticFile(strtoupper($path));
-		}
-		catch(\Gt\Response\NotFoundException $e) {
-			++ $exceptionCount;
-		}
+		$pathList []= ["$path/"];
+		$pathList []= ["/$path/"];
+		$pathList []= ["?$path"];
+		$pathList []= ["$path$path"];
+		$pathList []= ["\\$path"];
 	}
-
-	$this->assertEquals(
-		count($this->uriTestArray) * $attempts,
-		$exceptionCount
-	);
+	return $pathList;
 }
 
-public function testServingDynamicRequest() {
-
+/**
+ * @expectedException \Gt\Response\NotFoundException
+ * @dataProvider brokenPathList
+ */
+public function testServeFakeFile($path) {
+	Gateway::serveStaticFile($path);	
 }
 
 /**
