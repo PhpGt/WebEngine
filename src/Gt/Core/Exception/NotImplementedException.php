@@ -8,4 +8,4 @@
  */
 namespace Gt\Core\Exception;
 
-class NotImplementedException extends \Exception {}#
+class NotImplementedException extends GtException {}#
