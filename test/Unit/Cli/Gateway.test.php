@@ -81,7 +81,7 @@ public function testServeStaticFile() {
 	$this->expectOutputString($expected);
 }
 
-public function brokenPathList() {
+public function data_brokenPathList() {
 	$pathList = [];
 	foreach ($this->uriTestArray as $uri) {
 		$path = $this->getTempFilePath($uri);
@@ -96,7 +96,7 @@ public function brokenPathList() {
 
 /**
  * @expectedException \Gt\Response\NotFoundException
- * @dataProvider brokenPathList
+ * @dataProvider data_brokenPathList
  */
 public function testServeFakeFile($path) {
 	Gateway::serveStaticFile($path);	
