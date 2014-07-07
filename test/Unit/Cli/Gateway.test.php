@@ -11,22 +11,55 @@ class Gateway_Test extends \PHPUnit_Framework_TestCase {
 const DUMMY_CONTENT = "!!! DUMMY CONTENT !!!";
 const TEMP_PREFIX = "gt-test-phpgt-tmp";
 
-private $uriTestArray = [
+private $data_static = [
 	"/test.txt",
 	"/Script/test-app.js",
 	"/Script/test-app.js?v=123",
 	"/Script/Lib/jquery.js",
 	"/Asset/Img/Cat.jpg",
 ];
+private $data_dynamic = [
+	"/",
+	"/index",
+	"/something/nested",
+	"/a-file?pic=cat.jpg",
+];
+
 private $tempDir;
 
-public function setUp() {
-	// Temporary directory required to serve static files from.
-	$this->tempDir = $this->createTempDir();
+public function setUp() { }
+
+public function tearDown() { }
+
+public function data_brokenStaticPathList() {
+	$pathList = [];
+	foreach ($this->data_static as $uri) {
+		$path = $this->getTempFilePath($uri);
+		$pathList []= ["$path/"];
+		$pathList []= ["/$path/"];
+		$pathList []= ["?$path"];
+		$pathList []= ["$path$path"];
+		$pathList []= ["\\$path"];
+	}
+	return $pathList;
 }
 
-public function tearDown() {
-	$this->cleanup($this->tempDir);
+public function data_staticPathList() {
+	$returnData = [];
+	foreach ($this->data_static as $uri) {
+		$path = $this->getTempFilePath($uri);
+		$expectedOutput = self::DUMMY_CONTENT . " (from $uri).";
+		$returnData []= [$path, $expectedOutput];
+	}
+	return $returnData;
+}
+
+/**
+ * @dataProvider data_staticPathList
+ */
+public function testServeStaticFile($path, $expectedOutput) {
+	Gateway::serveStaticFile($path);
+	$this->expectOutputString($expectedOutput);
 }
 
 public function testStaticFileRequest() {
@@ -56,7 +89,7 @@ public function testGetAbsoluteFilePath() {
 	$docRoot = "/dev/null/test-app/www";
 	$_SERVER = ["DOCUMENT_ROOT" => $docRoot];
 
-	foreach ($this->uriTestArray as $uri) {
+	foreach ($this->data_static as $uri) {
 		// Build expected full path to check against.
 		$fullPath = $docRoot . $uri;
 
@@ -66,37 +99,12 @@ public function testGetAbsoluteFilePath() {
 		);
 	}
 
-	unset($_SERVER);
-}
-
-public function testServeStaticFile() {
-	$expected = "";
-
-	foreach ($this->uriTestArray as $uri) {
-		$path = $this->getTempFilePath($uri);
-
-		$expected .= self::DUMMY_CONTENT . " (from $uri).";
-		Gateway::serveStaticFile($path);
-	}
-	$this->expectOutputString($expected);
-}
-
-public function data_brokenPathList() {
-	$pathList = [];
-	foreach ($this->uriTestArray as $uri) {
-		$path = $this->getTempFilePath($uri);
-		$pathList []= ["$path/"];
-		$pathList []= ["/$path/"];
-		$pathList []= ["?$path"];
-		$pathList []= ["$path$path"];
-		$pathList []= ["\\$path"];
-	}
-	return $pathList;
+	// unset($_SERVER);
 }
 
 /**
  * @expectedException \Gt\Response\NotFoundException
- * @dataProvider data_brokenPathList
+ * @dataProvider data_brokenStaticPathList
  */
 public function testServeFakeFile($path) {
 	Gateway::serveStaticFile($path);	
