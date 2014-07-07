@@ -4,7 +4,7 @@
 		"leafo/scssphp": "*"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "4.1.*",
+		"phpunit/phpunit": "4.1.*"
 	},
 	
 	"prefer-stable": true,
