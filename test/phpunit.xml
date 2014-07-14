@@ -4,9 +4,9 @@
 		<testsuite name="Cli Tests">
 			<directory suffix=".test.php">Unit/Cli</directory>
 		</testsuite>
-		<!-- <testsuite name="Core Tests">
+		<testsuite name="Core Tests">
 			<directory suffix=".test.php">Unit/Core</directory>
-		</testsuite> -->
+		</testsuite>
 	</testsuites>
 	<logging>
 		<log type="json" target="phpunit.output.json" />

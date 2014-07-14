@@ -9,10 +9,10 @@
 namespace Gt\Core;
 class Config {
 
-public function __construct() {
-	$configDir = Path::get(Path::CONFIG);
+private $configDir;
 
-	
+public function __construct() {
+	$this->configDir = Path::get(Path::CONFIG);
 }
 
 }#

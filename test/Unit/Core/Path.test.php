@@ -8,10 +8,21 @@ namespace Gt\Core;
 
 class Path_Test extends \PHPUnit_Framework_TestCase {
 
-public function testPathThrowsExceptionFromInvalidConstant() {
-	$this->setExpectedException("\UnexpectedValueException");
+private $root;
 
-	$invalidConstant = Path::INVALID_CONSTANT;
+public function setUp() {
+	$this->root = sys_get_temp_dir() . "/root";
+	$_SERVER["DOCUMENT_ROOT"] = $this->root;
+}
+
+public function testPathRoot() {
+
+
+	$root = Path::$root;
+	var_dump($root);die();
+
+
+	$this->assertEquals($this->root, $root);
 }
 
 }#
