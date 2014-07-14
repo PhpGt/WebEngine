@@ -12,12 +12,12 @@ namespace Gt\Cli;
 class Gateway {
 
 public static function serve($uri, $phpgt = "\Gt\Core\Go") {
-	if(self::isStaticFileRequest($_SERVER["REQUEST_URI"])) {
-		$filePath = self::getAbsoluteFilePath($_SERVER["REQUEST_URI"]);
+	if(self::isStaticFileRequest($uri)) {
+		$filePath = self::getAbsoluteFilePath($uri);
 		self::serveStaticFile($filePath);
 	}
 	else {
-		new $phpgt;
+		return new $phpgt;
 	}
 }
 

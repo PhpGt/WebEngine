@@ -49,9 +49,33 @@ public function data_staticPathList() {
 	foreach ($this->data_static as $uri) {
 		$path = $this->getTempFilePath($uri);
 		$expectedOutput = self::DUMMY_CONTENT . " (from $uri).";
-		$returnData []= [$path, $expectedOutput];
+		$returnData []= [$path, $expectedOutput, $uri];
 	}
 	return $returnData;
+}
+
+public function data_dynamicPathList() {
+	$returnData = [];
+	foreach ($this->data_dynamic as $uri) {
+		$returnData []= [$uri];
+	}
+	return $returnData;
+}
+
+/**
+ * @dataProvider data_staticPathList
+ * @expectedException Gt\Response\NotFoundException
+ */
+public function testServeMethod_static($path, $expectedOutput, $uri) {
+	Gateway::serve($uri, "\StdClass");
+	$this->expectOutputString($expectOutputString);
+}
+/**
+ * @dataProvider data_dynamicPathList
+ */
+public function testServeMethod_dynamic($uri) {
+	$output = Gateway::serve($uri, "\StdClass");
+	$this->assertInstanceOf("\StdClass", $output);
 }
 
 /**
