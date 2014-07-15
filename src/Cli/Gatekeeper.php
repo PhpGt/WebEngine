@@ -15,9 +15,18 @@ namespace Gt\Cli;
 require(__DIR__ . "/../../../vendor/autoload.php");
 
 // Only allow this script to be invoked from inbuilt webserver.
-if(php_sapi_name() === "cli-server") {
+$sapi = php_sapi_name();
+
+switch($sapi) {
+case "cli-server":
 	return Gateway::serve($_SERVER["REQUEST_URI"]);
-}
-else {
+	break;
+
+case "cli":
 	throw new InvalidContextException(php_sapi_name());
+	break;
+
+default:
+	// When using third-party webserver:
+	return new \Gt\Core\Go();	
 }
