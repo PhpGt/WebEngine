@@ -9,22 +9,22 @@
 namespace Gt\Core;
 class Path {
 
-const CONFIG		= 100;
-const DATABASE		= 200;
-const PAGE			= 300;
-const PAGECODE		= 400;
-const PAGETOOL		= 500;
-const PAGEVIEW		= 600;
-const PUBLICFILES	= 700;
-const ROOT			= 800;
-const SCRIPT		= 900;
-const SERVICE		= 1000;
-const SERVICECODE	= 1100;
-const SERVICETOOL	= 1200;
-const SERVICEVIEW	= 1300;
-const SRC			= 1400;
-const STYLE			= 1500;
-const WWW			= 1600;
+const CONFIG		= "CONFIG";
+const DATABASE		= "DATABASE";
+const PAGE			= "PAGE";
+const PAGECODE		= "PAGECODE";
+const PAGETOOL		= "PAGETOOL";
+const PAGEVIEW		= "PAGEVIEW";
+const PUBLICFILES	= "PUBLICFILES";
+const ROOT			= "ROOT";
+const SCRIPT		= "SCRIPT";
+const SERVICE		= "SERVICE";
+const SERVICECODE	= "SERVICECODE";
+const SERVICETOOL	= "SERVICETOOL";
+const SERVICEVIEW	= "SERVICEVIEW";
+const SRC			= "SRC";
+const STYLE			= "STYLE";
+const WWW			= "WWW";
 
 public static function get($path) {
 	switch ($path) {
