@@ -9,29 +9,22 @@
 namespace Gt\Core;
 class Path {
 
-private $paths = [
-	"config",
-	"database",
-	"page",
-	"pagecode",
-	"pagetool",
-	"pageview",
-	"publicfiles",
-	"root",
-	"script",
-	"service",
-	"servicecode",
-	"servicetool",
-	"serviceview",
-	"src",
-	"style",
-	"www",
-];
-
-public static function __get($name) {
-	if(!array_key_exists($name, $this->paths)) {
-		throw new \UnexpectedValueException("Unexpected path: $name");		
-	}
+const CONFIG		= "CONFIG";
+const DATABASE		= "DATABASE";
+const PAGE			= "PAGE";
+const PAGECODE		= "PAGECODE";
+const PAGETOOL		= "PAGETOOL";
+const PAGEVIEW		= "PAGEVIEW";
+const PUBLICFILES	= "PUBLICFILES";
+const ROOT			= "ROOT";
+const SCRIPT		= "SCRIPT";
+const SERVICE		= "SERVICE";
+const SERVICECODE	= "SERVICECODE";
+const SERVICETOOL	= "SERVICETOOL";
+const SERVICEVIEW	= "SERVICEVIEW";
+const SRC			= "SRC";
+const STYLE			= "STYLE";
+const WWW			= "WWW";
 
 	switch($name) {
 	case "config":
