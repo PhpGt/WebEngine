@@ -26,69 +26,75 @@ const SRC			= "SRC";
 const STYLE			= "STYLE";
 const WWW			= "WWW";
 
+public function get($name) {
+
 	switch($name) {
-	case "config":
-		return self::root . "/cfg";
+	case self::CONFIG:
+		return self::get(self::ROOT) . "/cfg";
 		break;
 
-	case "database":
-		return self::src . "/Database";
+	case self::DATABASE:
+		return self::get(self::SRC) . "/Database";
 		break;
 
-	case "page":
-		return self::src . "/Page";
+	case self::PAGE:
+		return self::get(self::SRC) . "/Page";
 		break;
 
-	case "pagecode":
-		return self::page . "/Code";
+	case self::PAGECODE:
+		return self::get(self::PAGE) . "/Code";
 		break;
 
-	case "pagetool":
-		return self::page . "/Tool";
+	case self::PAGETOOL:
+		return self::get(self::PAGE) . "/Tool";
 		break;
 
-	case "pageview":
-		return self::page . "/View";
+	case self::PAGEVIEW:
+		return self::get(self::PAGE) . "/View";
 		break;
 
-	case "publicfiles":
-		return self::src . "/PublicFiles";
+	case self::PUBLICFILES:
+		return self::get(self::SRC) . "/PublicFiles";
 		break;
 
-	case "root":
+	case self::ROOT:
 		return dirname($_SERVER["DOCUMENT_ROOT"]);
 		break;
 
-	case "script":
-		return self::src . "/Script";
+	case self::SCRIPT:
+		return self::get(self::SRC) . "/Script";
 		break;
 
-	case "service":
-		return self::src . "/Service";
+	case self::SERVICE:
+		return self::get(self::SRC) . "/Service";
 		break;
 
-	case "servicecode":
-		return self::service . "/Code";
+	case self::SERVICECODE:
+		return self::get(self::SERVICE) . "/Code";
 		break;
 
-	case "servicetool":
-		return self::service . "/Tool";
+	case self::SERVICETOOL:
+		return self::get(self::SERVICE) . "/Tool";
 		break;
 
-	case "serviceview":
-		return self::service . "/View";
+	case self::SERVICEVIEW:
+		return self::get(self::SERVICE) . "/View";
 		break;
 
-	case "src":
-		return self::root . "/src";
+	case self::SRC:
+		return self::get(self::ROOT) . "/src";
 		break;
 
-	case "style":
-		return self::src . "/Style";
+	case self::STYLE:
+		return self::get(self::SRC) . "/Style";
 		break;
 
-	case "www":
-		return self::root . "/www";
+	case self::WWW:
+		return self::get(self::ROOT) . "/www";
+		break;
+
+	default:
+		throw new \UnexpectedValueException("Invalid path: $name");
 		break;
 	}
 }
