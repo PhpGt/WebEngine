@@ -12,7 +12,9 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Cli;
-require(__DIR__ . "/../../../vendor/autoload.php");
+
+$autoloader = realpath(__DIR__ . "/../../vendor/autoload.php");
+require($autoloader);
 
 // Only allow this script to be invoked from inbuilt webserver.
 $sapi = php_sapi_name();

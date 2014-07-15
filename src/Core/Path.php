@@ -9,7 +9,6 @@
 namespace Gt\Core;
 class Path {
 
-const CONFIG		= "CONFIG";
 const DATABASE		= "DATABASE";
 const PAGE			= "PAGE";
 const PAGECODE		= "PAGECODE";
@@ -29,10 +28,6 @@ const WWW			= "WWW";
 public function get($name) {
 
 	switch($name) {
-	case self::CONFIG:
-		return self::get(self::ROOT) . "/cfg";
-		break;
-
 	case self::DATABASE:
 		return self::get(self::SRC) . "/Database";
 		break;

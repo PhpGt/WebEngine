@@ -8,6 +8,4 @@
  */
 namespace Gt\Core\Exception;
 
-class GtErrorException extends \GtException {
-	
-}#
+class GtErrorException extends GtException {}#

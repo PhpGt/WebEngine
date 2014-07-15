@@ -1,6 +1,6 @@
 <?php
 /**
- * Acts as the entry point for serving PHP.Gt applications. Could be referred 
+ * Acts as the entry point for processing PHP.Gt applications. Could be referred 
  * to as the PHP.Gt bootstrapper. Only intended for serving dynamic responses.
  * The webserver should be set up to handle serving static files.
  * When using PHP.Gt's inbuilt server (gtserver), Gateway.php serves static
@@ -14,18 +14,14 @@ namespace Gt\Core;
 final class Go {
 
 public function __construct() {
-	set_error_handler([
-		"\Gt\Core\Exception\ErrorHandler",
-		"throwErrorException"
-	]);
-
 	if(empty($_SERVER)) {
 		throw new \Gt\Core\Exception\UndefinedVariableException(
 			"\$_SERVER is not defined. Are you running from cli?");
 	}
 
-	$config = new Gt\Core\Config();
+	$config = new Config();
 	
+	var_dump($_SERVER["HTTP_ACCEPT"]);die("!!!");
 }
 
 }#

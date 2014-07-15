@@ -1,6 +1,7 @@
 <?php
 /**
- * 
+ * Loads the config.ini file from the application root and parses it into this
+ * object's properties, for use within Gt and the application.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -9,10 +10,13 @@
 namespace Gt\Core;
 class Config {
 
-private $configDir;
-
 public function __construct() {
-	$this->configDir = Path::get(Path::CONFIG);
+	$configPath = Path::get(Path::ROOT) . "/config.ini";
+	$configArray = parse_ini_file($configPath, false);
+
+	foreach ($configArray as $key => $value) {
+		$this->$key = $value;
+	}
 }
 
 }#
