@@ -31,6 +31,18 @@ public function setUp() { }
 
 public function tearDown() { }
 
+public static function tearDownAfterClass() {
+	$tmp = sys_get_temp_dir();
+	$cwd = getcwd();
+
+	chdir($tmp);
+	foreach (glob(self::TEMP_PREFIX . "*") as $file) {
+		self::cleanup("$tmp/$file");
+	}
+
+	chdir($cwd);
+}
+
 public function data_brokenStaticPathList() {
 	$pathList = [];
 	foreach ($this->data_static as $uri) {
@@ -122,8 +134,6 @@ public function testGetAbsoluteFilePath() {
 			Gateway::getAbsoluteFilePath($uri)
 		);
 	}
-
-	// unset($_SERVER);
 }
 
 /**
@@ -142,10 +152,7 @@ public function testServeFakeFile($path) {
  */
 private function createTempDir() {
 	$tmp = sys_get_temp_dir();
-	$this->tempDir = tempnam($tmp, self::TEMP_PREFIX);
-	if(file_exists($this->tempDir)) {
-		$this->cleanup($this->tempDir);
-	}
+	$this->tempDir = $tmp . "/" . uniqid(self::TEMP_PREFIX);
 
 	mkdir($this->tempDir);
 	return $this->tempDir;
@@ -154,29 +161,21 @@ private function createTempDir() {
 /**
  * Recursive function to empty and remove a whole directory.
  * 
- * @param string $dir Path to directory to remove.
+ * @param string $dirPath Path to directory to remove.
  * @return bool True if directory is successfully removed, otherwise false.
  */
-private function cleanup($dir) {
-	if(empty($dir)) {
-		return true;
-	}
+private static function cleanup($dirPath) {
+	foreach(new \RecursiveIteratorIterator(
+	new \RecursiveDirectoryIterator($dirPath, \FilesystemIterator::SKIP_DOTS),
+	\RecursiveIteratorIterator::CHILD_FIRST)
+	as $path) {
 
-	if(is_file($dir)) {
-		return unlink($dir);
+		$path->isDir() 
+			? rmdir($path->getPathname()) 
+			: unlink($path->getPathname());
 	}
-
-	$files = array_diff(scandir($dir), array('.','..')); 
-	foreach ($files as $file) { 
-		if(is_dir("$dir/$file")) {
-			$this->cleanup("$dir/$file");
-		}
-		else {
-			unlink("$dir/$file");
-		}
-	} 
 	
-	return rmdir($dir); 
+	rmdir($dirPath);
 }
 
 /**

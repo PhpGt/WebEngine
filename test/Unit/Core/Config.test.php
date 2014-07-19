@@ -22,6 +22,11 @@ public function setUp() {
 	}
 }
 
+public function tearDown() {
+	unlink($this->configPath);
+	rmdir($this->root);
+}
+
 public function testLoadsFile() {
 	$this->assertTrue(touch($this->configPath), "Create empty config file");
 
