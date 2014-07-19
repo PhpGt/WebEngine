@@ -15,7 +15,7 @@ public function setUp() {
 	$this->root = sys_get_temp_dir() . "/gt-test";
 	$this->configPath = $this->root . "/config.ini";
 
-	$_SERVER["DOCUMENT_ROOT"] = $this->root;
+	$_SERVER["DOCUMENT_ROOT"] = $this->root . "/www";
 
 	if(!is_dir($this->root)) {
 		mkdir($this->root, 0777, true);
