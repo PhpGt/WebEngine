@@ -8,15 +8,30 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Core;
-class Config {
+class Config implements \ArrayAccess {
+
+private $configArray = [];
 
 public function __construct() {
 	$configPath = Path::get(Path::ROOT) . "/config.ini";
-	$configArray = parse_ini_file($configPath, false);
-
-	foreach ($configArray as $key => $value) {
-		$this->$key = $value;
-	}
+	$this->configArray = parse_ini_file($configPath, true);
 }
+
+public function offsetExists($offset) {
+	return isset($this->configArray[$offset]);
+}
+
+public function offsetGet($offset) {
+	$obj = new \StdClass();
+
+	foreach ($this->configArray[$offset] as $key => $value) {
+		$obj->$key = $value;
+	}
+
+	return $obj;
+}
+
+public function offsetSet($offset, $value) {}
+public function offsetUnset($offset) {}
 
 }#
