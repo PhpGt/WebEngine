@@ -5,26 +5,36 @@
  * The webserver should be set up to handle serving static files.
  * When using PHP.Gt's inbuilt server (gtserver), Gateway.php serves static
  * files without instantiating this class.
- *  
+ * 
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Core;
-use \Gt\Request\Standardiser as Standardiser;
+use \Gt\Request\Standardiser;
+use \Gt\Request\RequestType;
 
 final class Go {
 
+private $config;
+
 public function __construct($uri) {
+
 	if(empty($_SERVER)) {
 		throw new \Gt\Core\Exception\UndefinedVariableException(
 			"\$_SERVER is not defined. Are you running from cli?");
 	}
 
-	$config = new Config();
-	$uriNorm = Standardiser::apply($config["request"], $uri);
-	
-	// var_dump($_SERVER["HTTP_ACCEPT"]);die("!!!");
+	if($skipInstantiating) {
+		return;
+	}
+
+	$this->config = new Config();
+
+	$standardiser = new Standardiser($uri, $config["request"]);
+	$standardiser->apply();
+
+	$requestType = new RequestType($uri, $config["request"]);
 }
 
 }#
