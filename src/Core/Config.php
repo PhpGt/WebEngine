@@ -13,15 +13,24 @@ class Config implements \ArrayAccess {
 const DEFAULT_CONFIG_FILE = "default.ini";
 private $configArray = [];
 
-public function __construct($default = null) {
+public function __construct($defaultConfigArray = null) {
 	$configPath = Path::get(Path::ROOT) . "/config.ini";
 	if(!file_exists($configPath)) {
 		throw new Exception\RequiredAppResourceNotFoundException(
 			"Application configuration file ($configPath)");
 	}
 
-	$defaultConfigPath = Path::get(Path::GTROOT);
-	$this->configArray = parse_ini_file($configPath, true);
+	if(is_null($defaultConfigArray)) {
+		$defaultConfigPath = 
+			Path::get(Path::GTROOT) 
+			. "/" 
+			. self::DEFAULT_CONFIG_FILE;
+		$defaultConfigArray = parse_ini_file($defaultConfigPath, true);		
+	}
+	$this->configArray = array_replace_recursive(
+		$defaultConfigArray,
+		parse_ini_file($configPath, true)
+	);
 }
 
 public function offsetExists($offset) {

@@ -50,7 +50,7 @@ dbname = "my-db"
 
 [app]
 production = false
-clientcompiled = true
+client_compiled = true
 timezone = "UTC"
 
 [security]
@@ -67,11 +67,50 @@ CFG;
 	$this->assertEquals("my-db", $config["database"]->dbname);
 
 	$this->assertTrue(false == $config["app"]->production);
-	$this->assertTrue(true == $config["app"]->clientcompiled);
+	$this->assertTrue(true == $config["app"]->client_compiled);
 
 	$this->assertEquals("127.0.0.1", $config["security"]->adminIP);
 
 	$this->assertTrue(isset($config["security"]));
+}
+
+public function testDefaultConfigMerges() {
+	$cfgString = <<<CFG
+[request]
+pageview_html_extension = true
+
+[database]
+driver = "MySQL"
+dbname = "my-db"
+
+[app]
+
+[security]
+adminIP = "127.0.0.1"
+CFG;
+	file_put_contents($this->configPath, $cfgString);
+
+	$configDefault = [
+		"request" => [
+			"pageview_html_extension" => false,
+			"pageview_trailing_slash" => false,
+		],
+		"database" => [
+			"driver" => "mysql",
+			"host" => "localhost",
+		],
+		"app" => [
+			"production" => false,
+			"client_compiled" => false,
+			"timezone" => "UTC",
+		],
+	];
+	$config = new Config($configDefault);
+
+	$this->assertTrue(true == $config["request"]->pageview_html_extension);
+	$this->assertTrue(false == $config["request"]->pageview_trailing_slash);
+	$this->assertNotEquals("mysql", $config["database"]->driver);
+	$this->assertTrue(false == $config["app"]->production);
 }
 
 }#
