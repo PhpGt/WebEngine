@@ -90,6 +90,10 @@ public function testServeDynamicFile($uri) {
 	$path = $this->getTempFilePath($uri, true);
 	$output = Gateway::serve($uri, "\StdClass");
 
+	if("html" === pathinfo($uri, PATHINFO_EXTENSION)) {
+		
+	}
+
 	$this->assertInstanceOf("\StdClass", $output);
 }
 

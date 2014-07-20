@@ -32,8 +32,15 @@ public function testGetSubPaths() {
 		$path = Path::get($constValue);
 
 		$this->assertNotEmpty($path);
-		$this->assertContains(dirname($this->tmp), $path);
+		if($constName !== "GTROOT") {
+			$this->assertContains(dirname($this->tmp), $path);
+		}
 	}
+}
+
+public function testGetGtRoot() {
+	$gtroot = realpath(__DIR__ . "/../../../");
+	$this->assertEquals($gtroot, Path::get(Path::GTROOT));
 }
 
 }#

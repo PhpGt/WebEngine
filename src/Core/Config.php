@@ -10,14 +10,17 @@
 namespace Gt\Core;
 class Config implements \ArrayAccess {
 
+const DEFAULT_CONFIG_FILE = "default.ini";
 private $configArray = [];
 
-public function __construct() {
+public function __construct($default = null) {
 	$configPath = Path::get(Path::ROOT) . "/config.ini";
 	if(!file_exists($configPath)) {
 		throw new Exception\RequiredAppResourceNotFoundException(
 			"Application configuration file ($configPath)");
 	}
+
+	$defaultConfigPath = Path::get(Path::GTROOT);
 	$this->configArray = parse_ini_file($configPath, true);
 }
 

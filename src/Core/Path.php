@@ -24,6 +24,7 @@ const SERVICEVIEW	= "SERVICEVIEW";
 const SRC			= "SRC";
 const STYLE			= "STYLE";
 const WWW			= "WWW";
+const GTROOT		= "GTROOT";
 
 public function get($name) {
 
@@ -87,6 +88,9 @@ public function get($name) {
 	case self::WWW:
 		return self::get(self::ROOT) . "/www";
 		break;
+
+	case self::GTROOT:
+		return realpath(__DIR__ . "/../../");
 
 	default:
 		throw new \UnexpectedValueException("Invalid path: $name");

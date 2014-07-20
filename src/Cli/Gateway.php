@@ -25,7 +25,7 @@ public static function serve($uri, $phpgt = "\Gt\Core\Go") {
 		self::serveStaticFile($filePath);
 	}
 	else {
-		return new $phpgt;
+		return new $phpgt($uri);
 	}
 }
 

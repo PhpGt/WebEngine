@@ -11,17 +11,20 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Core;
+use \Gt\Request\Standardiser as Standardiser;
+
 final class Go {
 
-public function __construct() {
+public function __construct($uri) {
 	if(empty($_SERVER)) {
 		throw new \Gt\Core\Exception\UndefinedVariableException(
 			"\$_SERVER is not defined. Are you running from cli?");
 	}
 
 	$config = new Config();
+	$uriNorm = Standardiser::apply($config["request"], $uri);
 	
-	var_dump($_SERVER["HTTP_ACCEPT"]);die("!!!");
+	// var_dump($_SERVER["HTTP_ACCEPT"]);die("!!!");
 }
 
 }#
