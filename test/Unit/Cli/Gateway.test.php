@@ -11,27 +11,17 @@ class Gateway_Test extends \PHPUnit_Framework_TestCase {
 const DUMMY_CONTENT = "!!! DUMMY CONTENT !!!";
 const TEMP_PREFIX = "gt-test-phpgt-tmp";
 
-private $data_static = [
-	"/test.txt",
-	"/Script/test-app.js",
-	"/Script/test-app.js?v=123",
-	"/Script/Lib/jquery.js",
-	"/Asset/Img/Cat.jpg",
-];
-private $data_dynamic = [
-	"/",
-	"/index",
-	"/something/nested",
-	"/a-file?pic=cat.jpg",
-];
-
 private $tempDir;
 
-public function setUp() { }
+public function setUp() {
+	$this->createTempDir();
+	$_SERVER["DOCUMENT_ROOT"] = $this->tempDir . "/www";
+	if(!is_dir($_SERVER["DOCUMENT_ROOT"])) {
+		mkdir($_SERVER["DOCUMENT_ROOT"], 0775, true);
+	}
+}
 
-public function tearDown() { }
-
-public static function tearDownAfterClass() {
+public function tearDown() {
 	$tmp = sys_get_temp_dir();
 	$cwd = getcwd();
 
@@ -43,105 +33,64 @@ public static function tearDownAfterClass() {
 	chdir($cwd);
 }
 
-public function data_brokenStaticPathList() {
-	$pathList = [];
-	foreach ($this->data_static as $uri) {
-		$path = $this->getTempFilePath($uri);
-		$pathList []= ["$path/"];
-		$pathList []= ["/$path/"];
-		$pathList []= ["?$path"];
-		$pathList []= ["$path$path"];
-		$pathList []= ["\\$path"];
-	}
-	return $pathList;
-}
+/**
+ * Data provider that gives back a number of random URIs with random or no
+ * file extension, with a random number of directory nesting.
+ */
+public function data_randomUris() {
+	$data = [["/test"], ["/test.html"], ["/test.json"]];
+	$numPaths = 10;
+	$extArray = [
+		"",
+		".json",
+		".xml",
+		".html",
+		".jpg",
+		".php",
+		".txt",
+		".gif",
+	];
 
-public function data_staticPathList() {
-	$returnData = [];
-	foreach ($this->data_static as $uri) {
-		$path = $this->getTempFilePath($uri);
-		$expectedOutput = self::DUMMY_CONTENT . " (from $uri).";
-		$returnData []= [$path, $expectedOutput, $uri];
-	}
-	return $returnData;
-}
+	for($i = 0; $i < $numPaths; $i++) {
+		$extRandom = rand(0, count($extArray) - 1);
+		$nestCount = rand(1, 15);
 
-public function data_dynamicPathList() {
-	$returnData = [];
-	foreach ($this->data_dynamic as $uri) {
-		$returnData []= [$uri];
+		$uri = "";
+
+		for($j = 0; $j < $nestCount; $j++) {
+			$uri .= "/" . uniqid();
+		}
+
+		$data []= [
+			$uri . $extArray[$extRandom],
+		];
 	}
-	return $returnData;
+
+	return $data;
 }
 
 /**
- * @dataProvider data_staticPathList
- * @expectedException Gt\Response\NotFoundException
+ * A file that exists in www should be served, no matter what extension.
+ * 
+ * @dataProvider data_randomUris
  */
-public function testServeMethod_static($path, $expectedOutput, $uri) {
-	Gateway::serve($uri, "\StdClass");
-	$this->expectOutputString($expectOutputString);
+public function testServeStaticFile($uri) {
+	$path = $this->getTempFilePath($uri);
+	Gateway::serve($uri);
+	$this->expectOutputString(self::DUMMY_CONTENT . " (from $uri).");
 }
+
 /**
- * @dataProvider data_dynamicPathList
+ * A file that doesn't exist in www should create a new instance of the passed
+ * in class.
+ * 
+ * @dataProvider data_randomUris
  */
-public function testServeMethod_dynamic($uri) {
+public function testServeDynamicFile($uri) {
+	$path = $this->getTempFilePath($uri, true);
 	$output = Gateway::serve($uri, "\StdClass");
+
 	$this->assertInstanceOf("\StdClass", $output);
-}
-
-/**
- * @dataProvider data_staticPathList
- */
-public function testServeStaticFile($path, $expectedOutput) {
-	Gateway::serveStaticFile($path);
-	$this->expectOutputString($expectedOutput);
-}
-
-public function testStaticFileRequest() {
-	// Check that Gateway understands strange queryStrings.
-	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg"));
-	$this->assertTrue(Gateway::isStaticFileRequest("/directory/image.jpg"));
-	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg?query=string"));
-	$this->assertTrue(Gateway::isStaticFileRequest("/image.jpg?query=string"));
-	$this->assertTrue(Gateway::isStaticFileRequest("/t.txt?a=1/2/3/"));	
-}
-
-public function testDynamicRequest() {
-	$this->assertFalse(Gateway::isStaticFileRequest("/"));
-	$this->assertFalse(Gateway::isStaticFileRequest("/page"));
-	$this->assertFalse(Gateway::isStaticFileRequest("/directory/page"));
-	$this->assertFalse(Gateway::isStaticFileRequest("/?query=string"));
-	$this->assertFalse(Gateway::isStaticFileRequest("/example?query=string"));
-	// Default pathinfo function is confused by this request. strtok is now 
-	// used within Gateway.
-	$this->assertFalse(Gateway::isStaticFileRequest(
-		"/example?query=string&file=picture.jpg"));
-}
-
-public function testGetAbsoluteFilePath() {
-	// Fake a document root, so the server object thinks there is an application
-	// in use.
-	$docRoot = "/dev/null/test-app/www";
-	$_SERVER = ["DOCUMENT_ROOT" => $docRoot];
-
-	foreach ($this->data_static as $uri) {
-		// Build expected full path to check against.
-		$fullPath = $docRoot . $uri;
-
-		$this->assertEquals(
-			$fullPath,
-			Gateway::getAbsoluteFilePath($uri)
-		);
-	}
-}
-
-/**
- * @expectedException \Gt\Response\NotFoundException
- * @dataProvider data_brokenStaticPathList
- */
-public function testServeFakeFile($path) {
-	Gateway::serveStaticFile($path);	
 }
 
 /**
@@ -185,14 +134,15 @@ private static function cleanup($dirPath) {
  * @param string $uri Temp directory path suffix.
  * @return string Absolute path to newly created file.
  */
-private function getTempFilePath($uri) {
-	$tempDir = $this->createTempDir();
-	$path = $tempDir . $uri;
+private function getTempFilePath($uri, $skipCreating = false) {
+	$path = $_SERVER["DOCUMENT_ROOT"] . $uri;
 
-	if(!is_dir(dirname($path)) ) {
-		mkdir(dirname($path), 0775, true);
+	if(!$skipCreating) {
+		if(!is_dir(dirname($path)) ) {
+			mkdir(dirname($path), 0775, true);
+		}
+		file_put_contents($path, self::DUMMY_CONTENT . " (from $uri).");		
 	}
-	file_put_contents($path, self::DUMMY_CONTENT . " (from $uri).");
 
 	return $path;
 }

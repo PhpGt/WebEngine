@@ -11,6 +11,14 @@ namespace Gt\Cli;
 
 class Gateway {
 
+/**
+ * Serves the requested Uri by first detecting whether to serve the static 
+ * file or construct the given PHP.Gt Go class.
+ * 
+ * @param string $uri Uri of request
+ * @param string $phpgt Name of the class to use that serves dynamic requests
+ * @return mixed An instance of the $phpgt class
+ */
 public static function serve($uri, $phpgt = "\Gt\Core\Go") {
 	if(self::isStaticFileRequest($uri)) {
 		$filePath = self::getAbsoluteFilePath($uri);
@@ -22,16 +30,14 @@ public static function serve($uri, $phpgt = "\Gt\Core\Go") {
 }
 
 /**
- * Returns whether the requested uri shall be treated as a static file.
- * Static files are intended to be served directly by the webserver, rather than
- * dynamically created within PHP.Gt.
+ * If the requested file exists within the www directory, it should be served
+ * as a static file.
  * 
- * @param string $uri Absolute uri of request
+ * @param string $uri Uri of request
  * @return bool True if file request is to be treated as static.
  */
 public static function isStaticFileRequest($uri) {
-	$pathinfo_ext = pathinfo(strtok($uri, "?"), PATHINFO_EXTENSION);
-	return !empty($pathinfo_ext);
+	return is_file(self::getAbsoluteFilePath($uri));
 }
 
 /**
@@ -54,10 +60,6 @@ public static function getAbsoluteFilePath($uri) {
  * @return int The number of bytes served.
  */
 public static function serveStaticFile($filePath) {
-	if(!file_exists($filePath)) {
-		throw new \Gt\Response\NotFoundException();
-	}
-
 	return readfile($filePath);
 }
 

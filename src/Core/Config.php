@@ -14,6 +14,10 @@ private $configArray = [];
 
 public function __construct() {
 	$configPath = Path::get(Path::ROOT) . "/config.ini";
+	if(!file_exists($configPath)) {
+		throw new Exception\RequiredAppResourceNotFoundException(
+			"Application configuration file ($configPath)");
+	}
 	$this->configArray = parse_ini_file($configPath, true);
 }
 

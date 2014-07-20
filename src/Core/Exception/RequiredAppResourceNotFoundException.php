@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ * Thrown when something required by PHP.Gt is not present.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -8,4 +8,4 @@
  */
 namespace Gt\Core\Exception;
 
-class UndefinedVariableException extends GtException {}#
+class RequiredAppResourceNotFoundException extends GtException {}#
