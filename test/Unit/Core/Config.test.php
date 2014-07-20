@@ -23,31 +23,19 @@ public function setUp() {
 }
 
 public function tearDown() {
-	unlink($this->configPath);
-	rmdir($this->root);
+	if(is_file($this->configPath)) {
+		unlink($this->configPath);		
+	}
+	if(is_dir($this->root)) {
+		rmdir($this->root);		
+	}
 }
 
-// public function testLoadsFile() {
-// 	$this->assertTrue(touch($this->configPath), "Create empty config file");
-
-// 	$config = new Config();
-// 	$vars = get_object_vars($config);
-
-// 	$this->assertEmpty($vars);
-
-// 	file_put_contents($this->configPath, "var = test");
-// 	$config = new Config();
-// 	$vars = get_object_vars($config);
-
-// 	$this->assertNotEmpty($vars);
-// }
-
-// public function testLoadsVariable() {
-// 	file_put_contents($this->configPath, "var = test");
-	
-// 	$config = new Config();
-// 	$this->assertEquals("test", $config->var);
-// }
+public function testConfigFileRequired() {
+	$this->setExpectedException(
+		"\Gt\Core\Exception\RequiredAppResourceNotFoundException");
+	$config = new Config();
+}
 
 public function testLoadsMultipleVariables() {
 	$cfgString = <<<CFG
