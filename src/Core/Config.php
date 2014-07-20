@@ -38,7 +38,7 @@ public function offsetExists($offset) {
 }
 
 public function offsetGet($offset) {
-	$obj = new \StdClass();
+	$obj = new Obj();
 
 	foreach ($this->configArray[$offset] as $key => $value) {
 		$obj->$key = $value;
