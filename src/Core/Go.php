@@ -19,7 +19,6 @@ final class Go {
 private $config;
 
 public function __construct($uri) {
-
 	if(empty($_SERVER)) {
 		throw new \Gt\Core\Exception\UndefinedVariableException(
 			"\$_SERVER is not defined. Are you running from cli?");
@@ -32,7 +31,10 @@ public function __construct($uri) {
 	$this->config = new Config();
 
 	$standardiser = new Standardiser($uri, $config["request"]);
-	$standardiser->apply();
+	$fixed = $standardiser->fixUri();
+	if($uri !== $fixed) {
+		// TODO: Redirect to fixed URL.
+	}
 
 	$requestType = new RequestType($uri, $config["request"]);
 }
