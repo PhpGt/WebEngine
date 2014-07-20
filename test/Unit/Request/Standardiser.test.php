@@ -46,7 +46,7 @@ public function testUrlFixHtmlRemoved($uri) {
 	$config->pageview_trailing_slash = false;
 	$standardiser = new Standardiser();
 
-	$fixed = $standardiser->fixUrl($uri, $config);
+	$fixed = $standardiser->fixUri($uri, $config);
 	$this->assertStringEndsNotWith(".html", $fixed);
 }
 
@@ -60,7 +60,7 @@ public function testUrlFixHtmlForced($uri) {
 
 	$standardiser = new Standardiser();
 
-	$fixed = $standardiser->fixUrl($uri, $config);
+	$fixed = $standardiser->fixUri($uri, $config);
 
 	$ext = pathinfo($uri, PATHINFO_EXTENSION);
 	if(empty($ext) || $ext == "html") {
@@ -78,7 +78,7 @@ public function testUrlFixSlashForced($uri) {
 
 	$standardiser = new Standardiser();
 
-	$fixed = $standardiser->fixUrl($uri, $config);
+	$fixed = $standardiser->fixUri($uri, $config);
 	$this->assertStringEndsWith("/", $fixed);
 }
 

@@ -24,10 +24,6 @@ public function __construct($uri) {
 			"\$_SERVER is not defined. Are you running from cli?");
 	}
 
-	if($skipInstantiating) {
-		return;
-	}
-
 	$this->config = new Config();
 
 	$standardiser = new Standardiser($uri, $config["request"]);

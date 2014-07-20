@@ -18,7 +18,7 @@ class Standardiser {
  * @param StdClass $config Object containing configuration properties.
  * @return string The new URI, standardised to configuration options.
  */
-public function fixUrl($uri, $config) {
+public function fixUri($uri, $config) {
 	$ext = pathinfo($uri, PATHINFO_EXTENSION);
 
 	if($config->pageview_html_extension) {
