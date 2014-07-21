@@ -40,8 +40,10 @@ public function offsetExists($offset) {
 public function offsetGet($offset) {
 	$obj = new Obj();
 
-	foreach ($this->configArray[$offset] as $key => $value) {
-		$obj->$key = $value;
+	if(isset($this->configArray[$offset])) {
+		foreach ($this->configArray[$offset] as $key => $value) {
+			$obj->$key = $value;
+		}
 	}
 
 	return $obj;

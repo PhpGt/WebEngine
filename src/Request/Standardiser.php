@@ -15,7 +15,7 @@ class Standardiser {
 /**
  * Takes a URL and fixes it according to the configuration properties.
  * @param string $uri The request URI
- * @param StdClass $config Object containing configuration properties.
+ * @param Obj $config Object containing configuration properties.
  * @return string The new URI, standardised to configuration options.
  */
 public function fixUri($uri, $config) {
@@ -30,6 +30,7 @@ public function fixUri($uri, $config) {
 		$uri = substr($uri, 0, strrpos($uri, ".htm"));
 	}
 
+	$firstChar = substr($uri, 0, 1);
 	$lastChar = substr($uri, -1);
 	if($config->pageview_trailing_slash) {
 		if($lastChar !== "/") {
@@ -37,7 +38,7 @@ public function fixUri($uri, $config) {
 		}
 	}
 	else {
-		if($lastChar === "/") {
+		if(strlen($uri) > 1 && $lastChar === "/") {
 			$uri = substr($uri, 0, strrpos($uri, "/"));
 		}
 	}

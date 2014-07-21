@@ -12,8 +12,9 @@
  */
 namespace Gt\Core;
 use \Gt\Request\Standardiser;
-use \Gt\Request\RequestType;
+use \Gt\Request\Request;
 use \Gt\Response\Redirect;
+use \Gt\Response\ResponseFactory;
 
 final class Go {
 
@@ -27,21 +28,21 @@ public function __construct($uri) {
 
 	$this->config = new Config();
 
-	$standardiser = new Standardiser($uri, $config["request"]);
-	$fixed = $standardiser->fixUri();
-	if($uri !== $fixed) {
+	$standardiser = new Standardiser();
+	$uriFixed = $standardiser->fixUri($uri, $this->config["request"]);
+	if($uri !== $uriFixed) {
 		// Only perform permanent redirects on production applications.
 		$code = 302;
-		if($config["app"]->production) {
+		if($this->config["app"]->production) {
 			$code = 301;
 		}
 
 		return new Redirect($uri, $code);
 	}
 
-	$requestDetails = new RequestDetails($uri, $config["request"]);
-	$response = Response::create($requestDetails, $config["response"]);
-	
+	$request = new Request($uri, $config["request"]);
+	$response = ResponseFactory::create($request, $this->config["response"]);
+
 	return $response->process();
 }
 
