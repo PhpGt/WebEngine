@@ -14,10 +14,10 @@ class ResponseFactory {
  */
 public static function create(Request $request, $config) {
 	switch($request->getType()) {
-	case Request::TYPE_PAGE:
+	case Request::TYPE_API:
 		break;
 
-	case Request::TYPE_SERVICE:
+	case Request::TYPE_PAGE:
 		break;
 
 	default:

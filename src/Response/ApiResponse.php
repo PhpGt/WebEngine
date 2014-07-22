@@ -6,6 +6,6 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Response;
-class ServiceResponse extends Response {
+class ApiResponse extends Response {
 
 }#

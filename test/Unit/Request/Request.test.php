@@ -30,6 +30,9 @@ public function data_uriType() {
 
 	foreach ($this->uriTypeArray as $uriType) {
 		$return [] = [$uriType];
+		$return [] = ["/api"		. $uriType];
+		$return [] = ["/myapi"		. $uriType];
+		$return [] = ["/service"	. $uriType];
 	}
 
 	return $return;
@@ -42,29 +45,20 @@ public function testGetType($uri) {
 	$ext = pathinfo($uri, PATHINFO_EXTENSION);
 
 	$objArray = [
-		new Obj(),
-		new Obj(),
+		new Obj(["api_prefix" => "api"]),
+		new Obj(["api_prefix" => "myapi"]),
+		new Obj(["api_prefix" => "service"]),
 	];
-
-	$objArray[1]->pageview_html_extension = true;
 
 	foreach ($objArray as $obj) {
 		$request = new Request($uri, $obj);
 		$type = $request->getType();
-		
-		if(empty($ext)) {
-			$this->assertEquals(Request::TYPE_PAGE, $type);
-		}
-		else if($obj->pageview_html_extension) {
-			if($ext === "html") {
-				$this->assertEquals(Request::TYPE_PAGE, $type);
-			}
-			else {
-				$this->assertEquals(Request::TYPE_SERVICE, $type);
-			}
-		}
+
+		if(strpos($uri, "/" . $obj->api_prefix) === 0) {
+			$this->assertEquals(Request::TYPE_API, $type);
+		}	
 		else {
-			$this->assertEquals(Request::TYPE_SERVICE, $type);	
+			$this->assertEquals(Request::TYPE_PAGE, $type);
 		}
 	}
 }

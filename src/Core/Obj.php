@@ -10,6 +10,16 @@ namespace Gt\Core;
 class Obj {
 
 /**
+ * @param array $params Associative array of parameters to add to this object
+ * as properties.
+ */
+public function __construct($params = []) {
+	foreach ($params as $key => $value) {
+		$this->$key = $value;
+	}
+}
+
+/**
  * Automatically creates properties that do not exist, then returns their value.
  * Only called when property does not exist.
  * @param string $name Name of property to return.

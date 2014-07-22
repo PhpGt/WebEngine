@@ -10,7 +10,7 @@ namespace Gt\Request;
 class Request {
 
 const TYPE_PAGE			= "TYPE_PAGE";
-const TYPE_SERVICE		= "TYPE_SERVICE";
+const TYPE_API			= "TYPE_API";
 
 const METHOD_GET		= "METHOD_GET";
 const METHOD_POST		= "METHOD_POST";
@@ -24,6 +24,10 @@ public $uri;
 
 private $config;
 
+/**
+ * @param string $uri The requested absolute uri
+ * @param Obj $config Request configuration object
+ */
 public function __construct($uri, $config) {
 	$this->uri = $uri;
 	$this->ext = pathinfo($uri, PATHINFO_EXTENSION);
@@ -31,28 +35,17 @@ public function __construct($uri, $config) {
 }
 
 /**
- * Returns the type of request made, whether it is to a page or a service.
+ * Returns the type of request made, whether it is to a page or an API.
  * @return mixed A Request type constant.
  */
 public function getType() {
-	$type = Request::TYPE_SERVICE;
+	$apiPrefix = "/" . $this->config->api_prefix;
 
-	$pageExtensionArray = [
-		"",	// Having no extension indicates a page...
-	];
-
-	// ... or having a html extension, depending on configuration.
-	if($this->config->pageview_html_extension) {
-		$pageExtensionArray []= "html";
+	if(strpos($this->uri, $apiPrefix) === 0) {
+		return Request::TYPE_API;
 	}
 
-	foreach ($pageExtensionArray as $pageExtension) {
-		if($this->ext === $pageExtension) {
-			$type = Request::TYPE_PAGE;
-		}
-	}
-
-	return $type;
+	return Request::TYPE_PAGE;
 }
 
 }#

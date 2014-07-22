@@ -28,4 +28,11 @@ public function testObjNestedPropertyIsCreated() {
 	$this->assertEquals("nestedValue", $obj->test->nested);
 }
 
+public function testObjConstructs() {
+	$obj = new Obj([
+		"testProperty" => "testValue",
+	]);
+	$this->assertEquals("testValue", $obj->testProperty);
+}
+
 }#

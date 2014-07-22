@@ -17,10 +17,10 @@ const PAGEVIEW		= "PAGEVIEW";
 const PUBLICFILES	= "PUBLICFILES";
 const ROOT			= "ROOT";
 const SCRIPT		= "SCRIPT";
-const SERVICE		= "SERVICE";
-const SERVICECODE	= "SERVICECODE";
-const SERVICETOOL	= "SERVICETOOL";
-const SERVICEVIEW	= "SERVICEVIEW";
+const API			= "API";
+const APICODE		= "APICODE";
+const APITOOL		= "APITOOL";
+const APIVIEW		= "APIVIEW";
 const SRC			= "SRC";
 const STYLE			= "STYLE";
 const WWW			= "WWW";
@@ -61,20 +61,20 @@ public function get($name) {
 		return self::get(self::SRC) . "/Script";
 		break;
 
-	case self::SERVICE:
-		return self::get(self::SRC) . "/Service";
+	case self::API:
+		return self::get(self::SRC) . "/API";
 		break;
 
-	case self::SERVICECODE:
-		return self::get(self::SERVICE) . "/Code";
+	case self::APICODE:
+		return self::get(self::API) . "/Code";
 		break;
 
-	case self::SERVICETOOL:
-		return self::get(self::SERVICE) . "/Tool";
+	case self::APITOOL:
+		return self::get(self::API) . "/Tool";
 		break;
 
-	case self::SERVICEVIEW:
-		return self::get(self::SERVICE) . "/View";
+	case self::APIVIEW:
+		return self::get(self::API) . "/View";
 		break;
 
 	case self::SRC:
