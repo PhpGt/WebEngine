@@ -32,8 +32,8 @@ public function fixUri($uri, $config) {
 
 	$firstChar = substr($uri, 0, 1);
 	$lastChar = substr($uri, -1);
-	if($config->pageview_trailing_slash) {
-		if($lastChar !== "/") {
+	if($config->pageview_trailing_directory_slash) {
+		if(empty($ext) && $lastChar !== "/") {
 			$uri .= "/";
 		}
 	}
@@ -41,6 +41,13 @@ public function fixUri($uri, $config) {
 		if(strlen($uri) > 1 && $lastChar === "/") {
 			$uri = substr($uri, 0, strrpos($uri, "/"));
 		}
+	}
+
+	// Strip trailing slashes if there is an extension.
+	// We don't want to see /dir/page.html/
+	$lastChar = substr($uri, -1);
+	if(!empty($ext) && $lastChar === "/") {
+		$uri = substr($uri, 0, strrpos($uri, "/"));
 	}
 
 	return $uri;

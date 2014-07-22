@@ -41,9 +41,9 @@ public function data_uriList() {
  * @dataProvider data_uriList
  */
 public function testUrlFixHtmlRemoved($uri) {
-	$config = new Obj;
+	$config = new Obj();
 	$config->pageview_html_extension = false;
-	$config->pageview_trailing_slash = false;
+	$config->pageview_trailing_directory_slash = false;
 	$standardiser = new Standardiser();
 
 	$fixed = $standardiser->fixUri($uri, $config);
@@ -54,9 +54,9 @@ public function testUrlFixHtmlRemoved($uri) {
  * @dataProvider data_uriList
  */
 public function testUrlFixHtmlForced($uri) {
-	$config = new Obj;
+	$config = new Obj();
 	$config->pageview_html_extension = true;
-	$config->pageview_trailing_slash = false;
+	$config->pageview_trailing_directory_slash = false;
 
 	$standardiser = new Standardiser();
 
@@ -72,14 +72,21 @@ public function testUrlFixHtmlForced($uri) {
  * @dataProvider data_uriList
  */
 public function testUrlFixSlashForced($uri) {
-	$config = new Obj;
+	$ext = pathinfo($uri, PATHINFO_EXTENSION);
+	$config = new Obj();
 	$config->pageview_html_extension = false;
-	$config->pageview_trailing_slash = true;
+	$config->pageview_trailing_directory_slash = true;
 
 	$standardiser = new Standardiser();
 
 	$fixed = $standardiser->fixUri($uri, $config);
-	$this->assertStringEndsWith("/", $fixed);
+
+	if(empty($ext)) {
+		$this->assertStringEndsWith("/", $fixed);
+	}
+	else {
+		$this->assertStringEndsNotWith("/", $fixed);
+	}
 }
 
 }#
