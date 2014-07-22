@@ -32,6 +32,7 @@ public function tearDown() {
 }
 
 public function testConfigFileRequired() {
+	$this->tearDown();
 	$this->setExpectedException(
 		"\Gt\Core\Exception\RequiredAppResourceNotFoundException");
 	$config = new Config();
