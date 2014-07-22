@@ -10,8 +10,12 @@ use Gt\Request\Request;
 
 class ResponseFactory {
 
+/**
+ * @param Request $request Representing the HTTP request.
+ * @param Obj $config Object contining response configuration properties.
+ */
 public static function create(Request $request, $config) {
-
+	
 }
 
 }#

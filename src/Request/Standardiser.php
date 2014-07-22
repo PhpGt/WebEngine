@@ -13,10 +13,10 @@ use \Gt\Response\Redirect as Redirect;
 class Standardiser {
 
 /**
- * Takes a URL and fixes it according to the configuration properties.
+ * Takes a URL and fixes it according to the configuration properties
  * @param string $uri The request URI
- * @param Obj $config Object containing configuration properties.
- * @return string The new URI, standardised to configuration options.
+ * @param Obj $config Object containing request configuration properties
+ * @return string The new URI, standardised to configuration options
  */
 public function fixUri($uri, $config) {
 	$ext = pathinfo($uri, PATHINFO_EXTENSION);
