@@ -14,7 +14,7 @@ namespace Gt\Core;
 use \Gt\Request\Standardiser;
 use \Gt\Request\Request;
 use \Gt\Response\Redirect;
-use \Gt\Response\ResponseFactory;
+use \Gt\Dispatcher\DispatcherFactory;
 
 final class Go {
 
@@ -41,9 +41,11 @@ public function __construct($uri) {
 	}
 
 	$request = new Request($uri, $config["request"]);
-	$response = ResponseFactory::create($request, $this->config["response"]);
+	$dispatcher = DispatcherFactory::create(
+		$request, $this->config["response"]
+	);
 
-	return $response->process();
+	// return $response->process();
 }
 
 }#
