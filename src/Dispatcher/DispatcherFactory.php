@@ -7,24 +7,40 @@
  */
 namespace Gt\Dispatcher;
 use Gt\Request\Request;
+use Gt\Request\Response;
+use Gt\Api\ApiFactory;
+use Gt\Database\DatabaseFactory;
 
 class DispatcherFactory {
 
 /**
  * @param Request $request Representing the HTTP request
- * @param Obj $config Object contining response configuration properties
+ * @param Response $response Representing the HTTP response
+ * 
+ * @param DatabaseFactory $database Database Access Layer
  * @return Dispatcher Either an ApiDispatcher or PageDispatcher
  */
-public static function create(Request $request, $config) {
+public static function createDispatcher(Request $request, Response $response,
+ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
 	$type = $request->getType();
 
 	switch($type) {
 	case Request::TYPE_API:
-		return new ApiDispatcher();
+		return new ApiDispatcher(
+			$request, 
+			$response, 
+			$apiFactory, 
+			$databaseFactory
+		);
 		break;
 
 	case Request::TYPE_PAGE:
-		return new PageDispatcher();
+		return new PageDispatcher(
+			$request, 
+			$response, 
+			$apiFactory, 
+			$databaseFactory
+		);
 		break;
 
 	default:
