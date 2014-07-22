@@ -26,4 +26,8 @@ ApiFactory $apiFactory, DatabaseFactory $dbFactory) {
 	$this->dbFactory = $dbFactory;
 }
 
+public function process() {
+
+}
+
 }#

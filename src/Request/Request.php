@@ -19,8 +19,9 @@ const METHOD_DELETE		= "METHOD_DELETE";
 const METHOD_HEAD		= "METHOD_HEAD";
 const METHOD_OPTIONS	= "METHOD_OPTIONS";
 
-public $method;
 public $uri;
+public $method;
+public $headers;
 
 private $config;
 
@@ -32,6 +33,11 @@ public function __construct($uri, $config) {
 	$this->uri = $uri;
 	$this->ext = pathinfo($uri, PATHINFO_EXTENSION);
 	$this->config = $config;
+
+	$this->method = isset($_SERVER["REQUEST_METHOD"])
+		? $_SERVER["REQUEST_METHOD"]
+		: null;
+	$this->headers = new HeaderFields($_SERVER);
 }
 
 /**

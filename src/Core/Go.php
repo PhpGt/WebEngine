@@ -55,7 +55,7 @@ public function __construct($uri) {
 		$dbFactory
 	);
 
-	// return $response->process();
+	$dispatcher->process();
 }
 
 }#
