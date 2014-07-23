@@ -46,7 +46,7 @@ public function __construct($uri) {
 	$response = new Response($config["response"]);
 	
 	$apiFactory = new ApiFactory($config["api"]);
-	$dbFactory = new DatabaseFactory($config["database"]);
+	$dbFactory  = new DatabaseFactory($config["database"]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		$request,

@@ -5,22 +5,14 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-namespace Gt\Response;
-use Gt\Request\Request;
+namespace Gt\Database;
 
-class Response {
+class DatabaseFactory {
 
-public $content;
-
-private $code;
 private $config;
 
 public function __construct($config) {
 	$this->config = $config;
-}
-
-public function setCode(ResponseCode $code) {
-	$this->code = $code;
 }
 
 }#
