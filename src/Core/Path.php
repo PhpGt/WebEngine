@@ -26,7 +26,7 @@ const STYLE			= "STYLE";
 const WWW			= "WWW";
 const GTROOT		= "GTROOT";
 
-public function get($name) {
+public static function get($name) {
 
 	switch($name) {
 	case self::DATABASE:
