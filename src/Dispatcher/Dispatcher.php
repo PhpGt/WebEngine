@@ -30,21 +30,23 @@ public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
 	$content = ResponseContentFactory::create($this->request->getType());
-	$this->response->setContentObject($content);
 
 	// Construct and assign ResponseCode object, which is a collection of
 	// Code class instantiations in order of execution.
-	ResponseCodeFactory::create(
+	$code = ResponseCodeFactory::create(
 		$this->request->uri, 
 		$this->request->getType(),
 		$this->apiFactory,
 		$this->dbFactory,
 		$content
 	);
+	
 	$this->response->setCode($code);
+	$this->response->setContentObject($content);
 
 	// Handle client-side copying and compilation after the response codes have
 	// executed.
+	// $this->manifest....
 }
 
 }#

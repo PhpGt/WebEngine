@@ -10,9 +10,9 @@ use Gt\Request\Request;
 
 class Response {
 
+public $code;
 public $content;
 
-private $code;
 private $config;
 
 public function __construct($config) {
@@ -21,6 +21,10 @@ public function __construct($config) {
 
 public function setCode(ResponseCode $code) {
 	$this->code = $code;
+}
+
+public function setContentObject(ResponseContent $content) {
+	$this->content = $content;
 }
 
 }#
