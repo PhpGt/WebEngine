@@ -23,7 +23,8 @@
 		"leafo/scssphp": "0.0.*"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "4.1.*"
+		"phpunit/phpunit": "4.1.*",
+        "satooshi/php-coveralls": "dev-master"
 	},
 	
 	"prefer-stable": true,

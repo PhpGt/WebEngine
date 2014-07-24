@@ -4,3 +4,5 @@ php:
   - 5.4
 install: "./bin/install"
 script: "./test/run"
+after_script:
+  - php vendor/bin/coveralls
