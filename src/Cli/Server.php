@@ -32,10 +32,15 @@ public function __construct(ArgvInput $arguments) {
 	$this->approot = $arguments->getOption("approot");
 	$this->port = $arguments->getOption("port");
 
+	$wwwDir = "{$this->approot}/www";
+	if(!is_dir($wwwDir)) {
+		mkdir($wwwDir, 0775, true);
+	}
+
 	$this->process = new Process(
 		"php", [
 		"S" => "localhost:{$this->port}",
-		"t" => "{$this->approot}/www",
+		"t" => $wwwDir,
 		"{$this->gtroot}/Cli/Gatekeeper.php",
 	]);
 	$this->process->run();
