@@ -7,19 +7,14 @@
  */
 namespace Gt\Response;
 
-abstract class ResponseContent implements \Serializable {
+abstract class ResponseContent {
 
 /**
  * Serialises the response in its current state and adds it to the output
  * buffer, ready for flushing at the end of the response cycle.
  */
-abstract function serialize();
-
-/**
- * Loads a string representation of the current ResponseContent. Page requests
- * will load raw HTML for the Dom Document, API requests will load a PHP
- * object serialized string.
- */
-abstract function unserialize($serialized);
+public function flush() {
+	echo $this->__toString();
+}
 
 }#

@@ -16,24 +16,38 @@ public function __construct() {
 	$this->domDocument = new \DOMDocument("1.0", "utf-8");
 }
 
-
-public function serialize() {
-	// TODO: Serialize
+public function __toString() {
+	return $this->domDocument->saveHTML();
 }
 
 /**
- * Synonym for unserialize.
+ * Allows unserialization of one or more HTML files.
+ * @param string|array $content A string of raw-HTML, or an array of strings 
+ * containing raw-HTML to concatenate and unserialize.
  */
-public function load($content) {
-	return $this->unserialize($content);
-}
+public function load($content = "<!doctype html>") {
+	$string = "";
 
-public function unserialize($serialized) {
+	if(!is_array($content)) {
+		$content = [$content];
+	}
+
+	foreach ($content as $c) {
+		$string .= $c . PHP_EOL;
+	}
+	
 	libxml_use_internal_errors(true);
 
-	$html = "<!doctype html>";
-	// TODO: Actually load the HTML.
-	$html = mb_convert_encoding($html, "HTML-ENTITIES", "utf-8");
+	$string = mb_convert_encoding(trim($string), "HTML-ENTITIES", "utf-8");
+	$this->domDocument->loadHTML($string, 
+		0
+		| LIBXML_COMPACT
+		| LIBXML_HTML_NOIMPLIED
+		| LIBXML_NOBLANKS
+		| LIBXML_NOXMLDECL
+		| LIBXML_NSCLEAN
+		| LIBXML_PARSEHUGE
+	);
 }
 
 }#

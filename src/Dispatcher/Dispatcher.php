@@ -43,20 +43,21 @@ public function process() {
 
 	// Construct and assign ResponseCode object, which is a collection of
 	// Code class instantiations in order of execution.
-	$code = ResponseCodeFactory::create(
-		$this->request->uri, 
-		$this->request->getType(),
-		$this->apiFactory,
-		$this->dbFactory,
-		$content
-	);
+	// $code = ResponseCodeFactory::create(
+	// 	$this->request->uri, 
+	// 	$this->request->getType(),
+	// 	$this->apiFactory,
+	// 	$this->dbFactory,
+	// 	$content
+	// );
 	
-	$this->response->setCode($code);
-	$this->response->setContentObject($content);
+	// $this->response->setCode($code);
+	// $this->response->setContentObject($content);
 
 	// Handle client-side copying and compilation after the response codes have
 	// executed.
 	// $this->manifest....
+	$content->flush();
 }
 
 }#

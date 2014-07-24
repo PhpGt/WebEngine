@@ -11,10 +11,10 @@ class PageDispatcher extends Dispatcher {
 public function createResponseContent() {
 	$domDocument = new \Gt\Response\Dom\Document();
 
-	$htmlPath = $this->getPath(Dispatcher::PATH_HTML);
-	$htmlArray = [];	
+	// $htmlPath = $this->getPath(Dispatcher::PATH_HTML);
+	$htmlArray = [];
 
-	$domDocument->load($htmlArray);
+	$domDocument->load();
 
 	return $domDocument;
 }
