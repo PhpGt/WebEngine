@@ -8,8 +8,10 @@ PHP frameworks offer many features, and often come with steep learning curves. T
 
 ***
 
-[![Build Status](https://travis-ci.org/BrightFlair/PHP.Gt.svg?branch=v2)](https://travis-ci.org/BrightFlair/PHP.Gt)
-[![Coverage Status](https://coveralls.io/repos/BrightFlair/PHP.Gt/badge.png)](https://coveralls.io/r/BrightFlair/PHP.Gt)
+[![Build Status](http://img.shields.io/travis/BrightFlair/PHP.Gt.svg?style=flat)](https://travis-ci.org/BrightFlair/PHP.Gt)
+[![Coverage Status](http://img.shields.io/coveralls/BrightFlair/PHP.Gt.svg?style=flat)](https://coveralls.io/r/BrightFlair/PHP.Gt)
+[![Composer Version](http://img.shields.io/packagist/v/BrightFlair/PHP.Gt.svg?style=flat)](https://packagist.org/packages/brightflair/php.gt)
+[![Download Stats](http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat)](https://packagist.org/packages/brightflair/php.gt)
 
 PHP.Gt has been in commercial use for 2 years now. It is now time for a full code re-write to bring it up to speed with the industry and to apply what we've learnt over the years.
 
