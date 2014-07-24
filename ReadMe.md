@@ -8,6 +8,8 @@ PHP frameworks offer many features, and often come with steep learning curves. T
 
 ***
 
+*Build status*: [![Build Status](https://travis-ci.org/BrightFlair/PHP.Gt.svg?branch=v2)](https://travis-ci.org/BrightFlair/PHP.Gt)
+
 PHP.Gt has been in commercial use for 2 years now. It is now time for a full code re-write to bring it up to speed with the industry and to apply what we've learnt over the years.
 
 **Version 2 (this working branch) is backwards breaking and unfinished. Do not use this on real projects!**
