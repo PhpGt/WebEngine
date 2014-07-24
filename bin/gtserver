@@ -1,0 +1,45 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Shell script interface for launching the built-in webserver.
+ * 
+ * Usage: gtserver [-a|--approot[="..."]] [-p|--port[="..."]]
+ *
+ * PHP.Gt (http://php.gt)
+ * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
+ * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ */
+use Gt\Cli\Server,
+	Symfony\Component\Console\Input\InputDefinition,
+	Symfony\Component\Console\Input\InputArgument,
+	Symfony\Component\Console\Input\InputOption,
+	Symfony\Component\Console\Input\ArgvInput;
+
+require(__DIR__ . "/../vendor/autoload.php");
+
+$defaults = [
+	"approot" => getcwd(),
+	"port" => 8080,
+];
+
+$definition = new InputDefinition([
+	new InputOption("approot", "a", InputOption::VALUE_OPTIONAL,
+		"Application root directory", $defaults["approot"]),
+	new InputOption("port", "p", InputOption::VALUE_OPTIONAL,
+		"Port to bind webserver to", $defaults["port"]),
+]);
+
+try {
+	$input = new ArgvInput($argv, $definition);
+	new Server($input);
+	exit(1);
+}
+catch(Exception $e) {
+	echo "\ngtserver shell script usage:\n";
+	echo $definition->getSynopsis();
+	echo "\n\n";
+	echo strip_tags($definition->asText());
+
+	echo "\n";
+	exit(0);
+}

@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Uses composer to install all dependencies required to run or test the
+ * project. Downloads composer if it doesn't already exist.
+ * 
+ * PHP.Gt (http://php.gt)
+ * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
+ * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ */
+chdir(__DIR__);
+chdir("..");
+if(!file_exists("composer.phar")) {
+	$tempFile = "./.install.php";
+	$installScript = file_get_contents("https://getcomposer.org/installer");
+	file_put_contents($tempFile, $installScript);
+	passthru("php $tempFile");
+	unlink($tempFile);
+}
+
+passthru("./composer.phar install");
+
+echo "\n\nPHP.Gt successfully installed\n\n";
