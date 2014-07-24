@@ -10,4 +10,7 @@
  */
 
 chdir(__DIR__);
-system("../vendor/bin/phpunit --colors");
+$exitCode = 0;
+system("../vendor/bin/phpunit --colors", $exitCode);
+
+exit($exitCode);
