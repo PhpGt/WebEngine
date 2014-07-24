@@ -45,9 +45,9 @@ driver = "MySQL"
 host = "localhost"
 username = "dbuser"
 password = "dbpass"
-# comment to confuse things
+; comment to confuse things
 dbname = "my-db"
-# another comment to confuse things
+; another comment to confuse things
 
 [app]
 production = false
