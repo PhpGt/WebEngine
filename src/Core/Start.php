@@ -13,14 +13,12 @@
 namespace Gt\Core;
 use \Gt\Request\Standardiser;
 use \Gt\Request\Request;
-use \Gt\Response\Redirect;
+use \Gt\Response\Response;
 use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
 use \Gt\Dispatcher\DispatcherFactory;
 
 final class Start {
-
-private $config;
 
 public function __construct($uri) {
 	if(empty($_SERVER)) {
@@ -28,14 +26,14 @@ public function __construct($uri) {
 			"\$_SERVER is not defined. Are you running from cli?");
 	}
 
-	$this->config = new Config();
+	$config = new Config();
 
 	$standardiser = new Standardiser();
-	$uriFixed = $standardiser->fixUri($uri, $this->config["request"]);
+	$uriFixed = $standardiser->fixUri($uri, $config["request"]);
 	if($uri !== $uriFixed) {
 		// Only perform permanent redirects on production applications.
 		$code = 302;
-		if($this->config["app"]->production) {
+		if($config["app"]->production) {
 			$code = 301;
 		}
 

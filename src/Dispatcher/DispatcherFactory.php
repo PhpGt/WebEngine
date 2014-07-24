@@ -7,7 +7,7 @@
  */
 namespace Gt\Dispatcher;
 use Gt\Request\Request;
-use Gt\Request\Response;
+use Gt\Response\Response;
 use Gt\Api\ApiFactory;
 use Gt\Database\DatabaseFactory;
 

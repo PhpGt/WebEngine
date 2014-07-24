@@ -13,10 +13,22 @@ class Document extends ResponseContent {
 private $domDocument;
 
 public function __construct() {
-	$this->domDocument = new DOMDocument("1.0", "utf-8");
+	$this->domDocument = new \DOMDocument("1.0", "utf-8");
 }
 
-public function load($response) {
+
+public function serialize() {
+	// TODO: Serialize
+}
+
+/**
+ * Synonym for unserialize.
+ */
+public function load($content) {
+	return $this->unserialize($content);
+}
+
+public function unserialize($serialized) {
 	libxml_use_internal_errors(true);
 
 	$html = "<!doctype html>";

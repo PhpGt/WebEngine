@@ -26,10 +26,20 @@ ApiFactory $apiFactory, DatabaseFactory $dbFactory) {
 	$this->dbFactory = $dbFactory;
 }
 
+/**
+ * Creates a suitable ResponseContent object for the type of dispatcher.
+ * For a PageDispatcher, the ResponseContent will be a Gt\Response\Dom\Document
+ * @return ResponseContent The object to serialise as part of the HTTP response
+ */
+abstract function createResponseContent();
+
+/**
+ * Performs the dispatch cycle.
+ */
 public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
-	$content = ResponseContentFactory::create($this->request->getType());
+	$content = $this->createResponseContent();
 
 	// Construct and assign ResponseCode object, which is a collection of
 	// Code class instantiations in order of execution.
