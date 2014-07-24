@@ -18,7 +18,7 @@ use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
 use \Gt\Dispatcher\DispatcherFactory;
 
-final class Go {
+final class Start {
 
 private $config;
 

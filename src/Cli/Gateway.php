@@ -13,13 +13,13 @@ class Gateway {
 
 /**
  * Serves the requested Uri by first detecting whether to serve the static 
- * file or construct the given PHP.Gt Go class.
+ * file or construct the given bootstrapping class.
  * 
  * @param string $uri Uri of request
  * @param string $phpgt Name of the class to use that serves dynamic requests
  * @return mixed An instance of the $phpgt class
  */
-public static function serve($uri, $phpgt = "\Gt\Core\Go") {
+public static function serve($uri, $phpgt = "\Gt\Core\Start") {
 	if(self::isStaticFileRequest($uri)) {
 		$filePath = self::getAbsoluteFilePath($uri);
 		self::serveStaticFile($filePath);
