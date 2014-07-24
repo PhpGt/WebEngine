@@ -8,7 +8,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
-use \Gt\Response\Redirect as Redirect;
+use Gt\Core\Obj;
 
 class Standardiser {
 
@@ -18,28 +18,50 @@ class Standardiser {
  * @param Obj $config Object containing request configuration properties
  * @return string The new URI, standardised to configuration options
  */
-public function fixUri($uri, $config) {
-	$ext = pathinfo($uri, PATHINFO_EXTENSION);
+public function fixUri($uri, Obj $config) {
+	$pathinfo = pathinfo($uri);
+	$file = strtok($pathinfo["filename"], "?");
+	$ext  = empty($pathinfo["extension"])
+		? null
+		: strtok($pathinfo["extension"], "?");
 
-	if($config->pageview_html_extension) {
-		if(empty($ext)) {
-			$uri .= ".html";
+	// Fix index filename:
+	if(empty($file)) {
+		if($config->index_force) {
+			$uri .= $config->index_filename;			
 		}
 	}
-	else if(strpos($ext, "htm") === 0) {
-		$uri = substr($uri, 0, strrpos($uri, ".htm"));
-	}
-
-	$firstChar = substr($uri, 0, 1);
-	$lastChar = substr($uri, -1);
-	if($config->pageview_trailing_directory_slash) {
-		if(empty($ext) && $lastChar !== "/") {
-			$uri .= "/";
-		}
-	}
-	else {
-		if(strlen($uri) > 1 && $lastChar === "/") {
+	else if($file === $config->index_filename) {
+		if(!$config->index_force) {
 			$uri = substr($uri, 0, strrpos($uri, "/"));
+		}
+	}
+
+	// Fix html extension:
+	if(isset($config->pageview_html_extension)) {
+		if($config->pageview_html_extension) {
+			if(empty($ext)) {
+				$uri .= ".html";
+			}
+		}
+		else if(strpos($ext, "htm") === 0) {
+			$uri = substr($uri, 0, strrpos($uri, ".htm"));
+		}
+	}
+
+	// Fix trailing slash:
+	if(isset($config->pageview_trailing_directory_slash)) {
+		$firstChar = substr($uri, 0, 1);
+		$lastChar = substr($uri, -1);
+		if($config->pageview_trailing_directory_slash) {
+			if(empty($ext) && $lastChar !== "/") {
+				$uri .= "/";
+			}
+		}
+		else {
+			if(strlen($uri) > 1 && $lastChar === "/") {
+				$uri = substr($uri, 0, strrpos($uri, "/"));
+			}
 		}
 	}
 

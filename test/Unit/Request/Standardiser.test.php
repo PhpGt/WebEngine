@@ -40,7 +40,7 @@ public function data_uriList() {
 /**
  * @dataProvider data_uriList
  */
-public function testUrlFixHtmlRemoved($uri) {
+public function testUriFixHtmlRemoved($uri) {
 	$config = new Obj();
 	$config->pageview_html_extension = false;
 	$config->pageview_trailing_directory_slash = false;
@@ -53,7 +53,7 @@ public function testUrlFixHtmlRemoved($uri) {
 /**
  * @dataProvider data_uriList
  */
-public function testUrlFixHtmlForced($uri) {
+public function testUriFixHtmlForced($uri) {
 	$config = new Obj();
 	$config->pageview_html_extension = true;
 	$config->pageview_trailing_directory_slash = false;
@@ -71,7 +71,7 @@ public function testUrlFixHtmlForced($uri) {
 /**
  * @dataProvider data_uriList
  */
-public function testUrlFixSlashForced($uri) {
+public function testUriFixSlashForced($uri) {
 	$ext = pathinfo($uri, PATHINFO_EXTENSION);
 	$config = new Obj();
 	$config->pageview_html_extension = false;
@@ -87,6 +87,47 @@ public function testUrlFixSlashForced($uri) {
 	else {
 		$this->assertStringEndsNotWith("/", $fixed);
 	}
+}
+
+/**
+ * @dataProvider data_uriList
+ */
+public function testUriIndexFilename($uri) {
+	$file = pathinfo($uri, PATHINFO_FILENAME);
+	$file = strtok($file, ".");
+	$file = strtok($file, "?");
+	$config = new Obj();
+	$config->index_filename = "index";
+	$config->index_force = false;
+
+	$standardiser = new Standardiser();
+	$fixed = $standardiser->fixUri($uri, $config);
+
+	if($file === $config->index_filename) {
+		$this->assertEquals(strtok($uri, "/index"), $fixed);
+	}
+	else {
+		$this->assertEquals($uri, $fixed);
+	}
+}
+
+/**
+ * @dataProvider data_uriList
+ */
+public function testUriIndexForce($uri) {
+	$config = new Obj();
+	$config->index_force = true;
+}
+
+/**
+ * @dataProvider data_uriList
+ */
+public function testUriIndexFilenameForce($uri) {
+	$config = new Obj();
+	$config->index_filename = "index";
+	$config->index_force = true;
+
+
 }
 
 }#
