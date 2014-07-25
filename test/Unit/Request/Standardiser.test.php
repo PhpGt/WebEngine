@@ -205,4 +205,17 @@ public function testFixTrailingExtSlash($uri) {
 	}
 }
 
+/**
+ * The above tests ensure that the functionality of fixUri is as expected.
+ * This test simply asserts that there are not exceptions thrown, and the fixUri
+ * method does in fact return a string.
+ * 
+ * @dataProvider data_uriList
+ */
+public function testFixUri($uri) {
+	$standardiser = new Standardiser();
+	$fixed = $standardiser->fixUri($uri, new Obj());
+	$this->assertInternalType("string", $fixed);
+}
+
 }#
