@@ -32,7 +32,6 @@ ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
 			$apiFactory, 
 			$databaseFactory
 		);
-		break;
 
 	case Request::TYPE_PAGE:
 		return new PageDispatcher(
@@ -41,10 +40,9 @@ ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
 			$apiFactory, 
 			$databaseFactory
 		);
-		break;
 
 	default:
-		break;
+		throw new \Gt\Core\Exception\InvalidAccessException();
 	}
 }
 
