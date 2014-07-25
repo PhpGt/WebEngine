@@ -20,6 +20,7 @@ const METHOD_HEAD		= "METHOD_HEAD";
 const METHOD_OPTIONS	= "METHOD_OPTIONS";
 
 public $uri;
+public $ext;
 public $method;
 public $headers;
 
