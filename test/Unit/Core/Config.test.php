@@ -35,7 +35,7 @@ public function testConfigFileRequired() {
 	$this->tearDown();
 	$this->setExpectedException(
 		"\Gt\Core\Exception\RequiredAppResourceNotFoundException");
-	$config = new Config();
+	new Config();
 }
 
 public function testLoadsMultipleVariables() {
