@@ -5,7 +5,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
-use \Gt\Core\Obj;
+use \Gt\Core\ConfigObj;
 
 class Request_Test extends \PHPUnit_Framework_TestCase {
 
@@ -45,9 +45,9 @@ public function testGetType($uri) {
 	$ext = pathinfo($uri, PATHINFO_EXTENSION);
 
 	$objArray = [
-		new Obj(["api_prefix" => "api"]),
-		new Obj(["api_prefix" => "myapi"]),
-		new Obj(["api_prefix" => "service"]),
+		new ConfigObj(["api_prefix" => "api"]),
+		new ConfigObj(["api_prefix" => "myapi"]),
+		new ConfigObj(["api_prefix" => "service"]),
 	];
 
 	foreach ($objArray as $obj) {
