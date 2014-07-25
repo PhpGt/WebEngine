@@ -75,7 +75,7 @@ public function data_randomUris() {
  * @dataProvider data_randomUris
  */
 public function testServeStaticFile($uri) {
-	$path = $this->getTempFilePath($uri);
+	$this->getTempFilePath($uri);
 	Gateway::serve($uri);
 	$this->expectOutputString(self::DUMMY_CONTENT . " (from $uri).");
 }
@@ -87,7 +87,7 @@ public function testServeStaticFile($uri) {
  * @dataProvider data_randomUris
  */
 public function testServeDynamicFile($uri) {
-	$path = $this->getTempFilePath($uri, true);
+	$this->getTempFilePath($uri, true);
 	$output = Gateway::serve($uri, "\StdClass");
 
 	if("html" === pathinfo($uri, PATHINFO_EXTENSION)) {
