@@ -109,18 +109,35 @@ public function fixIndexFilename($uri, $file, $ext, $config) {
 	return $uri;
 }
 
+/**
+ * Ensures that for extension-less URIs, the trailing slash is forced on or off,
+ * depending on the value of pageview_trailing_directory_slash configuration
+ * option.
+ * 
+ * Also, removes any trailing slashes from an extension-full URI.
+ * 
+ * @param string $uri The request URI
+ * @param string $file The requested file name, with no path.
+ * @param string $ext The requested file extension, or null.
+ * @param Obj $config The provided configuration options object.
+ * @return string The fixed URI.
+ */
 public function fixTrailingSlash($uri, $file, $ext, $config) {
-	if(isset($config->pageview_trailing_directory_slash)) {
-		$firstChar = substr($uri, 0, 1);
-		$lastChar = substr($uri, -1);
+	if(!isset($config->pageview_trailing_directory_slash)) {
+		return $uri;
+	}
+
+	$lastChar = substr($uri, -1);
+
+	if(empty($ext)) {
 		if($config->pageview_trailing_directory_slash) {
-			if(empty($ext) && $lastChar !== "/") {
+			if($lastChar !== "/") {
 				$uri .= "/";
 			}
 		}
 		else {
-			if(strlen($uri) > 1 && $lastChar === "/") {
-				$uri = substr($uri, 0, strrpos($uri, "/"));
+			if($lastChar === "/") {
+				$uri = substr($uri, 0, -1);
 			}
 		}
 	}

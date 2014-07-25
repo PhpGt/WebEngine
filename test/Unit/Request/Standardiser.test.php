@@ -20,6 +20,12 @@ private $uriList = [
 	"shop/pie/apple",
 ];
 
+private $indexNameList = [
+	"index",
+	"start",
+	"home",
+];
+
 public function data_uriList() {
 	$return = array(["/"]);
 
@@ -32,6 +38,18 @@ public function data_uriList() {
 		$return []= ["/$uri.json/"];
 		$return []= ["/$uri.jpg"];
 		$return []= ["/$uri.jpg/"];
+	}
+
+	return $return;
+}
+
+public function data_uriList_withIndexName() {
+	$return = $this->data_uriList();
+
+	foreach ($return as $i => $param) {
+		foreach($this->indexNameList as $indexName) {
+			$return[$i] []= $indexName;			
+		}
 	}
 
 	return $return;
@@ -84,12 +102,11 @@ public function testFixHtmlExtension($uri) {
 }
 
 /**
- * @dataProvider data_uriList
+ * @dataProvider data_uriList_withIndexName
  */
-public function testFixIndexFilenameForce($uri) {
+public function testFixIndexFilenameForce($uri, $index) {
 	$this->pathinfo($uri, $file, $ext);
 
-	$index = "index";
 	$config = new Obj();
 	$config->index_force = true;
 	$config->index_filename = $index;
@@ -104,15 +121,14 @@ public function testFixIndexFilenameForce($uri) {
 }
 
 /**
- * @dataProvider data_uriList
+ * @dataProvider data_uriList_withIndexName
  */
-public function testFixIndexFilenameNoForce($uri) {
+public function testFixIndexFilenameNoForce($uri, $index) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$this->assertEquals($uri, 
 		$standardiser->fixIndexFilename($uri, $file, $ext, new Obj()) );
 
-	$index = "index";
 	$config = new Obj();
 	$config->index_force = false;
 	$config->index_filename = $index;
@@ -123,6 +139,56 @@ public function testFixIndexFilenameNoForce($uri) {
 	&&(empty($ext) || $ext === "html") ) {
 		$expected = substr($uri, 0, strrpos($uri, $index));
 		$this->assertEquals($expected, $fixed, "The ext is $ext");
+	}
+}
+
+/**
+ * @dataProvider data_uriList
+ */
+public function testFixTrailingSlash($uri) {
+	$this->pathinfo($uri, $file, $ext);
+	$standardiser = new Standardiser();
+	$this->assertEquals($uri,
+		$standardiser->fixTrailingSlash($uri, $file, $ext, new Obj()));
+
+	$config = new Obj();
+	$config->pageview_trailing_directory_slash = true;
+
+	$fixed = $standardiser->fixTrailingSlash($uri, $file, $ext, $config);
+
+	$lastChar = substr($uri, -1);
+	if(empty($ext)) {
+		if($lastChar === "/") {
+			$this->assertEquals($uri, $fixed);
+		}
+		else {
+			$this->assertEquals($uri . "/", $fixed);
+		}
+	}
+}
+
+/**
+ * @dataProvider data_uriList
+ */
+public function testFixNoTrailingSlash($uri) {
+	$this->pathinfo($uri, $file, $ext);
+	$standardiser = new Standardiser();
+	$this->assertEquals($uri,
+		$standardiser->fixTrailingSlash($uri, $file, $ext, new Obj()));
+
+	$config = new Obj();
+	$config->pageview_trailing_directory_slash = false;
+
+	$fixed = $standardiser->fixTrailingSlash($uri, $file, $ext, $config);
+
+	$lastChar = substr($uri, -1);
+	if(empty($ext)) {
+		if($lastChar === "/") {
+			$this->assertEquals(substr($uri, 0, -1), $fixed);
+		}
+		else {
+			$this->assertEquals($uri, $fixed);
+		}
 	}
 }
 

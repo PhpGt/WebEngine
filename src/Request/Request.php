@@ -37,7 +37,7 @@ public function __construct($uri, $config) {
 	$this->method = isset($_SERVER["REQUEST_METHOD"])
 		? $_SERVER["REQUEST_METHOD"]
 		: null;
-	$this->headers = new HeaderFields($_SERVER);
+	$this->headers = new HeaderList($_SERVER);
 }
 
 /**
