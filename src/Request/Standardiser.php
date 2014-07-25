@@ -19,37 +19,97 @@ class Standardiser {
  * @return string The new URI, standardised to configuration options
  */
 public function fixUri($uri, Obj $config) {
-	$pathinfo = pathinfo($uri);
+	$fixed = $uri;
+	$pathinfo = pathinfo($fixed);
 	$file = strtok($pathinfo["filename"], "?");
 	$ext  = empty($pathinfo["extension"])
 		? null
 		: strtok($pathinfo["extension"], "?");
 
-	// Fix index filename:
+	$fixed = $this->fixHtmlExtension($fixed, $file, $ext, $config);
+	$fixed = $this->fixIndexFilename($fixed, $file, $ext, $config);
+	$fixed = $this->fixTrailingSlash($fixed, $file, $ext, $config);
+	$fixed = $this->fixTrailingExtSlash($fixed, $file, $ext, $config);
+
+	return $fixed;
+}
+
+/**
+ * If pageview_html_extension configuration value is true, requests to 
+ * directories have .html appended to them.
+ * 
+ * @param string $uri The request URI
+ * @param string $file The requested file name, with no path.
+ * @param string $ext The requested file extension, or null.
+ * @param Obj $config The provided configuration options object.
+ * @return string The fixed URI.
+ */
+public function fixHtmlExtension($uri, $file, $ext, $config) {
+	if(!isset($config->pageview_html_extension)) {
+		return $uri;
+	}
+
+	$lastChar = substr($uri, -1);
+
+	if($config->pageview_html_extension) {
+		if(empty($ext) && !empty($file)) {
+			if($lastChar === "/") {
+				$uri = substr($uri, 0, -1) 
+					. ".html";
+			}
+			else {
+				$uri .= ".html";				
+			}
+		}
+	}
+	else if($ext === "html") {
+		$uri = substr($uri, 0, strrpos($uri, ".html"));
+	}
+
+	return $uri;
+}
+
+/**
+ * Ensures that 1) when index_force configuration option is ture, and a
+ * directory is requested that the URI is changed to the index_filename
+ * configuration option, and 2) when index_force configuration option is false,
+ * and the index_filename configuration option is requested, the URI is changed
+ * to a directory style URI.
+ * 
+ * @param string $uri The request URI
+ * @param string $file The requested file name, with no path.
+ * @param string $ext The requested file extension, or null.
+ * @param Obj $config The provided configuration options object.
+ * @return string The fixed URI.
+ */
+public function fixIndexFilename($uri, $file, $ext, $config) {
+	if(!isset($config->index_force)
+	|| !isset($config->index_filename)) {
+		return $uri;
+	}
+
+	$lastChar = substr($uri, -1);
+
 	if(empty($file)) {
 		if($config->index_force) {
 			$uri .= $config->index_filename;			
 		}
 	}
-	else if($file === $config->index_filename) {
+	else if($file === $config->index_filename 
+	&& (empty($ext) || $ext === "html")) {
 		if(!$config->index_force) {
-			$uri = substr($uri, 0, strrpos($uri, "/"));
-		}
-	}
-
-	// Fix html extension:
-	if(isset($config->pageview_html_extension)) {
-		if($config->pageview_html_extension) {
-			if(empty($ext)) {
-				$uri .= ".html";
+			// Handle URIs with an extension that also have trailing slash.
+			if($lastChar === "/") {
+				$uri = substr($uri, 0, -1);
 			}
-		}
-		else if(strpos($ext, "htm") === 0) {
-			$uri = substr($uri, 0, strrpos($uri, ".htm"));
+			$uri = substr($uri, 0, strrpos($uri, "/") + 1);
 		}
 	}
 
-	// Fix trailing slash:
+	return $uri;
+}
+
+public function fixTrailingSlash($uri, $file, $ext, $config) {
 	if(isset($config->pageview_trailing_directory_slash)) {
 		$firstChar = substr($uri, 0, 1);
 		$lastChar = substr($uri, -1);
@@ -65,8 +125,10 @@ public function fixUri($uri, Obj $config) {
 		}
 	}
 
-	// Strip trailing slashes if there is an extension.
-	// We don't want to see /dir/page.html/
+	return $uri;
+}
+
+public function fixTrailingExtSlash($uri, $file, $ext, $config) {
 	$lastChar = substr($uri, -1);
 	if(!empty($ext) && $lastChar === "/") {
 		$uri = substr($uri, 0, strrpos($uri, "/"));

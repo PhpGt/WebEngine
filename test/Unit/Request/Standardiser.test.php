@@ -37,97 +37,93 @@ public function data_uriList() {
 	return $return;
 }
 
-/**
- * @dataProvider data_uriList
- */
-public function testUriFixHtmlRemoved($uri) {
-	$config = new Obj();
-	$config->pageview_html_extension = false;
-	$config->pageview_trailing_directory_slash = false;
-	$standardiser = new Standardiser();
-
-	$fixed = $standardiser->fixUri($uri, $config);
-	$this->assertStringEndsNotWith(".html", $fixed);
+private function pathinfo($uri, &$file, &$ext) {
+	$pathinfo = pathinfo($uri);
+	$file = strtok($pathinfo["filename"], "?");
+	$ext  = empty($pathinfo["extension"])
+		? null
+		: strtok($pathinfo["extension"], "?");
 }
 
 /**
  * @dataProvider data_uriList
  */
-public function testUriFixHtmlForced($uri) {
+public function testFixHtmlExtension($uri) {
+	$this->pathinfo($uri, $file, $ext);
+	$standardiser = new Standardiser();
+
+	$this->assertEquals($uri, $standardiser->fixHtmlExtension(
+		$uri, $file, $ext, new Obj()) );
+
+	$config = new Obj();
+	$config->pageview_html_extension = false;
+
+	$fixed = $standardiser->fixHtmlExtension($uri, $file, $ext, $config);
+	$this->assertNotRegexp("/\.html.?$/", $fixed);
+
 	$config = new Obj();
 	$config->pageview_html_extension = true;
-	$config->pageview_trailing_directory_slash = false;
 
-	$standardiser = new Standardiser();
-
-	$fixed = $standardiser->fixUri($uri, $config);
-
-	$ext = pathinfo($uri, PATHINFO_EXTENSION);
-	if(empty($ext) || $ext == "html") {
-		$this->assertStringEndsWith(".html", $fixed);		
-	}
-}
-
-/**
- * @dataProvider data_uriList
- */
-public function testUriFixSlashForced($uri) {
-	$ext = pathinfo($uri, PATHINFO_EXTENSION);
-	$config = new Obj();
-	$config->pageview_html_extension = false;
-	$config->pageview_trailing_directory_slash = true;
-
-	$standardiser = new Standardiser();
-
-	$fixed = $standardiser->fixUri($uri, $config);
-
+	$fixed = $standardiser->fixHtmlExtension($uri, $file, $ext, $config);
 	if(empty($ext)) {
-		$this->assertStringEndsWith("/", $fixed);
+		if($uri === "/") {
+			$this->assertEquals($fixed, $uri);
+		}
+		else {
+			$this->assertRegexp("/\.html.?$/", $fixed);			
+		}
 	}
 	else {
-		$this->assertStringEndsNotWith("/", $fixed);
+		if($ext === "html") {
+			$this->assertRegexp("/\.html.?$/", $fixed);			
+		}
+		else {
+			$this->assertNotRegexp("/\.html.?$/", $fixed);			
+		}
 	}
 }
 
 /**
  * @dataProvider data_uriList
  */
-public function testUriIndexFilename($uri) {
-	$file = pathinfo($uri, PATHINFO_FILENAME);
-	$file = strtok($file, ".");
-	$file = strtok($file, "?");
+public function testFixIndexFilenameForce($uri) {
+	$this->pathinfo($uri, $file, $ext);
+
+	$index = "index";
 	$config = new Obj();
-	$config->index_filename = "index";
-	$config->index_force = false;
+	$config->index_force = true;
+	$config->index_filename = $index;
 
 	$standardiser = new Standardiser();
-	$fixed = $standardiser->fixUri($uri, $config);
+	$fixed = $standardiser->fixIndexFilename($uri, $file, $ext, $config);
 
-	if($file === $config->index_filename) {
-		$this->assertEquals(strtok($uri, "/index"), $fixed);
-	}
-	else {
-		$this->assertEquals($uri, $fixed);
+	if(empty($file)) {
+		$expected = "$uri$index";
+		$this->assertEquals($expected, $fixed);
 	}
 }
 
 /**
  * @dataProvider data_uriList
  */
-public function testUriIndexForce($uri) {
+public function testFixIndexFilenameNoForce($uri) {
+	$this->pathinfo($uri, $file, $ext);
+	$standardiser = new Standardiser();
+	$this->assertEquals($uri, 
+		$standardiser->fixIndexFilename($uri, $file, $ext, new Obj()) );
+
+	$index = "index";
 	$config = new Obj();
-	$config->index_force = true;
-}
+	$config->index_force = false;
+	$config->index_filename = $index;
 
-/**
- * @dataProvider data_uriList
- */
-public function testUriIndexFilenameForce($uri) {
-	$config = new Obj();
-	$config->index_filename = "index";
-	$config->index_force = true;
+	$fixed = $standardiser->fixIndexFilename($uri, $file, $ext, $config);
 
-
+	if($file === $index 
+	&&(empty($ext) || $ext === "html") ) {
+		$expected = substr($uri, 0, strrpos($uri, $index));
+		$this->assertEquals($expected, $fixed, "The ext is $ext");
+	}
 }
 
 }#
