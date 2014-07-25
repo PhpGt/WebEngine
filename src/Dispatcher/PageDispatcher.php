@@ -11,8 +11,8 @@ class PageDispatcher extends Dispatcher {
 public function createResponseContent() {
 	$domDocument = new \Gt\Response\Dom\Document();
 
+	// TODO: Find the paths, something like the following?
 	// $htmlPath = $this->getPath(Dispatcher::PATH_HTML);
-	$htmlArray = [];
 
 	$domDocument->load();
 
