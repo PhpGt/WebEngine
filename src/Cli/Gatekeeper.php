@@ -22,11 +22,9 @@ $sapi = php_sapi_name();
 switch($sapi) {
 case "cli-server":
 	return Gateway::serve($_SERVER["REQUEST_URI"]);
-	break;
 
 case "cli":
 	throw new InvalidContextException(php_sapi_name());
-	break;
 
 default:
 	// When using third-party webserver:
