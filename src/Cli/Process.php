@@ -28,7 +28,7 @@ public function __construct($processName, array $processArgs) {
 }
 
 public function __destruct() {
-	pclose($fp);
+	pclose($this->fp);
 }
 
 public function run() {
