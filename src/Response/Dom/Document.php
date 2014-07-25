@@ -39,15 +39,7 @@ public function load($content = "<!doctype html>") {
 	libxml_use_internal_errors(true);
 
 	$string = mb_convert_encoding(trim($string), "HTML-ENTITIES", "utf-8");
-	$this->domDocument->loadHTML($string, 
-		0
-		| LIBXML_COMPACT
-		| LIBXML_HTML_NOIMPLIED
-		| LIBXML_NOBLANKS
-		| LIBXML_NOXMLDECL
-		| LIBXML_NSCLEAN
-		| LIBXML_PARSEHUGE
-	);
+	$this->domDocument->loadHTML($string);
 }
 
 }#
