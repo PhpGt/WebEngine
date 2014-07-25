@@ -192,4 +192,17 @@ public function testFixNoTrailingSlash($uri) {
 	}
 }
 
+/**
+ * @dataProvider data_uriList
+ */
+public function testFixTrailingExtSlash($uri) {
+	$this->pathinfo($uri, $file, $ext);
+	$standardiser = new Standardiser();
+	$fixed = $standardiser->fixTrailingExtSlash($uri, $file, $ext, new Obj());
+
+	if(!empty($ext)) {
+		$this->assertStringEndsNotWith("/", $fixed);
+	}
+}
+
 }#

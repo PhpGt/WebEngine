@@ -145,6 +145,17 @@ public function fixTrailingSlash($uri, $file, $ext, $config) {
 	return $uri;
 }
 
+/**
+ * Ensures that request URIs made to files with extensions do not have a 
+ * trailing slash, independent to pageview_trailing_directory_slash.
+ * URIs with file extensions should not end with a slash, ever.
+ * 
+ * @param string $uri The request URI
+ * @param string $file The requested file name, with no path.
+ * @param string $ext The requested file extension, or null.
+ * @param Obj $config The provided configuration options object.
+ * @return string The fixed URI.
+ */
 public function fixTrailingExtSlash($uri, $file, $ext, $config) {
 	$lastChar = substr($uri, -1);
 	if(!empty($ext) && $lastChar === "/") {
