@@ -7,6 +7,10 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Core;
+
+/**
+ * @property mixed $anything The object can be given any read-write property.
+ */
 class Obj {
 
 /**
