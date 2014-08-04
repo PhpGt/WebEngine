@@ -1,6 +1,6 @@
 <?php
 /**
- * Used to perform temporary or permanent HTTP redirects within 
+ * Used to perform temporary or permanent HTTP redirects within
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -47,7 +47,7 @@ public function sendHeader() {
 	}
 
 	header("Location: " . $this->uri, true, $this->code);
-	exit;	
+	exit;
 }
 
 }#

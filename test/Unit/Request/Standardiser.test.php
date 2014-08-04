@@ -56,7 +56,7 @@ public function data_uriList_withIndexName() {
 
 	foreach ($return as $i => $param) {
 		foreach($this->indexNameList as $indexName) {
-			$return[$i] []= $indexName;			
+			$return[$i] []= $indexName;
 		}
 	}
 
@@ -96,16 +96,21 @@ public function testFixHtmlExtension($uri) {
 			$this->assertEquals($fixed, $uri);
 		}
 		else {
-			$this->assertRegexp("/\.html.?$/", $fixed);			
+			$this->assertRegexp("/\.html.?$/", $fixed);
 		}
 	}
 	else {
 		if($ext === "html") {
-			$this->assertRegexp("/\.html.?$/", $fixed);			
+			$this->assertRegexp("/\.html.?(\?.+)?$/", $fixed);
 		}
 		else {
-			$this->assertNotRegexp("/\.html.?$/", $fixed);			
+			$this->assertNotRegexp("/\.html.?(\?.+)?$/", $fixed);
 		}
+	}
+
+	$queryString = parse_url($uri, PHP_URL_QUERY);
+	if(!empty($queryString)) {
+		$this->assertContains("?" . $queryString, $fixed);
 	}
 }
 
@@ -134,7 +139,7 @@ public function testFixIndexFilenameForce($uri, $index) {
 public function testFixIndexFilenameNoForce($uri, $index) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
-	$this->assertEquals($uri, 
+	$this->assertEquals($uri,
 		$standardiser->fixIndexFilename($uri, $file, $ext, new ConfigObj()) );
 
 	$config = new ConfigObj();
@@ -143,7 +148,7 @@ public function testFixIndexFilenameNoForce($uri, $index) {
 
 	$fixed = $standardiser->fixIndexFilename($uri, $file, $ext, $config);
 
-	if($file === $index 
+	if($file === $index
 	&&(empty($ext) || $ext === "html") ) {
 		$expected = substr($uri, 0, strrpos($uri, $index));
 		$this->assertEquals($expected, $fixed, "The ext is $ext");
@@ -200,7 +205,7 @@ public function testFixNoTrailingSlash($uri) {
 				$this->assertEquals($uri, $fixed);
 			}
 			else {
-				$this->assertEquals(substr($uri, 0, -1), $fixed);				
+				$this->assertEquals(substr($uri, 0, -1), $fixed);
 			}
 		}
 		else {
@@ -224,10 +229,23 @@ public function testFixTrailingExtSlash($uri) {
 }
 
 /**
+ * @dataProvider data_uriList
+ */
+public function testQueryStringPreserved($uri) {
+	$standardiser = new Standardiser();
+	$fixed = $standardiser->fixUri($uri, new ConfigObj());
+
+	$queryString = parse_url($uri, PHP_URL_QUERY);
+	if(!empty($queryString)) {
+		$this->assertContains("?" . $queryString, $fixed);
+	}
+}
+
+/**
  * The above tests ensure that the functionality of fixUri is as expected.
  * This test simply asserts that there are not exceptions thrown, and the fixUri
  * method does in fact return a string.
- * 
+ *
  * @dataProvider data_uriList
  */
 public function testFixUri($uri) {
