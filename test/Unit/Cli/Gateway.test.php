@@ -91,7 +91,7 @@ public function testServeDynamicFile($uri) {
 	$output = Gateway::serve($uri, "\StdClass");
 
 	if("html" === pathinfo($uri, PATHINFO_EXTENSION)) {
-		
+
 	}
 
 	$this->assertInstanceOf("\StdClass", $output);
@@ -127,8 +127,8 @@ private static function cleanup($dirPath) {
 			? rmdir($path->getPathname())
 			: unlink($path->getPathname());
 	}
-	
-	rmdir($dirPath);
+
+	return rmdir($dirPath);
 }
 
 /**
@@ -145,7 +145,7 @@ private function getTempFilePath($uri, $skipCreating = false) {
 		if(!is_dir(dirname($path)) ) {
 			mkdir(dirname($path), 0775, true);
 		}
-		file_put_contents($path, self::DUMMY_CONTENT . " (from $uri).");		
+		file_put_contents($path, self::DUMMY_CONTENT . " (from $uri).");
 	}
 
 	return $path;
