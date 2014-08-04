@@ -13,6 +13,10 @@ class Process {
 private $fp;
 private $processString;
 
+/**
+ * @param string $processName The process to spawn
+ * @param array $processArgs Associative array of arguments to pass
+ */
 public function __construct($processName, array $processArgs) {
 	$this->processString = $processName;
 
@@ -23,8 +27,6 @@ public function __construct($processName, array $processArgs) {
 		}
 		$this->processString .= $value;
 	}
-
-	
 }
 
 public function __destruct() {
