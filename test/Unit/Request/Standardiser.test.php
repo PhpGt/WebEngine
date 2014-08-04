@@ -251,7 +251,8 @@ public function testQueryStringPreserved($uri) {
  */
 public function testFixUri($uri) {
 	$standardiser = new Standardiser();
-	$fixed = $standardiser->fixUri($uri, new ConfigObj());
+
+	$fixed = $standardiser->fixUri("$uri", new ConfigObj() );
 	$this->assertInternalType("string", $fixed);
 }
 

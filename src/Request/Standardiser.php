@@ -22,12 +22,13 @@ class Standardiser {
  */
 public function fixUri($uri, ConfigObj $config) {
 	$queryString = parse_url($uri, PHP_URL_QUERY);
-	$fixed = $uri;
+	$fixed = strtok($uri, "?");
+
 	$pathinfo = pathinfo($fixed);
-	$file = strtok($pathinfo["filename"], "?");
+	$file = $pathinfo["filename"];
 	$ext  = empty($pathinfo["extension"])
 		? null
-		: strtok($pathinfo["extension"], "?");
+		: $pathinfo["extension"];
 
 	$fixed = $this->fixHtmlExtension($fixed, $file, $ext, $config);
 	$fixed = $this->fixIndexFilename($fixed, $file, $ext, $config);
