@@ -20,6 +20,12 @@ private $uriList = [
 	"shop/pie/apple",
 ];
 
+private $queryStringList = [
+	"",
+	"?sort=date",
+	"?first=Rasmus&last=Lerdorf"
+];
+
 private $indexNameList = [
 	"index",
 	"start",
@@ -30,14 +36,16 @@ public function data_uriList() {
 	$return = array(["/"]);
 
 	foreach ($this->uriList as $uri) {
-		$return []= ["/$uri"];
-		$return []= ["/$uri/"];
-		$return []= ["/$uri.html"];
-		$return []= ["/$uri.html/"];
-		$return []= ["/$uri.json"];
-		$return []= ["/$uri.json/"];
-		$return []= ["/$uri.jpg"];
-		$return []= ["/$uri.jpg/"];
+		foreach ($this->queryStringList as $qs) {
+			$return []= ["/$uri"		. $qs];
+			$return []= ["/$uri/"		. $qs];
+			$return []= ["/$uri.html"	. $qs];
+			$return []= ["/$uri.html/"	. $qs];
+			$return []= ["/$uri.json"	. $qs];
+			$return []= ["/$uri.json/"	. $qs];
+			$return []= ["/$uri.jpg"	. $qs];
+			$return []= ["/$uri.jpg/"	. $qs];
+		}
 	}
 
 	return $return;
