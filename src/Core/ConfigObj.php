@@ -9,11 +9,11 @@
 namespace Gt\Core;
 
 /**
- * @property-read string $api_prefix
- * @property-read string $api_default_type
- * @property-read bool $pageview_html_extension
- * @property-read bool $pageview_trailing_directory_slash
- * @property-read string $index_filename
- * @property-read bool $index_force
+ * @property string $api_prefix
+ * @property string $api_default_type
+ * @property bool $pageview_html_extension
+ * @property bool $pageview_trailing_directory_slash
+ * @property string $index_filename
+ * @property bool $index_force
  */
 class ConfigObj extends Obj {}#

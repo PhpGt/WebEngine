@@ -8,17 +8,18 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
-use Gt\Core\Obj;
+use Gt\Core\ConfigObj;
 
 class Standardiser {
 
 /**
  * Takes a URL and fixes it according to the configuration properties
  * @param string $uri The request URI
- * @param Obj $config Object containing request configuration properties
+ * @param ConfigObj $config Object containing request configuration properties
+ * 
  * @return string The new URI, standardised to configuration options
  */
-public function fixUri($uri, Obj $config) {
+public function fixUri($uri, ConfigObj $config) {
 	$fixed = $uri;
 	$pathinfo = pathinfo($fixed);
 	$file = strtok($pathinfo["filename"], "?");
@@ -41,10 +42,11 @@ public function fixUri($uri, Obj $config) {
  * @param string $uri The request URI
  * @param string $file The requested file name, with no path.
  * @param string $ext The requested file extension, or null.
- * @param Obj $config The provided configuration options object.
+ * @param ConfigObj $config The provided configuration options object.
+ * 
  * @return string The fixed URI.
  */
-public function fixHtmlExtension($uri, $file, $ext, $config) {
+public function fixHtmlExtension($uri, $file, $ext, ConfigObj $config) {
 	if(!isset($config->pageview_html_extension)) {
 		return $uri;
 	}
@@ -79,10 +81,11 @@ public function fixHtmlExtension($uri, $file, $ext, $config) {
  * @param string $uri The request URI
  * @param string $file The requested file name, with no path.
  * @param string $ext The requested file extension, or null.
- * @param Obj $config The provided configuration options object.
+ * @param ConfigObj $config The provided configuration options object.
+ * 
  * @return string The fixed URI.
  */
-public function fixIndexFilename($uri, $file, $ext, $config) {
+public function fixIndexFilename($uri, $file, $ext, ConfigObj $config) {
 	if(!isset($config->index_force)
 	|| !isset($config->index_filename)) {
 		return $uri;
@@ -119,10 +122,11 @@ public function fixIndexFilename($uri, $file, $ext, $config) {
  * @param string $uri The request URI
  * @param string $file The requested file name, with no path.
  * @param string $ext The requested file extension, or null.
- * @param Obj $config The provided configuration options object.
+ * @param ConfigObj $config The provided configuration options object.
+ * 
  * @return string The fixed URI.
  */
-public function fixTrailingSlash($uri, $file, $ext, $config) {
+public function fixTrailingSlash($uri, $file, $ext, ConfigObj $config) {
 	if(!isset($config->pageview_trailing_directory_slash)) {
 		return $uri;
 	}
@@ -153,10 +157,11 @@ public function fixTrailingSlash($uri, $file, $ext, $config) {
  * @param string $uri The request URI
  * @param string $file The requested file name, with no path.
  * @param string $ext The requested file extension, or null.
- * @param Obj $config The provided configuration options object.
+ * @param ConfigObj $config The provided configuration options object.
+ * 
  * @return string The fixed URI.
  */
-public function fixTrailingExtSlash($uri, $file, $ext, $config) {
+public function fixTrailingExtSlash($uri, $file, $ext, ConfigObj $config) {
 	$lastChar = substr($uri, -1);
 	if(!empty($ext) && $lastChar === "/") {
 		$uri = substr($uri, 0, strrpos($uri, "/"));

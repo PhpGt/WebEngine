@@ -5,7 +5,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
-use \Gt\Core\Obj;
+use \Gt\Core\ConfigObj;
 
 class Standardiser_Test extends \PHPUnit_Framework_TestCase {
 
@@ -71,15 +71,15 @@ public function testFixHtmlExtension($uri) {
 	$standardiser = new Standardiser();
 
 	$this->assertEquals($uri, $standardiser->fixHtmlExtension(
-		$uri, $file, $ext, new Obj()) );
+		$uri, $file, $ext, new ConfigObj()) );
 
-	$config = new Obj();
+	$config = new ConfigObj();
 	$config->pageview_html_extension = false;
 
 	$fixed = $standardiser->fixHtmlExtension($uri, $file, $ext, $config);
 	$this->assertNotRegexp("/\.html.?$/", $fixed);
 
-	$config = new Obj();
+	$config = new ConfigObj();
 	$config->pageview_html_extension = true;
 
 	$fixed = $standardiser->fixHtmlExtension($uri, $file, $ext, $config);
@@ -107,7 +107,7 @@ public function testFixHtmlExtension($uri) {
 public function testFixIndexFilenameForce($uri, $index) {
 	$this->pathinfo($uri, $file, $ext);
 
-	$config = new Obj();
+	$config = new ConfigObj();
 	$config->index_force = true;
 	$config->index_filename = $index;
 
@@ -127,9 +127,9 @@ public function testFixIndexFilenameNoForce($uri, $index) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$this->assertEquals($uri, 
-		$standardiser->fixIndexFilename($uri, $file, $ext, new Obj()) );
+		$standardiser->fixIndexFilename($uri, $file, $ext, new ConfigObj()) );
 
-	$config = new Obj();
+	$config = new ConfigObj();
 	$config->index_force = false;
 	$config->index_filename = $index;
 
@@ -149,9 +149,9 @@ public function testFixTrailingSlash($uri) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$this->assertEquals($uri,
-		$standardiser->fixTrailingSlash($uri, $file, $ext, new Obj()));
+		$standardiser->fixTrailingSlash($uri, $file, $ext, new ConfigObj()));
 
-	$config = new Obj();
+	$config = new ConfigObj();
 	$config->pageview_trailing_directory_slash = true;
 
 	$fixed = $standardiser->fixTrailingSlash($uri, $file, $ext, $config);
@@ -174,9 +174,9 @@ public function testFixNoTrailingSlash($uri) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$this->assertEquals($uri,
-		$standardiser->fixTrailingSlash($uri, $file, $ext, new Obj()));
+		$standardiser->fixTrailingSlash($uri, $file, $ext, new ConfigObj()));
 
-	$config = new Obj();
+	$config = new ConfigObj();
 	$config->pageview_trailing_directory_slash = false;
 
 	$fixed = $standardiser->fixTrailingSlash($uri, $file, $ext, $config);
@@ -198,7 +198,8 @@ public function testFixNoTrailingSlash($uri) {
 public function testFixTrailingExtSlash($uri) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
-	$fixed = $standardiser->fixTrailingExtSlash($uri, $file, $ext, new Obj());
+	$fixed = $standardiser->fixTrailingExtSlash(
+		$uri, $file, $ext, new ConfigObj());
 
 	if(!empty($ext)) {
 		$this->assertStringEndsNotWith("/", $fixed);
@@ -214,7 +215,7 @@ public function testFixTrailingExtSlash($uri) {
  */
 public function testFixUri($uri) {
 	$standardiser = new Standardiser();
-	$fixed = $standardiser->fixUri($uri, new Obj());
+	$fixed = $standardiser->fixUri($uri, new ConfigObj());
 	$this->assertInternalType("string", $fixed);
 }
 
