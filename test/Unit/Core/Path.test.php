@@ -80,7 +80,12 @@ public function testFixCase() {
 	);
 
 	// Test URI-style
-	$uri = "/subDirectory/Capitals/File_Test.html";
+	$uri = "/subDirectory/Capitals/File_Test";
+	$uriWithExtension = $uri . $pageViewExtension;
+	$this->assertEquals($pageViewPath_uri . $pageViewExtension,
+		Path::fixCase($uriWithExtension, true));
+
+	// Test URI-style with no extension
 	$this->assertEquals($pageViewPath_uri . $pageViewExtension,
 		Path::fixCase($uri, true));
 }

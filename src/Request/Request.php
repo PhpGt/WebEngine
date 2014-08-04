@@ -57,8 +57,4 @@ public function getType() {
 	return Request::TYPE_PAGE;
 }
 
-public function getPageFileExtension() {
-
-}
-
 }#
