@@ -28,7 +28,7 @@ private $config;
 
 /**
  * @param string $uri The requested absolute uri
- * @param Obj $config Request configuration object
+ * @param \Gt\Core\Obj $config Request configuration object
  */
 public function __construct($uri, $config) {
 	$this->uri = $uri;
