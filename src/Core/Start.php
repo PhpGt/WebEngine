@@ -14,6 +14,7 @@ namespace Gt\Core;
 use \Gt\Request\Standardiser;
 use \Gt\Request\Request;
 use \Gt\Response\Response;
+use \Gt\Response\Redirect;
 use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
 use \Gt\Dispatcher\DispatcherFactory;
@@ -37,7 +38,7 @@ public function __construct($uri) {
 			$code = 301;
 		}
 
-		return new Redirect($uri, $code);
+		return new Redirect($uriFixed, $code);
 	}
 
 	$request  = new Request ($uri, $config["request"]);
