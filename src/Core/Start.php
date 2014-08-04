@@ -38,7 +38,6 @@ public function __construct($uri) {
 			$code = 301;
 		}
 
-		var_dump($uriFixed);die("!!!!!!");
 		return new Redirect($uriFixed, $code);
 	}
 
