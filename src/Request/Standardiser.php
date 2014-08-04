@@ -139,7 +139,8 @@ public function fixTrailingSlash($uri, $ext, ConfigObj $config) {
 			}
 		}
 		else {
-			if($lastChar === "/") {
+			if($lastChar === "/"
+			&& $uri !== "/") {
 				$uri = substr($uri, 0, -1);
 			}
 		}

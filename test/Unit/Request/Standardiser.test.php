@@ -140,6 +140,9 @@ public function testFixIndexFilenameNoForce($uri, $index) {
 		$expected = substr($uri, 0, strrpos($uri, $index));
 		$this->assertEquals($expected, $fixed, "The ext is $ext");
 	}
+	else {
+		$this->assertEquals($uri, $fixed);
+	}
 }
 
 /**
@@ -184,7 +187,13 @@ public function testFixNoTrailingSlash($uri) {
 	$lastChar = substr($uri, -1);
 	if(empty($ext)) {
 		if($lastChar === "/") {
-			$this->assertEquals(substr($uri, 0, -1), $fixed);
+			// Make sure URIs always start with a slash.
+			if($uri === "/") {
+				$this->assertEquals($uri, $fixed);
+			}
+			else {
+				$this->assertEquals(substr($uri, 0, -1), $fixed);				
+			}
 		}
 		else {
 			$this->assertEquals($uri, $fixed);
