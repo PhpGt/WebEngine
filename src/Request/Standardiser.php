@@ -33,8 +33,9 @@ public function fixUri($uri, ConfigObj $config) {
 	$fixed = $this->fixTrailingSlash($fixed, $ext, $config);
 	$fixed = $this->fixTrailingExtSlash($fixed, $ext);
 
-	if(!empty($queryString)) {
-		$fixed = $fixed . "?" . $queryString;
+	if($uri !== $fixed
+	&& !empty($queryString)) {
+		$fixed .= "?" . $queryString;
 	}
 
 	return $fixed;
