@@ -149,12 +149,12 @@ public function testFixTrailingSlash($uri) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$this->assertEquals($uri,
-		$standardiser->fixTrailingSlash($uri, $file, $ext, new ConfigObj()));
+		$standardiser->fixTrailingSlash($uri, $ext, new ConfigObj()));
 
 	$config = new ConfigObj();
 	$config->pageview_trailing_directory_slash = true;
 
-	$fixed = $standardiser->fixTrailingSlash($uri, $file, $ext, $config);
+	$fixed = $standardiser->fixTrailingSlash($uri, $ext, $config);
 
 	$lastChar = substr($uri, -1);
 	if(empty($ext)) {
@@ -174,12 +174,12 @@ public function testFixNoTrailingSlash($uri) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$this->assertEquals($uri,
-		$standardiser->fixTrailingSlash($uri, $file, $ext, new ConfigObj()));
+		$standardiser->fixTrailingSlash($uri, $ext, new ConfigObj()));
 
 	$config = new ConfigObj();
 	$config->pageview_trailing_directory_slash = false;
 
-	$fixed = $standardiser->fixTrailingSlash($uri, $file, $ext, $config);
+	$fixed = $standardiser->fixTrailingSlash($uri, $ext, $config);
 
 	$lastChar = substr($uri, -1);
 	if(empty($ext)) {
@@ -199,7 +199,7 @@ public function testFixTrailingExtSlash($uri) {
 	$this->pathinfo($uri, $file, $ext);
 	$standardiser = new Standardiser();
 	$fixed = $standardiser->fixTrailingExtSlash(
-		$uri, $file, $ext, new ConfigObj());
+		$uri, $ext);
 
 	if(!empty($ext)) {
 		$this->assertStringEndsNotWith("/", $fixed);

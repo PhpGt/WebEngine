@@ -29,8 +29,8 @@ public function fixUri($uri, ConfigObj $config) {
 
 	$fixed = $this->fixHtmlExtension($fixed, $file, $ext, $config);
 	$fixed = $this->fixIndexFilename($fixed, $file, $ext, $config);
-	$fixed = $this->fixTrailingSlash($fixed, $file, $ext, $config);
-	$fixed = $this->fixTrailingExtSlash($fixed, $file, $ext, $config);
+	$fixed = $this->fixTrailingSlash($fixed, $ext, $config);
+	$fixed = $this->fixTrailingExtSlash($fixed, $ext);
 
 	return $fixed;
 }
@@ -120,13 +120,12 @@ public function fixIndexFilename($uri, $file, $ext, ConfigObj $config) {
  * Also, removes any trailing slashes from an extension-full URI.
  * 
  * @param string $uri The request URI
- * @param string $file The requested file name, with no path.
  * @param string $ext The requested file extension, or null.
  * @param ConfigObj $config The provided configuration options object.
  * 
  * @return string The fixed URI.
  */
-public function fixTrailingSlash($uri, $file, $ext, ConfigObj $config) {
+public function fixTrailingSlash($uri, $ext, ConfigObj $config) {
 	if(!isset($config->pageview_trailing_directory_slash)) {
 		return $uri;
 	}
@@ -155,13 +154,11 @@ public function fixTrailingSlash($uri, $file, $ext, ConfigObj $config) {
  * URIs with file extensions should not end with a slash, ever.
  * 
  * @param string $uri The request URI
- * @param string $file The requested file name, with no path.
  * @param string $ext The requested file extension, or null.
- * @param ConfigObj $config The provided configuration options object.
  * 
  * @return string The fixed URI.
  */
-public function fixTrailingExtSlash($uri, $file, $ext, ConfigObj $config) {
+public function fixTrailingExtSlash($uri, $ext) {
 	$lastChar = substr($uri, -1);
 	if(!empty($ext) && $lastChar === "/") {
 		$uri = substr($uri, 0, strrpos($uri, "/"));

@@ -6,6 +6,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
+use \Gt\Core\ConfigObj;
 
 class Request {
 
@@ -28,9 +29,9 @@ private $config;
 
 /**
  * @param string $uri The requested absolute uri
- * @param \Gt\Core\Obj $config Request configuration object
+ * @param ConfigObj $config Request configuration object
  */
-public function __construct($uri, $config) {
+public function __construct($uri, ConfigObj $config) {
 	$this->uri = $uri;
 	$this->ext = pathinfo($uri, PATHINFO_EXTENSION);
 	$this->config = $config;
