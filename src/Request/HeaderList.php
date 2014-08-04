@@ -13,6 +13,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
+
 use \Gt\Core\Obj;
 
 /**
@@ -121,7 +122,7 @@ public function offsetUnset($offset) {
 
 public function __get($name) {
 	$name = strtolower($name);
-	
+
 	$name = str_replace("_", "-", $name);
 	return $this->headerArray[$name];
 }

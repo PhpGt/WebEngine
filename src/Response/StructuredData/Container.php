@@ -6,6 +6,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Response\StructuredData;
+
 use \Gt\Response\ResponseContent;
 
 class Container extends ResponseContent {

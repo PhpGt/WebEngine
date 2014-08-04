@@ -14,6 +14,9 @@
 namespace Gt\Cli;
 
 $autoloader = realpath(__DIR__ . "/../../vendor/autoload.php");
+if(false === $autoloader) {
+	die("Composer autoloader missing. Have you installed correctly?");
+}
 require($autoloader);
 
 // Only allow this script to be invoked from inbuilt webserver.
@@ -28,5 +31,5 @@ case "cli":
 
 default:
 	// When using third-party webserver:
-	return new \Gt\Core\Go();	
+	return new \Gt\Core\Go();
 }

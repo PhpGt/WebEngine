@@ -6,6 +6,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Response\Dom;
+
 use \Gt\Response\ResponseContent;
 
 class Document extends ResponseContent {
@@ -35,7 +36,7 @@ public function load($content = "<!doctype html>") {
 	foreach ($content as $c) {
 		$string .= $c . PHP_EOL;
 	}
-	
+
 	libxml_use_internal_errors(true);
 
 	$string = mb_convert_encoding(trim($string), "HTML-ENTITIES", "utf-8");

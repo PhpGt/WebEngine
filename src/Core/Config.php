@@ -8,6 +8,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Core;
+
 class Config implements \ArrayAccess {
 
 const DEFAULT_CONFIG_FILE = "default.ini";
@@ -25,7 +26,7 @@ public function __construct($defaultConfigArray = null) {
 			Path::get(Path::GTROOT)
 			. "/"
 			. self::DEFAULT_CONFIG_FILE;
-		$defaultConfigArray = parse_ini_file($defaultConfigPath, true);		
+		$defaultConfigArray = parse_ini_file($defaultConfigPath, true);
 	}
 	$this->configArray = array_replace_recursive(
 		$defaultConfigArray,

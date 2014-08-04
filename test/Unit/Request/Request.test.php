@@ -5,6 +5,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
+
 use \Gt\Core\ConfigObj;
 
 class Request_Test extends \PHPUnit_Framework_TestCase {
@@ -54,7 +55,7 @@ public function testGetType($uri) {
 
 		if(strpos($uri, "/" . $obj->api_prefix) === 0) {
 			$this->assertEquals(Request::TYPE_API, $type);
-		}	
+		}
 		else {
 			$this->assertEquals(Request::TYPE_PAGE, $type);
 		}

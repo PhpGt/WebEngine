@@ -6,6 +6,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Dispatcher;
+
 use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Api\ApiFactory;
@@ -50,7 +51,7 @@ public function process() {
 	// 	$this->dbFactory,
 	// 	$content
 	// );
-	
+
 	// $this->response->setCode($code);
 	// $this->response->setContentObject($content);
 

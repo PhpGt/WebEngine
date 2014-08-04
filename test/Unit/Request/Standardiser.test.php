@@ -5,6 +5,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
+
 use \Gt\Core\ConfigObj;
 
 class Standardiser_Test extends \PHPUnit_Framework_TestCase {

@@ -7,6 +7,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Core;
+
 class Path {
 
 const DATABASE		= "DATABASE";

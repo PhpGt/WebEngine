@@ -8,6 +8,7 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Cli;
+
 class Process {
 
 private $fp;
