@@ -25,7 +25,6 @@ checks:
         code_rating: true
         deadlock_detection_in_loops: true
         deprecated_code_usage: true
-        encourage_shallow_comparison: true
         fix_doc_comments: true
         foreach_traversable: true
         function_body_start_on_same_line: true
