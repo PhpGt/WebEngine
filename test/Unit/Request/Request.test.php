@@ -42,8 +42,6 @@ public function data_uriType() {
  * @dataProvider data_uriType
  */
 public function testGetType($uri) {
-	$ext = pathinfo($uri, PATHINFO_EXTENSION);
-
 	$objArray = [
 		new ConfigObj(["api_prefix" => "api"]),
 		new ConfigObj(["api_prefix" => "myapi"]),
