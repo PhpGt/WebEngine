@@ -17,7 +17,7 @@ class DispatcherFactory {
  * @param Request $request Representing the HTTP request
  * @param Response $response Representing the HTTP response
  * @param ApiFactory $apiFactory API Access Layer
- * @param DatabaseFactory $database Database Access Layer
+ * @param DatabaseFactory $databaseFactory Database Access Layer
  *
  * @return Dispatcher Either an ApiDispatcher or PageDispatcher
  */
