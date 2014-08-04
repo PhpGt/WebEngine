@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
@@ -16,7 +16,7 @@ class DispatcherFactory {
 /**
  * @param Request $request Representing the HTTP request
  * @param Response $response Representing the HTTP response
- * 
+ *
  * @param DatabaseFactory $database Database Access Layer
  * @return Dispatcher Either an ApiDispatcher or PageDispatcher
  */
@@ -27,17 +27,17 @@ ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
 	switch($type) {
 	case Request::TYPE_API:
 		return new ApiDispatcher(
-			$request, 
-			$response, 
-			$apiFactory, 
+			$request,
+			$response,
+			$apiFactory,
 			$databaseFactory
 		);
 
 	case Request::TYPE_PAGE:
 		return new PageDispatcher(
-			$request, 
-			$response, 
-			$apiFactory, 
+			$request,
+			$response,
+			$apiFactory,
 			$databaseFactory
 		);
 

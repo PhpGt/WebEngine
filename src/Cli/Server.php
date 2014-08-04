@@ -21,9 +21,9 @@ private $process;
 
 /**
  * Sets the gtroot (allowing Gatekeeper to be found), and sets approot and port
- * with values from the ArgvInput object, then creates and runs the php 
+ * with values from the ArgvInput object, then creates and runs the php
  * inbuilt server in a new Process.
- * 
+ *
  * @param ArgvInput $arguments The arguments passed to the gtserver shell script
  * or default values if none are provided.
  */

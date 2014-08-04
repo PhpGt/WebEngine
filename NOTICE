@@ -2,18 +2,18 @@ PHP.Gt is created and maintained by Bright Flair Ltd (http://brightflair.com).
 
 The software is covered by the Apache2 license, which in summary means:
 
-You may reproduce and distribute copies of PHP.Gt with or without modifications, or use it in 
+You may reproduce and distribute copies of PHP.Gt with or without modifications, or use it in
 closed-source projects after following these conditions:
 
 * The original license file and this notice should be included in each distribution.
 * Any changes to original source files must be noted in the comments at the top of each file.
-* All copyright notices including those within source files and the license information files 
+* All copyright notices including those within source files and the license information files
   must be kept present in all distributions.
-* A readable copy of this NOTICE file must be kept unmodified in all distributions and 
+* A readable copy of this NOTICE file must be kept unmodified in all distributions and
   derivative works.
 
-Applications that are built on top of PHP.Gt, are not permitted to use the PHP.Gt name. To 
-indicate that they are using PHP.Gt, they are permitted but not required to use the .Gt 
+Applications that are built on top of PHP.Gt, are not permitted to use the PHP.Gt name. To
+indicate that they are using PHP.Gt, they are permitted but not required to use the .Gt
 suffix after the application's own name.
 
-For more information about the PHP.Gt project, visit the website: http://php.gt 
+For more information about the PHP.Gt project, visit the website: http://php.gt

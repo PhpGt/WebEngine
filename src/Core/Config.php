@@ -21,9 +21,9 @@ public function __construct($defaultConfigArray = null) {
 	}
 
 	if(is_null($defaultConfigArray)) {
-		$defaultConfigPath = 
-			Path::get(Path::GTROOT) 
-			. "/" 
+		$defaultConfigPath =
+			Path::get(Path::GTROOT)
+			. "/"
 			. self::DEFAULT_CONFIG_FILE;
 		$defaultConfigArray = parse_ini_file($defaultConfigPath, true);		
 	}

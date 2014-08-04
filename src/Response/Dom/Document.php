@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
@@ -22,7 +22,7 @@ public function __toString() {
 
 /**
  * Allows unserialization of one or more HTML files.
- * @param string|array $content A string of raw-HTML, or an array of strings 
+ * @param string|array $content A string of raw-HTML, or an array of strings
  * containing raw-HTML to concatenate and unserialize.
  */
 public function load($content = "<!doctype html>") {

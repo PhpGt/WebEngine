@@ -2,7 +2,7 @@
 <?php
 /**
  * Shell script interface for launching the built-in webserver.
- * 
+ *
  * Usage: gtserver [-a|--approot[="..."]] [-p|--port[="..."]]
  *
  * PHP.Gt (http://php.gt)

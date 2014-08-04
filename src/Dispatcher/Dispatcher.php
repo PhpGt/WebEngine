@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
@@ -18,7 +18,7 @@ private $response;
 private $apiFactory;
 private $dbFactory;
 
-public function __construct(Request $request, Response $response, 
+public function __construct(Request $request, Response $response,
 ApiFactory $apiFactory, DatabaseFactory $dbFactory) {
 	$this->request = $request;
 	$this->response = $response;
@@ -44,7 +44,7 @@ public function process() {
 	// Construct and assign ResponseCode object, which is a collection of
 	// Code class instantiations in order of execution.
 	// $code = ResponseCodeFactory::create(
-	// 	$this->request->uri, 
+	// 	$this->request->uri,
 	// 	$this->request->getType(),
 	// 	$this->apiFactory,
 	// 	$this->dbFactory,

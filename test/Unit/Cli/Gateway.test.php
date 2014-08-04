@@ -71,7 +71,7 @@ public function data_randomUris() {
 
 /**
  * A file that exists in www should be served, no matter what extension.
- * 
+ *
  * @dataProvider data_randomUris
  */
 public function testServeStaticFile($uri) {
@@ -83,7 +83,7 @@ public function testServeStaticFile($uri) {
 /**
  * A file that doesn't exist in www should create a new instance of the passed
  * in class.
- * 
+ *
  * @dataProvider data_randomUris
  */
 public function testServeDynamicFile($uri) {
@@ -98,9 +98,9 @@ public function testServeDynamicFile($uri) {
 }
 
 /**
- * Creates a directory in the system's tmp, stores the directory path in 
+ * Creates a directory in the system's tmp, stores the directory path in
  * $this->tempDir.
- * 
+ *
  * @return string Temporary directroy path.
  */
 private function createTempDir() {
@@ -113,7 +113,7 @@ private function createTempDir() {
 
 /**
  * Recursive function to empty and remove a whole directory.
- * 
+ *
  * @param string $dirPath Path to directory to remove.
  * @return bool True if directory is successfully removed, otherwise false.
  */
@@ -123,8 +123,8 @@ private static function cleanup($dirPath) {
 	\RecursiveIteratorIterator::CHILD_FIRST)
 	as $path) {
 
-		$path->isDir() 
-			? rmdir($path->getPathname()) 
+		$path->isDir()
+			? rmdir($path->getPathname())
 			: unlink($path->getPathname());
 	}
 	
@@ -134,7 +134,7 @@ private static function cleanup($dirPath) {
 /**
  * Creates a temp file in the current tempDir location named with the provided
  * uri parameter. Content is filled with dummy content suffixed with the uri.
- * 
+ *
  * @param string $uri Temp directory path suffix.
  * @return string Absolute path to newly created file.
  */
