@@ -87,3 +87,4 @@ checks:
         verify_access_scope_valid: true
         verify_argument_usable_as_reference: true
         verify_property_names: true
+        avoid_perl_style_comments: false
