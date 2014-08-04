@@ -27,7 +27,7 @@ public function tearDown() {
 
 	chdir($tmp);
 	foreach (glob(self::TEMP_PREFIX . "*") as $file) {
-		self::cleanup("$tmp/$file");
+		\Gt\Test\Helper::cleanup("$tmp/$file");
 	}
 
 	chdir($cwd);
@@ -109,26 +109,6 @@ private function createTempDir() {
 
 	mkdir($this->tempDir);
 	return $this->tempDir;
-}
-
-/**
- * Recursive function to empty and remove a whole directory.
- *
- * @param string $dirPath Path to directory to remove.
- * @return bool True if directory is successfully removed, otherwise false.
- */
-private static function cleanup($dirPath) {
-	foreach(new \RecursiveIteratorIterator(
-	new \RecursiveDirectoryIterator($dirPath, \FilesystemIterator::SKIP_DOTS),
-	\RecursiveIteratorIterator::CHILD_FIRST)
-	as $path) {
-
-		$path->isDir()
-			? rmdir($path->getPathname())
-			: unlink($path->getPathname());
-	}
-
-	return rmdir($dirPath);
 }
 
 /**

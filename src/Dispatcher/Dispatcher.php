@@ -28,11 +28,29 @@ ApiFactory $apiFactory, DatabaseFactory $dbFactory) {
 }
 
 /**
+ * From the provided URI, return the correct path where the source content is
+ * located.
+ * @param string $uri The requested uri
+ *
+ * @return string The absolute path on disk to the source content file
+ */
+abstract protected function getPath($uri);
+
+/**
+ * From given file path, return the serialised content. This will either be a
+ * raw file representation, or a concatenation or compilation of pre-processed
+ * file types (for example, returning the HTML source for a Markdown file).
+ */
+abstract protected function loadSource($path);
+
+/**
  * Creates a suitable ResponseContent object for the type of dispatcher.
- * For a PageDispatcher, the ResponseContent will be a Gt\Response\Dom\Document
+ * For a PageDispatcher, the ResponseContent will be a Gt\Response\Dom\Document.
+ * @param mixed $content The serialized content to represent
+ *
  * @return ResponseContent The object to serialise as part of the HTTP response
  */
-abstract function createResponseContent();
+abstract protected function createResponseContent($content);
 
 /**
  * Performs the dispatch cycle.
@@ -40,7 +58,9 @@ abstract function createResponseContent();
 public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
-	$content = $this->createResponseContent();
+	$path = $this->getPath($this->request->uri);
+	$source = $this->loadSource($path);
+	$content = $this->createResponseContent($source);
 
 	// Construct and assign ResponseCode object, which is a collection of
 	// Code class instantiations in order of execution.

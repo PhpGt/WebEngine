@@ -27,60 +27,141 @@ const STYLE			= "STYLE";
 const WWW			= "WWW";
 const GTROOT		= "GTROOT";
 
+/**
+ * Returns the absolute path on disk to the requested path constant, while
+ * fixing the path's case, so your application does not need to know if the
+ * developer is using lower case, upper case, camel case, etc.
+ *
+ * @param string $name One of this class's constants.
+ *
+ * @return string The absolute path on disk.
+ */
 public static function get($name) {
+	$p = null;
 
 	switch($name) {
 	case self::DATABASE:
-		return self::get(self::SRC) . "/Database";
+		$p = self::get(self::SRC) . "/Database";
+		break;
 
 	case self::PAGE:
-		return self::get(self::SRC) . "/Page";
+		$p = self::get(self::SRC) . "/Page";
+		break;
 
 	case self::PAGECODE:
-		return self::get(self::PAGE) . "/Code";
+		$p = self::get(self::PAGE) . "/Code";
+		break;
 
 	case self::PAGETOOL:
-		return self::get(self::PAGE) . "/Tool";
+		$p = self::get(self::PAGE) . "/Tool";
+		break;
 
 	case self::PAGEVIEW:
-		return self::get(self::PAGE) . "/View";
+		$p = self::get(self::PAGE) . "/View";
+		break;
 
 	case self::PUBLICFILES:
-		return self::get(self::SRC) . "/PublicFiles";
+		$p = self::get(self::SRC) . "/PublicFiles";
+		break;
 
 	case self::ROOT:
-		return dirname($_SERVER["DOCUMENT_ROOT"]);
+		$p = dirname($_SERVER["DOCUMENT_ROOT"]);
+		break;
 
 	case self::SCRIPT:
-		return self::get(self::SRC) . "/Script";
+		$p = self::get(self::SRC) . "/Script";
+		break;
 
 	case self::API:
-		return self::get(self::SRC) . "/API";
+		$p = self::get(self::SRC) . "/API";
+		break;
 
 	case self::APICODE:
-		return self::get(self::API) . "/Code";
+		$p = self::get(self::API) . "/Code";
+		break;
 
 	case self::APITOOL:
-		return self::get(self::API) . "/Tool";
+		$p = self::get(self::API) . "/Tool";
+		break;
 
 	case self::APIVIEW:
-		return self::get(self::API) . "/View";
+		$p = self::get(self::API) . "/View";
+		break;
 
 	case self::SRC:
-		return self::get(self::ROOT) . "/src";
+		$p = self::get(self::ROOT) . "/src";
+		break;
 
 	case self::STYLE:
-		return self::get(self::SRC) . "/Style";
+		$p = self::get(self::SRC) . "/Style";
+		break;
 
 	case self::WWW:
-		return self::get(self::ROOT) . "/www";
+		$p = self::get(self::ROOT) . "/www";
+		break;
 
 	case self::GTROOT:
-		return realpath(__DIR__ . "/../../");
+		$p = realpath(__DIR__ . "/../../");
+		break;
 
 	default:
 		throw new \UnexpectedValueException("Invalid path: $name");
 	}
+
+	return self::fixCase($p);
+}
+
+/**
+ * Takes an absolute path and checks the case for each directory in the tree,
+ * correcting it according to what is actually stored on disk.
+ *
+ * @param string $path Original path
+ * @param bool $uriPath Defaults to false. Set to true to treat the path as a
+ * uri, prefixing with the PAGEVIEW path automatically in order to use as
+ * an absolute path.
+ *
+ * @return string Correctly-cased path. Returns in URI style if $uriPath is set
+ * to true.
+ */
+public static function fixCase($path, $uriPath = false) {
+	if($uriPath) {
+		$path = self::get(self::PAGEVIEW) . $path;
+	}
+
+	$pathArray = explode("/", $path);
+
+	$currentPath = "";
+	foreach ($pathArray as $i => $p) {
+		if(!file_exists($currentPath . "/" . $p)) {
+			if(!is_dir($currentPath)) {
+				continue;
+			}
+
+			foreach (new \DirectoryIterator($currentPath) as $fileInfo) {
+				if($fileInfo->isDot()) {
+					continue;
+				}
+
+				$filename = $fileInfo->getFilename();
+
+				if(strcasecmp($filename, $p) === 0) {
+					$pathArray[$i] = $filename;
+				}
+				else if(strcasecmp($filename, $p . ".html") === 0) {
+					$pathArray[$i] = $filename;
+				}
+			}
+		}
+		$currentPath .= $pathArray[$i] . "/";
+	}
+
+	$result = implode("/", $pathArray);
+
+	if($uriPath) {
+		$result = substr($result, strlen(self::get(self::PAGEVIEW)) );
+	}
+
+	return $result;
 }
 
 }#

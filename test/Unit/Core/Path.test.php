@@ -9,10 +9,22 @@ namespace Gt\Core;
 class Path_Test extends \PHPUnit_Framework_TestCase {
 
 private $tmp;
+private $root;
+private $src;
 
 public function setup() {
-	$this->tmp = sys_get_temp_dir() . "/root";
-	$_SERVER["DOCUMENT_ROOT"] = $this->tmp;
+	$this->tmp = sys_get_temp_dir() . "/gt-temp-path-test";
+	if(!is_dir($this->tmp)) {
+		mkdir($this->tmp, 0775, true);
+	}
+
+	$this->root = $this->tmp . "/www";
+	$this->src = $this->tmp . "/src";
+	$_SERVER["DOCUMENT_ROOT"] = $this->tmp . "/www";
+}
+
+public function teardown() {
+	\Gt\Test\Helper::cleanup($this->tmp);
 }
 
 public function testPathThrowsExceptionFromInvalidConstant() {
@@ -22,7 +34,7 @@ public function testPathThrowsExceptionFromInvalidConstant() {
 }
 
 public function testRootSet() {
-	$this->assertEquals(dirname($this->tmp), Path::get(Path::ROOT));
+	$this->assertEquals(dirname($this->root), Path::get(Path::ROOT));
 }
 
 public function testGetSubPaths() {
@@ -36,7 +48,7 @@ public function testGetSubPaths() {
 
 		$this->assertNotEmpty($path);
 		if($constName !== "GTROOT") {
-			$this->assertContains(dirname($this->tmp), $path);
+			$this->assertContains(dirname($this->root), $path);
 		}
 	}
 }
@@ -44,6 +56,33 @@ public function testGetSubPaths() {
 public function testGetGtRoot() {
 	$gtroot = realpath(__DIR__ . "/../../../");
 	$this->assertEquals($gtroot, Path::get(Path::GTROOT));
+}
+
+public function testFixCase() {
+	$styleSubDir = $this->src . "/style/DirName";
+	mkdir($styleSubDir, 0775, true);
+
+	$this->assertEquals($styleSubDir,
+		Path::fixCase(Path::get(Path::STYLE) . "/DirName"));
+
+	$pageViewPath = $this->src . "/page/View";
+	$pageViewFilePath = "/Subdirectory/CAPITALS/FILE_test";
+	$pageViewExtension = ".html";
+	$pageViewPath_full = $pageViewPath . $pageViewFilePath . $pageViewExtension;
+	$pageViewPath_uri = $pageViewFilePath;
+
+	mkdir(dirname($pageViewPath_full), 0775, true);
+	file_put_contents($pageViewPath_full, "<!doctype html><h1>TEST!</h1>");
+
+	$this->assertEquals($pageViewPath_full,
+		Path::fixCase(Path::get(Path::PAGEVIEW)
+		. "/subdirectory/capitals/file_test.html")
+	);
+
+	// Test URI-style
+	$uri = "/subDirectory/Capitals/File_Test.html";
+	$this->assertEquals($pageViewPath_uri . $pageViewExtension,
+		Path::fixCase($uri, true));
 }
 
 }#

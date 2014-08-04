@@ -1,5 +1,6 @@
 <?php
 /**
+ * TODO: Docs
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -7,17 +8,26 @@
  */
 namespace Gt\Dispatcher;
 
+use \Gt\Core\Path;
+
 class PageDispatcher extends Dispatcher {
 
-public function createResponseContent() {
-	$domDocument = new \Gt\Response\Dom\Document();
-
-	// TODO: Find the paths, something like the following?
-	// $htmlPath = $this->getPath(Dispatcher::PATH_HTML);
-
-	$domDocument->load();
+protected function createResponseContent($html) {
+	$domDocument = new \Gt\Response\Dom\Document($html);
 
 	return $domDocument;
+}
+
+/**
+ * From the Requested URI, .... TODO: Docs.
+ */
+protected function getPath($uri) {
+	$pageViewDir = Path::fixCase(Path::get(Path::PAGEVIEW) . $uri, true);
+	var_dump($pageViewDir);die();
+}
+
+protected function loadSource($path) {
+
 }
 
 }#

@@ -1,5 +1,6 @@
 <?php
 /**
+ * TODO: Docs
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -13,8 +14,16 @@ class Document extends ResponseContent {
 
 private $domDocument;
 
-public function __construct() {
+/**
+ * Passing in the HTML to parse as an optional first parameter automatically
+ * calls the load function with provided HTML content.
+ */
+public function __construct($html = null) {
 	$this->domDocument = new \DOMDocument("1.0", "utf-8");
+
+	if(!is_null($html)) {
+		$this->load($html);
+	}
 }
 
 public function __toString() {
