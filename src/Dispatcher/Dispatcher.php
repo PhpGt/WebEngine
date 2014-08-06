@@ -19,8 +19,7 @@ private $response;
 private $apiFactory;
 private $dbFactory;
 
-public function __construct(Request $request, Response $response,
-ApiFactory $apiFactory, DatabaseFactory $dbFactory) {
+public function __construct($request, $response, $apiFactory, $dbFactory) {
 	$this->request = $request;
 	$this->response = $response;
 	$this->apiFactory = $apiFactory;

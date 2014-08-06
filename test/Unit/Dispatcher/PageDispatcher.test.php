@@ -8,16 +8,31 @@ namespace Gt\Dispatcher;
 
 class PageDispatcher_Test extends \PHPUnit_Framework_TestCase {
 
-public function testTest() {
-	$request 	= $this->getMock("\Gt\Request\Request");
-	$response	= $this->getMock("\Gt\Response\Reponse");
-	$apiFactory	= $this->getMock("\Gt\Api\ApiFactory");
-	$dbFactory	= $this->getMock("\Gt\Database\DatabaseFactory");
+private $dispatcher;
 
-	$dispatcher = new PageDispatcher(
+public function setUp() {
+	$cfg = new \Gt\Core\ConfigObj();
+
+	$request 	= $this->getMock("\Gt\Request\Request", null, [
+		"/", $cfg,
+	]);
+	$response	= $this->getMock("\Gt\Response\Reponse", null);/*, [
+		$cfg
+	]);*/
+	$apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
+		$cfg
+	]);
+	$dbFactory	= $this->getMock("\Gt\Database\DatabaseFactory", null, [
+		$cfg
+	]);
+
+	$this->dispatcher = new PageDispatcher(
 		$request, $response, $apiFactory, $dbFactory);
+}
 
-	$this->assertTrue(true);
+public function testDispatcherCreated() {
+	$this->assertInstanceOf("\Gt\Dispatcher\PageDispatcher",
+		$this->dispatcher);
 }
 
 }#
