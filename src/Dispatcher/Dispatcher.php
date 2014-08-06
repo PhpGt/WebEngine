@@ -34,14 +34,14 @@ ApiFactory $apiFactory, DatabaseFactory $dbFactory) {
  *
  * @return string The absolute path on disk to the source content file
  */
-abstract protected function getPath($uri);
+abstract public function getPath($uri);
 
 /**
  * From given file path, return the serialised content. This will either be a
  * raw file representation, or a concatenation or compilation of pre-processed
  * file types (for example, returning the HTML source for a Markdown file).
  */
-abstract protected function loadSource($path);
+abstract public function loadSource($path);
 
 /**
  * Creates a suitable ResponseContent object for the type of dispatcher.
@@ -50,7 +50,7 @@ abstract protected function loadSource($path);
  *
  * @return ResponseContent The object to serialise as part of the HTTP response
  */
-abstract protected function createResponseContent($content);
+abstract public function createResponseContent($content);
 
 /**
  * Performs the dispatch cycle.

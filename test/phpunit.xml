@@ -1,14 +1,8 @@
 <?xml version="1.0"?>
 <phpunit bootstrap="Unit/Bootstrap.php">
 	<testsuites>
-		<testsuite name="Cli Tests">
-			<directory suffix=".test.php">Unit/Cli</directory>
-		</testsuite>
-		<testsuite name="Core Tests">
-			<directory suffix=".test.php">Unit/Core</directory>
-		</testsuite>
-		<testsuite name="Request Tests">
-			<directory suffix=".test.php">Unit/Request</directory>
+		<testsuite name="Unit Tests">
+			<directory suffix=".test.php">Unit</directory>
 		</testsuite>
 	</testsuites>
 	<logging>

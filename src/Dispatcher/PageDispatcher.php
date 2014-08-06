@@ -12,7 +12,7 @@ use \Gt\Core\Path;
 
 class PageDispatcher extends Dispatcher {
 
-protected function createResponseContent($html) {
+public function createResponseContent($html) {
 	$domDocument = new \Gt\Response\Dom\Document($html);
 
 	return $domDocument;
@@ -21,12 +21,12 @@ protected function createResponseContent($html) {
 /**
  * From the Requested URI, .... TODO: Docs.
  */
-protected function getPath($uri) {
+public function getPath($uri) {
 	$pageViewDir = Path::fixCase(Path::get(Path::PAGEVIEW) . $uri, true);
 	var_dump($pageViewDir);die();
 }
 
-protected function loadSource($path) {
+public function loadSource($path) {
 
 }
 
