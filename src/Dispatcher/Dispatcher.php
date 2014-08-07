@@ -65,10 +65,11 @@ public function process() {
 	// Get the directory path representing the request.
 	$path = $this->getPath($this->request->uri);
 	// Get the requested filename, or index filename if none set.
-	$filename = basename($this->request->uri);
-	if(empty($filename)) {
-		$filename = $this->request->indexFilename;
-	}
+	$filename = $this->getFilename(
+		$this->request->uri,
+		$this->request->indexFilename,
+		$path
+	);
 
 	try {
 		// Load the source view from the path on disk and requested filename.
@@ -98,6 +99,23 @@ public function process() {
 	// executed.
 	// $this->manifest....
 	$content->flush();
+}
+
+/**
+ * Gets the name of the requested file in the current directory path, or returns
+ * the default index filename if the directory is requested.
+ * TODO: Needs test!
+ */
+public function getFilename($uri, $indexFilename, $path) {
+	$filename = basename($this->request->uri);
+	if(empty($filename)
+	// TODO: Temporary solution. Needs to be robust, so nested directories of
+	// the same name are possible.
+	|| strtolower($filename) === strtolower(basename($path))) {
+		$filename = $this->request->indexFilename;
+	}
+
+	return $filename;
 }
 
 }#
