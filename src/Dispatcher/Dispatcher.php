@@ -11,6 +11,7 @@ use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
+use \Gt\Response\NotFoundException;
 
 abstract class Dispatcher {
 
@@ -69,8 +70,14 @@ public function process() {
 		$filename = $this->request->indexFilename;
 	}
 
-	// Load the source view from the path on disk and requested filename.
-	$source = $this->loadSource($path, $filename);
+	try {
+		// Load the source view from the path on disk and requested filename.
+		$source = $this->loadSource($path, $filename);
+	}
+	catch(NotFoundException $e) {
+		// TODO: Handle 404 error here.
+	}
+
 	// Instantiate the response content object, for manipulation in Code.
 	$content = $this->createResponseContent($source);
 
