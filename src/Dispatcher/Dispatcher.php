@@ -61,10 +61,17 @@ abstract public function createResponseContent($content);
 public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
+	// Get the directory path representing the request.
 	$path = $this->getPath($this->request->uri);
+	// Get the requested filename, or index filename if none set.
 	$filename = basename($this->request->uri);
+	if(empty($filename)) {
+		$filename = $this->request->indexFilename;
+	}
 
+	// Load the source view from the path on disk and requested filename.
 	$source = $this->loadSource($path, $filename);
+	// Instantiate the response content object, for manipulation in Code.
 	$content = $this->createResponseContent($source);
 
 	// Construct and assign ResponseCode object, which is a collection of
