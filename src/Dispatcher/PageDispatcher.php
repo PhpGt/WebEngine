@@ -15,7 +15,15 @@ class PageDispatcher extends Dispatcher {
 public function getPath($uri) {
 	$pageViewDir = Path::fixCase(Path::get(Path::PAGEVIEW) . $uri);
 	if(!is_dir($pageViewDir)) {
-		$pageViewDir = dirname($pageViewDir);
+		$pageViewDir_container = dirname($pageViewDir);
+
+		if(!is_dir($pageViewDir_container)) {
+			throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
+				$pageViewDir
+			);
+		}
+
+		$pageViewDir = $pageViewDir_container;
 	}
 
 	return $pageViewDir;
