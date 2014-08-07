@@ -9,6 +9,7 @@
 namespace Gt\Dispatcher;
 
 use \Gt\Core\Path;
+use \Gt\Response\NotFoundException;
 
 class PageDispatcher extends Dispatcher {
 
@@ -18,7 +19,7 @@ public function getPath($uri) {
 		$pageViewDir_container = dirname($pageViewDir);
 
 		if(!is_dir($pageViewDir_container)) {
-			throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
+			throw new NotFoundException(
 				$pageViewDir
 			);
 		}
