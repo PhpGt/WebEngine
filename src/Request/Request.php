@@ -25,6 +25,7 @@ public $uri;
 public $ext;
 public $method;
 public $headers;
+public $indexFilename;
 
 private $config;
 
@@ -41,6 +42,7 @@ public function __construct($uri, ConfigObj $config) {
 		? $_SERVER["REQUEST_METHOD"]
 		: null;
 	$this->headers = new HeaderList($_SERVER);
+	$this->indexFilename = $config->index_filename;
 }
 
 /**
