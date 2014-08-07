@@ -39,8 +39,12 @@ abstract public function getPath($uri);
  * From given file path, return the serialised content. This will either be a
  * raw file representation, or a concatenation or compilation of pre-processed
  * file types (for example, returning the HTML source for a Markdown file).
+ *
+ * @param string $path The absolute path on disk to the requested source
+ * directory
+ * @param string $filename The requested base filename
  */
-abstract public function loadSource($path);
+abstract public function loadSource($path, $filename);
 
 /**
  * Creates a suitable ResponseContent object for the type of dispatcher.
@@ -58,7 +62,9 @@ public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
 	$path = $this->getPath($this->request->uri);
-	$source = $this->loadSource($path);
+	$filename = basename($this->request->uri);
+
+	$source = $this->loadSource($path, $filename);
 	$content = $this->createResponseContent($source);
 
 	// Construct and assign ResponseCode object, which is a collection of
