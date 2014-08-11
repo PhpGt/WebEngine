@@ -13,11 +13,7 @@ private $root;
 private $src;
 
 public function setup() {
-	$this->tmp = sys_get_temp_dir() . "/gt-temp-path-test";
-	if(!is_dir($this->tmp)) {
-		mkdir($this->tmp, 0775, true);
-	}
-
+	$this->tmp = \Gt\Test\Helper::createTmpDir();
 	$this->root = $this->tmp . "/www";
 	$this->src = $this->tmp . "/src";
 	$_SERVER["DOCUMENT_ROOT"] = $this->tmp . "/www";

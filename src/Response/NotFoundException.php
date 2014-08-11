@@ -12,7 +12,7 @@ class NotFoundException extends \Gt\Core\Exception\GtException {
 
 public function __construct() {
 	http_response_code(404);
-	call_user_func_array([parent, "construct"], func_get_args());
+	call_user_func_array([$this, "parent::" . __FUNCTION__], func_get_args());
 }
 
 }#
