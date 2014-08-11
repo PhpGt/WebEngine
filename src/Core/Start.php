@@ -29,18 +29,11 @@ public function __construct($uri) {
 	}
 
 	$config = new Config();
+	$production = $config["app"]->production;
 
 	$standardiser = new Standardiser();
 	$uriFixed = $standardiser->fixUri($uri, $config["request"]);
-	if($uri !== $uriFixed) {
-		// Only perform permanent redirects on production applications.
-		$code = 302;
-		if($config["app"]->production) {
-			$code = 301;
-		}
-
-		return new Redirect($uriFixed, $code);
-	}
+	$this->redirect($uri, $uriFixed, $production);
 
 	$request  = new Request ($uri, $config["request"]);
 	$response = new Response($config["response"]);
@@ -55,7 +48,29 @@ public function __construct($uri) {
 		$dbFactory
 	);
 
-	$dispatcher->process();
+	$this->redirect($uri, $dispatcher->process(), $production);
+}
+
+/**
+ * @param string $uri1 Originally requested URI.
+ * @param string $uri2 Fixed or changed URI.
+ *
+ * @return Redirect Object representing the redirection.
+ */
+private function redirect($uri1, $uri2, $production) {
+	if(is_null($uri1) || is_null($uri2)) {
+		return;
+	}
+
+	if(strcmp($uri1, $uri2) !== 0) {
+		// Only perform permanent redirects on production applications.
+		$code = 302;
+		if($production) {
+			$code = 301;
+		}
+
+		return new Redirect($uri2, $code);
+	}
 }
 
 }#

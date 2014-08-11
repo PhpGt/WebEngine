@@ -44,7 +44,7 @@ public function fixUri($uri, ConfigObj $config) {
 }
 
 /**
- * If pageview_html_extension configuration value is true, requests to
+ * If force_extension configuration value is true, requests to
  * directories have .html appended to them.
  *
  * @param string $uri The request URI
@@ -55,13 +55,13 @@ public function fixUri($uri, ConfigObj $config) {
  * @return string The fixed URI.
  */
 public function fixHtmlExtension($uri, $file, $ext, ConfigObj $config) {
-	if(!isset($config->pageview_html_extension)) {
+	if(!isset($config->force_extension)) {
 		return $uri;
 	}
 
 	$lastChar = substr($uri, -1);
 
-	if($config->pageview_html_extension) {
+	if($config->force_extension) {
 		if(empty($ext) && !empty($file)) {
 			if($lastChar === "/") {
 				$uri = substr($uri, 0, -1)

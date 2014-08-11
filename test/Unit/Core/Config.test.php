@@ -24,10 +24,10 @@ public function setUp() {
 
 public function tearDown() {
 	if(is_file($this->configPath)) {
-		unlink($this->configPath);		
+		unlink($this->configPath);
 	}
 	if(is_dir($this->root)) {
-		rmdir($this->root);		
+		rmdir($this->root);
 	}
 }
 
@@ -78,7 +78,7 @@ CFG;
 public function testDefaultConfigMerges() {
 	$cfgString = <<<CFG
 [request]
-pageview_html_extension = true
+force_extension = true
 
 [database]
 driver = "MySQL"
@@ -93,7 +93,7 @@ CFG;
 
 	$configDefault = [
 		"request" => [
-			"pageview_html_extension" => false,
+			"force_extension" => false,
 			"pageview_trailing_slash" => false,
 		],
 		"database" => [
@@ -108,7 +108,7 @@ CFG;
 	];
 	$config = new Config($configDefault);
 
-	$this->assertTrue(true == $config["request"]->pageview_html_extension);
+	$this->assertTrue(true == $config["request"]->force_extension);
 	$this->assertTrue(false == $config["request"]->pageview_trailing_slash);
 	$this->assertNotEquals("mysql", $config["database"]->driver);
 	$this->assertTrue(false == $config["app"]->production);

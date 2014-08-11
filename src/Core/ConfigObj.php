@@ -11,7 +11,7 @@ namespace Gt\Core;
 /**
  * @property string $api_prefix
  * @property string $api_default_type
- * @property bool $pageview_html_extension
+ * @property bool $force_extension
  * @property bool $pageview_trailing_directory_slash
  * @property string $index_filename
  * @property bool $index_force

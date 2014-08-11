@@ -31,10 +31,12 @@ public function __construct($request, $response, $apiFactory, $dbFactory) {
  * From the provided URI, return the correct path where the source content is
  * located.
  * @param string $uri The requested uri
+ * @param string $fixedUri (Pass-by-reference) URI representing
+ * the requested file on disk, after being fixed for spelling and or case.
  *
  * @return string The absolute path on disk to the source content file
  */
-abstract public function getPath($uri);
+abstract public function getPath($uri, &$fixedUri);
 
 /**
  * From given file path, return the serialised content. This will either be a
@@ -63,15 +65,31 @@ public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
 	// Get the directory path representing the request.
-	$path = $this->getPath($this->request->uri);
-	// Get the requested filename, or index filename if none set.
-	$filename = $this->getFilename(
-		$this->request->uri,
-		$this->request->indexFilename,
-		$path
-	);
-
 	try {
+		$path = $this->getPath($this->request->uri, $fixedUri);
+		if($this->request->forceExtension) {
+			if(strrpos($fixedUri, ".html")
+			!== strlen($fixedUri) - strlen(".html")) {
+				$fixedUri .= ".html";
+			}
+		}
+		else {
+			if(strrpos($fixedUri, ".html")
+			=== strlen($fixedUri) - strlen(".html")) {
+				$fixedUri = substr($fixedUri, 0, -strlen(".html"));
+			}
+		}
+		if(strcmp($this->request->uri, $fixedUri) !== 0) {
+
+			return $fixedUri;
+		}
+		// Get the requested filename, or index filename if none set.
+		$filename = $this->getFilename(
+			$this->request->uri,
+			$this->request->indexFilename,
+			$path
+		);
+
 		// Load the source view from the path on disk and requested filename.
 		$source = $this->loadSource($path, $filename);
 	}

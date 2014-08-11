@@ -26,6 +26,7 @@ public $ext;
 public $method;
 public $headers;
 public $indexFilename;
+public $forceExtension;
 
 private $config;
 
@@ -43,6 +44,7 @@ public function __construct($uri, ConfigObj $config) {
 		: null;
 	$this->headers = new HeaderList($_SERVER);
 	$this->indexFilename = $config->index_filename;
+	$this->forceExtension = $config->force_extension;
 }
 
 /**

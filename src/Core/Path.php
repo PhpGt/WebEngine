@@ -116,18 +116,14 @@ public static function get($name) {
  * correcting it according to what is actually stored on disk.
  *
  * @param string $path Original path
- * @param bool $uriPath Defaults to false. Set to true to treat the path as a
- * uri, prefixing with the PAGEVIEW path automatically in order to use as
- * an absolute path.
+ * @param bool|string $stripPrefix Defaults to false. Set to non-false string to
+ * treat the returned path as a uri, removing the provided urlPath prefix
+ * automatically in order to use as an absolute URI.
  *
- * @return string Correctly-cased path. Returns in URI style if $uriPath is set
- * to true.
+ * @return string Correctly-cased path. Returns in URI style if $stripPrefix
+ * is set to a non-null string.
  */
-public static function fixCase($path, $uriPath = false) {
-	if($uriPath) {
-		$path = self::get(self::PAGEVIEW) . $path;
-	}
-
+public static function fixCase($path, $stripPrefix = false) {
 	$pathArray = explode("/", $path);
 
 	$currentPath = "";
@@ -142,13 +138,13 @@ public static function fixCase($path, $uriPath = false) {
 					continue;
 				}
 
-				$filename = $fileInfo->getFilename();
+				$fileName = $fileInfo->getFilename();
 
-				if(strcasecmp($filename, $p) === 0) {
-					$pathArray[$i] = $filename;
+				if(strcasecmp($fileName, $p) === 0) {
+					$pathArray[$i] = $fileName;
 				}
-				else if(strcasecmp($filename, $p . ".html") === 0) {
-					$pathArray[$i] = $filename;
+				else if(strcasecmp($fileName, $p . ".html") === 0) {
+					$pathArray[$i] = $fileName;
 				}
 			}
 		}
@@ -157,8 +153,9 @@ public static function fixCase($path, $uriPath = false) {
 
 	$result = implode("/", $pathArray);
 
-	if($uriPath) {
-		$result = substr($result, strlen(self::get(self::PAGEVIEW)) );
+	if(false !== $stripPrefix
+	&& strpos($result, $stripPrefix) === 0) {
+		$result = substr($result, strlen($stripPrefix) );
 	}
 
 	return $result;
