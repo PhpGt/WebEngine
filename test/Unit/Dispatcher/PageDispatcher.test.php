@@ -34,7 +34,7 @@ public function setUp() {
 }
 
 public function tearDown() {
-	// \Gt\Test\Helper::cleanup($this->tmp);
+	\Gt\Test\Helper::cleanup($this->tmp);
 }
 
 private $uriList = [
@@ -53,6 +53,11 @@ public function data_uris() {
 
 	foreach ($this->uriList as $uri) {
 		$return []= [$uri];
+		if(strlen($uri) === 1
+		|| substr($uri, -1) === "/") {
+			continue;
+		}
+
 		$return []= [$uri . ".html"];
 		$return []= [$uri . ".json"];
 		$return []= [$uri . ".jpg"];
@@ -78,18 +83,19 @@ public function testGetPathThrowsExceptionWhenNoDirectoryExists($uri) {
  */
 public function testGetPathFromUri($uri) {
 	$filePath = $this->pageViewDir . $uri;
-	if(!is_dir(dirname($filePath)) ) {
-		mkdir(dirname($filePath), 0775, true);
-	}
+	$dirname = (substr($filePath, -1) === "/")
+		? $filePath
+		: dirname($filePath);
 
-	var_dump(is_dir($filePath));
+	if(!is_dir($dirname) ) {
+		mkdir($dirname, 0775, true);
+	}
 
 	if(is_dir($filePath)) {
 		file_put_contents($filePath . "/index.test", "dummy data");
 		$uri .= "index";
 	}
 	else {
-		var_dump($filePath);
 		file_put_contents($filePath, "dummy data");
 	}
 
