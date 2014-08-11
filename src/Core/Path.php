@@ -119,11 +119,14 @@ public static function get($name) {
  * @param bool|string $stripPrefix Defaults to false. Set to non-false string to
  * treat the returned path as a uri, removing the provided urlPath prefix
  * automatically in order to use as an absolute URI.
+ * @param bool|string $stripSuffix Defaults to false. Set to non-false string to
+ * automatically remove the provided string ending.
  *
  * @return string Correctly-cased path. Returns in URI style if $stripPrefix
  * is set to a non-null string.
  */
-public static function fixCase($path, $stripPrefix = false) {
+public static function fixCase($path,
+$stripPrefix = false, $stripSuffix = false) {
 	$pathArray = explode("/", $path);
 
 	$currentPath = "";
@@ -156,6 +159,11 @@ public static function fixCase($path, $stripPrefix = false) {
 	if(false !== $stripPrefix
 	&& strpos($result, $stripPrefix) === 0) {
 		$result = substr($result, strlen($stripPrefix) );
+	}
+
+	if(false !== $stripSuffix
+	&& substr($result, -strlen($stripSuffix)) === $stripSuffix) {
+		$result = substr($result, 0, -strlen($stripSuffix));
 	}
 
 	return $result;

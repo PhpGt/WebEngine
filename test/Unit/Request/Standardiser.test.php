@@ -83,13 +83,13 @@ public function testFixHtmlExtension($uri) {
 		$uri, $file, $ext, new ConfigObj()) );
 
 	$config = new ConfigObj();
-	$config->pageview_html_extension = false;
+	$config->force_extension = false;
 
 	$fixed = $standardiser->fixHtmlExtension($uri, $file, $ext, $config);
 	$this->assertNotRegexp("/\.html.?$/", $fixed);
 
 	$config = new ConfigObj();
-	$config->pageview_html_extension = true;
+	$config->force_extension = true;
 
 	$fixed = $standardiser->fixHtmlExtension($uri, $file, $ext, $config);
 	if(empty($ext)) {
