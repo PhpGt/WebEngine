@@ -86,6 +86,7 @@ public function testGetPathFromUri($uri) {
 	$dirname = (substr($filePath, -1) === "/")
 		? $filePath
 		: dirname($filePath);
+	$dirname = rtrim($dirname, "/");
 
 	if(!is_dir($dirname) ) {
 		mkdir($dirname, 0775, true);
@@ -100,7 +101,8 @@ public function testGetPathFromUri($uri) {
 	}
 
 	$path = $this->dispatcher->getPath($uri, $fixedUri);
-	$this->assertInternalType("string", $path);
+
+	$this->assertEquals($path, $dirname);
 }
 
 // public function testGetPathFixesUri() {

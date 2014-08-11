@@ -34,7 +34,7 @@ public function getPath($uri, &$fixedUri) {
 		$pageViewDir = $pageViewDir_container;
 	}
 
-	return $pageViewDir;
+	return rtrim($pageViewDir, "/");
 }
 
 public function loadSource($path, $pathFile) {
