@@ -38,7 +38,47 @@ public function getPath($uri, &$fixedUri) {
 }
 
 public function loadSource($path, $pathFile) {
-	// Only load .html files (for now).
+	$source = "";
+	$headerSource = "";
+	$footerSource = "";
+
+	// Look for a header and footer view file up the tree.
+	$headerFooterPathTop = dirname(Path::get(Path::PAGEVIEW));
+	$headerFooterPath = realpath($path);
+	do {
+		foreach (new \DirectoryIterator($headerFooterPath) as $fileInfo) {
+			if($fileInfo->isDot()) {
+				continue;
+			}
+
+			$fileName = $fileInfo->getFilename();
+			$fileBase = strtok($fileName, ".");
+			if($fileName[0] !== "_") {
+				continue;
+			}
+
+			$specialName = substr(strtolower($fileBase), 1);
+			$fullPath = implode("/", [$headerFooterPath, $fileName]);
+
+			switch($specialName) {
+			case "header":
+				$headerSource = file_get_contents($fullPath);
+				break;
+
+			case "footer":
+				$footers = file_get_contents($fullPath);
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		// Go up a directory...
+		$headerFooterPath = realpath($headerFooterPath . "/..");
+		// ... until we are above the Page View directory.
+	} while ($headerFooterPath !== $headerFooterPathTop);
+
 	foreach (new \DirectoryIterator($path) as $fileInfo) {
 		if($fileInfo->isDot()) {
 			continue;
@@ -49,9 +89,15 @@ public function loadSource($path, $pathFile) {
 
 		if(strcasecmp($fileBase, $pathFile) === 0) {
 			$fullPath = implode("/", [$path, $fileName]);
-			return file_get_contents($fullPath);
+			$source .= file_get_contents($fullPath);
 		}
 	}
+
+	return implode("\n", [
+		$headerSource,
+		$source,
+		$footerSource,
+	]);
 
 	throw new NotFoundException(implode("/", [$path, $pathFile]));
 }

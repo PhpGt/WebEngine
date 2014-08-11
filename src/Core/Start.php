@@ -48,6 +48,8 @@ public function __construct($uri) {
 		$dbFactory
 	);
 
+	// Dispatcher::process returns null on a successful call, only returning
+	// a string when a redirect is required.
 	$this->redirect($uri, $dispatcher->process(), $production);
 }
 

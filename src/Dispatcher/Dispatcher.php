@@ -80,7 +80,7 @@ public function process() {
 			}
 		}
 		if(strcmp($this->request->uri, $fixedUri) !== 0) {
-
+			// Returning early will cause Start to create a Redirect object.
 			return $fixedUri;
 		}
 		// Get the requested filename, or index filename if none set.
