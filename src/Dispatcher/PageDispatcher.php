@@ -17,10 +17,6 @@ public function getPath($uri, &$fixedUri) {
 	$pageViewPath = Path::get(Path::PAGEVIEW);
 	$pageViewDir = Path::fixCase($pageViewPath . $uri);
 	$fixedUri = Path::fixCase($pageViewPath . $uri, $pageViewPath);
-	// Normalise directory path so no return values have trailing slash.
-	if(substr($pageViewDir, -1) === "/") {
-		$pageViewDir = substr($pageViewDir, 0, -1);
-	}
 
 	if(!is_dir($pageViewDir)) {
 		$pageViewDir_container = dirname($pageViewDir);
