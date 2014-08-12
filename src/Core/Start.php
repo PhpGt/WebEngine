@@ -31,6 +31,8 @@ public function __construct($uri) {
 	$config = new Config();
 	$production = $config["app"]->production;
 
+	$this->setupEnvironment($config);
+
 	$standardiser = new Standardiser();
 	$uriFixed = $standardiser->fixUri($uri, $config["request"]);
 	$this->redirect($uri, $uriFixed, $production);
@@ -73,6 +75,17 @@ private function redirect($uri1, $uri2, $production) {
 
 		return new Redirect($uri2, $code);
 	}
+}
+
+/**
+ * Simple bootstrapping function to set PHP environment according to
+ * configuration options.
+ *
+ * @param ConfigObj $config This application's Configuration object
+ */
+private function setupEnvironment($config) {
+	ini_set("default_charset", $config["app"]->encoding);
+	mb_internal_encoding($config["app"]->encoding);
 }
 
 }#
