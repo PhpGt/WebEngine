@@ -18,4 +18,9 @@
 		<log type="coverage-text"
             target="php://stdout" showUncoveredFiles="true" />
 	</logging>
+	<filter>
+		<blacklist>
+			<file>Unit/Bootstrap.php</file>
+		</blacklist>
+	</filter>
 </phpunit>
