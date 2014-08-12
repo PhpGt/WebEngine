@@ -79,17 +79,21 @@ public static function cleanup($dirPath) {
  * @return string The provided string with each character randomised in case
  */
 public static function randomiseCase($string) {
-	for ($i = 0, $len = strlen($string); $i < $len; $i++) {
-		$c = $string[$i];
-		if(mt_rand(0, 1)) {
-			$string[$i] = strtoupper($c);
-		}
-		else {
-			$string[$i] = strtolower($c);
+	$return = $string;
+	while($string === $return
+	&& strlen($string) > 1) {
+		for ($i = 0, $len = strlen($return); $i < $len; $i++) {
+			$c = $return[$i];
+			if(mt_rand(0, 1)) {
+				$return[$i] = strtoupper($c);
+			}
+			else {
+				$return[$i] = strtolower($c);
+			}
 		}
 	}
 
-	return $string;
+	return $return;
 }
 
 }#

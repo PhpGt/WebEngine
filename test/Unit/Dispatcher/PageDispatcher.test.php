@@ -108,8 +108,33 @@ public function testGetPathFromUri($uri) {
  * @dataProvider data_uris
  */
 public function testGetPathFixesUri($uri) {
-	$filePath = $this->pageViewDir . $uri;
-	$this->assertInternalType("string", $filePath, 'dummy test');
+	$uriRand = \Gt\Test\Helper::randomiseCase($uri);
+	$filePath = $this->pageViewDir . $uriRand;
+	$dirname = (substr($filePath, -1) === "/")
+		? $filePath
+		: dirname($filePath);
+	$dirname = rtrim($dirname, "/");
+	$filePath = rtrim($filePath, "/");
+
+	if(!is_dir($dirname) ) {
+		mkdir($dirname, 0775, true);
+	}
+
+	if(is_dir($filePath)) {
+		$index = \Gt\Test\Helper::randomiseCase("index");
+		file_put_contents($filePath . "/$index.test", "dummy data");
+		$uri .= "index";
+	}
+	else {
+		file_put_contents($filePath, "dummy data");
+	}
+
+	$path = $this->dispatcher->getPath($uri, $fixedUri);
+
+	if($filePath !== $dirname) {
+		$this->assertNotEquals($fixedUri, $uri);
+		$this->assertEquals(strtolower($fixedUri), strtolower($uri));
+	}
 }
 
 // public function testLoadSourceFromPath() {
