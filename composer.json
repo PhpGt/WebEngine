@@ -26,9 +26,15 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "4.1.*",
-        "satooshi/php-coveralls": "dev-master"
+		"satooshi/php-coveralls": "dev-master",
+		"behat/behat": "*",
+		"behat/mink": "*",
+		"behat/mink-extension": "*",
+		"sensiolabs/behat-page-object-extension": "*",
+		"behat/mink-goutte-driver": "*",
+		"behat/mink-selenium2-driver": "*"
 	},
-	
+
 	"prefer-stable": true,
 
 	"autoload": {
