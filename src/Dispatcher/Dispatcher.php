@@ -122,15 +122,11 @@ public function process() {
 /**
  * Gets the name of the requested file in the current directory path, or returns
  * the default index filename if the directory is requested.
- * TODO: Needs test!
  */
 public function getFilename($uri, $indexFilename, $path) {
-	$filename = basename($this->request->uri);
-	if(empty($filename)
-	// TODO: Temporary solution. Needs to be robust, so nested directories of
-	// the same name are possible.
-	|| strtolower($filename) === strtolower(basename($path))) {
-		$filename = $this->request->indexFilename;
+	$filename = basename($uri);
+	if(empty($filename) || substr($uri, -1) === "/") {
+		$filename = $indexFilename;
 	}
 
 	return $filename;

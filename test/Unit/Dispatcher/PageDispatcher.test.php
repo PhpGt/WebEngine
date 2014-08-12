@@ -46,6 +46,7 @@ private $uriList = [
 	"/directory/",
 	"/directory/inner-file",
 	"/directory/nested/double-inner-file",
+	"/doubleName/doubleName",
 ];
 
 public function data_uris() {
@@ -215,8 +216,26 @@ public function testCreateResponseContentThrowsTypeException() {
 	$responseContent = $this->dispatcher->createResponseContent($notHtml);
 }
 
-// public function testGetFilenameRequestedFromUri() {
-// 	// Or index filename if none set.
+/**
+ * @dataProvider data_uris
+ */
+public function testGetFilenameRequestedFromUri($uri) {
+	$path = $this->pageViewDir;
+	$filename = $this->dispatcher->getFilename($uri, "index", $path);
+
+	if(substr($uri, -1) === "/") {
+		$this->assertEquals("index", $filename);
+	}
+	else {
+		$this->assertEquals(basename($uri), $filename);
+	}
+}
+
+// /**
+//  * @dataProvider data_uris
+//  */
+// public function testDispatcherFixesUri($uri) {
+
 // }
 
 }#
