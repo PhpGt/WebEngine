@@ -71,4 +71,25 @@ public static function cleanup($dirPath) {
 	return rmdir($dirPath);
 }
 
+/**
+ * Randomises the case of each character in the provided string.
+ *
+ * @param string $string Input string
+ *
+ * @return string The provided string with each character randomised in case
+ */
+public static function randomiseCase($string) {
+	for ($i = 0, $len = strlen($string); $i < $len; $i++) {
+		$c = $string[$i];
+		if(mt_rand(0, 1)) {
+			$string[$i] = strtoupper($c);
+		}
+		else {
+			$string[$i] = strtolower($c);
+		}
+	}
+
+	return $string;
+}
+
 }#

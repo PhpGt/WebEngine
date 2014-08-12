@@ -101,13 +101,16 @@ public function testGetPathFromUri($uri) {
 	}
 
 	$path = $this->dispatcher->getPath($uri, $fixedUri);
-
 	$this->assertEquals($path, $dirname);
 }
 
-// public function testGetPathFixesUri() {
-
-// }
+/**
+ * @dataProvider data_uris
+ */
+public function testGetPathFixesUri($uri) {
+	$filePath = $this->pageViewDir . $uri;
+	$this->assertInternalType("string", $filePath, 'dummy test');
+}
 
 // public function testLoadSourceFromPath() {
 
