@@ -137,7 +137,37 @@ public function testGetPathFixesUri($uri) {
 	}
 }
 
-// public function testLoadSourceFromPath() {
+/**
+ * @dataProvider data_uris
+ */
+public function testLoadSourceFromPath($uri) {
+	$filePath = $this->pageViewDir . $uri;
+	$dirname = (substr($filePath, -1) === "/")
+		? $filePath
+		: dirname($filePath);
+	$dirname = rtrim($dirname, "/");
+	$filePath = rtrim($filePath, "/");
+
+	if(!is_dir($dirname) ) {
+		mkdir($dirname, 0775, true);
+	}
+
+	if(is_dir($filePath)) {
+		file_put_contents($filePath . "/index.test", "dummy data");
+		$uri .= "index";
+	}
+	else {
+		file_put_contents($filePath, "dummy data");
+	}
+
+	$uriFile = basename($uri);
+
+	$source = $this->dispatcher->loadSource($dirname, $uriFile);
+	$source = str_replace("\n", "", $source);
+	$this->assertEquals("dummy data", $source);
+}
+
+// public function testLoadSourceFromPathWithHeaderFooter($uri) {
 
 // }
 

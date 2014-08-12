@@ -37,6 +37,7 @@ public function loadSource($path, $pathFile) {
 	$source = "";
 	$headerSource = "";
 	$footerSource = "";
+	$pathFileBase = strtok($pathFile, ".");
 
 	// Look for a header and footer view file up the tree.
 	$headerFooterPathTop = dirname(Path::get(Path::PAGEVIEW));
@@ -48,11 +49,11 @@ public function loadSource($path, $pathFile) {
 			}
 
 			$fileName = $fileInfo->getFilename();
-			$fileBase = strtok($fileName, ".");
 			if($fileName[0] !== "_") {
 				continue;
 			}
 
+			$fileBase = strtok($fileName, ".");
 			$specialName = substr(strtolower($fileBase), 1);
 			$fullPath = implode("/", [$headerFooterPath, $fileName]);
 
@@ -83,7 +84,7 @@ public function loadSource($path, $pathFile) {
 		$fileName = $fileInfo->getFilename();
 		$fileBase = strtok($fileName, ".");
 
-		if(strcasecmp($fileBase, $pathFile) === 0) {
+		if(strcasecmp($fileBase, $pathFileBase) === 0) {
 			$fullPath = implode("/", [$path, $fileName]);
 			$source .= file_get_contents($fullPath);
 		}
