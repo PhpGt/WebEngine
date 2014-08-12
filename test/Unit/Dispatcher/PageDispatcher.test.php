@@ -269,25 +269,27 @@ public function testDispatcherProcessFixesUri($uri) {
 		file_put_contents($filePath, "dummy data ($uri)");
 	}
 
-	$request = new \StdClass();
-	$request->forceExtension = false;
-	$request->indexFilename = "index";
-	$request->uri = $uriRand;
+	for($force = 0; $force <= 1; $force++) {
+		$request = new \StdClass();
+		$request->forceExtension = !!$force;
+		$request->indexFilename = "index";
+		$request->uri = $uriRand;
 
-	$this->dispatcher = new PageDispatcher(
-		$request,
-		$this->response,
-		$this->apiFactory,
-		$this->dbFactory
-	);
+		$this->dispatcher = new PageDispatcher(
+			$request,
+			$this->response,
+			$this->apiFactory,
+			$this->dbFactory
+		);
 
 
-	$fixedUri = $this->dispatcher->process();
-	$this->assertInternalType("string", $fixedUri);
-	$this->assertEquals(
-		strtok(strtolower($fixedUri), "."),
-		strtok(strtolower($uriRand), ".")
-	);
+		$fixedUri = $this->dispatcher->process();
+		$this->assertInternalType("string", $fixedUri);
+		$this->assertEquals(
+			strtok(strtolower($fixedUri), "."),
+			strtok(strtolower($uriRand), ".")
+		);
+	}
 }
 
 public function testDispatcherFlushes() {
@@ -296,6 +298,28 @@ public function testDispatcherFlushes() {
 	$content = $this->dispatcher->createResponseContent($html);
 
 	$content->flush();
+}
+
+public function testDispatcherProcessFlushes() {
+	// All we need to know is that the content flushes, actual computation is
+	// tested in other test cases.
+	$this->expectOutputRegex("/.*<h1>Test<\/h1>.*/s");
+
+	$request = new \StdClass();
+	$request->forceExtension = true;
+	$request->indexFilename = "index";
+	$request->uri = "/test.html";
+
+	file_put_contents($this->pageViewDir . "/test.html", "<h1>Test</h1>");
+
+	$this->dispatcher = new PageDispatcher(
+		$request,
+		$this->response,
+		$this->apiFactory,
+		$this->dbFactory
+	);
+
+	$this->dispatcher->process();
 }
 
 }#
