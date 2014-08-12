@@ -97,7 +97,10 @@ public function loadSource($path, $pathFile) {
 }
 
 public function createResponseContent($html) {
-
+	if(!is_string($html)) {
+		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
+			gettype($html) . " is not a string");
+	}
 	$domDocument = new \Gt\Response\Dom\Document($html);
 
 	return $domDocument;

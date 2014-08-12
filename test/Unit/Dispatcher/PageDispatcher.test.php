@@ -201,9 +201,19 @@ public function testLoadSourceFromPathWithHeaderFooter($uri) {
 	$this->assertEquals("header datadummy datafooter data", $source);
 }
 
-// public function testCreateResponseContentFromHtml() {
+public function testCreateResponseContentFromHtml() {
+	$html = "<!doctype html><h1>Test!</h1>";
+	$responseContent = $this->dispatcher->createResponseContent($html);
+	$this->assertInstanceOf("\Gt\Response\ResponseContent", $responseContent);
+	$this->assertInstanceOf("\Gt\Response\Dom\Document", $responseContent);
+}
 
-// }
+public function testCreateResponseContentThrowsTypeException() {
+	$this->setExpectedException(
+		"\Gt\Core\Exception\InvalidArgumentTypeException");
+	$notHtml = new \StdClass();
+	$responseContent = $this->dispatcher->createResponseContent($notHtml);
+}
 
 // public function testGetFilenameRequestedFromUri() {
 // 	// Or index filename if none set.
