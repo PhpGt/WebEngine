@@ -238,4 +238,12 @@ public function testGetFilenameRequestedFromUri($uri) {
 
 // }
 
+public function testDispatcherFlushes() {
+	$html = "<!doctype html><h1>Test</h1>";
+	$this->expectOutputRegex("/<!DOCTYPE html>.*<h1>Test<\/h1>.*<\/html>/s");
+	$content = $this->dispatcher->createResponseContent($html);
+
+	$content->flush();
+}
+
 }#
