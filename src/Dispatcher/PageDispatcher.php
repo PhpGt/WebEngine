@@ -63,10 +63,7 @@ public function loadSource($path, $pathFile) {
 				break;
 
 			case "footer":
-				$footers = file_get_contents($fullPath);
-				break;
-
-			default:
+				$footerSource = file_get_contents($fullPath);
 				break;
 			}
 		}

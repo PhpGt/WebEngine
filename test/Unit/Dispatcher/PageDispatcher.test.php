@@ -167,9 +167,39 @@ public function testLoadSourceFromPath($uri) {
 	$this->assertEquals("dummy data", $source);
 }
 
-// public function testLoadSourceFromPathWithHeaderFooter($uri) {
+/**
+ * @dataProvider data_uris
+ */
+public function testLoadSourceFromPathWithHeaderFooter($uri) {
+	$filePath = $this->pageViewDir . $uri;
+	$dirname = (substr($filePath, -1) === "/")
+		? $filePath
+		: dirname($filePath);
+	$dirname = rtrim($dirname, "/");
+	$filePath = rtrim($filePath, "/");
 
-// }
+	if(!is_dir($dirname) ) {
+		mkdir($dirname, 0775, true);
+	}
+
+	if(is_dir($filePath)) {
+		file_put_contents($filePath . "/_header.test", "header data");
+		file_put_contents($filePath . "/_footer.test", "footer data");
+		file_put_contents($filePath . "/index.test", "dummy data");
+		$uri .= "index";
+	}
+	else {
+		file_put_contents(dirname($filePath) . "/_header.test", "header data");
+		file_put_contents(dirname($filePath) . "/_footer.test", "footer data");
+		file_put_contents($filePath, "dummy data");
+	}
+
+	$uriFile = basename($uri);
+
+	$source = $this->dispatcher->loadSource($dirname, $uriFile);
+	$source = str_replace("\n", "", $source);
+	$this->assertEquals("header datadummy datafooter data", $source);
+}
 
 // public function testCreateResponseContentFromHtml() {
 
