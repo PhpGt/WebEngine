@@ -123,7 +123,7 @@ public function process() {
  * Gets the name of the requested file in the current directory path, or returns
  * the default index filename if the directory is requested.
  */
-public function getFilename($uri, $indexFilename, $path) {
+public function getFilename($uri, $indexFilename) {
 	$filename = basename($uri);
 	if(empty($filename) || substr($uri, -1) === "/") {
 		$filename = $indexFilename;

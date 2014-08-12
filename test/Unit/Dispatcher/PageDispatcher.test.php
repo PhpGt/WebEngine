@@ -12,25 +12,34 @@ private $dispatcher;
 private $tmp;
 private $pageViewDir;
 
+private $request;
+private $response;
+private $apiFactory;
+private $dbFactory;
+
 public function setUp() {
 	$this->tmp = \Gt\Test\Helper::createTmpDir();
 	$this->pageViewDir = \Gt\Test\Helper::createTmpDir("/src/Page/View");
 
 	$cfg = new \Gt\Core\ConfigObj();
 
-	$request 	= $this->getMock("\Gt\Request\Request", null, [
+	$this->request 		= $this->getMock("\Gt\Request\Request", null, [
 		"/", $cfg,
 	]);
-	$response	= $this->getMock("\Gt\Response\Reponse", null);
-	$apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
+	$this->response		= $this->getMock("\Gt\Response\Reponse", null);
+	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
 		$cfg
 	]);
-	$dbFactory	= $this->getMock("\Gt\Database\DatabaseFactory", null, [
+	$this->dbFactory	= $this->getMock("\Gt\Database\DatabaseFactory", null, [
 		$cfg
 	]);
 
 	$this->dispatcher = new PageDispatcher(
-		$request, $response, $apiFactory, $dbFactory);
+		$this->request,
+		$this->response,
+		$this->apiFactory,
+		$this->dbFactory
+	);
 }
 
 public function tearDown() {
@@ -220,8 +229,7 @@ public function testCreateResponseContentThrowsTypeException() {
  * @dataProvider data_uris
  */
 public function testGetFilenameRequestedFromUri($uri) {
-	$path = $this->pageViewDir;
-	$filename = $this->dispatcher->getFilename($uri, "index", $path);
+	$filename = $this->dispatcher->getFilename($uri, "index");
 
 	if(substr($uri, -1) === "/") {
 		$this->assertEquals("index", $filename);
@@ -231,12 +239,56 @@ public function testGetFilenameRequestedFromUri($uri) {
 	}
 }
 
-// /**
-//  * @dataProvider data_uris
-//  */
-// public function testDispatcherFixesUri($uri) {
+/**
+ * @dataProvider data_uris
+ */
+public function testDispatcherProcessFixesUri($uri) {
+	if($uri === "/") {
+		// Nothing to correct when empty URI
+		return;
+	}
 
-// }
+	$uriRand = \Gt\Test\Helper::randomiseCase($uri);
+	$filePath = $this->pageViewDir . $uri;
+	$dirname = (substr($filePath, -1) === "/")
+		? $filePath
+		: dirname($filePath);
+	$dirname = rtrim($dirname, "/");
+	$filePath = rtrim($filePath, "/");
+
+	if(!is_dir($dirname) ) {
+		mkdir($dirname, 0775, true);
+	}
+
+	if(is_dir($filePath)) {
+		$index = \Gt\Test\Helper::randomiseCase("index");
+		file_put_contents($filePath . "/$index.test", "dummy data ($uri)");
+		$uri .= "index";
+	}
+	else {
+		file_put_contents($filePath, "dummy data ($uri)");
+	}
+
+	$request = new \StdClass();
+	$request->forceExtension = false;
+	$request->indexFilename = "index";
+	$request->uri = $uriRand;
+
+	$this->dispatcher = new PageDispatcher(
+		$request,
+		$this->response,
+		$this->apiFactory,
+		$this->dbFactory
+	);
+
+
+	$fixedUri = $this->dispatcher->process();
+	$this->assertInternalType("string", $fixedUri);
+	$this->assertEquals(
+		strtok(strtolower($fixedUri), "."),
+		strtok(strtolower($uriRand), ".")
+	);
+}
 
 public function testDispatcherFlushes() {
 	$html = "<!doctype html><h1>Test</h1>";
