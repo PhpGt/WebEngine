@@ -16,4 +16,5 @@ foreach (["Unit/run", "Acceptance/run"] as $path) {
 	}
 }
 
+echo "\n\nALL TESTS PASSED SUCCESSFULLY\n\n";
 exit($exitCode);

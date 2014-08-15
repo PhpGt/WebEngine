@@ -10,4 +10,10 @@ chdir(__DIR__);
 chdir("..");
 $exitCode = 0;
 system("../vendor/bin/phpunit --colors", $exitCode);
+if($exitCode == 0) {
+	echo "\n\nSUCCESS: Unit tests all OK.\n\n";
+}
+else {
+	echo "\n\nERROR: Unit test failed.\n\n";
+}
 exit($exitCode);

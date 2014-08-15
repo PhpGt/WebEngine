@@ -31,10 +31,9 @@ public function tearDown() {
 	}
 }
 
-public function testConfigFileRequired() {
+public function testConfigFileNotRequired() {
 	$this->tearDown();
-	$this->setExpectedException(
-		"\Gt\Core\Exception\RequiredAppResourceNotFoundException");
+	// Make sure an exception is not thrown now Configs are optional.
 	new Config();
 }
 

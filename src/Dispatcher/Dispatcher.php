@@ -65,6 +65,7 @@ public function process() {
 	// Create and assign the Response content. This object may represent a
 	// DOMDocument or ApiObject, depending on request type.
 	// Get the directory path representing the request.
+	$source = "";
 	try {
 		$path = $this->getPath($this->request->uri, $fixedUri);
 		if($this->request->forceExtension) {

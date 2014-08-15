@@ -5,3 +5,59 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
+chdir(__DIR__);
+$cwd = getcwd();
+$gtroot = realpath(__DIR__ . "/../..");
+
+foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
+	if($fileInfo->isDot() || !$fileInfo->isDir()) {
+		continue;
+	}
+
+	$testName = $fileInfo->getFilename();
+	$testPath = $fileInfo->getPathname();
+	$testWebroot = $testPath . "/www";
+	if(!is_dir($testWebroot)) {
+		continue;
+	}
+
+	// Start the server for each individual test.
+	chdir($cwd);
+	$descriptorSpec = [
+		0 => ["pipe", "r"],
+		1 => ["pipe", "w"],
+		2 => ["pipe", "w"],
+	];
+	$server = proc_open(
+		"$gtroot/bin/gtserver --approot=$testPath --port=8089",
+		$descriptorSpec,
+		$pipes
+	);
+
+	chdir($testPath . "/test/Acceptance");
+	passthru("$gtroot/vendor/bin/behat", $exitCode);
+
+	// Inbuilt server spawns child processes that need killing.
+	$status = proc_get_status($server);
+	$pid = $status["pid"];
+	$pidArray = [];
+
+	while(!empty($pid)) {
+		$pidArray []= $pid;
+		$pid = exec("pgrep -P $pid");
+	}
+
+	proc_terminate($server);
+	proc_close($server);
+	foreach ($pidArray as $p) {
+		posix_kill($p, SIGKILL);
+	}
+
+	if($exitCode != 0) {
+		echo "\n\nERROR: Acceptance test failed.\n\n";
+		exit($exitCode);
+	}
+}
+
+echo "\n\nSUCCESS: Acceptance tests all OK.\n\n";
+exit(0);

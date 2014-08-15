@@ -16,11 +16,6 @@ private $configArray = [];
 
 public function __construct($defaultConfigArray = null) {
 	$configPath = Path::get(Path::ROOT) . "/config.ini";
-	if(!file_exists($configPath)) {
-		throw new Exception\RequiredAppResourceNotFoundException(
-			"Application configuration file ($configPath)");
-	}
-
 	if(is_null($defaultConfigArray)) {
 		$defaultConfigPath =
 			Path::get(Path::GTROOT)
@@ -28,9 +23,14 @@ public function __construct($defaultConfigArray = null) {
 			. self::DEFAULT_CONFIG_FILE;
 		$defaultConfigArray = parse_ini_file($defaultConfigPath, true);
 	}
+
+	$config = [];
+	if(file_exists($configPath)) {
+		$config = parse_ini_file($configPath, true);
+	}
 	$this->configArray = array_replace_recursive(
 		$defaultConfigArray,
-		parse_ini_file($configPath, true)
+		$config
 	);
 }
 

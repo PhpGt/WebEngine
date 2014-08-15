@@ -30,9 +30,8 @@
 		"behat/behat": "*",
 		"behat/mink": "*",
 		"behat/mink-extension": "*",
-		"sensiolabs/behat-page-object-extension": "*",
 		"behat/mink-goutte-driver": "*",
-		"behat/mink-selenium2-driver": "*"
+		"sensiolabs/behat-page-object-extension": "*"
 	},
 
 	"prefer-stable": true,
