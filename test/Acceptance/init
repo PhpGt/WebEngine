@@ -15,13 +15,13 @@ $seleniumRemoteFilename = "selenium-server-standalone-$seleniumVersionFile.jar";
 
 if(!is_file($seleniumFilename)) {
 	echo "Downloading Selenium...\n";
-	file_put_contents($seleniumFilename, fopen(
-		"http://selenium-release.storage.googleapis.com/"
+	copy("http://selenium-release.storage.googleapis.com/"
 		. $seleniumVersion
 		. "/"
 		. $seleniumRemoteFilename,
-		"r"
-	));
+
+		$seleniumFilename
+	);
 }
 
 $bitSize = (PHP_INT_SIZE == 4)
@@ -34,16 +34,16 @@ $os = strtolower(php_uname("s"));
 
 if(!is_file($chromeFilename)) {
 	echo "Downloading Chrome Driver...\n";
-	file_put_contents($chromeFilename . ".zip", fopen(
-		"http://chromedriver.storage.googleapis.com/"
+	copy("http://chromedriver.storage.googleapis.com/"
 		. $chromeVersion
 		. "/"
 		. "chromedriver_"
 		. $os
 		. $bitSize
 		. ".zip",
-		"r"
-	));
+
+		$chromeFilename . ".zip"
+	);
 }
 $zip = new ZipArchive();
 $resource = $zip->open($chromeFilename . ".zip");
