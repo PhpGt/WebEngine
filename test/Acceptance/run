@@ -8,6 +8,7 @@
 chdir(__DIR__);
 $cwd = getcwd();
 $gtroot = realpath(__DIR__ . "/../..");
+echo "Starting acceptance tests...\n";
 
 foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 	if($fileInfo->isDot() || !$fileInfo->isDir()) {
@@ -15,6 +16,7 @@ foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 	}
 
 	$testName = $fileInfo->getFilename();
+	echo "Found acceptance test: $testName\n";
 	$testPath = $fileInfo->getPathname();
 	$testWebroot = $testPath . "/www";
 	if(!is_dir($testWebroot)) {
@@ -53,7 +55,10 @@ foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 		posix_kill($p, SIGKILL);
 	}
 
-	if($exitCode != 0) {
+	if($exitCode == 0) {
+		echo "Acceptance test $testName successful";
+	}
+	else {
 		echo "\n\nERROR: Acceptance test failed.\n\n";
 		exit($exitCode);
 	}
