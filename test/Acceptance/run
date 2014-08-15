@@ -37,7 +37,7 @@ foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 	);
 
 	chdir($testPath . "/test/Acceptance");
-	passthru("$gtroot/vendor/bin/behat", $exitCode);
+	system("$gtroot/vendor/bin/behat", $exitCode);
 
 	// Inbuilt server spawns child processes that need killing.
 	$status = proc_get_status($server);
