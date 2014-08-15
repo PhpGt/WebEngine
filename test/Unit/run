@@ -9,7 +9,7 @@
 chdir(__DIR__);
 chdir("..");
 $exitCode = 0;
-system("../vendor/bin/phpunit --colors", $exitCode);
+system("../vendor/bin/phpunit --colors 1>&0", $exitCode);
 if($exitCode == 0) {
 	echo "\n\nSUCCESS: Unit tests all OK.\n\n";
 }
