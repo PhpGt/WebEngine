@@ -21,9 +21,14 @@ public function getPath($uri, &$fixedUri) {
 	if(!is_dir($pageViewDir)) {
 		$pageViewDir_container = dirname($pageViewDir);
 
-		if(!is_dir($pageViewDir_container)) {
+		if(is_dir($pageViewDir_container)) {
+			if(!file_exists($pageViewPath . $fixedUri)) {
+				throw new NotFoundException($fixedUri);
+			}
+		}
+		else {
 			throw new NotFoundException(
-				$pageViewDir
+				$fixedUri
 			);
 		}
 
