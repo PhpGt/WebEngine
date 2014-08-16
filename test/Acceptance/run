@@ -16,11 +16,12 @@ foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 	}
 
 	$testName = $fileInfo->getFilename();
-	echo "Found acceptance test: $testName\n";
 	$testPath = $fileInfo->getPathname();
+	echo "Found acceptance test: $testName\n";
 	$testWebroot = $testPath . "/www";
 	if(!is_dir($testWebroot)) {
-		continue;
+		// Directory may be empty and not part of repo.
+		mkdir($testWebroot, 0775, true);
 	}
 
 	// Start the server for each individual test.
@@ -37,7 +38,7 @@ foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 	);
 
 	chdir($testPath . "/test/Acceptance");
-	system("$gtroot/vendor/bin/behat 1>&0", $exitCode);
+	$test = system("$gtroot/vendor/bin/behat", $exitCode);
 
 	// Inbuilt server spawns child processes that need killing.
 	$status = proc_get_status($server);
