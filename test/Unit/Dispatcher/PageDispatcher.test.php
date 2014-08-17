@@ -103,7 +103,7 @@ public function testGetPathFromUri($uri) {
 	}
 
 	if(is_dir($filePath)) {
-		file_put_contents($filePath . "/index.test", "dummy data");
+		file_put_contents($filePath . "/index.html", "dummy data");
 		$uri .= "index";
 	}
 	else {
@@ -132,7 +132,7 @@ public function testGetPathFixesUri($uri) {
 
 	if(is_dir($filePath)) {
 		$index = \Gt\Test\Helper::randomiseCase("index");
-		file_put_contents($filePath . "/$index.test", "dummy data");
+		file_put_contents($filePath . "/$index.html", "dummy data");
 		$uri .= "index";
 	}
 	else {
@@ -145,6 +145,12 @@ public function testGetPathFixesUri($uri) {
 		$this->assertNotEquals($fixedUri, $uri);
 		$this->assertEquals(strtolower($fixedUri), strtolower($uri));
 	}
+}
+
+public function testGetPathThrowsException() {
+	$this->setExpectedException("\Gt\Response\NotFoundException");
+	$uri = "/does-not-exist";
+	$path = $this->dispatcher->getPath($uri, $fixedUri);
 }
 
 /**
@@ -163,7 +169,7 @@ public function testLoadSourceFromPath($uri) {
 	}
 
 	if(is_dir($filePath)) {
-		file_put_contents($filePath . "/index.test", "dummy data");
+		file_put_contents($filePath . "/index.html", "dummy data");
 		$uri .= "index";
 	}
 	else {
@@ -193,14 +199,14 @@ public function testLoadSourceFromPathWithHeaderFooter($uri) {
 	}
 
 	if(is_dir($filePath)) {
-		file_put_contents($filePath . "/_header.test", "header data");
-		file_put_contents($filePath . "/_footer.test", "footer data");
-		file_put_contents($filePath . "/index.test", "dummy data");
+		file_put_contents($filePath . "/_header.html", "header data");
+		file_put_contents($filePath . "/_footer.html", "footer data");
+		file_put_contents($filePath . "/index.html", "dummy data");
 		$uri .= "index";
 	}
 	else {
-		file_put_contents(dirname($filePath) . "/_header.test", "header data");
-		file_put_contents(dirname($filePath) . "/_footer.test", "footer data");
+		file_put_contents(dirname($filePath) . "/_header.html", "header data");
+		file_put_contents(dirname($filePath) . "/_footer.html", "footer data");
 		file_put_contents($filePath, "dummy data");
 	}
 
@@ -262,7 +268,7 @@ public function testDispatcherProcessFixesUri($uri) {
 
 	if(is_dir($filePath)) {
 		$index = \Gt\Test\Helper::randomiseCase("index");
-		file_put_contents($filePath . "/$index.test", "dummy data ($uri)");
+		file_put_contents($filePath . "/$index.html", "dummy data ($uri)");
 		$uri .= "index";
 	}
 	else {
