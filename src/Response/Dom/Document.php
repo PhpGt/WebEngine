@@ -12,6 +12,7 @@ use \Gt\Response\ResponseContent;
 
 class Document extends ResponseContent {
 
+const DEFAULT_HTML = "<!doctype html>";
 private $domDocument;
 
 /**
@@ -22,6 +23,9 @@ public function __construct($html = null) {
 	$this->domDocument = new \DOMDocument("1.0", "utf-8");
 
 	if(!is_null($html)) {
+		if(empty($html)) {
+			$html = self::DEFAULT_HTML;
+		}
 		$this->load($html);
 	}
 }
@@ -35,8 +39,12 @@ public function __toString() {
  * @param string|array $content A string of raw-HTML, or an array of strings
  * containing raw-HTML to concatenate and unserialize.
  */
-public function load($content = "<!doctype html>") {
+public function load($content = null) {
 	$string = "";
+
+	if(is_null($content)) {
+		$content = self::DEFAULT_HTML;
+	}
 
 	if(!is_array($content)) {
 		$content = [$content];
