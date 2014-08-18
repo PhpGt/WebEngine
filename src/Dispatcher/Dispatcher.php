@@ -13,6 +13,7 @@ use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
 use \Gt\Response\NotFoundException;
 use \Gt\Core\Path;
+use \Gt\Logic\LogicFactory;
 
 abstract class Dispatcher {
 
@@ -103,18 +104,15 @@ public function process() {
 	// Instantiate the response content object, for manipulation in Code.
 	$content = $this->createResponseContent($source);
 
-	// Construct and assign ResponseCode object, which is a collection of
-	// Code class instantiations in order of execution.
-	// $code = ResponseCodeFactory::create(
-	// 	$this->request->uri,
-	// 	$this->request->getType(),
-	// 	$this->apiFactory,
-	// 	$this->dbFactory,
-	// 	$content
-	// );
-
-	// $this->response->setCode($code);
-	// $this->response->setContentObject($content);
+	// Construct and assign Logic object, which is a collection of
+	// Logic class instantiations in order of execution.
+	$logicList = LogicFactory::create(
+		$this->request->uri,
+		$this->request->getType(),
+		$this->apiFactory,
+		$this->dbFactory,
+		$content
+	);
 
 	// Handle client-side copying and compilation after the response codes have
 	// executed.

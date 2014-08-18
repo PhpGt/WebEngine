@@ -12,14 +12,14 @@ class Path {
 
 const DATABASE		= "DATABASE";
 const PAGE			= "PAGE";
-const PAGECODE		= "PAGECODE";
+const PAGELOGIC		= "PAGELOGIC";
 const PAGETOOL		= "PAGETOOL";
 const PAGEVIEW		= "PAGEVIEW";
 const PUBLICFILES	= "PUBLICFILES";
 const ROOT			= "ROOT";
 const SCRIPT		= "SCRIPT";
 const API			= "API";
-const APICODE		= "APICODE";
+const APILOGIC		= "APILOGIC";
 const APITOOL		= "APITOOL";
 const APIVIEW		= "APIVIEW";
 const SRC			= "SRC";
