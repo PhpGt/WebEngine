@@ -7,6 +7,9 @@
  */
 namespace Gt\Logic;
 
+use \Gt\Core\Path;
+use \Gt\Request\Request;
+
 class LogicFactory {
 
 /**
@@ -36,9 +39,36 @@ public static function create($uri, $type, $apiFactory, $dbFactory) {
 		throw new \Gt\Core\Exception\InvalidAccessException();
 	}
 
-	var_dump($basePath);die("LOGIC FACTORY!!!!!!!!!");
+	$filename = basename($uri);
+	$path = pathinfo($basePath . $uri, PATHINFO_DIRNAME);
+	$logicFileArray = self::getLogicFileArray($filename, $path, $basePath);
 
 	return new $objectType($uri, $type, $apiFactory, $dbFactory);
+}
+
+/**
+ * Return an array of absolute filepaths to the logic files that match the
+ * current URI, in order of execution.
+ *
+ * @param string $filename The requested filename, without any directory path
+ * @param string $path The path to look for logic files in, moving up the tree
+ * until and including the $topPath path
+ * @param string $topPath The top-most path to use when looking for logic files
+ */
+public function getLogicFileArray($filename, $path, $topPath) {
+	// Get PageLogic path for current URI.
+	$currentPageLogicPath = implode("/", [$path, $filename]) . ".php";
+	$commonPageLogicPathArray = [];
+
+	$currentPath = $path;
+	while(false !== strstr($currentPath, $topPath)) {
+		$commonPageLogicPathArray [] = $currentPath . "/_common.php";
+		$currentPath = dirname($currentPath);
+	}
+
+	$commonPageLogicPathArray = array_reverse($commonPageLogicPathArray);
+	var_dump($commonPageLogicPathArray, $currentPageLogicPath);
+	die("getLogicFileArray");
 }
 
 }#

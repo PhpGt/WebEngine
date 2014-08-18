@@ -68,6 +68,7 @@ public function process() {
 	// DOMDocument or ApiObject, depending on request type.
 	// Get the directory path representing the request.
 	$source = "";
+	$fullUri = "";
 	try {
 		$path = $this->getPath($this->request->uri, $fixedUri);
 		if($this->request->forceExtension) {
@@ -91,7 +92,7 @@ public function process() {
 		$filename = $this->getFilename(
 			$this->request->uri,
 			$this->request->indexFilename,
-			$path
+			$fullUri
 		);
 
 		// Load the source view from the path on disk and requested filename.
@@ -107,7 +108,7 @@ public function process() {
 	// Construct and assign Logic object, which is a collection of
 	// Logic class instantiations in order of execution.
 	$logicList = LogicFactory::create(
-		$this->request->uri,
+		$fullUri,
 		$this->request->getType(),
 		$this->apiFactory,
 		$this->dbFactory,
@@ -123,16 +124,30 @@ public function process() {
 /**
  * Gets the name of the requested file in the current directory path, or returns
  * the default index filename if the directory is requested.
+ *
+ * @param string $uri The requested URI
+ * @param string $indexFilename The default index filename, taken from
+ * application configuration
+ * @param string $fullUri Passed by reference. The full URI, including the
+ * implied index filename
+ *
+ * @return string The filename according the the URI. This may be identical to
+ * the requested filename, or may be replaced by the default index filename
  */
-public function getFilename($uri, $indexFilename) {
+public function getFilename($uri, $indexFilename, &$fullUri) {
 	$filename = basename($uri);
+	$fullUri = $uri;
+
+
 	if(empty($filename)) {
 		$filename = $indexFilename;
+		$fullUri = implode("/", [$uri, $indexFilename]);
 	}
 
 	$pvPath = Path::get(Path::PAGEVIEW) . $uri;
 	if(is_dir($pvPath)) {
 		$filename = $indexFilename;
+		$fullUri = implode("/", [$uri, $indexFilename]);
 	}
 
 	return $filename;

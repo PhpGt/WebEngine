@@ -48,8 +48,8 @@ public static function get($name) {
 		$p = self::get(self::SRC) . "/Page";
 		break;
 
-	case self::PAGECODE:
-		$p = self::get(self::PAGE) . "/Code";
+	case self::PAGELOGIC:
+		$p = self::get(self::PAGE) . "/Logic";
 		break;
 
 	case self::PAGETOOL:
@@ -76,8 +76,8 @@ public static function get($name) {
 		$p = self::get(self::SRC) . "/API";
 		break;
 
-	case self::APICODE:
-		$p = self::get(self::API) . "/Code";
+	case self::APILOGIC:
+		$p = self::get(self::API) . "/Logic";
 		break;
 
 	case self::APITOOL:
