@@ -64,11 +64,15 @@ public function loadSource($path, $pathFile) {
 
 			switch($specialName) {
 			case "header":
-				$headerSource = file_get_contents($fullPath);
+				if(empty($headerSource)) {
+					$headerSource = file_get_contents($fullPath);
+				}
 				break;
 
 			case "footer":
-				$footerSource = file_get_contents($fullPath);
+				if(empty($footerSource)) {
+					$footerSource = file_get_contents($fullPath);
+				}
 				break;
 			}
 		}
