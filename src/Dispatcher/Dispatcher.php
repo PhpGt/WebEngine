@@ -12,6 +12,7 @@ use \Gt\Response\Response;
 use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
 use \Gt\Response\NotFoundException;
+use \Gt\Core\Path;
 
 abstract class Dispatcher {
 
@@ -84,6 +85,7 @@ public function process() {
 			// Returning early will cause Start to create a Redirect object.
 			return $fixedUri;
 		}
+
 		// Get the requested filename, or index filename if none set.
 		$filename = $this->getFilename(
 			$this->request->uri,
@@ -126,7 +128,12 @@ public function process() {
  */
 public function getFilename($uri, $indexFilename) {
 	$filename = basename($uri);
-	if(empty($filename) || substr($uri, -1) === "/") {
+	if(empty($filename)) {
+		$filename = $indexFilename;
+	}
+
+	$pvPath = Path::get(Path::PAGEVIEW) . $uri;
+	if(is_dir($pvPath)) {
 		$filename = $indexFilename;
 	}
 

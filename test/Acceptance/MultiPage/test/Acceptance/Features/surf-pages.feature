@@ -20,9 +20,8 @@ Feature: Test that users can surf between pages
 
 	Scenario: Access directory as file
 		Given I go to "/directory"
-		Then the response status code should be 302
-		# Then I should see "MultiPage Test"
-		# And I should see "This is the index of the directory"
+		Then I should see "MultiPage Test"
+		And I should see "This is the index of the directory"
 
 	Scenario: Access nested file
 		Given I go to "/directory/page-inside-directory"

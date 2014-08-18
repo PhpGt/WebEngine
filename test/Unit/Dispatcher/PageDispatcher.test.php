@@ -235,12 +235,20 @@ public function testCreateResponseContentThrowsTypeException() {
  * @dataProvider data_uris
  */
 public function testGetFilenameRequestedFromUri($uri) {
-	$filename = $this->dispatcher->getFilename($uri, "index");
-
 	if(substr($uri, -1) === "/") {
+		if(strlen($uri) > 1) {
+			$dirPath = $this->pageViewDir . $uri;
+
+			if(!is_dir($dirPath)) {
+				mkdir($dirPath, 0775, true);
+			}
+		}
+
+		$filename = $this->dispatcher->getFilename($uri, "index");
 		$this->assertEquals("index", $filename);
 	}
 	else {
+		$filename = $this->dispatcher->getFilename($uri, "index");
 		$this->assertEquals(basename($uri), $filename);
 	}
 }
