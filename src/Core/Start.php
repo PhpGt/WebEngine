@@ -1,10 +1,10 @@
 <?php
 /**
- * Acts as the entry point for processing PHP.Gt applications. Could be referred
- * to as the PHP.Gt bootstrapper. Only intended for serving dynamic responses.
+ * Acts as the entry point for processing all applications. Could be referred
+ * to as the bootstrapper. Only intended for serving dynamic responses.
  * The webserver should be set up to handle serving static files.
- * When using PHP.Gt's inbuilt server (gtserver), Gateway.php serves static
- * files without instantiating this class.
+ * When using the inbuilt server, Gateway.php serves static files without
+ * instantiating this class.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)

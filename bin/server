@@ -3,7 +3,7 @@
 /**
  * Shell script interface for launching the built-in webserver.
  *
- * Usage: gtserver [-a|--approot[="..."]] [-p|--port[="..."]]
+ * Usage: server [-a|--approot[="..."]] [-p|--port[="..."]]
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -35,7 +35,7 @@ try {
 	exit(1);
 }
 catch(Exception $e) {
-	echo "\ngtserver shell script usage:\n";
+	echo "\nserver shell script usage:\n";
 	echo $definition->getSynopsis();
 	echo "\n\n";
 	echo strip_tags($definition->asText());

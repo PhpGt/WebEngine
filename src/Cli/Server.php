@@ -3,7 +3,7 @@
  * Used as a wrapper to the PHP built-in server to handle directory paths and
  * alert the developer if directories do not exist, before starting the server.
  *
- * Used from the PHP.Gt/bin/gtserver shell script.
+ * Used from the PHP.Gt/bin/server shell script.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -25,7 +25,7 @@ private $process;
  * with values from the ArgvInput object, then creates and runs the php
  * inbuilt server in a new Process.
  *
- * @param ArgvInput $arguments The arguments passed to the gtserver shell script
+ * @param ArgvInput $arguments The arguments passed to the server shell script
  * or default values if none are provided.
  */
 public function __construct(ArgvInput $arguments) {

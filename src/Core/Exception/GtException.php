@@ -1,6 +1,6 @@
 <?php
 /**
- * Base exception for use within PHP.Gt.
+ * Base exception for use within applications.
  *
  * TODO: Depending on application debug configuration, will display 500 error
  * and stack trace, or generic error page.
