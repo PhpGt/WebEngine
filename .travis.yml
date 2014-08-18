@@ -8,3 +8,7 @@ after_script:
   - php ./vendor/bin/coveralls
 
 script: ./test/run
+
+notifications:
+  email:
+    - mailbot@brightflair.com
