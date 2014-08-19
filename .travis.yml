@@ -11,4 +11,7 @@ script: ./test/run
 
 notifications:
   email:
-    - mailbot@brightflair.com
+    recipients:
+      - mailbot@brightflair.com
+    on_success: always
+    on_failure: always
