@@ -17,12 +17,15 @@ use \Gt\Logic\LogicFactory;
 
 abstract class Dispatcher {
 
+private $appNamespace;
 private $request;
 private $response;
 private $apiFactory;
 private $dbFactory;
 
-public function __construct($request, $response, $apiFactory, $dbFactory) {
+public function __construct($appNamespace, $request, $response,
+$apiFactory, $dbFactory) {
+	$this->appNamespace = $appNamespace;
 	$this->request = $request;
 	$this->response = $response;
 	$this->apiFactory = $apiFactory;
@@ -107,13 +110,26 @@ public function process() {
 
 	// Construct and assign Logic object, which is a collection of
 	// Logic class instantiations in order of execution.
-	// $logicList = LogicFactory::create(
-	// 	$fullUri,
-	// 	$this->request->getType(),
-	// 	$this->apiFactory,
-	// 	$this->dbFactory,
-	// 	$content
-	// );
+	$logicList = LogicFactory::create(
+		$this->appNamespace,
+		$fullUri,
+		$this->request->getType(),
+		$this->apiFactory,
+		$this->dbFactory,
+		$content
+	);
+
+	// Call the correct methods on each Logic object:
+	foreach ($logicList as $logicObj) {
+		$logicObj->go();
+	}
+	foreach (array_reverse($logicList) as $logicObj) {
+		if(!method_exists($logicObj, "endGo")) {
+			continue;
+		}
+
+		$logicObj->endGo();
+	}
 
 	// Handle client-side copying and compilation after the response codes have
 	// executed.

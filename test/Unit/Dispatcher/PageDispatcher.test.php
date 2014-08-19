@@ -16,6 +16,7 @@ private $request;
 private $response;
 private $apiFactory;
 private $dbFactory;
+private $appNamespace = "TestApp";
 
 public function setUp() {
 	$this->tmp = \Gt\Test\Helper::createTmpDir();
@@ -38,7 +39,8 @@ public function setUp() {
 		$this->request,
 		$this->response,
 		$this->apiFactory,
-		$this->dbFactory
+		$this->dbFactory,
+		$this->appNamespace
 	);
 }
 
@@ -295,7 +297,8 @@ public function testDispatcherProcessFixesUri($uri) {
 			$request,
 			$this->response,
 			$this->apiFactory,
-			$this->dbFactory
+			$this->dbFactory,
+			$this->appNamespace
 		);
 
 		$fixedUri = $this->dispatcher->process();
@@ -331,7 +334,8 @@ public function testDispatcherProcessFlushes() {
 		$request,
 		$this->response,
 		$this->apiFactory,
-		$this->dbFactory
+		$this->dbFactory,
+		$this->appNamespace
 	);
 
 	$this->dispatcher->process();

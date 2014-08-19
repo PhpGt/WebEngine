@@ -34,10 +34,10 @@ public function __construct($uri) {
 		throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
 			"No App namespace defined. Are you sure you have a config.ini?");
 	}
-	// var_dump($appNamespace);die();
+
+	$this->addAppAutoloader($appNamespace);
 
 	$production = $config["app"]->production;
-
 	$this->setupEnvironment($config);
 
 	$standardiser = new Standardiser();
@@ -51,6 +51,7 @@ public function __construct($uri) {
 	$dbFactory  = new DatabaseFactory($config["database"]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
+		$appNamespace,
 		$request,
 		$response,
 		$apiFactory,
@@ -60,6 +61,18 @@ public function __construct($uri) {
 	// Dispatcher::process returns null on a successful call, only returning
 	// a string when a redirect is required.
 	$this->redirect($uri, $dispatcher->process(), $production);
+}
+
+/**
+ * Adds the application's path to Composer's autoloader.
+ *
+ * @param string $appNamespace Base namespace containing all application logic
+ */
+private function addAppAutoloader($appNamespace) {
+	$loader = require Path::get(Path::GTROOT) . "/vendor/autoload.php";
+	// TODO: Do we need to add everywhere the classes *could* exist?
+	// $loader->addPsr4($appNamespace . "\\", Path::get(Path::SRC) . "/Page");
+	$loader->addPsr4($appNamespace . "\\", Path::get(Path::SRC));
 }
 
 /**

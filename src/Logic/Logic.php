@@ -9,6 +9,16 @@ namespace Gt\Logic;
 
 abstract class Logic {
 
-public function go();
+protected $api;
+protected $db;
+protected $content;
+
+public function __construct($apiFactory, $dbFactory, $content) {
+	$this->api = $apiFactory;
+	$this->db = $dbFactory;
+	$this->content = $content;
+}
+
+abstract public function go();
 
 }#

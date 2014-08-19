@@ -7,10 +7,13 @@
  */
 namespace Gt\Logic;
 
-class PageLogic extends Logic {
+abstract class PageLogic extends Logic {
 
-public function go() {
-	die("PageLogic!!!");
+protected $dom;
+
+public function __construct($apiFactory, $dbFactory, $content) {
+	parent::__construct($apiFactory, $dbFactory, $content);
+	$this->dom = $content;
 }
 
 }#

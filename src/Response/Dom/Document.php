@@ -60,4 +60,10 @@ public function load($content = null) {
 	$this->domDocument->loadHTML($string);
 }
 
+public function __call($name, $args) {
+	if(method_exists($this->domDocument, $name)) {
+		return call_user_func_array([$this->domDocument, $name], $args);
+	}
+}
+
 }#
