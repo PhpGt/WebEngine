@@ -107,13 +107,13 @@ public function process() {
 
 	// Construct and assign Logic object, which is a collection of
 	// Logic class instantiations in order of execution.
-	$logicList = LogicFactory::create(
-		$fullUri,
-		$this->request->getType(),
-		$this->apiFactory,
-		$this->dbFactory,
-		$content
-	);
+	// $logicList = LogicFactory::create(
+	// 	$fullUri,
+	// 	$this->request->getType(),
+	// 	$this->apiFactory,
+	// 	$this->dbFactory,
+	// 	$content
+	// );
 
 	// Handle client-side copying and compilation after the response codes have
 	// executed.
@@ -134,10 +134,9 @@ public function process() {
  * @return string The filename according the the URI. This may be identical to
  * the requested filename, or may be replaced by the default index filename
  */
-public function getFilename($uri, $indexFilename, &$fullUri) {
+public function getFilename($uri, $indexFilename, &$fullUri = null) {
 	$filename = basename($uri);
 	$fullUri = $uri;
-
 
 	if(empty($filename)) {
 		$filename = $indexFilename;

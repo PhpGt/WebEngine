@@ -29,6 +29,14 @@ public function __construct($uri) {
 	}
 
 	$config = new Config();
+	// $appNamespace = $config["app"]->namespace;
+	// if(empty($appNamespace)) {
+	// 	die("WUT?");
+	// }
+	// else {
+	// 	die("oh...");
+	// }
+
 	$production = $config["app"]->production;
 
 	$this->setupEnvironment($config);

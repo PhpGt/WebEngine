@@ -14,14 +14,14 @@ public function testObjPropertyDoesNotExist() {
 }
 
 public function testObjPropertyIsCreated() {
-	$obj = new Obj();
+	$obj = new Obj([], true);
 	$obj->test = "testValue";
 
 	$this->assertEquals("testValue", $obj->test);
 }
 
 public function testObjNestedPropertyIsCreated() {
-	$obj = new Obj();
+	$obj = new Obj([], true);
 	$obj->test->nested = "nestedValue";
 
 	$this->assertObjectHasAttribute("test", $obj);
@@ -33,6 +33,13 @@ public function testObjConstructs() {
 		"testProperty" => "testValue",
 	]);
 	$this->assertEquals("testValue", $obj->testProperty);
+}
+
+public function testObjCallable() {
+	$obj = new Obj([], false, true);
+	$value = $obj->callMe();
+
+	$this->assertInstanceOf("\Gt\Core\Obj", $value);
 }
 
 }#

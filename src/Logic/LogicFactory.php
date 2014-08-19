@@ -42,8 +42,10 @@ public static function create($uri, $type, $apiFactory, $dbFactory) {
 	$filename = basename($uri);
 	$path = pathinfo($basePath . $uri, PATHINFO_DIRNAME);
 	$logicFileArray = self::getLogicFileArray($filename, $path, $basePath);
+	$logicObjArray = self::getLogicClassArray($logicFileArray);
 
-	return new $objectType($uri, $type, $apiFactory, $dbFactory);
+	die("what next?");
+	// return new $objectType($uri, $type, $apiFactory, $dbFactory);
 }
 
 /**
@@ -67,8 +69,46 @@ public function getLogicFileArray($filename, $path, $topPath) {
 	}
 
 	$commonPageLogicPathArray = array_reverse($commonPageLogicPathArray);
-	var_dump($commonPageLogicPathArray, $currentPageLogicPath);
-	die("getLogicFileArray");
+	$pageLogicPathArray = array_merge(
+		$commonPageLogicPathArray,
+		[$currentPageLogicPath]
+	);
+
+	// Check the case of each Page Logic file
+	foreach ($pageLogicPathArray as $i => $path) {
+		$pageLogicPathArray[$i] = Path::fixCase($path);
+	}
+
+	return $pageLogicPathArray;
+}
+
+/**
+ * Return an array of instantiated Logic objects, in correct execution order,
+ * to hand to the Dispatcher where their go methods will be called at the
+ * correct time.
+ *
+ * @param array $logicPathArray Array of absolute file paths to all Logic
+ * classes on disk
+ *
+ * @return array Array of instantiated Logic objects
+ */
+public function getLogicClassArray($logicPathArray) {
+	$objectArray = [];
+	$logicBasePath = Path::get(Path::PAGELOGIC);
+
+	foreach ($logicPathArray as $logicPath) {
+		$namespaceStr = dirname(
+			"Logic" . substr($logicPath, strlen($logicBasePath))
+		);
+		$namespaceArray = explode("/", $namespaceStr);
+
+		$className = strtok(basename($logicPath), ".");
+		var_dump($namespaceArray, $className);
+	}
+
+	die();
+
+	return $objectArray;
 }
 
 }#

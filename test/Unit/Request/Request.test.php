@@ -44,9 +44,9 @@ public function data_uriType() {
  */
 public function testGetType($uri) {
 	$objArray = [
-		new ConfigObj(["api_prefix" => "api"]),
-		new ConfigObj(["api_prefix" => "myapi"]),
-		new ConfigObj(["api_prefix" => "service"]),
+		new ConfigObj(["api_prefix" => "api"], true),
+		new ConfigObj(["api_prefix" => "myapi"], true),
+		new ConfigObj(["api_prefix" => "service"], true),
 	];
 
 	foreach ($objArray as $obj) {

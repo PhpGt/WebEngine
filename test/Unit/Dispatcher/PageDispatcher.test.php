@@ -244,12 +244,14 @@ public function testGetFilenameRequestedFromUri($uri) {
 			}
 		}
 
-		$filename = $this->dispatcher->getFilename($uri, "index");
+		$filename = $this->dispatcher->getFilename($uri, "index", $fullUri);
 		$this->assertEquals("index", $filename);
+		$this->assertEquals($uri . "/index", $fullUri);
 	}
 	else {
-		$filename = $this->dispatcher->getFilename($uri, "index");
+		$filename = $this->dispatcher->getFilename($uri, "index", $fullUri);
 		$this->assertEquals(basename($uri), $filename);
+		$this->assertEquals($uri, $fullUri);
 	}
 }
 
@@ -319,7 +321,7 @@ public function testDispatcherProcessFlushes() {
 	// tested in other test cases.
 	$this->expectOutputRegex("/.*<h1>Test<\/h1>.*/s");
 
-	$request = new \StdClass();
+	$request = new \Gt\Core\Obj([], true, true);
 	$request->forceExtension = true;
 	$request->indexFilename = "index";
 	$request->uri = "/test.html";

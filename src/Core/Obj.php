@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * An Obj object represents an empty Object with no default properties.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -13,24 +13,38 @@ namespace Gt\Core;
  */
 class Obj {
 
+protected $autoNestProperties;
+protected $autoCallMethods;
+
 /**
  * @param array $params Associative array of parameters to add to this object
- * as properties.
+ * as properties
+ * @param bool $autoNestProperties Whether to automatically instantiate new Obj
+ * objects when non-existant properties are requested
  */
-public function __construct($params = []) {
+public function __construct($params = [],
+$autoNestProperties = false, $autoCallMethods = false) {
 	foreach ($params as $key => $value) {
 		$this->$key = $value;
 	}
+
+	$this->autoNestProperties = $autoNestProperties;
+	$this->autoCallMethods = $autoCallMethods;
 }
 
-/**
- * Automatically creates properties that do not exist, then returns their value.
- * Only called when property does not exist.
- * @param string $name Name of property to return.
- */
+// TODO: Add setProperty method to recursively set nested property values,
+// automatically nesting the properties as they are accessed.
 public function __get($name) {
-	$this->$name = new Obj();
-	return $this->$name;
+	if($this->autoNestProperties) {
+		$this->$name = new Obj();
+		return $this->$name;
+	}
+}
+
+public function __call($name, $args) {
+	if($this->autoCallMethods) {
+		return new Obj([], $this->autoNestProperties, true);
+	}
 }
 
 }#
