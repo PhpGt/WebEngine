@@ -36,6 +36,7 @@ public function setUp() {
 	]);
 
 	$this->dispatcher = new PageDispatcher(
+		"TestApp",
 		$this->request,
 		$this->response,
 		$this->apiFactory,
@@ -294,6 +295,7 @@ public function testDispatcherProcessFixesUri($uri) {
 		$request->uri = $uriRand;
 
 		$this->dispatcher = new PageDispatcher(
+			"TestApp",
 			$request,
 			$this->response,
 			$this->apiFactory,
@@ -327,15 +329,16 @@ public function testDispatcherProcessFlushes() {
 	$request->forceExtension = true;
 	$request->indexFilename = "index";
 	$request->uri = "/test.html";
+	$request->type = \Gt\Request\Request::TYPE_PAGE;
 
 	file_put_contents($this->pageViewDir . "/test.html", "<h1>Test</h1>");
 
 	$this->dispatcher = new PageDispatcher(
+		$this->appNamespace,
 		$request,
 		$this->response,
 		$this->apiFactory,
-		$this->dbFactory,
-		$this->appNamespace
+		$this->dbFactory
 	);
 
 	$this->dispatcher->process();
