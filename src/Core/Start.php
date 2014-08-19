@@ -70,8 +70,6 @@ public function __construct($uri) {
  */
 private function addAppAutoloader($appNamespace) {
 	$loader = require Path::get(Path::GTROOT) . "/vendor/autoload.php";
-	// TODO: Do we need to add everywhere the classes *could* exist?
-	// $loader->addPsr4($appNamespace . "\\", Path::get(Path::SRC) . "/Page");
 	$loader->addPsr4($appNamespace . "\\", Path::get(Path::SRC));
 }
 
