@@ -32,6 +32,16 @@ public function __construct($defaultConfigArray = null) {
 		$defaultConfigArray,
 		$config
 	);
+
+	// Ensure lowercase configuration keys:
+	foreach ($this->configArray as $key => $config) {
+		$lcKey = strtolower($key);
+		$this->configArray[$lcKey] = array_merge(
+			$config, $this->configArray[$lcKey]);
+		if($lcKey !== $key) {
+			unset($this->configArray[$key]);
+		}
+	}
 }
 
 public function offsetExists($offset) {

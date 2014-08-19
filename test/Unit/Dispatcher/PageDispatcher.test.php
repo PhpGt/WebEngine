@@ -298,7 +298,6 @@ public function testDispatcherProcessFixesUri($uri) {
 			$this->dbFactory
 		);
 
-
 		$fixedUri = $this->dispatcher->process();
 		$this->assertInternalType("string", $fixedUri);
 		$this->assertEquals(

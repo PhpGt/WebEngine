@@ -113,4 +113,41 @@ CFG;
 	$this->assertTrue(false == $config["app"]->production);
 }
 
+public function testCaseInsensitive() {
+	$cfgString = <<<CFG
+[request]
+force_extension = true
+
+[DataBase]
+driver = "MySQL"
+dbname = "my-db"
+
+[App]
+namespace = TestApp
+CFG;
+	file_put_contents($this->configPath, $cfgString);
+
+	$configDefault = [
+		"request" => [
+			"force_extension" => false,
+			"pageview_trailing_slash" => false,
+		],
+		"database" => [
+			"driver" => "mysql",
+			"host" => "localhost",
+		],
+		"app" => [
+			"production" => false,
+			"client_compiled" => false,
+			"timezone" => "UTC",
+		],
+	];
+	$config = new Config($configDefault);
+
+	$this->assertTrue(true == $config["request"]->force_extension);
+	$this->assertTrue(false == $config["request"]->pageview_trailing_slash);
+	$this->assertTrue(false == $config["app"]->production);
+	$this->assertEquals("TestApp", $config["app"]->namespace);
+}
+
 }#

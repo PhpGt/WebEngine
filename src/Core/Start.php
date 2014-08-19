@@ -29,13 +29,12 @@ public function __construct($uri) {
 	}
 
 	$config = new Config();
-	// $appNamespace = $config["app"]->namespace;
-	// if(empty($appNamespace)) {
-	// 	die("WUT?");
-	// }
-	// else {
-	// 	die("oh...");
-	// }
+	$appNamespace = $config["app"]->namespace;
+	if(empty($appNamespace)) {
+		throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
+			"No App namespace defined. Are you sure you have a config.ini?");
+	}
+	// var_dump($appNamespace);die();
 
 	$production = $config["app"]->production;
 
