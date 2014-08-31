@@ -58,10 +58,13 @@ public function testGetLogicFileArrayGivesCommons($uri) {
 		$topPath
 	);
 
-	$directory = dirname($topPath . $uri);
-	$commonPath = $directory . "/_common.php";
-
-	$this->assertContains($commonPath, $logicFileArray);
+	// Check each directory in the tree.
+	$directory = $topPath . $uri;
+	do {
+		$directory = dirname($directory);
+		$commonPath = $directory . "/_common.php";
+		$this->assertContains($commonPath, $logicFileArray);
+	} while(strstr($directory, $path));
 }
 
 /**

@@ -24,9 +24,13 @@ public function setUp() {
 
 	$cfg = new \Gt\Core\ConfigObj();
 
-	$this->request 		= $this->getMock("\Gt\Request\Request", null, [
+	$this->request 		= $this->getMock("\Gt\Request\Request", ["getType"], [
 		"/", $cfg,
 	]);
+	$this->request->expects($this->any())
+		->method("getType")
+		->will($this->returnValue(\Gt\Request\Request::TYPE_PAGE)
+	);
 	$this->response		= $this->getMock("\Gt\Response\Reponse", null);
 	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
 		$cfg
