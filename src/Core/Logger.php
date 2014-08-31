@@ -3,7 +3,18 @@
  * Abstraction class to map directly to external logging framework, so the
  * choice in Logger can be changed at a later date.
  *
- * Exposes error, warning, info, debug, etc. as public methods.
+ * PSR-3 compliant, meaning the implementation must adhere to the interface
+ * Psr\Log\LoggerInterface.
+ *
+ * Available log levels (in order of highest priority to lowest):
+ * LogLevel::EMERGENCY;
+ * LogLevel::ALERT;
+ * LogLevel::CRITICAL;
+ * LogLevel::ERROR;
+ * LogLevel::WARNING;
+ * LogLevel::NOTICE;
+ * LogLevel::INFO;
+ * LogLevel::DEBUG;
  *
  * Currently using Katzgrau's Klogger.
  * https://github.com/katzgrau/KLogger
@@ -14,14 +25,17 @@
  */
 namespace Gt\Core;
 
+use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
+
 class Logger extends \Katzgrau\KLogger\Logger {
 
-public function __construct($path = null) {
+public function __construct($path = null, $level = LogLevel::DEBUG) {
 	if(is_null($path)) {
 		$path = Path::get(Path::ROOT);
 	}
 
-	parent::__construct($path);
+	parent::__construct($path, $level);
 }
 
 }#
