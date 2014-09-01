@@ -10,22 +10,19 @@ namespace Gt\Core;
 
 class Path {
 
-const DATABASE		= "DATABASE";
-const PAGE			= "PAGE";
-const PAGELOGIC		= "PAGELOGIC";
-const PAGETOOL		= "PAGETOOL";
-const PAGEVIEW		= "PAGEVIEW";
-const PUBLICFILES	= "PUBLICFILES";
-const ROOT			= "ROOT";
-const SCRIPT		= "SCRIPT";
-const API			= "API";
-const APILOGIC		= "APILOGIC";
-const APITOOL		= "APITOOL";
-const APIVIEW		= "APIVIEW";
-const SRC			= "SRC";
-const STYLE			= "STYLE";
-const WWW			= "WWW";
-const GTROOT		= "GTROOT";
+const DATABASE		= "database";
+const PAGE			= "page";
+const PUBLICFILES	= "publicfiles";
+const ROOT			= "root";
+const SCRIPT		= "script";
+const API			= "api";
+const APILOGIC		= "apilogic";
+const APITOOL		= "apitool";
+const APIVIEW		= "apiview";
+const SRC			= "src";
+const STYLE			= "style";
+const WWW			= "www";
+const GTROOT		= "gtroot";
 
 /**
  * Returns the absolute path on disk to the requested path constant, while
@@ -46,18 +43,6 @@ public static function get($name) {
 
 	case self::PAGE:
 		$p = self::get(self::SRC) . "/Page";
-		break;
-
-	case self::PAGELOGIC:
-		$p = self::get(self::PAGE) . "/Logic";
-		break;
-
-	case self::PAGETOOL:
-		$p = self::get(self::PAGE) . "/Tool";
-		break;
-
-	case self::PAGEVIEW:
-		$p = self::get(self::PAGE) . "/View";
 		break;
 
 	case self::PUBLICFILES:

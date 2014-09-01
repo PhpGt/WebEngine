@@ -10,7 +10,7 @@ class PageDispatcher_Test extends \PHPUnit_Framework_TestCase {
 
 private $dispatcher;
 private $tmp;
-private $pageViewDir;
+private $pageDir;
 
 private $request;
 private $response;
@@ -20,7 +20,7 @@ private $appNamespace = "TestApp";
 
 public function setUp() {
 	$this->tmp = \Gt\Test\Helper::createTmpDir();
-	$this->pageViewDir = \Gt\Test\Helper::createTmpDir("/src/Page/View");
+	$this->pageDir = \Gt\Test\Helper::createTmpDir("/src/Page");
 
 	$cfg = new \Gt\Core\ConfigObj();
 
@@ -99,7 +99,7 @@ public function testGetPathThrowsExceptionWhenNoDirectoryExists($uri) {
  * @dataProvider data_uris
  */
 public function testGetPathFromUri($uri) {
-	$filePath = $this->pageViewDir . $uri;
+	$filePath = $this->pageDir . $uri;
 	$dirname = (substr($filePath, -1) === "/")
 		? $filePath
 		: dirname($filePath);
@@ -126,7 +126,7 @@ public function testGetPathFromUri($uri) {
  */
 public function testGetPathFixesUri($uri) {
 	$uriRand = \Gt\Test\Helper::randomiseCase($uri);
-	$filePath = $this->pageViewDir . $uriRand;
+	$filePath = $this->pageDir . $uriRand;
 	$dirname = (substr($filePath, -1) === "/")
 		? $filePath
 		: dirname($filePath);
@@ -164,7 +164,7 @@ public function testGetPathThrowsException() {
  * @dataProvider data_uris
  */
 public function testLoadSourceFromPath($uri) {
-	$filePath = $this->pageViewDir . $uri;
+	$filePath = $this->pageDir . $uri;
 	$dirname = (substr($filePath, -1) === "/")
 		? $filePath
 		: dirname($filePath);
@@ -194,7 +194,7 @@ public function testLoadSourceFromPath($uri) {
  * @dataProvider data_uris
  */
 public function testLoadSourceFromPathWithHeaderFooter($uri) {
-	$filePath = $this->pageViewDir . $uri;
+	$filePath = $this->pageDir . $uri;
 	$dirname = (substr($filePath, -1) === "/")
 		? $filePath
 		: dirname($filePath);
@@ -244,7 +244,7 @@ public function testCreateResponseContentThrowsTypeException() {
 public function testGetFilenameRequestedFromUri($uri) {
 	if(substr($uri, -1) === "/") {
 		if(strlen($uri) > 1) {
-			$dirPath = $this->pageViewDir . $uri;
+			$dirPath = $this->pageDir . $uri;
 
 			if(!is_dir($dirPath)) {
 				mkdir($dirPath, 0775, true);
@@ -272,7 +272,7 @@ public function testDispatcherProcessFixesUri($uri) {
 	}
 
 	$uriRand = \Gt\Test\Helper::randomiseCase($uri);
-	$filePath = $this->pageViewDir . $uri;
+	$filePath = $this->pageDir . $uri;
 	$dirname = (substr($filePath, -1) === "/")
 		? $filePath
 		: dirname($filePath);
@@ -293,14 +293,13 @@ public function testDispatcherProcessFixesUri($uri) {
 	}
 
 	for($force = 0; $force <= 1; $force++) {
-		$request = new \StdClass();
-		$request->forceExtension = !!$force;
-		$request->indexFilename = "index";
-		$request->uri = $uriRand;
+		$this->request->forceExtension = !!$force;
+		$this->request->indexFilename = "index";
+		$this->request->uri = $uriRand;
 
 		$this->dispatcher = new PageDispatcher(
 			"TestApp",
-			$request,
+			$this->request,
 			$this->response,
 			$this->apiFactory,
 			$this->dbFactory,
@@ -335,7 +334,7 @@ public function testDispatcherProcessFlushes() {
 	$request->uri = "/test.html";
 	$request->type = \Gt\Request\Request::TYPE_PAGE;
 
-	file_put_contents($this->pageViewDir . "/test.html", "<h1>Test</h1>");
+	file_put_contents($this->pageDir . "/test.html", "<h1>Test</h1>");
 
 	$this->dispatcher = new PageDispatcher(
 		$this->appNamespace,

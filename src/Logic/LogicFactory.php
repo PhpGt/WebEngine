@@ -15,30 +15,16 @@ class LogicFactory {
 /**
  * @param string $appNamespace Base namespace containing all application logic
  * @param string $uri The current request URI
- * @param string $type Request Class constant, the type of request
  * @param ApiFactory $apiFactory API Access Layer
  * @param DatabaseFactory $dbFactory Database Access Layer
  *
  * @return array An array containing all appropriate Logic objects,
  * depending on request type, in execution order
  */
-public static function create($appNamespace, $uri, $type,
+public static function create($appNamespace, $uri,
 $apiFactory, $dbFactory, $content) {
 	$objArray = [];
-	$topPath = null;
-
-	switch ($type) {
-	case Request::TYPE_PAGE:
-		$topPath = Path::get(Path::PAGELOGIC);
-		break;
-
-	case Request::TYPE_API:
-		$topPath = Path::get(Path::APILOGIC);
-		break;
-
-	default:
-		throw new \Gt\Core\Exception\InvalidAccessException();
-	}
+	$topPath = Path::get(Path::PAGE);
 
 	$filename = basename($uri);
 	$path = pathinfo($topPath . $uri, PATHINFO_DIRNAME);

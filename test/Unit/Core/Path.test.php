@@ -38,6 +38,7 @@ public function testGetSubPaths() {
 	$constantsArray = $refl->getConstants();
 
 	foreach ($constantsArray as $constName) {
+		$constName = strtoupper($constName);
 		$constValue = constant("Gt\Core\Path::$constName");
 		$this->assertNotEmpty($constValue);
 		$path = Path::get($constValue);
@@ -61,7 +62,7 @@ public function testFixCase() {
 	$this->assertEquals($styleSubDir,
 		Path::fixCase(Path::get(Path::STYLE) . "/DirName"));
 
-	$pageViewPath = $this->src . "/page/View";
+	$pageViewPath = $this->src . "/page";
 	$pageViewFilePath = "/Subdirectory/CAPITALS/FILE_test";
 	$pageViewExtension = ".html";
 	$pageViewPath_full = $pageViewPath . $pageViewFilePath . $pageViewExtension;
@@ -71,12 +72,12 @@ public function testFixCase() {
 	file_put_contents($pageViewPath_full, "<!doctype html><h1>TEST!</h1>");
 
 	$this->assertEquals($pageViewPath_full,
-		Path::fixCase(Path::get(Path::PAGEVIEW)
+		Path::fixCase(Path::get(Path::PAGE)
 		. "/subdirectory/capitals/file_test.html")
 	);
 
 	// Test URI-style
-	$pvPath = Path::get(Path::PAGEVIEW);
+	$pvPath = Path::get(Path::PAGE);
 	$uri = "/subDirectory/Capitals/File_Test";
 	$uriWithExtension = $uri . $pageViewExtension;
 

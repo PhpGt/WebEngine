@@ -113,7 +113,6 @@ public function process() {
 	$logicList = LogicFactory::create(
 		$this->appNamespace,
 		$fullUri,
-		$this->request->getType(),
 		$this->apiFactory,
 		$this->dbFactory,
 		$content
@@ -159,8 +158,8 @@ public function getFilename($uri, $indexFilename, &$fullUri = null) {
 		$fullUri = implode("/", [$uri, $indexFilename]);
 	}
 
-	$pvPath = Path::get(Path::PAGEVIEW) . $uri;
-	if(is_dir($pvPath)) {
+	$pagePath = Path::get(Path::PAGE) . $uri;
+	if(is_dir($pagePath)) {
 		$filename = $indexFilename;
 		$fullUri = implode("/", [$uri, $indexFilename]);
 	}

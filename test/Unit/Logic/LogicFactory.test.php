@@ -48,7 +48,7 @@ public function data_uri() {
  * @dataProvider data_uri
  */
 public function testGetLogicFileArrayGivesCommons($uri) {
-	$topPath = Path::get(Path::PAGELOGIC);
+	$topPath = Path::get(Path::PAGE);
 	$filename = basename($uri);
 	$path = pathinfo($topPath . $uri, PATHINFO_DIRNAME);
 
@@ -63,7 +63,9 @@ public function testGetLogicFileArrayGivesCommons($uri) {
 	do {
 		$directory = dirname($directory);
 		$commonPath = $directory . "/_common.php";
-		$this->assertContains($commonPath, $logicFileArray);
+		$this->assertContains($commonPath, $logicFileArray,
+			"Message, and TODO: output actual array. ($commonPath)"
+			. print_r($logicFileArray, true));
 	} while(strstr($directory, $path));
 }
 
@@ -71,7 +73,7 @@ public function testGetLogicFileArrayGivesCommons($uri) {
  * @dataProvider data_uri
  */
 public function testGetLogicFileArray($uri) {
-	$topPath = Path::get(Path::PAGELOGIC);
+	$topPath = Path::get(Path::PAGE);
 	$filename = basename($uri);
 	$path = pathinfo($topPath . $uri, PATHINFO_DIRNAME);
 
@@ -86,16 +88,5 @@ public function testGetLogicFileArray($uri) {
 	$directoryCount = substr_count($uri, "/");
 	$this->assertCount($directoryCount + 1, $logicFileArray);
 }
-
-// public function testCreatesPageLogicForTestPage($uri) {
-// 	$logicList = LogicFactory::create(
-// 		"TestApp",
-// 		$uri,
-// 		Request::TYPE_PAGE,
-// 		$this->apiFactory,
-// 		$this->dbFactory,
-// 		$this->content
-// 	);
-// }
 
 }#

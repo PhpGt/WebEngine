@@ -14,15 +14,15 @@ use \Gt\Response\NotFoundException;
 class PageDispatcher extends Dispatcher {
 
 public function getPath($uri, &$fixedUri) {
-	$pageViewPath = Path::get(Path::PAGEVIEW);
-	$pageViewDir = Path::fixCase($pageViewPath . $uri);
-	$fixedUri = Path::fixCase($pageViewPath . $uri, $pageViewPath);
+	$pagePath = Path::get(Path::PAGE);
+	$pageDir = Path::fixCase($pagePath . $uri);
+	$fixedUri = Path::fixCase($pagePath . $uri, $pagePath);
 
-	if(!is_dir($pageViewDir)) {
-		$pageViewDir_container = dirname($pageViewDir);
+	if(!is_dir($pageDir)) {
+		$pageDir_container = dirname($pageDir);
 
-		if(is_dir($pageViewDir_container)) {
-			if(!file_exists($pageViewPath . $fixedUri)) {
+		if(is_dir($pageDir_container)) {
+			if(!file_exists($pagePath . $fixedUri)) {
 				throw new NotFoundException($fixedUri);
 			}
 		}
@@ -32,10 +32,10 @@ public function getPath($uri, &$fixedUri) {
 			);
 		}
 
-		$pageViewDir = $pageViewDir_container;
+		$pageDir = $pageDir_container;
 	}
 
-	return rtrim($pageViewDir, "/");
+	return rtrim($pageDir, "/");
 }
 
 public function loadSource($path, $pathFile) {
@@ -45,7 +45,7 @@ public function loadSource($path, $pathFile) {
 	$pathFileBase = strtok($pathFile, ".");
 
 	// Look for a header and footer view file up the tree.
-	$headerFooterPathTop = dirname(Path::get(Path::PAGEVIEW));
+	$headerFooterPathTop = dirname(Path::get(Path::PAGE));
 	$headerFooterPath = realpath($path);
 	do {
 		foreach (new \DirectoryIterator($headerFooterPath) as $fileInfo) {
