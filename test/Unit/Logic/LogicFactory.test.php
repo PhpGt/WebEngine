@@ -66,7 +66,7 @@ public function testGetLogicFileArrayGivesCommons($uri) {
 		$this->assertContains($commonPath, $logicFileArray,
 			"Message, and TODO: output actual array. ($commonPath)"
 			. print_r($logicFileArray, true));
-	} while(strstr($directory, $path));
+	} while(strstr($directory, $path . "/"));
 }
 
 /**
