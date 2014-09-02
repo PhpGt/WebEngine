@@ -89,4 +89,11 @@ public function testGetLogicFileArray($uri) {
 	$this->assertCount($directoryCount + 1, $logicFileArray);
 }
 
+/**
+ * @dataProvider data_uri
+ */
+public function testGetLogicClassNameArray($uri) {
+	// TODO.
+}
+
 }#

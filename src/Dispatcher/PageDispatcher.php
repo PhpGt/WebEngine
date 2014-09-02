@@ -13,6 +13,12 @@ use \Gt\Response\NotFoundException;
 
 class PageDispatcher extends Dispatcher {
 
+private static $pageExtensions = [
+	"html",
+	// "md",
+	// "haml",
+];
+
 public function getPath($uri, &$fixedUri) {
 	$pagePath = Path::get(Path::PAGE);
 	$pageDir = Path::fixCase($pagePath . $uri);
@@ -89,6 +95,12 @@ public function loadSource($path, $pathFile) {
 
 		$fileName = $fileInfo->getFilename();
 		$fileBase = strtok($fileName, ".");
+		$extension = $fileInfo->getExtension();
+		if(!in_array(strtolower($extension), self::$pageExtensions)) {
+			// Only include the current file's source if its extension is
+			// within the pageExtensions array.
+			continue;
+		}
 
 		if(strcasecmp($fileBase, $pathFileBase) === 0) {
 			$fullPath = implode("/", [$path, $fileName]);

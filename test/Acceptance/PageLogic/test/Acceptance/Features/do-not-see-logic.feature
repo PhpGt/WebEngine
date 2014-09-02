@@ -5,6 +5,7 @@ Feature: Page Logic is hidden from user
 
 	Scenario: Open homepage
 		Given I go to the homepage
-		Then I should see "MultiPage Test"
-		And I should see "PageLogic Test"
+		Then I should see "PageLogic Test"
+		And I should see "This is the index page"
+		And I should see "EDITED FROM PAGE LOGIC"
 		And the response should not contain "hidden from Page View"

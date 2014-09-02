@@ -57,7 +57,7 @@ foreach (new DirectoryIterator(__DIR__) as $fileInfo) {
 	}
 
 	if($exitCode == 0) {
-		echo "Acceptance test $testName successful";
+		echo "Acceptance test $testName successful\n";
 	}
 	else {
 		echo "\n\nERROR: Acceptance test failed.\n\n";
