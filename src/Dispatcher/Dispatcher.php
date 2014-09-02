@@ -118,6 +118,8 @@ public function process() {
 		$content
 	);
 
+	$this->cleanBuffer();
+
 	// Call the correct methods on each Logic object:
 	foreach ($logicList as $logicObj) {
 		$logicObj->go();
@@ -165,6 +167,11 @@ public function getFilename($uri, $indexFilename, &$fullUri = null) {
 	}
 
 	return $filename;
+}
+
+public function cleanBuffer() {
+	// ob_start();
+	// ob_clean();
 }
 
 }#
