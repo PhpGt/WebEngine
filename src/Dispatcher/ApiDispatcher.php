@@ -9,7 +9,24 @@ namespace Gt\Dispatcher;
 
 class ApiDispatcher extends Dispatcher {
 
-public function createResponseContent() {
+/**
+ *
+ */
+public function getPath($uri, &$fixedUri) {
+	// TODO...
+}
+
+/**
+ *
+ */
+public function loadSource($path, $pathFile) {
+	// TODO...
+}
+
+/**
+ *
+ */
+public function createResponseContent($content) {
 	$apiObj = new \Gt\Response\StructuredData\Container();
 
 	return $apiObj;
