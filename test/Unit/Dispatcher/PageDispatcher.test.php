@@ -180,7 +180,7 @@ public function testLoadSourceFromPath($uri) {
 		$uri .= "index";
 	}
 	else {
-		file_put_contents($filePath, "dummy data");
+		file_put_contents($filePath . ".html", "dummy data");
 	}
 
 	$uriFile = basename($uri);
@@ -214,7 +214,7 @@ public function testLoadSourceFromPathWithHeaderFooter($uri) {
 	else {
 		file_put_contents(dirname($filePath) . "/_header.html", "header data");
 		file_put_contents(dirname($filePath) . "/_footer.html", "footer data");
-		file_put_contents($filePath, "dummy data");
+		file_put_contents($filePath . ".html", "dummy data");
 	}
 
 	$uriFile = basename($uri);
