@@ -57,7 +57,7 @@ $apiFactory, $dbFactory, $content) {
  * until and including the $topPath path
  * @param string $topPath The top-most path to use when looking for logic files
  */
-public function getLogicFileArray($filename, $path, $topPath) {
+public static function getLogicFileArray($filename, $path, $topPath) {
 	// Get PageLogic path for current URI.
 	$currentPageLogicPath = implode("/", [$path, $filename]) . ".php";
 	$commonPageLogicPathArray = [];
@@ -94,7 +94,7 @@ public function getLogicFileArray($filename, $path, $topPath) {
  *
  * @return array Array of instantiated Logic objects
  */
-public function getLogicClassNameArray(
+public static function getLogicClassNameArray(
 $appNamespace, $logicPathArray, $topPath) {
 	$classNameArray = [];
 	$srcPath = Path::get(Path::SRC);
