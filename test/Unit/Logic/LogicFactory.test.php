@@ -93,7 +93,34 @@ public function testGetLogicFileArray($uri) {
  * @dataProvider data_uri
  */
 public function testGetLogicClassNameArray($uri) {
-	// TODO.
+	$root = Path::get(Path::ROOT);
+	$topPath = Path::get(Path::PAGE);
+	$logicSubPathArray = [
+		"/Page/Index.php",
+		"/Page/_Common.php",
+		"/Page/Directory/Index.php",
+		"/Page/Directory/SubPage.php",
+		"/Page/Directory/InnerDirectory/AnotherPage.php",
+	];
+	$logicPathArray = [];
+	foreach ($logicSubPathArray as $subPath) {
+		$logicPathArray []= $topPath . $subPath;
+	}
+
+	$logicClassNameArray = LogicFactory::getLogicClassNameArray(
+		"TestApp",
+		$logicPathArray,
+		$topPath
+	);
+
+	var_dump($logicClassNameArray);die();
+	foreach ($logicSubPathArray as $i => $subPath) {
+		$expectedFQClassName = "TestApp" . strtok($subPath, ".");
+		$expectedFQClassName = str_replace("/", "\\", $expectedFQClassName);
+
+		$this->assertContains($expectedFQClassName, $logicClassNameArray);
+	}
+
 }
 
 }#

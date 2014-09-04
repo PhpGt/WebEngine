@@ -56,6 +56,9 @@ $apiFactory, $dbFactory, $content) {
  * @param string $path The path to look for logic files in, moving up the tree
  * until and including the $topPath path
  * @param string $topPath The top-most path to use when looking for logic files
+ *
+ * @return array An array of file paths for each potential logic file, even if
+ * there is no file at that path.
  */
 public static function getLogicFileArray($filename, $path, $topPath) {
 	// Get PageLogic path for current URI.
@@ -83,9 +86,10 @@ public static function getLogicFileArray($filename, $path, $topPath) {
 }
 
 /**
- * Return an array of instantiated Logic objects, in correct execution order,
+ * Return an array of Logic class names, in correct execution order,
  * to hand to the Dispatcher where their go methods will be called at the
- * correct time.
+ * correct time. Each element in the array is fully qualified with the
+ * namespace it is contained within.
  *
  * @param string $appNamespace Base namespace containing all application logic
  * @param array $logicPathArray Array of absolute file paths to all Logic
@@ -100,15 +104,18 @@ $appNamespace, $logicPathArray, $topPath) {
 	$srcPath = Path::get(Path::SRC);
 
 	foreach ($logicPathArray as $logicPath) {
-		$namespaceStr = substr($topPath, strlen($srcPath) + 1);
+		$namespaceStr = substr($logicPath, strlen($srcPath) + 1);
 		$namespaceArray = explode("/", $namespaceStr);
 		array_unshift($namespaceArray, $appNamespace);
 
 		$className = strtok(basename($logicPath), ".");
-		$classNameArray []=
-			implode("\\", array_merge($namespaceArray, [$className]));
+		// $classNameArray []=
+		var_dump(
+			implode("\\", array_merge($namespaceArray, [$className]))
+			);die();
 	}
 
+	var_dump($classNameArray);die();
 	return $classNameArray;
 }
 
