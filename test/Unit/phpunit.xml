@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="Unit/Bootstrap.php">
+<phpunit bootstrap="Bootstrap.php">
 	<testsuites>
 		<testsuite name="Unit Tests">
-			<directory suffix=".test.php">Unit</directory>
+			<directory suffix=".test.php">.</directory>
 		</testsuite>
 	</testsuites>
 	<logging>
@@ -21,7 +21,7 @@
 	<filter>
 		<blacklist>
 			<file>Unit/Bootstrap.php</file>
-			<directory>../vendor</directory>
+			<directory>../../vendor</directory>
 		</blacklist>
 	</filter>
 </phpunit>
