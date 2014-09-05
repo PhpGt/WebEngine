@@ -3,5 +3,5 @@
 composer.lock
 composer.phar
 vendor/*
-test/Unit/Report/*
+test/Unit/_Report/*
 test/Unit/phpunit.output*
