@@ -10,10 +10,11 @@ namespace Gt\Response\Dom;
 
 use \Gt\Response\ResponseContent;
 
-class Document extends ResponseContent {
+class Document extends ResponseContent implements ArrayAccess {
 
 const DEFAULT_HTML = "<!doctype html>";
-private $domDocument;
+public $domDocument;
+public $node;
 
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
@@ -28,6 +29,8 @@ public function __construct($html = null) {
 		}
 		$this->load($html);
 	}
+
+	$node = new Node($this);
 }
 
 public function __toString() {
@@ -61,9 +64,66 @@ public function load($content = null) {
 }
 
 public function __call($name, $args) {
-	if(method_exists($this->domDocument, $name)) {
-		return call_user_func_array([$this->domDocument, $name], $args);
+	if(method_exists($this->node, $name)) {
+		$result = call_user_func_array([$this->node, $name], $args);
+		// TODO: Wrap result with Node or NodeList.
+		return $result;
 	}
+	else if(method_exists($this->domDocument, $name)) {
+		$result = call_user_func_array([$this->domDocument, $name], $args);
+		// TODO: Wrap result with Node or NodeList.
+		return $result;
+	}
+	else {
+		throw new NodeMethodNotDefinedException();
+	}
+
+}
+
+// ArrayAccess -----------------------------------------------------------------
+
+/**
+ * This method is executed when using isset() or empty()
+ *
+ * @param string $offset CSS selector string
+ *
+ * @return bool True if the provided CSS selector string matches 1 or more
+ * elements in the current Document
+ */
+public function offsetExists($offset) {
+	$matches = $this->css($offset);
+	return ($matches->length > 0);
+}
+
+/**
+ * Wrapper to the Document::css() method, allowing the DOM to be CSS queried
+ * using array notation.
+ *
+ * @param string $offset CSS selector string
+ *
+ * @return NodeList A NodeList with 0 or more matching elements
+ */
+public function offsetGet($offset) {
+	return $this->css($offset);
+}
+
+/**
+ * Used to replace a NodeList with another, via matching CSS selector.
+ *
+ * @param string $offset CSS selector string
+ * @param NodeList $value A NodeList to replace the current one with
+ */
+public function offsetSet($offset, $value) {
+	throw new \Gt\Core\Exception\NotImplementedException();
+}
+
+/**
+ * Used to remove a NodeList, via matching CSS selector.
+ *
+ * @param string $offset CSS selector string
+ */
+public function ofsetUnSet($offset) {
+	throw new \Gt\Core\Exception\NotImplementedException();
 }
 
 }#
