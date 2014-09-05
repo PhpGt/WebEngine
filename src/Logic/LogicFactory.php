@@ -104,18 +104,18 @@ $appNamespace, $logicPathArray, $topPath) {
 	$srcPath = Path::get(Path::SRC);
 
 	foreach ($logicPathArray as $logicPath) {
+		// Begin creating a string contining the fully-qualified class name.
 		$namespaceStr = substr($logicPath, strlen($srcPath) + 1);
+		$namespaceStr = strtok($namespaceStr, ".");
+		// Explode the string into an array ..
 		$namespaceArray = explode("/", $namespaceStr);
+		// .. and add the App's namespace to the beginning of the array.
 		array_unshift($namespaceArray, $appNamespace);
 
-		$className = strtok(basename($logicPath), ".");
-		// $classNameArray []=
-		var_dump(
-			implode("\\", array_merge($namespaceArray, [$className]))
-			);die();
+		// Implode the array with backslashes to create a FQ class name:
+		$classNameArray []= implode("\\", $namespaceArray);
 	}
 
-	var_dump($classNameArray);die();
 	return $classNameArray;
 }
 

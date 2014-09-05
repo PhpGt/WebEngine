@@ -96,11 +96,11 @@ public function testGetLogicClassNameArray($uri) {
 	$root = Path::get(Path::ROOT);
 	$topPath = Path::get(Path::PAGE);
 	$logicSubPathArray = [
-		"/Page/Index.php",
-		"/Page/_Common.php",
-		"/Page/Directory/Index.php",
-		"/Page/Directory/SubPage.php",
-		"/Page/Directory/InnerDirectory/AnotherPage.php",
+		"/Index.php",
+		"/_Common.php",
+		"/Directory/Index.php",
+		"/Directory/SubPage.php",
+		"/Directory/InnerDirectory/AnotherPage.php",
 	];
 	$logicPathArray = [];
 	foreach ($logicSubPathArray as $subPath) {
@@ -112,15 +112,36 @@ public function testGetLogicClassNameArray($uri) {
 		$logicPathArray,
 		$topPath
 	);
+	$logicClassNameArray = array_map("strtolower", $logicClassNameArray);
 
-	var_dump($logicClassNameArray);die();
 	foreach ($logicSubPathArray as $i => $subPath) {
-		$expectedFQClassName = "TestApp" . strtok($subPath, ".");
-		$expectedFQClassName = str_replace("/", "\\", $expectedFQClassName);
+		// Create a FQ class name that should exist in the logicClassNameArray.
+		$expectedFQClassNamePrefix = "TestApp\\Page";
+		$expectedFQClassName =
+			$expectedFQClassNamePrefix
+			. str_replace("/", "\\", $subPath);
+		$expectedFQClassName = strtok($expectedFQClassName, ".");
 
-		$this->assertContains($expectedFQClassName, $logicClassNameArray);
+		$this->assertContains(
+			strtolower($expectedFQClassName),
+			$logicClassNameArray
+		);
+
+		$expectedFQCommonClassName = $expectedFQClassName;
+
+		while(substr_count(
+			$expectedFQClassName, $expectedFQClassNamePrefix) > 1) {
+			$expectedFQCommonClassName = substr(
+				$expectedFQCommonClassName,
+				0,
+				strrpos($expectedFQCommonClassName, "\\")
+			);
+			$this->assertContains(
+				strtolower($expectedFQCommonClassName . "\\_common"),
+				$logicClassNameArray
+			);
+		}
 	}
-
 }
 
 }#
