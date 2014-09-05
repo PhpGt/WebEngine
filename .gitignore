@@ -3,5 +3,5 @@
 composer.lock
 composer.phar
 vendor/*
-test/chromedriver
-test/selenium.jar
+test/Unit/Report/*
+test/Unit/phpunit.output*
