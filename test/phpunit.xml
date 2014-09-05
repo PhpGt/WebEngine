@@ -21,6 +21,7 @@
 	<filter>
 		<blacklist>
 			<file>Unit/Bootstrap.php</file>
+			<directory>../vendor</directory>
 		</blacklist>
 	</filter>
 </phpunit>
