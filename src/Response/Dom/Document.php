@@ -10,7 +10,7 @@ namespace Gt\Response\Dom;
 
 use \Gt\Response\ResponseContent;
 
-class Document extends ResponseContent implements ArrayAccess {
+class Document extends ResponseContent implements \ArrayAccess {
 
 const DEFAULT_HTML = "<!doctype html>";
 public $domDocument;
@@ -30,9 +30,12 @@ public function __construct($html = null) {
 		$this->load($html);
 	}
 
-	$node = new Node($this);
+	$this->node = new Node($this, $this->domDocument);
 }
 
+/**
+ *
+ */
 public function __toString() {
 	return $this->domDocument->saveHTML();
 }
@@ -63,21 +66,18 @@ public function load($content = null) {
 	$this->domDocument->loadHTML($string);
 }
 
+/**
+ *
+ */
 public function __call($name, $args) {
-	if(method_exists($this->node, $name)) {
+	if(is_callable([$this->node, $name])) {
 		$result = call_user_func_array([$this->node, $name], $args);
-		// TODO: Wrap result with Node or NodeList.
-		return $result;
-	}
-	else if(method_exists($this->domDocument, $name)) {
-		$result = call_user_func_array([$this->domDocument, $name], $args);
 		// TODO: Wrap result with Node or NodeList.
 		return $result;
 	}
 	else {
 		throw new NodeMethodNotDefinedException();
 	}
-
 }
 
 // ArrayAccess -----------------------------------------------------------------
@@ -91,8 +91,7 @@ public function __call($name, $args) {
  * elements in the current Document
  */
 public function offsetExists($offset) {
-	$matches = $this->css($offset);
-	return ($matches->length > 0);
+	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
 }
 
 /**
@@ -104,7 +103,7 @@ public function offsetExists($offset) {
  * @return NodeList A NodeList with 0 or more matching elements
  */
 public function offsetGet($offset) {
-	return $this->css($offset);
+	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
 }
 
 /**
@@ -114,7 +113,7 @@ public function offsetGet($offset) {
  * @param NodeList $value A NodeList to replace the current one with
  */
 public function offsetSet($offset, $value) {
-	throw new \Gt\Core\Exception\NotImplementedException();
+	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
 }
 
 /**
@@ -122,8 +121,8 @@ public function offsetSet($offset, $value) {
  *
  * @param string $offset CSS selector string
  */
-public function ofsetUnSet($offset) {
-	throw new \Gt\Core\Exception\NotImplementedException();
+public function offsetUnset($offset) {
+	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
 }
 
 }#

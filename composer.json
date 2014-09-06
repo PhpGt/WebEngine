@@ -16,6 +16,7 @@
 	},
 
 	"require": {
+		"symfony/css-selector": "2.6.*",
 		"symfony/console": "2.5.*",
 		"leafo/scssphp": "0.0.*"
 	},

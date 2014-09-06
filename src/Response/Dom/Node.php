@@ -7,9 +7,12 @@
  */
 namespace Gt\Response\Dom;
 
-class Node implements ArrayAccess {
+use Symfony\Component\CssSelector\CssSelector;
 
-private $domElement;
+class Node implements \ArrayAccess {
+
+public $document;
+public $domNode;
 
 /**
  *
@@ -17,21 +20,23 @@ private $domElement;
 public function __construct(Document $document, $domNode,
 array $attributeArray = [], $value = null) {
 	if($domNode instanceof Node) {
-		$this->domElement = $domNode->domElement;
+		$this->domNode = $domNode->domNode;
 	}
-	else if($domNode instanceof DOMElement) {
-		$this->domElement = $domNode;
+	else if($domNode instanceof \DOMNode) {
+		$this->domNode = $domNode;
 	}
 	else if(is_string($domNode)) {
-		$this->domElement =
+		// $this->domNode =
 	}
 	else {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException();
 	}
 
 	foreach ($attributeArray as $key => $value) {
-		$this->domElement->setAttribute($key, $value);
+		$this->domNode->setAttribute($key, $value);
 	}
+
+	$this->document = $document;
 }
 
 /**
@@ -46,9 +51,10 @@ array $attributeArray = [], $value = null) {
  * returns the first matching element.
  */
 public function querySelector($query) {
-	$nodeList = $this->css($query, null, 1);
+	$nodeList = $this->css($query, null);
 	if($nodeList->length > 0) {
-		return $nodeList;
+		// TODO: Might be possible to speed this up?
+		return $nodeList[0];
 	}
 
 	return null;
@@ -68,12 +74,48 @@ public function querySelectorAll($query) {
 	return $this->css($query);
 }
 
-public function css($query, $context = null, $max = 0) {
+/**
+ *
+ */
+public function css($query, $context = null) {
+	$context = $this->checkContext($context);
 
+	$xpath = CssSelector::toXPath($query);
+	return $this->xpath($xpath, $context);
 }
 
-public function xpath($query, $context = null, $max = 0) {
+/**
+ *
+ */
+public function xpath($query, $context = null) {
+	$context = $this->checkContext($context);
 
+	$xpath = new \DOMXPath($this->document->domDocument);
+	return $xpath->query($query, $context);
+}
+
+/**
+ * Ensures the provided context is of a native DOMDocument type rather than
+ * an enhanced object, so it can be used with native DOMDocument methods.
+ *
+ * @param Node|DOMNode|null $context The current context. If null is provided,
+ * this current Node's DOMNode is used.
+ *
+ * @return DOMNode The contextual DOMNode
+ */
+public function checkContext($context) {
+	if(is_null($context)) {
+		$context = $this->domNode->documentElement;
+	}
+
+	if($context instanceof Node) {
+		$context = $context->domNode;
+	}
+	else if(!$context instanceof \DOMNode) {
+		throw new InvalidNodeTypeException();
+	}
+
+	return $context;
 }
 
 // ArrayAccess -----------------------------------------------------------------
@@ -118,7 +160,7 @@ public function offsetSet($offset, $value) {
  *
  * @param string $offset CSS selector string
  */
-public function ofsetUnSet($offset) {
+public function offsetUnset($offset) {
 	throw new \Gt\Core\Exception\NotImplementedException();
 }
 
