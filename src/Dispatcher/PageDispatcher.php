@@ -122,7 +122,7 @@ public function createResponseContent($html) {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
 			gettype($html) . " is not a string");
 	}
-	$domDocument = new \Gt\Response\Dom\Document($html);
+	$domDocument = new \Gt\Dom\Document($html);
 
 	return $domDocument;
 }

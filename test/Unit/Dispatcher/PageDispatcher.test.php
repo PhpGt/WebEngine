@@ -228,7 +228,7 @@ public function testCreateResponseContentFromHtml() {
 	$html = "<!doctype html><h1>Test!</h1>";
 	$responseContent = $this->dispatcher->createResponseContent($html);
 	$this->assertInstanceOf("\Gt\Response\ResponseContent", $responseContent);
-	$this->assertInstanceOf("\Gt\Response\Dom\Document", $responseContent);
+	$this->assertInstanceOf("\Gt\Dom\Document", $responseContent);
 }
 
 public function testCreateResponseContentThrowsTypeException() {

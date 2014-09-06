@@ -5,13 +5,12 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-namespace Gt\Response\Dom;
+namespace Gt\Dom;
 
 use Symfony\Component\CssSelector\CssSelector;
 
 class Node implements \ArrayAccess {
 
-public $document;
 public $domNode;
 
 /**
@@ -54,7 +53,7 @@ public function __construct($node, array $attributeArray = [], $value = null) {
  */
 public function querySelector($query) {
 	$nodeList = $this->css($query, null);
-	if($nodeList->length > 0) {
+	if(count($nodeList) > 0) {
 		// TODO: Might be possible to speed this up?
 		return $nodeList[0];
 	}
@@ -93,7 +92,7 @@ public function css($query, $context = null) {
 public function xpath($query, $context = null) {
 	$context = $this->checkContext($context);
 
-	$xpath = new \DOMXPath($this->document->domDocument);
+	$xpath = new \DOMXPath($context->ownerDocument);
 	$domNodeList = $xpath->query($query, $context);
 	return new NodeList($domNodeList);
 }
@@ -134,19 +133,19 @@ public function checkContext($context) {
  */
 public function offsetExists($offset) {
 	$matches = $this->css($offset);
-	return ($matches->length > 0);
+	return (count($matches) > 0);
 }
 
 /**
- * Wrapper to the Document::css() method, allowing the DOM to be CSS queried
- * using array notation.
+ * Wrapper to the Document::querySelectorAll() method, allowing the DOM to be
+ * CSS queried using array notation.
  *
  * @param string $offset CSS selector string
  *
  * @return NodeList A NodeList with 0 or more matching elements
  */
 public function offsetGet($offset) {
-	return $this->css($offset);
+	return $this->querySelectorAll($offset);
 }
 
 /**

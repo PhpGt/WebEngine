@@ -6,7 +6,7 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-namespace Gt\Response\Dom;
+namespace Gt\Dom;
 
 use \Gt\Response\ResponseContent;
 
@@ -32,7 +32,7 @@ public function __construct($html = null) {
 		$this->load($html);
 	}
 
-	$this->node = new Node($this, $this->domDocument);
+	$this->node = new Node($this->domDocument);
 
 	if(is_null(self::$currentDocument)) {
 		self::$currentDocument = $this;
