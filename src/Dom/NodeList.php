@@ -21,11 +21,16 @@ public function __construct($domNodeList) {
 		foreach($domNodeList as $domNode) {
 			// Get reference to current DOMNode's owner document, as this may
 			// be different from node to node.
-			$document = $domNode->ownerDocument;
+			if($domNode instanceof Node) {
+				// Ensure we are working with a native DOMNode.
+				$domNode = $domNode->domNode;
+			}
+
+			$domDocument = $domNode->ownerDocument;
 
 			// Call getNode to get reference to a Node object representing the
 			// given DOMNode, then push it into the nodeArray.
-			$node = $document->getNode($domNode);
+			$node = $domDocument->document->getNode($domNode);
 			$this->nodeArray []= $node;
 		}
 	}
@@ -41,8 +46,6 @@ public function __construct($domNodeList) {
  * @return integer Number of elements contained by this NodeList
  */
 public function count() {
-	var_dump($this->nodeArray);
-	die("COUNT!");
 	return count($this->nodeArray);
 }
 
@@ -58,14 +61,14 @@ public function rewind() {
  *
  */
 public function valid() {
-	return isset($this->_elArray[$this->iteratorIndex]);
+	return isset($this->nodeArray[$this->iteratorIndex]);
 }
 
 /**
  *
  */
 public function current() {
-	return $this->_elArray[$this->iteratorIndex];
+	return $this->nodeArray[$this->iteratorIndex];
 }
 
 /**

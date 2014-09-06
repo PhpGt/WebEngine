@@ -17,6 +17,7 @@ public $domDocument;
 public $node;
 
 private static $currentDocument = null;
+public $nodeMap = [];
 
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
@@ -37,6 +38,10 @@ public function __construct($html = null) {
 	if(is_null(self::$currentDocument)) {
 		self::$currentDocument = $this;
 	}
+
+	// Store a self-reference in the native DOMDocument, for access within the
+	// Node class.
+	$this->domDocument->document = $this;
 }
 
 /**
@@ -71,8 +76,8 @@ public function getNode($domNode) {
 	// attached, but there still may not be a Node object stored in the nodeMap,
 	// so another check is required.
 	if(!empty($domNode->UUID)) {
-		if(isset(self::$nodeMap[$domNode->UUID])) {
-			$node = self::$nodeMap[$domNode->UUID];
+		if(isset($this->$nodeMap[$domNode->UUID])) {
+			$node = $this->$nodeMap[$domNode->UUID];
 		}
 	}
 

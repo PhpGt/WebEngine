@@ -38,6 +38,13 @@ public function __construct($node, array $attributeArray = [], $value = null) {
 	if(!is_null($value)) {
 		$this->value = $value;
 	}
+
+	// Attach a UUID to the underlying DOMNode and store a reference in the
+	// Document::nodeMap. This allows for accessing already-constructed Node
+	// objects through Document::getNode(), rather than constructing again.
+	$uuid = uniqid("nodeMap-", true);
+	$this->domNode->uuid = $uuid;
+	$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 }
 
 /**
