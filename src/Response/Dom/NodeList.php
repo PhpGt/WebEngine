@@ -15,11 +15,17 @@ public $nodeArray;
 public function __construct($domNodeList) {
 	$this->nodeArray = [];
 
-	for($i = 0, $len = $domNodeList->length; $i < $len; $i++) {
-		$node = $domNodeList->item($i);
-
-		// TODO: Create Node, add to array.
-		// Then implement Iterator and ArrayAccess.
+	if($domNodeList instanceof \DOMNodeList) {
+		for($i = 0, $len = $domNodeList->length; $i < $len; $i++) {
+			$node = new Node($domNodeList->item($i));
+			$this->nodeArray []= $node;
+		}
+	}
+	else if(is_array($domNodeList)) {
+		for($i = 0, $len = count($domNodeList); $i < $len; $i++) {
+			$node = new Node($domNodeList[$i]);
+			$this->nodeArray []= $node;
+		}
 	}
 }
 

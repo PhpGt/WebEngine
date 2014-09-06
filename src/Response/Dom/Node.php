@@ -17,26 +17,28 @@ public $domNode;
 /**
  *
  */
-public function __construct(Document $document, $domNode,
-array $attributeArray = [], $value = null) {
-	if($domNode instanceof Node) {
-		$this->domNode = $domNode->domNode;
+public function __construct($node, array $attributeArray = [], $value = null) {
+	if($node instanceof Node) {
+		$this->domNode = $node->domNode;
 	}
-	else if($domNode instanceof \DOMNode) {
-		$this->domNode = $domNode;
+	else if($node instanceof \DOMNode) {
+		$this->domNode = $node;
 	}
-	else if(is_string($domNode)) {
-		// $this->domNode =
+	else if(is_string($node)) {
+		$domDocument = Document::getCurrent()->domDocument;
+		$this->domNode = $domDocument->createElement($node);
 	}
 	else {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException();
 	}
 
 	foreach ($attributeArray as $key => $value) {
-		$this->domNode->setAttribute($key, $value);
+		$this->setAttribute($key, $value);
 	}
 
-	$this->document = $document;
+	if(!is_null($value)) {
+		$this->value = $value;
+	}
 }
 
 /**

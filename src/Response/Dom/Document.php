@@ -16,6 +16,8 @@ const DEFAULT_HTML = "<!doctype html>";
 public $domDocument;
 public $node;
 
+private static $currentDocument = null;
+
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
  * calls the load function with provided HTML content.
@@ -31,6 +33,17 @@ public function __construct($html = null) {
 	}
 
 	$this->node = new Node($this, $this->domDocument);
+
+	if(is_null(self::$currentDocument)) {
+		self::$currentDocument = $this;
+	}
+}
+
+/**
+ *
+ */
+public static function getCurrent() {
+	return self::$currentDocument;
 }
 
 /**
