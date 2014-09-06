@@ -81,7 +81,8 @@ public function css($query, $context = null) {
 	$context = $this->checkContext($context);
 
 	$xpath = CssSelector::toXPath($query);
-	return $this->xpath($xpath, $context);
+	$domNodeList = $this->xpath($xpath, $context);
+	return new NodeList($domNodeList);
 }
 
 /**
@@ -91,7 +92,8 @@ public function xpath($query, $context = null) {
 	$context = $this->checkContext($context);
 
 	$xpath = new \DOMXPath($this->document->domDocument);
-	return $xpath->query($query, $context);
+	$domNodeList = $xpath->query($query, $context);
+	return new NodeList($domNodeList);
 }
 
 /**
