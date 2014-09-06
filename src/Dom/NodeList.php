@@ -15,16 +15,21 @@ public $nodeArray;
 public function __construct($domNodeList) {
 	$this->nodeArray = [];
 
-	if($domNodeList instanceof \DOMNodeList
+	if($domNodeList instanceof NodeList
+	|| $domNodeList instanceof \DOMNodeList
 	|| is_array($domNodeList)) {
 		foreach($domNodeList as $domNode) {
-			$node = new Node($domNode);
+			// Get reference to current DOMNode's owner document, as this may
+			// be different from node to node.
+			$document = $domNode->ownerDocument;
+
+			// Call getNode to get reference to a Node object representing the
+			// given DOMNode, then push it into the nodeArray.
+			$node = $document->getNode($domNode);
 			$this->nodeArray []= $node;
 		}
 	}
 	else {
-		// TODO: The problem here is that is is being constructed as an instance of itself...
-		var_dump($domNodeList);die();
 		throw new InvalidNodeTypeException();
 	}
 }

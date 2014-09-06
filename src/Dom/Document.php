@@ -47,6 +47,45 @@ public static function getCurrent() {
 }
 
 /**
+ * Get reference to the Node object representing the provided DOMNode. Use this
+ * instead of constructing a new Node each time you want access to the node to
+ * avoid unnecessary memory usage.
+ *
+ * @param DOMNode|Node $domNode The provided DOMNode (or Node object) to obtain
+ * a reference to
+ *
+ * @return Node A Node object representing the provided DOMNode. The object may
+ * have already existed, or may have been constructed here for the first time
+ */
+public function getNode($domNode) {
+	if($domNode instanceof Node) {
+		$domNode = $domNode->domNode;
+	}
+	else if(!$domNode instanceof \DOMNode) {
+		throw new InvalidNodeTypeException();
+	}
+
+	$node = null;
+
+	// If the DOMNode has been used before, it will have a UUID property
+	// attached, but there still may not be a Node object stored in the nodeMap,
+	// so another check is required.
+	if(!empty($domNode->UUID)) {
+		if(isset(self::$nodeMap[$domNode->UUID])) {
+			$node = self::$nodeMap[$domNode->UUID];
+		}
+	}
+
+	// Only construct a new Node object if there isn't one referencing the
+	// provided DOMNode.
+	if(is_null($node)) {
+		$node = new Node($domNode);
+	}
+
+	return $node;
+}
+
+/**
  *
  */
 public function __toString() {
