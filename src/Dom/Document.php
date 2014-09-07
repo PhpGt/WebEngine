@@ -127,14 +127,8 @@ public function load($content = null) {
  *
  */
 public function __call($name, $args) {
-	if(is_callable([$this->node, $name])) {
-		$result = call_user_func_array([$this->node, $name], $args);
-		// TODO: Wrap result with Node or NodeList.
-		return $result;
-	}
-	else {
-		throw new NodeMethodNotDefinedException();
-	}
+	$result = call_user_func_array([$this->node, $name], $args);
+	return $result;
 }
 
 // ArrayAccess -----------------------------------------------------------------

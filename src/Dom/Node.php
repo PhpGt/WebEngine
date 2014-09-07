@@ -47,6 +47,9 @@ public function __construct($node, array $attributeArray = [], $value = null) {
 	$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 }
 
+/**
+ *
+ */
 public function __get($name) {
 	switch($name) {
 	default:
@@ -55,9 +58,12 @@ public function __get($name) {
 
 			// Attempt to never pass back a native DOMNode, wrapping it in
 			// a Node class instead.
-			if($value instanceof DOMNode) {
+			if($value instanceof \DOMNode) {
 				$document = $this->domNode->ownerDocument->document;
 				$value = $document->getNode($value);
+			}
+			else if($value instanceof \DOMNodeList) {
+				$value = new NodeList($value);
 			}
 
 			return $value;
@@ -68,6 +74,9 @@ public function __get($name) {
 	}
 }
 
+/**
+ *
+ */
 public function __set($name, $value) {
 	switch($name) {
 	case "textContent":
@@ -77,6 +86,54 @@ public function __set($name, $value) {
 		break;
 	default:
 		throw new InvalidNodePropertyException($name);
+	}
+}
+
+/**
+ *
+ */
+public function __call($name, $args) {
+	switch($name) {
+	default:
+		if(method_exists($this->domNode, $name)) {
+			// Convert each argument to native DOMDocument implementation where
+			// possible.
+			foreach ($args as $i => $arg) {
+				if($arg instanceof Document) {
+					$args[$i] = $arg->domDocument;
+				}
+				else if($arg instanceof Node) {
+					$args[$i] = $arg->domNode;
+				}
+			}
+
+			$value = call_user_func_array([$this->domNode, $name], $args);
+
+			// Attempt to never pass back a native DOMNode, wrapping it in
+			// a Node class instead.
+			if($value instanceof \DOMDocument) {
+				$value = $value->document->getNode($value);
+			}
+			else if($value instanceof \DOMNode) {
+				$document = null;
+
+				if($this->domNode instanceof \DOMDocument) {
+					$document = $this->domNode->document;
+				}
+				else {
+					$document = $this->domNode->ownerDocument->document;
+				}
+				$value = $document->getNode($value);
+			}
+			else if($value instanceof \DOMNodeList) {
+				$value = new NodeList($value);
+			}
+
+			return $value;
+		}
+
+		throw new NodeMethodNotDefinedException($name);
+		break;
 	}
 }
 
