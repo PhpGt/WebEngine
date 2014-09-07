@@ -47,6 +47,39 @@ public function __construct($node, array $attributeArray = [], $value = null) {
 	$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 }
 
+public function __get($name) {
+	switch($name) {
+	default:
+		if(property_exists($this->domNode, $name)) {
+			$value = $this->domNode->$name;
+
+			// Attempt to never pass back a native DOMNode, wrapping it in
+			// a Node class instead.
+			if($value instanceof DOMNode) {
+				$document = $this->domNode->ownerDocument->document;
+				$value = $document->getNode($value);
+			}
+
+			return $value;
+		}
+
+		throw new InvalidNodePropertyException($name);
+		break;
+	}
+}
+
+public function __set($name, $value) {
+	switch($name) {
+	case "textContent":
+	case "innerText":
+		$value = htmlentities($value, ENT_COMPAT | ENT_HTML5);
+		$this->domNode->nodeValue = $value;
+		break;
+	default:
+		throw new InvalidNodePropertyException($name);
+	}
+}
+
 /**
  * Returns the first element within the document (using depth-first
  * pre-order traversal of the document's nodes) that matches the specified
