@@ -16,9 +16,10 @@
 	},
 
 	"require": {
-		"symfony/css-selector": "2.6.*",
+		"symfony/css-selector": "*",
 		"symfony/console": "2.5.*",
-		"leafo/scssphp": "0.0.*"
+		"leafo/scssphp": "0.0.*",
+		"katzgrau/klogger": "1.0.*"
 	},
 
 	"require-dev": {
@@ -28,8 +29,7 @@
 		"behat/mink": "*",
 		"behat/mink-extension": "*",
 		"behat/mink-goutte-driver": "*",
-		"sensiolabs/behat-page-object-extension": "*",
-		"katzgrau/klogger": "1.0.*"
+		"sensiolabs/behat-page-object-extension": "*"
 	},
 
 	"prefer-stable": true,
