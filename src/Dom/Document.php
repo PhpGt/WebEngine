@@ -15,8 +15,9 @@ class Document extends ResponseContent implements \ArrayAccess {
 const DEFAULT_HTML = "<!doctype html>";
 public $domDocument;
 public $node;
-
 public $nodeMap = [];
+
+public static $currentDocument;
 
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
@@ -47,6 +48,12 @@ public function __construct($source = null) {
 	// Store a self-reference in the native DOMDocument, for access within the
 	// Node class.
 	$this->domDocument->document = $this;
+	$uuid = uniqid("nodeMap-", true);
+	$this->domDocument->uuid = $uuid;
+
+	if(is_null(self::$currentDocument)) {
+		self::$currentDocument = $this;
+	}
 }
 
 /**
@@ -73,9 +80,9 @@ public function getNode($domNode) {
 	// If the DOMNode has been used before, it will have a UUID property
 	// attached, but there still may not be a Node object stored in the nodeMap,
 	// so another check is required.
-	if(!empty($domNode->UUID)) {
-		if(isset($this->$nodeMap[$domNode->UUID])) {
-			$node = $this->$nodeMap[$domNode->UUID];
+	if(!empty($domNode->uuid)) {
+		if(isset($this->nodeMap[$domNode->uuid])) {
+			$node = $this->nodeMap[$domNode->uuid];
 		}
 	}
 
@@ -83,7 +90,7 @@ public function getNode($domNode) {
 	// provided DOMNode.
 	if(is_null($node)) {
 		if($domNode instanceof \DOMDocument) {
-			$node = new Document($domNode);
+			$node = $domNode->document;
 		}
 		else {
 			$node = new Node($domNode);
@@ -132,6 +139,19 @@ public function load($content = null) {
 public function __call($name, $args) {
 	$result = call_user_func_array([$this->node, $name], $args);
 	return $result;
+}
+
+public function __get($name) {
+	$value = null;
+
+	if(property_exists($this->domDocument, $name)) {
+		$value = Node::wrapNative($this->domDocument->$name);
+	}
+	else {
+		throw new InvalidNodePropertyException($name);
+	}
+
+	return $value;
 }
 
 // ArrayAccess -----------------------------------------------------------------
