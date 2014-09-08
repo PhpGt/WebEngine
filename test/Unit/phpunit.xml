@@ -20,7 +20,7 @@
 	</logging>
 	<filter>
 		<blacklist>
-			<file>Unit/Bootstrap.php</file>
+			<file>Bootstrap.php</file>
 			<directory>../../vendor</directory>
 		</blacklist>
 	</filter>
