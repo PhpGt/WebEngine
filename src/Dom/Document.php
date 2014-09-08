@@ -17,8 +17,6 @@ public $domDocument;
 public $node;
 public $nodeMap = [];
 
-public static $currentDocument;
-
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
  * calls the load function with provided HTML content.
@@ -42,7 +40,7 @@ public function __construct($source = null) {
 	}
 
 	if(!isset($this->node)) {
-		$this->node = new Node($this->domDocument);
+		$this->node = new Node($this, $this->domDocument);
 	}
 
 	// Store a self-reference in the native DOMDocument, for access within the
@@ -50,10 +48,6 @@ public function __construct($source = null) {
 	$this->domDocument->document = $this;
 	$uuid = uniqid("nodeMap-", true);
 	$this->domDocument->uuid = $uuid;
-
-	if(is_null(self::$currentDocument)) {
-		self::$currentDocument = $this;
-	}
 }
 
 /**
@@ -93,7 +87,7 @@ public function getNode($domNode) {
 			$node = $domNode->document;
 		}
 		else {
-			$node = new Node($domNode);
+			$node = new Node($this, $domNode);
 		}
 	}
 

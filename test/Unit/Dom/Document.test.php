@@ -85,19 +85,19 @@ public function testGetNodeWrapsNativeDomNode() {
 
 	$node = $document->getNode($h1DomNode);
 	$this->assertInstanceOf("\Gt\Dom\Node", $node);
-	$this->assertEquals($h1DomNode, $node->domNode);
+	$this->assertSame($h1DomNode, $node->domNode);
 	$this->assertObjectHasAttribute("uuid", $h1DomNode);
 
 	// Perform getNode on an already-extended Node object..
 	// .. should return itself.
-	$this->assertEquals($node, $document->getNode($node));
+	$this->assertSame($node, $document->getNode($node));
 
 	// Get node on native DOMDocument for the first time.
-	$this->assertEquals($document, $document->getNode($domDocument));
+	$this->assertSame($document, $document->getNode($domDocument));
 	// Mess up the uuid map value.
 	$domDocument->uuid = "edited directly from test!";
 	// Should still get reference back to same document.
-	$this->assertEquals($document, $document->getNode($domDocument));
+	$this->assertSame($document, $document->getNode($domDocument));
 }
 
 /**
@@ -115,7 +115,7 @@ public function testDocumentConstructedWithDomDocumentSource() {
 
 	$document = new Document($domDocument);
 
-	$this->assertEquals($domDocument, $document->domDocument);
+	$this->assertSame($domDocument, $document->domDocument);
 }
 
 public function testArrayAccess() {
@@ -133,7 +133,7 @@ public function testArrayAccess() {
  */
 public function testArrayAccessSetNotImplemented() {
 	$document = new Document();
-	$document["h1"] = new Node("h1");
+	$document["h1"] = new Node($document, "h1");
 }
 
 /**

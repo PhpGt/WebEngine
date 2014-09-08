@@ -16,7 +16,8 @@ public $domNode;
 /**
  *
  */
-public function __construct($node, array $attributeArray = [], $value = null) {
+public function __construct($document, $node,
+array $attributeArray = [], $value = null) {
 	if($node instanceof Node) {
 		$this->domNode = $node->domNode;
 	}
@@ -24,7 +25,7 @@ public function __construct($node, array $attributeArray = [], $value = null) {
 		$this->domNode = $node;
 	}
 	else if(is_string($node)) {
-		$domDocument = Document::$currentDocument->domDocument;
+		$domDocument = $document->domDocument;
 		$this->domNode = $domDocument->createElement($node);
 	}
 	else {
@@ -42,9 +43,11 @@ public function __construct($node, array $attributeArray = [], $value = null) {
 	// Attach a UUID to the underlying DOMNode and store a reference in the
 	// Document::nodeMap. This allows for accessing already-constructed Node
 	// objects through Document::getNode(), rather than constructing again.
-	$uuid = uniqid("nodeMap-", true);
-	$this->domNode->uuid = $uuid;
-	$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
+	if(!property_exists($this->domNode, "uuid")) {
+		$uuid = uniqid("nodeMap-", true);
+		$this->domNode->uuid = $uuid;
+		$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
+	}
 }
 
 /**
@@ -133,15 +136,7 @@ public static function wrapNative($node) {
 		$node = $node->document->getNode($node);
 	}
 	else if($node instanceof \DOMNode) {
-		$document = null;
-
-		if($node->domNode instanceof \DOMDocument) {
-			$document = $node->domNode->document;
-		}
-		else {
-			$document = $node->domNode->ownerDocument->document;
-		}
-		$node = $document->getNode($node);
+		$node = $node->ownerDocument->document->getNode($node);
 	}
 	else if($node instanceof \DOMNodeList) {
 		$node = new NodeList($node);
