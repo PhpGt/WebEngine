@@ -24,7 +24,7 @@ public function __construct($node, array $attributeArray = [], $value = null) {
 		$this->domNode = $node;
 	}
 	else if(is_string($node)) {
-		$domDocument = Document::getCurrent()->domDocument;
+		$domDocument = Document::$currentDocument->domDocument;
 		$this->domNode = $domDocument->createElement($node);
 	}
 	else {
@@ -62,7 +62,7 @@ public function __get($name) {
 	default:
 		if(property_exists($this->domNode, $name)) {
 			$value = $this->domNode->$name;
-			$value = $this->wrapNative($value);
+			$value = self::wrapNative($value);
 		}
 		else {
 			throw new InvalidNodePropertyException($name);
@@ -110,7 +110,7 @@ public function __call($name, $args) {
 
 			// Attempt to never pass back a native DOMNode, wrapping it in
 			// a Node class instead.
-			$value = $this->wrapNative($value);
+			$value = self::wrapNative($value);
 			return $value;
 		}
 
@@ -128,18 +128,18 @@ public function __call($name, $args) {
  *
  * @return Document|Node|NodeList Instance of Gt\Dom extension class
  */
-public function wrapNative($node) {
+public static function wrapNative($node) {
 	if($node instanceof \DOMDocument) {
 		$node = $node->document->getNode($node);
 	}
 	else if($node instanceof \DOMNode) {
 		$document = null;
 
-		if($this->domNode instanceof \DOMDocument) {
-			$document = $this->domNode->document;
+		if($node->domNode instanceof \DOMDocument) {
+			$document = $node->domNode->document;
 		}
 		else {
-			$document = $this->domNode->ownerDocument->document;
+			$document = $node->domNode->ownerDocument->document;
 		}
 		$node = $document->getNode($node);
 	}
