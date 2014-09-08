@@ -16,39 +16,37 @@ const DEFAULT_HTML = "<!doctype html>";
 public $domDocument;
 public $node;
 
-private static $currentDocument = null;
 public $nodeMap = [];
 
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
  * calls the load function with provided HTML content.
+ *
+ * @param string|DOMDocument $source Raw HTML string, or existing native
+ * DOMDocument to represent
  */
-public function __construct($html = null) {
-	$this->domDocument = new \DOMDocument("1.0", "utf-8");
+public function __construct($source = null) {
+	if($source instanceof \DOMDocument) {
+		$this->domDocument = $source;
+	}
+	else {
+		$this->domDocument = new \DOMDocument("1.0", "utf-8");
 
-	if(!is_null($html)) {
-		if(empty($html)) {
-			$html = self::DEFAULT_HTML;
+		if(!is_null($source)) {
+			if(empty($source)) {
+				$source = self::DEFAULT_HTML;
+			}
+			$this->load($source);
 		}
-		$this->load($html);
 	}
 
-	$this->node = new Node($this->domDocument);
-
-	if(is_null(self::$currentDocument)) {
-		self::$currentDocument = $this;
+	if(!isset($this->node)) {
+		$this->node = new Node($this->domDocument);
 	}
 
 	// Store a self-reference in the native DOMDocument, for access within the
 	// Node class.
 	$this->domDocument->document = $this;
-}
-
-/**
- *
- */
-public static function getCurrent() {
-	return self::$currentDocument;
 }
 
 /**
@@ -84,7 +82,12 @@ public function getNode($domNode) {
 	// Only construct a new Node object if there isn't one referencing the
 	// provided DOMNode.
 	if(is_null($node)) {
-		$node = new Node($domNode);
+		if($domNode instanceof \DOMDocument) {
+			$node = new Document($domNode);
+		}
+		else {
+			$node = new Node($domNode);
+		}
 	}
 
 	return $node;

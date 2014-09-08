@@ -51,27 +51,26 @@ public function __construct($node, array $attributeArray = [], $value = null) {
  *
  */
 public function __get($name) {
+	$value = null;
+
 	switch($name) {
+	case "tagName":
+		// Fix case, according to W3 spec
+		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
+		$value = strtoupper($this->domNode->$name);
+		break;
 	default:
 		if(property_exists($this->domNode, $name)) {
 			$value = $this->domNode->$name;
-
-			// Attempt to never pass back a native DOMNode, wrapping it in
-			// a Node class instead.
-			if($value instanceof \DOMNode) {
-				$document = $this->domNode->ownerDocument->document;
-				$value = $document->getNode($value);
-			}
-			else if($value instanceof \DOMNodeList) {
-				$value = new NodeList($value);
-			}
-
-			return $value;
+			$value = $this->wrapNative($value);
 		}
-
-		throw new InvalidNodePropertyException($name);
+		else {
+			throw new InvalidNodePropertyException($name);
+		}
 		break;
 	}
+
+	return $value;
 }
 
 /**
@@ -111,30 +110,44 @@ public function __call($name, $args) {
 
 			// Attempt to never pass back a native DOMNode, wrapping it in
 			// a Node class instead.
-			if($value instanceof \DOMDocument) {
-				$value = $value->document->getNode($value);
-			}
-			else if($value instanceof \DOMNode) {
-				$document = null;
-
-				if($this->domNode instanceof \DOMDocument) {
-					$document = $this->domNode->document;
-				}
-				else {
-					$document = $this->domNode->ownerDocument->document;
-				}
-				$value = $document->getNode($value);
-			}
-			else if($value instanceof \DOMNodeList) {
-				$value = new NodeList($value);
-			}
-
+			$value = $this->wrapNative($value);
 			return $value;
 		}
 
 		throw new NodeMethodNotDefinedException($name);
 		break;
 	}
+}
+
+/**
+ * Attempt to never pass back a native DOMNode, wrapping it in the appropriate
+ * Gt\Dom extension class.
+ *
+ * @param DOMDocument|DOMNode|DOMNodeList $node Native object to wrap in
+ * extension class
+ *
+ * @return Document|Node|NodeList Instance of Gt\Dom extension class
+ */
+public function wrapNative($node) {
+	if($node instanceof \DOMDocument) {
+		$node = $node->document->getNode($node);
+	}
+	else if($node instanceof \DOMNode) {
+		$document = null;
+
+		if($this->domNode instanceof \DOMDocument) {
+			$document = $this->domNode->document;
+		}
+		else {
+			$document = $this->domNode->ownerDocument->document;
+		}
+		$node = $document->getNode($node);
+	}
+	else if($node instanceof \DOMNodeList) {
+		$node = new NodeList($node);
+	}
+
+	return $node;
 }
 
 /**
