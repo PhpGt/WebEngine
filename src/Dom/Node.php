@@ -17,7 +17,7 @@ public $domNode;
  *
  */
 public function __construct($document, $node,
-array $attributeArray = [], $value = null) {
+array $attributeArray = array(), $nodeValue = null) {
 	if($node instanceof Node) {
 		$this->domNode = $node->domNode;
 	}
@@ -36,8 +36,8 @@ array $attributeArray = [], $value = null) {
 		$this->setAttribute($key, $value);
 	}
 
-	if(!is_null($value)) {
-		$this->value = $value;
+	if(!is_null($nodeValue)) {
+		$this->value = $nodeValue;
 	}
 
 	// Attach a UUID to the underlying DOMNode and store a reference in the
@@ -57,11 +57,25 @@ public function __get($name) {
 	$value = null;
 
 	switch($name) {
+	case "id":
+	case "ID":
+		$value = $this->getAttribute("id");
+		break;
+
+	case "className":
+		$value = $this->getAttribute("class");
+		break;
+
 	case "tagName":
 		// Fix case, according to W3 spec
 		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
 		$value = strtoupper($this->domNode->$name);
 		break;
+
+	case "value":
+		$value = $this->getValue();
+		break;
+
 	default:
 		if(property_exists($this->domNode, $name)) {
 			$value = $this->domNode->$name;
@@ -81,11 +95,25 @@ public function __get($name) {
  */
 public function __set($name, $value) {
 	switch($name) {
+	case "id":
+	case "ID":
+		$this->setAttribute("id", $value);
+		break;
+
+	case "className":
+		$this->setAttribute("class", $value);
+		break;
+
 	case "textContent":
 	case "innerText":
 		$value = htmlentities($value, ENT_COMPAT | ENT_HTML5);
 		$this->domNode->nodeValue = $value;
 		break;
+
+	case "value":
+		$this->setValue($value);
+		break;
+
 	default:
 		throw new InvalidNodePropertyException($name);
 	}
@@ -118,6 +146,103 @@ public function __call($name, $args) {
 		}
 
 		throw new NodeMethodNotDefinedException($name);
+		break;
+	}
+}
+
+/**
+ * Gets the node value according to the node type. Typical block element'
+ * value represents its textContent, however certain elements can have a value
+ * attribute (such as input elements).
+ *
+ * @return string The node value as a string
+ */
+private function getValue() {
+	$value = null;
+
+	switch($this->tagName) {
+	// The following tags can accept a value attribute:
+	// developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+	case "BUTTON":
+	case "INPUT":
+	case "COMMAND":
+	case "EMBED":
+	case "OBJECT":
+	case "SCRIPT":
+	case "SOURCE":
+	case "STYLE":
+	case "MENU":
+	case "OPTION":
+		$value = $this->getAttribute("value");
+		break;
+
+	// Loop through a select's option elements and set the 'selected' attribute
+	// on the option whose own value matches the current $value.
+	// dev.w3.org/html5/spec-preview/common-microsyntaxes#boolean-attributes
+	case "SELECT":
+		$optionList = $this->querySelectorAll("option");
+		for($i = 0, $len = count($optionList); $i < $len; $i++) {
+			if($optionList[$i]->hasAttribute("selected")) {
+				$value = $optionList[$i]->getAttribute("value");
+			}
+		}
+		break;
+
+	default:
+		$value = $this->domNode->nodeValue;
+		break;
+	}
+
+	return $value;
+}
+
+/**
+ * Sets the node value according to the node type. Typical block elements'
+ * value represents its textContent, however certain elements have a value
+ * attribute (such as input elements), some elements can accept objects as
+ * values (such as date elements accepting DateTime objects), and some elements
+ * have children that need modifying due to element value (such as select
+ * elements' options being selected).
+ *
+ * @param string|object $value The value to set
+ */
+private function setValue($value) {
+	if($value instanceof \DateTime) {
+		// w3.org/TR/html-markup/input.datetime.html#input.datetime.attrs.value
+		$value = $value->format(\DateTime::RFC3339);
+	}
+
+	switch($this->tagName) {
+	// The following tags can accept a value attribute:
+	// developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+	case "BUTTON":
+	case "INPUT":
+	case "COMMAND":
+	case "EMBED":
+	case "OBJECT":
+	case "SCRIPT":
+	case "SOURCE":
+	case "STYLE":
+	case "MENU":
+	case "OPTION":
+		$this->setAttribute("value", $value);
+		break;
+
+	// Loop through a select's option elements and set the 'selected' attribute
+	// on the option whose own value matches the current $value.
+	// dev.w3.org/html5/spec-preview/common-microsyntaxes#boolean-attributes
+	case "SELECT":
+		$optionList = $this->querySelectorAll("option");
+		for($i = 0, $len = count($optionList); $i < $len; $i++) {
+			if($optionList[$i]->value == $value) {
+				$optionList[$i]->setAttribute("selected", "");
+			}
+		}
+		break;
+
+	default:
+		$value = htmlentities($value);
+		$this->domNode->nodeValue = $value;
 		break;
 	}
 }
@@ -157,7 +282,7 @@ public static function wrapNative($node) {
  * returns the first matching element.
  */
 public function querySelector($query) {
-	$nodeList = $this->css($query, null);
+	$nodeList = $this->css($query);
 	if(count($nodeList) > 0) {
 		// TODO: Might be possible to speed this up?
 		return $nodeList[0];
@@ -186,7 +311,11 @@ public function querySelectorAll($query) {
 public function css($query, $context = null) {
 	$context = $this->checkContext($context);
 
-	$xpath = CssSelector::toXPath($query);
+	// Second parameter of toXPath is optional query prefix.
+	$xpath = CssSelector::toXPath($query, ".//");
+	// if($query == "#child") {
+	// 	var_dump($xpath);die();
+	// }
 	$domNodeList = $this->xpath($xpath, $context);
 	return new NodeList($domNodeList);
 }
@@ -199,6 +328,7 @@ public function xpath($query, $context = null) {
 
 	$xpath = new \DOMXPath($context->ownerDocument);
 	$domNodeList = $xpath->query($query, $context);
+
 	return new NodeList($domNodeList);
 }
 
@@ -213,14 +343,23 @@ public function xpath($query, $context = null) {
  */
 public function checkContext($context) {
 	if(is_null($context)) {
-		$context = $this->domNode->documentElement;
+		if($this->getNodePath() === "/") {
+			// This is a document.
+			$context = $this->documentElement;
+		}
+		else {
+			$context = $this->domNode;
+		}
 	}
 
-	if($context instanceof Node) {
+	if($context instanceof Document) {
+		$context = $context->documentElement;
+	}
+	else if($context instanceof Node) {
 		$context = $context->domNode;
 	}
 	else if(!$context instanceof \DOMNode) {
-		throw new InvalidNodeTypeException();
+		throw new InvalidNodeTypeException(gettype($context));
 	}
 
 	return $context;
