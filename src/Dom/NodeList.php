@@ -9,7 +9,7 @@ namespace Gt\Dom;
 
 class NodeList implements \Countable, \Iterator, \ArrayAccess {
 
-private $iteratorIndex;
+private $iteratorIndex = 0;
 public $nodeArray;
 
 public function __construct($domNodeList) {
