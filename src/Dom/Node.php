@@ -9,7 +9,7 @@ namespace Gt\Dom;
 
 use Symfony\Component\CssSelector\CssSelector;
 
-class Node implements \ArrayAccess {
+class Node {
 
 public $domNode;
 
@@ -123,31 +123,28 @@ public function __set($name, $value) {
  *
  */
 public function __call($name, $args) {
-	switch($name) {
-	default:
-		if(method_exists($this->domNode, $name)) {
-			// Convert each argument to native DOMDocument implementation where
-			// possible.
-			foreach ($args as $i => $arg) {
-				if($arg instanceof Document) {
-					$args[$i] = $arg->domDocument;
-				}
-				else if($arg instanceof Node) {
-					$args[$i] = $arg->domNode;
-				}
+	if(method_exists($this->domNode, $name)) {
+		// Convert each argument to native DOMDocument implementation where
+		// possible.
+		foreach ($args as $i => $arg) {
+			if($arg instanceof Document) {
+				$args[$i] = $arg->domDocument;
 			}
-
-			$value = call_user_func_array([$this->domNode, $name], $args);
-
-			// Attempt to never pass back a native DOMNode, wrapping it in
-			// a Node class instead.
-			$value = self::wrapNative($value);
-			return $value;
+			else if($arg instanceof Node) {
+				$args[$i] = $arg->domNode;
+			}
 		}
 
-		throw new NodeMethodNotDefinedException($name);
-		break;
+		$value = call_user_func_array([$this->domNode, $name], $args);
+
+		// Attempt to never pass back a native DOMNode, wrapping it in
+		// a Node class instead.
+		$value = self::wrapNative($value);
+		return $value;
 	}
+
+	throw new NodeMethodNotDefinedException($name);
+	break;
 }
 
 /**
@@ -355,7 +352,8 @@ public function checkContext($context) {
 	if($context instanceof Document) {
 		$context = $context->documentElement;
 	}
-	else if($context instanceof Node) {
+
+	if($context instanceof Node) {
 		$context = $context->domNode;
 	}
 	else if(!$context instanceof \DOMNode) {
@@ -365,50 +363,22 @@ public function checkContext($context) {
 	return $context;
 }
 
-// ArrayAccess -----------------------------------------------------------------
-
 /**
- * This method is executed when using isset() or empty()
+ * Returns NodeList containing all child elements which have all of the given
+ * class names. When called on the document object, the complete document is
+ * searched, including the root node. You may also call getElementsByClassName
+ * on any element; it will return only elements which are descendants of the
+ * specified root element with the given class names.
  *
- * @param string $offset CSS selector string
+ * @param string $classNames Space-separated class list to search against
  *
- * @return bool True if the provided CSS selector string matches 1 or more
- * elements in the current Document
+ * @return NodeList NodeList containing all matching child elements
  */
-public function offsetExists($offset) {
-	$matches = $this->css($offset);
-	return (count($matches) > 0);
-}
+public function getElementsByClassName($classNames) {
+	$query = str_replace(" ", ".", $classNames);
+	$query = "." . $query;
 
-/**
- * Wrapper to the Document::querySelectorAll() method, allowing the DOM to be
- * CSS queried using array notation.
- *
- * @param string $offset CSS selector string
- *
- * @return NodeList A NodeList with 0 or more matching elements
- */
-public function offsetGet($offset) {
-	return $this->querySelectorAll($offset);
-}
-
-/**
- * Used to replace a NodeList with another, via matching CSS selector.
- *
- * @param string $offset CSS selector string
- * @param NodeList $value A NodeList to replace the current one with
- */
-public function offsetSet($offset, $value) {
-	throw new \Gt\Core\Exception\NotImplementedException();
-}
-
-/**
- * Used to remove a NodeList, via matching CSS selector.
- *
- * @param string $offset CSS selector string
- */
-public function offsetUnset($offset) {
-	throw new \Gt\Core\Exception\NotImplementedException();
+	return $this->querySelectorAll($query);
 }
 
 }#

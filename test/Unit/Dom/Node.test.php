@@ -326,4 +326,46 @@ public function testQuerySelector() {
 	$this->assertNull($shouldNotMatch);
 }
 
+public function testCheckContext() {
+	$node = $this->document->createElement("div");
+
+	$context = $node->checkContext(null);
+	$this->assertInstanceOf("\DOMNode", $context);
+
+	$context = $node->checkContext($this->document);
+	$this->assertInstanceOf("\DOMNode", $context);
+}
+
+/**
+ * @expectedException \Gt\Dom\InvalidNodeTypeException
+ */
+public function testCheckInvalidContext() {
+	$node = $this->document->createElement("div");
+
+	$context = $node->checkContext("invalid parameter type");
+}
+
+public function testGetSetDomProperties() {
+	$node = $this->document->createElement("div");
+	$this->document->documentElement->appendChild($node);
+
+	$node->id = "div-id";
+	$this->assertEquals("div-id", $node->id);
+	$this->assertEquals("div-id", $node->getAttribute("id"));
+	$this->assertSame($node, $this->document->getElementById("div-id"));
+
+	$node->className = "oneClass";
+	$this->assertEquals("oneClass", $node->className);
+	$this->assertEquals("oneClass", $node->getAttribute("class"));
+
+	$node->className = "oneClass twoClass";
+	$this->assertEquals("oneClass twoClass", $node->className);
+	$this->assertEquals("oneClass twoClass", $node->getAttribute("class"));
+
+	$this->assertSame($node,
+		$this->document->getElementsByClassName("oneClass")[0]);
+	$this->assertSame($node,
+		$this->document->getElementsByClassName("twoClass")[0]);
+}
+
 }#

@@ -118,32 +118,4 @@ public function testDocumentConstructedWithDomDocumentSource() {
 	$this->assertSame($domDocument, $document->domDocument);
 }
 
-public function testArrayAccess() {
-	$document = new Document("<!doctype html><h1>Heading</h1><p>Paragraph</p>");
-	$this->assertArrayHasKey("h1", $document);
-	$this->assertArrayNotHasKey("h2", $document);
-
-	$this->assertInstanceOf("\Gt\Dom\NodeList", $document["h1"]);
-}
-
-/**
- * Setting and unsetting array access is not planned for version 2 release.
- *
- * @expectedException \Gt\Core\Exception\NotImplementedException
- */
-public function testArrayAccessSetNotImplemented() {
-	$document = new Document();
-	$document["h1"] = new Node($document, "h1");
-}
-
-/**
- * Setting and unsetting array access is not planned for version 2 release.
- *
- * @expectedException \Gt\Core\Exception\NotImplementedException
- */
-public function testArrayAccessUnsetNotImplemented() {
-	$document = new Document();
-	unset($document["h1"]);
-}
-
 }#
