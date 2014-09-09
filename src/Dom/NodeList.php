@@ -35,7 +35,7 @@ public function __construct($domNodeList) {
 		}
 	}
 	else {
-		throw new InvalidNodeTypeException();
+		throw new InvalidNodeTypeException(gettype($domNodeList));
 	}
 }
 
@@ -105,14 +105,17 @@ public function offsetGet($offset) {
  *
  */
 public function offsetSet($offset, $value) {
-	throw new \Gt\Core\Exception\NotImplementedException();
+	if(!$value instanceof Node) {
+		throw new InvalidNodeTypeException(gettype($value));
+	}
+	$this->nodeArray[$offset] = $value;
 }
 
 /**
  *
  */
 public function offsetUnset($offset) {
-	throw new \Gt\Core\Exception\NotImplementedException();
+	unset($this->nodeArray[$offset]);
 }
 
 }#

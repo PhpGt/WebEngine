@@ -10,7 +10,7 @@ namespace Gt\Dom;
 
 use \Gt\Response\ResponseContent;
 
-class Document extends ResponseContent implements \ArrayAccess {
+class Document extends ResponseContent {
 
 const DEFAULT_HTML = "<!doctype html>";
 public $domDocument;
@@ -146,51 +146,6 @@ public function __get($name) {
 	}
 
 	return $value;
-}
-
-// ArrayAccess -----------------------------------------------------------------
-
-/**
- * This method is executed when using isset() or empty()
- *
- * @param string $offset CSS selector string
- *
- * @return bool True if the provided CSS selector string matches 1 or more
- * elements in the current Document
- */
-public function offsetExists($offset) {
-	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
-}
-
-/**
- * Wrapper to the Document::css() method, allowing the DOM to be CSS queried
- * using array notation.
- *
- * @param string $offset CSS selector string
- *
- * @return NodeList A NodeList with 0 or more matching elements
- */
-public function offsetGet($offset) {
-	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
-}
-
-/**
- * Used to replace a NodeList with another, via matching CSS selector.
- *
- * @param string $offset CSS selector string
- * @param NodeList $value A NodeList to replace the current one with
- */
-public function offsetSet($offset, $value) {
-	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
-}
-
-/**
- * Used to remove a NodeList, via matching CSS selector.
- *
- * @param string $offset CSS selector string
- */
-public function offsetUnset($offset) {
-	return call_user_func_array([$this->node, __FUNCTION__], func_get_args());
 }
 
 }#
