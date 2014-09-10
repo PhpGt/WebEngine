@@ -14,6 +14,7 @@ use \Gt\Database\DatabaseFactory;
 use \Gt\Response\NotFoundException;
 use \Gt\Core\Path;
 use \Gt\Logic\LogicFactory;
+use Gt\ClientSide\FileOrganiser;
 
 abstract class Dispatcher {
 
@@ -132,9 +133,10 @@ public function process() {
 		$logicObj->endGo();
 	}
 
-	// Handle client-side copying and compilation after the response codes have
-	// executed.
-	// $this->manifest....
+	$manifest = $content->createManifest();
+	$fileOrganiser = new FileOrganiser($this->response, $manifest);
+	$fileOrganiser->organise();
+
 	$content->flush();
 }
 

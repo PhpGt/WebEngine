@@ -7,7 +7,20 @@
  */
 namespace Gt\Response;
 
+use \Gt\ClientSide\Manifest;
+
 abstract class ResponseContent {
+
+/**
+ * By default, a Manifest has no capabilities, but each type of ResponseContent
+ * can have its own type of Manifest-extending object, which it should construct
+ * and return in an overriden version of this method.
+ *
+ * @return Manifest The Manfiest of correct type according to this object's type
+ */
+public function createManifest() {
+	return new Manifest();
+}
 
 /**
  * Serialises the response in its current state and adds it to the output
