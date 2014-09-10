@@ -12,6 +12,8 @@ use Symfony\Component\CssSelector\CssSelector;
 class Node {
 
 public $domNode;
+public $tagName;
+public $id;
 
 /**
  *
@@ -48,6 +50,13 @@ array $attributeArray = array(), $nodeValue = null) {
 		$this->domNode->uuid = $uuid;
 		$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 	}
+
+	if($this->domNode instanceof \DOMElement) {
+		// Fix case, according to W3 spec
+		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
+		$this->tagName = strtoupper($this->domNode->tagName);
+		$this->id = $this->getAttribute("id") ?: null;
+	}
 }
 
 /**
@@ -57,19 +66,8 @@ public function __get($name) {
 	$value = null;
 
 	switch($name) {
-	case "id":
-	case "ID":
-		$value = $this->getAttribute("id");
-		break;
-
 	case "className":
 		$value = $this->getAttribute("class");
-		break;
-
-	case "tagName":
-		// Fix case, according to W3 spec
-		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
-		$value = strtoupper($this->domNode->$name);
 		break;
 
 	case "value":

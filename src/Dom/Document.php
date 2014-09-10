@@ -9,6 +9,7 @@
 namespace Gt\Dom;
 
 use \Gt\Response\ResponseContent;
+use \Gt\ClientSide\PageManifest;
 
 class Document extends ResponseContent {
 
@@ -48,6 +49,11 @@ public function __construct($source = null) {
 	$this->domDocument->document = $this;
 	$uuid = uniqid("nodeMap-", true);
 	$this->domDocument->uuid = $uuid;
+}
+
+public function createManifest() {
+	$domHead = $this->getElementsByTagName("head")[0];
+	return new PageManifest($domHead);
 }
 
 /**
