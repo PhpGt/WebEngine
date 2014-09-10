@@ -12,6 +12,7 @@ use \Gt\Dom\Node;
 class PageManifest extends Manifest {
 
 private $fingerprint;
+private $sourceAttributeArray = ["src", "href"];
 
 /**
  *
@@ -22,11 +23,23 @@ public function __construct(Node $domHead) {
 }
 
 /**
+ * Creates an MD5 hash representing the combined content and filenames of all
+ * client side resorces represented in the dom head.
  *
  * @return string MD5 hash representation of current dom head
  */
 public function calculateFingerprint(Node $domHead) {
+	$nodeList = $domHead->querySelectorAll(
+		"script[src], link[rel='stylesheet'][href]");
 
+	foreach ($nodeList as $node) {
+		$sourceAttribute = null;
+
+		foreach ($this->sourceAttributeArray as $key => $value) {
+			// TODO: Save sourceattr
+		}
+	}
+	var_dump($nodeList);die();
 }
 
 /**
