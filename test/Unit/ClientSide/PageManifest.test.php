@@ -34,6 +34,8 @@ private $request;
 private $response;
 
 public function setUp() {
+	$this->tmp = \Gt\Test\Helper::createTmpDir();
+
 	$cfg = new \Gt\Core\ConfigObj();
 
 	$this->request		= new Request("/", $cfg);
@@ -63,6 +65,19 @@ public function testCalculateFingerprint() {
 				$this->scriptStyleTag[$tag], "<%SOURCE_PATH%>", $path);
 
 			$scriptStyleHtml .= $htmlFragment;
+
+			$filePath = Path::get(Path::SRC);
+			$fiePath .= "/$tag";
+			$filePath .= $path;
+
+			// path concatenated with path, to make it easy to remember, but
+			// to avoid common mistake within actual implementation of
+			// accidentally hashing the path and not the file contents.
+			$fileContents = md5($path . $path);
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $fileContents);
 		}
 	}
 
@@ -70,5 +85,9 @@ public function testCalculateFingerprint() {
 	$document = new Document($html);
 
 	$manifest = $document->createManifest($this->request, $this->response);
+	$fingerprint = $manifest->calculateFingerprint(
+		$document->querySelector("head"));
+
+	var_dump($fingerprint);die();
 }
 }#
