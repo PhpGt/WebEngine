@@ -1,0 +1,75 @@
+<?php
+/**
+ * PHP.Gt (http://php.gt)
+ * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
+ * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ */
+namespace Gt\ClientSide;
+
+use \Gt\Dom\Document;
+
+class PageManifest_Test extends \PHPUnit_Framework_TestCase {
+
+private $scriptStyleTag = [
+	"script" => "<script src=\"<%SOURCE_PATH%>\"></script>",
+	"style" => "<link rel=\"stylesheet\" href=\"<%SOURCE_PATH%>\" />",
+];
+private $html = <<<HTML
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Test page</title>
+	<%SCRIPT_STYLE_LIST%>
+</head>
+<body>
+	<h1>Test page</h1>
+</body>
+</html>
+HTML;
+
+private $request;
+private $response;
+
+public function setUp() {
+	$cfg = new \Gt\Core\ConfigObj();
+
+	$this->request		= $this->getMock("\Gt\Request\Request", null, [
+		"/",
+		$cfg
+	]);
+	$this->response		= $this->getMock("\Gt\Response\Reponse", null);
+}
+
+public function tearDown() {}
+
+public function testManifestCreatedFromDocument() {
+	$document = new Document;
+	$manifest = $document->createManifest($this->request, $this->response);
+
+	$this->assertInstanceOf("\Gt\ClientSide\Manifest", $manifest);
+	$this->assertInstanceOf("\Gt\ClientSide\PageManifest", $manifest);
+}
+
+public function testCalculateFingerprint() {
+	$scriptStylePathList = [
+		"script" => ["/main.js", "/do-something.js", "jqueer.js"],
+		"style" => ["/main.css", "/my-font.css", "/more.css"],
+	];
+	$scriptStyleHtml = "";
+
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$htmlFragment = str_replace(
+				$$this->scriptStyleTag[$tag], "<%SOURCE_PATH%>", $path);
+
+			$scriptStyleHtml .= $htmlFragment;
+		}
+	}
+
+	$html = str_replace("<%SCRIPT_STYLE_LIST%>", $scriptStyleHtml, $this->html);
+	$document = new Document($html);
+
+	$manifest = $document->createManifest($this->request, $this->response);
+}
+}#
