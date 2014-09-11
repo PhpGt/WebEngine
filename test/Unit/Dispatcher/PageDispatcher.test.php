@@ -328,11 +328,22 @@ public function testDispatcherProcessFlushes() {
 	// tested in other test cases.
 	$this->expectOutputRegex("/.*<h1>Test<\/h1>.*/s");
 
-	$request = new \Gt\Core\Obj([], true, true);
-	$request->forceExtension = true;
-	$request->indexFilename = "index";
-	$request->uri = "/test.html";
-	$request->type = \Gt\Request\Request::TYPE_PAGE;
+	// $request = new \Gt\Core\Obj([], true, true);
+	// $request->forceExtension = true;
+	// $request->indexFilename = "index";
+	// $request->uri = "/test.html";
+	// $request->type = \Gt\Request\Request::TYPE_PAGE;
+	$cfg = new \Gt\Core\ConfigObj();
+	$cfg->forceExtension = false;
+	//////
+	$request 		= $this->getMock("\Gt\Request\Request", ["getType"], [
+		"/test", $cfg,
+	]);
+	$request->expects($this->any())
+		->method("getType")
+		->will($this->returnValue(\Gt\Request\Request::TYPE_PAGE)
+	);
+	/////
 
 	file_put_contents($this->pageDir . "/test.html", "<h1>Test</h1>");
 

@@ -17,7 +17,11 @@ private $sourceAttributeArray = ["src", "href"];
 /**
  *
  */
-public function __construct(Node $domHead) {
+public function __construct(Node $domHead,
+Request $request, Response $response) {
+	$this->request = $request;
+	$this->response = $response;
+
 	$this->fingerprint = $this->calculateFingerprint($domHead);
 	$this->pathDetails = $this->generatePathArray($domHead);
 }
@@ -31,15 +35,47 @@ public function __construct(Node $domHead) {
 public function calculateFingerprint(Node $domHead) {
 	$nodeList = $domHead->querySelectorAll(
 		"script[src], link[rel='stylesheet'][href]");
+	// The source fingerprint is a concatenation of all files' MD5s, which
+	// in turn will be hashed to create an output MD5.
+	$fingerprintSource = "";
 
 	foreach ($nodeList as $node) {
-		$sourceAttribute = null;
+		$nodeSourceAttriute = null;
 
-		foreach ($this->sourceAttributeArray as $key => $value) {
-			// TODO: Save sourceattr
+		foreach ($this->sourceAttributeArray as $sourceAttributeValue) {
+			if($node->hasAttribute($sourceAttributeValue)) {
+				$nodeSourceAttriute = $sourceAttributeValue;
+			}
 		}
+
+		$sourcePathUri = $node->getAttribute($nodeSourceAttriute);
+		$sourcePathAbsolute = "";
+
+		// Do not add external files to the fingerprint:
+		if(strstr($sourcePathUri, "//")) {
+			continue;
+		}
+		// If the source path is an absolute URI, simply concatenate:
+		else if(strpos($sourcePathUri, "/")) {
+			$sourcePathAbsolute =
+				Path::get(Path::SRC)
+				. $sourcePathUri;
+		}
+		// If the source path is a relative URI, current URI's directory path
+		// needs to be added to the absolute source path:
+		else {
+			$uriDirectory = pathinfo($this->request->uri, PATHINFO_DIRNAME);
+
+			$sourcePathAbsolute =
+				Path::get(Path::SRC)
+				. $uriDirectory
+				. $sourcePathUri;
+		}
+
+		$fingerprintSource .= md5_file($sourcePathAbsolute);
 	}
-	var_dump($nodeList);die();
+
+	return md5($fingerprintSource);
 }
 
 /**
