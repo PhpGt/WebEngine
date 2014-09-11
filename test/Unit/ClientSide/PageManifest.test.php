@@ -6,6 +6,8 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Request\Request;
+use \Gt\Response\Response;
 use \Gt\Dom\Document;
 
 class PageManifest_Test extends \PHPUnit_Framework_TestCase {
@@ -34,17 +36,14 @@ private $response;
 public function setUp() {
 	$cfg = new \Gt\Core\ConfigObj();
 
-	$this->request		= $this->getMock("\Gt\Request\Request", null, [
-		"/",
-		$cfg
-	]);
-	$this->response		= $this->getMock("\Gt\Response\Reponse", null);
+	$this->request		= new Request("/", $cfg);
+	$this->response		= new Response($cfg);
 }
 
 public function tearDown() {}
 
 public function testManifestCreatedFromDocument() {
-	$document = new Document;
+	$document = new Document($this->html);
 	$manifest = $document->createManifest($this->request, $this->response);
 
 	$this->assertInstanceOf("\Gt\ClientSide\Manifest", $manifest);
@@ -61,7 +60,7 @@ public function testCalculateFingerprint() {
 	foreach ($scriptStylePathList as $tag => $pathList) {
 		foreach ($pathList as $path) {
 			$htmlFragment = str_replace(
-				$$this->scriptStyleTag[$tag], "<%SOURCE_PATH%>", $path);
+				$this->scriptStyleTag[$tag], "<%SOURCE_PATH%>", $path);
 
 			$scriptStyleHtml .= $htmlFragment;
 		}

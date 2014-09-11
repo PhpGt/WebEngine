@@ -54,7 +54,7 @@ public function __construct($source = null) {
 }
 
 public function createManifest(Request $request, Response $response) {
-	$domHead = $this->getElementsByTagName("head")[0];
+	$domHead = $this->querySelector("head");
 	return new PageManifest($domHead, $request, $response);
 }
 

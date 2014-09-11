@@ -8,6 +8,8 @@
 namespace Gt\ClientSide;
 
 use \Gt\Dom\Node;
+use \Gt\Request\Request;
+use \Gt\Response\Response;
 
 class PageManifest extends Manifest {
 
