@@ -8,6 +8,8 @@
  */
 namespace Gt\Dom;
 
+use \Gt\Request\Request;
+use \Gt\Response\Response;
 use \Gt\Response\ResponseContent;
 use \Gt\ClientSide\PageManifest;
 
@@ -51,9 +53,9 @@ public function __construct($source = null) {
 	$this->domDocument->uuid = $uuid;
 }
 
-public function createManifest() {
+public function createManifest(Request $request, Response $response) {
 	$domHead = $this->getElementsByTagName("head")[0];
-	return new PageManifest($domHead);
+	return new PageManifest($domHead, $request, $response);
 }
 
 /**

@@ -133,7 +133,7 @@ public function process() {
 		$logicObj->endGo();
 	}
 
-	$manifest = $content->createManifest();
+	$manifest = $content->createManifest($this->request, $this->response);
 	$fileOrganiser = new FileOrganiser($this->response, $manifest);
 	$fileOrganiser->organise();
 
@@ -172,6 +172,7 @@ public function getFilename($uri, $indexFilename, &$fullUri = null) {
 }
 
 public function cleanBuffer() {
+	// TODO: What is the need for this function?
 	// ob_start();
 	// ob_clean();
 }
