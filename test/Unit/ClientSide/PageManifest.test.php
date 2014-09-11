@@ -6,6 +6,7 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Core\Path;
 use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Dom\Document;
@@ -62,12 +63,15 @@ public function testCalculateFingerprint() {
 	foreach ($scriptStylePathList as $tag => $pathList) {
 		foreach ($pathList as $path) {
 			$htmlFragment = str_replace(
-				$this->scriptStyleTag[$tag], "<%SOURCE_PATH%>", $path);
+				"<%SOURCE_PATH%>",
+				"$tag/$path",
+				$this->scriptStyleTag[$tag]
+			);
 
 			$scriptStyleHtml .= $htmlFragment;
 
 			$filePath = Path::get(Path::SRC);
-			$fiePath .= "/$tag";
+			$filePath .= "/$tag";
 			$filePath .= $path;
 
 			// path concatenated with path, to make it easy to remember, but
@@ -88,6 +92,18 @@ public function testCalculateFingerprint() {
 	$fingerprint = $manifest->calculateFingerprint(
 		$document->querySelector("head"));
 
-	var_dump($fingerprint);die();
+	$expectedFingerprint = "";
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			$expectedFingerprint .= md5_file($filePath);
+		}
+	}
+	$expectedFingerprint = md5($expectedFingerprint);
+
+	$this->assertEquals($expectedFingerprint, $fingerprint);
 }
 }#

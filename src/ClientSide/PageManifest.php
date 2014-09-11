@@ -7,6 +7,7 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Core\Path;
 use \Gt\Dom\Node;
 use \Gt\Request\Request;
 use \Gt\Response\Response;
@@ -75,9 +76,11 @@ public function calculateFingerprint(Node $domHead) {
 		}
 
 		$fingerprintSource .= md5_file($sourcePathAbsolute);
+		// $fingerprintSource .= "|||||" . $sourcePathAbsolute . "|||||";
 	}
 
 	return md5($fingerprintSource);
+	// return $fingerprintSource;
 }
 
 /**
