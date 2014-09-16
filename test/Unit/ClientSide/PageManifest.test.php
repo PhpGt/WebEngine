@@ -107,4 +107,146 @@ public function testCalculateFingerprint() {
 	$expectedFingerprint = md5($expectedFingerprint);
 	$this->assertEquals($expectedFingerprint, $fingerprint);
 }
+
+public function testFingerprintIgnoresExternalFiles() {
+	// An external file has a double slash in it e.g. http://something.example,
+	// and these files cannot be fingerprinted.
+	$scriptStylePathList = [
+		"script" => ["/main.js", "http://example.com/javascript.js"],
+		"style" => ["/main.css", "//example.com/external.css"],
+	];
+	$scriptStyleHtml = "";
+
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$htmlFragment = str_replace(
+				"<%SOURCE_PATH%>",
+				"/$tag$path",
+				$this->scriptStyleTag[$tag]
+			);
+
+			$scriptStyleHtml .= $htmlFragment;
+
+			if(strstr($path, "//")) {
+				// Add external files to head, but don't create files.
+				continue;
+			}
+
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			// path concatenated with path, to make it easy to remember, but
+			// to avoid common mistake within actual implementation of
+			// accidentally hashing the path and not the file contents.
+			$fileContents = md5($path . $path);
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $fileContents);
+		}
+	}
+
+	$html = str_replace("<%SCRIPT_STYLE_LIST%>", $scriptStyleHtml, $this->html);
+	$document = new Document($html);
+
+	$manifest = $document->createManifest($this->request, $this->response);
+	$fingerprint = $manifest->calculateFingerprint(
+		$document->querySelector("head"));
+
+	$expectedFingerprint = "";
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			if(!strstr($path, "//")) {
+				$expectedFingerprint .= md5_file($filePath);
+			}
+		}
+	}
+	$expectedFingerprint = md5($expectedFingerprint);
+	$this->assertEquals($expectedFingerprint, $fingerprint);
+}
+
+public function testRelativeUris() {
+	$scriptStylePathList = [
+		"script" => ["/main.js", "directory/nested.js"],
+		"style" => ["/main.css", "directory/subDir/deepFile.css"],
+	];
+	$scriptStyleHtml = "";
+
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$htmlFragment = "";
+
+			if(substr($path, 0, 1) === "/") {
+				$htmlFragment = str_replace(
+					"<%SOURCE_PATH%>",
+					"/$tag$path",
+					$this->scriptStyleTag[$tag]
+				);
+			}
+			else {
+				$htmlFragment = str_replace(
+					"<%SOURCE_PATH%>",
+					$path,
+					$this->scriptStyleTag[$tag]
+				);
+			}
+
+			$scriptStyleHtml .= $htmlFragment;
+
+			if(substr($path, 0, 1) !== "/") {
+				// Add relative files to head, but don't create files.
+				continue;
+			}
+
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			// path concatenated with path, to make it easy to remember, but
+			// to avoid common mistake within actual implementation of
+			// accidentally hashing the path and not the file contents.
+			$fileContents = md5($path . $path);
+			if(!is_dir(dirname($filePath))) {
+				if(false === (mkdir(dirname($filePath), 0775, true)) ) {
+					die("mkdir failed :(");
+				}
+			}
+
+			file_put_contents($filePath, $fileContents);
+		}
+	}
+
+	$html = str_replace("<%SCRIPT_STYLE_LIST%>", $scriptStyleHtml, $this->html);
+	$document = new Document($html);
+
+	$this->request->uri = "/directory/index.html";
+
+	$manifest = $document->createManifest($this->request, $this->response);
+	$fingerprint = $manifest->calculateFingerprint(
+		$document->querySelector("head"));
+
+	$expectedFingerprint = "";
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			if(substr($path, 0, 1) !== "/") {
+				continue;
+			}
+
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			$expectedFingerprint .= md5_file($filePath);
+		}
+	}
+
+	$expectedFingerprint = md5($expectedFingerprint);
+	$this->assertEquals($expectedFingerprint, $fingerprint);
+}
+
 }#

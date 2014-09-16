@@ -57,25 +57,16 @@ public function calculateFingerprint(Node $domHead) {
 		if(strstr($sourcePathUri, "//")) {
 			continue;
 		}
-		// If the source path is an absolute URI, simply concatenate:
-		else if(strpos($sourcePathUri, "/") === 0) {
-			$sourcePathAbsolute =
-				Path::get(Path::SRC)
-				. $sourcePathUri;
+		// Do not add relative files to the fingerprint:
+		else if(strpos($sourcePathUri, "/") > 0) {
+			continue;
 		}
-		// If the source path is a relative URI, current URI's directory path
-		// needs to be added to the absolute source path:
-		else {
-			$uriDirectory = pathinfo($this->request->uri, PATHINFO_DIRNAME);
 
-			$sourcePathAbsolute =
+		$sourcePathAbsolute =
 				Path::get(Path::SRC)
-				. $uriDirectory
 				. $sourcePathUri;
-		}
 
 		$fingerprintSource .= md5_file($sourcePathAbsolute);
-		// $fingerprintSource .= "|||||" . $sourcePathAbsolute . "|||||";
 	}
 
 	if(empty($fingerprintSource)) {
