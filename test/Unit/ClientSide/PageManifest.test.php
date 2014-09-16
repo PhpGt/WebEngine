@@ -6,6 +6,9 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Core\Path;
+use \Gt\Request\Request;
+use \Gt\Response\Response;
 use \Gt\Dom\Document;
 
 class PageManifest_Test extends \PHPUnit_Framework_TestCase {
@@ -32,19 +35,20 @@ private $request;
 private $response;
 
 public function setUp() {
+	$this->tmp = \Gt\Test\Helper::createTmpDir();
+
 	$cfg = new \Gt\Core\ConfigObj();
 
-	$this->request		= $this->getMock("\Gt\Request\Request", null, [
-		"/",
-		$cfg
-	]);
-	$this->response		= $this->getMock("\Gt\Response\Reponse", null);
+	$this->request		= new Request("/", $cfg);
+	$this->response		= new Response($cfg);
 }
 
-public function tearDown() {}
+public function tearDown() {
+	\Gt\Test\Helper::cleanup($this->tmp);
+}
 
 public function testManifestCreatedFromDocument() {
-	$document = new Document;
+	$document = new Document($this->html);
 	$manifest = $document->createManifest($this->request, $this->response);
 
 	$this->assertInstanceOf("\Gt\ClientSide\Manifest", $manifest);
@@ -53,7 +57,7 @@ public function testManifestCreatedFromDocument() {
 
 public function testCalculateFingerprint() {
 	$scriptStylePathList = [
-		"script" => ["/main.js", "/do-something.js", "jqueer.js"],
+		"script" => ["/main.js", "/do-something.js", "/jqueer.js"],
 		"style" => ["/main.css", "/my-font.css", "/more.css"],
 	];
 	$scriptStyleHtml = "";
@@ -61,9 +65,25 @@ public function testCalculateFingerprint() {
 	foreach ($scriptStylePathList as $tag => $pathList) {
 		foreach ($pathList as $path) {
 			$htmlFragment = str_replace(
-				$$this->scriptStyleTag[$tag], "<%SOURCE_PATH%>", $path);
+				"<%SOURCE_PATH%>",
+				"/$tag$path",
+				$this->scriptStyleTag[$tag]
+			);
 
 			$scriptStyleHtml .= $htmlFragment;
+
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			// path concatenated with path, to make it easy to remember, but
+			// to avoid common mistake within actual implementation of
+			// accidentally hashing the path and not the file contents.
+			$fileContents = md5($path . $path);
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $fileContents);
 		}
 	}
 
@@ -71,5 +91,20 @@ public function testCalculateFingerprint() {
 	$document = new Document($html);
 
 	$manifest = $document->createManifest($this->request, $this->response);
+	$fingerprint = $manifest->calculateFingerprint(
+		$document->querySelector("head"));
+
+	$expectedFingerprint = "";
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			$expectedFingerprint .= md5_file($filePath);
+		}
+	}
+	$expectedFingerprint = md5($expectedFingerprint);
+	$this->assertEquals($expectedFingerprint, $fingerprint);
 }
 }#

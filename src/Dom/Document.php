@@ -20,6 +20,9 @@ public $domDocument;
 public $node;
 public $nodeMap = [];
 
+public $head;
+public $body;
+
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
  * calls the load function with provided HTML content.
@@ -51,10 +54,33 @@ public function __construct($source = null) {
 	$this->domDocument->document = $this;
 	$uuid = uniqid("nodeMap-", true);
 	$this->domDocument->uuid = $uuid;
+
+	$head = $this->domDocument->getElementsByTagName("head");
+	if($head->length > 0) {
+		$this->head = Node::wrapNative($head->item(0));
+	}
+	else {
+		$this->head = $this->createElement("head");
+		$this->insertBefore(
+			$this->head, $this->firstChild);
+	}
+
+	$body = $this->domDocument->getElementsByTagName("body");
+	if($body->length > 0) {
+		$this->body = Node::wrapNative($body->item(0));
+	}
+	else {
+		$this->body = $this->createElement("body");
+		$this->insertBefore(
+			$this->body, $this->firstChild);
+	}
 }
 
-public function createManifest(Request $request, Response $response) {
-	$domHead = $this->getElementsByTagName("head")[0];
+/**
+ *
+ */
+public function createManifest($request, $response) {
+	$domHead = $this->querySelector("head");
 	return new PageManifest($domHead, $request, $response);
 }
 
@@ -139,6 +165,10 @@ public function load($content = null) {
  *
  */
 public function __call($name, $args) {
+	// TODO: Throw exception on appendChikd related stuff.
+	// See what JavaScript does: document.appendChild(something)
+	// "HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Nodes
+	// of type 'DIV' may not be inserted inside nodes of type '#document'."
 	$result = call_user_func_array([$this->node, $name], $args);
 	return $result;
 }

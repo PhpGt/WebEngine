@@ -18,12 +18,25 @@ public function __construct($config) {
 	$this->config = $config;
 }
 
+/**
+ *
+ */
 public function setCode(ResponseCode $code) {
 	$this->code = $code;
 }
 
+/**
+ *
+ */
 public function setContentObject(ResponseContent $content) {
 	$this->content = $content;
+}
+
+/**
+ *
+ */
+public function getConfigOption($name) {
+	return $this->config->$name;
 }
 
 }#

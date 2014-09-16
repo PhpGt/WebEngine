@@ -41,6 +41,15 @@ public function testLoadHtmlDefault() {
 	$this->assertEmpty($document->textContent);
 }
 
+public function testCreatesHead() {
+	// $document = new Document();
+	// $document->xpath(".//head");
+}
+
+public function testCreatesBody() {
+
+}
+
 public function testDocumentCallsNodeMethods() {
 	// Should be able to call Node and DOMNode functions on the Document.
 	$document = new Document("<!doctype html><h1>Hello, Test</h1>");
