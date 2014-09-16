@@ -20,8 +20,7 @@ private $sourceAttributeArray = ["src", "href"];
 /**
  *
  */
-public function __construct(Node $domHead,
-Request $request, Response $response) {
+public function __construct(Node $domHead, $request, $response) {
 	$this->request = $request;
 	$this->response = $response;
 
@@ -59,7 +58,7 @@ public function calculateFingerprint(Node $domHead) {
 			continue;
 		}
 		// If the source path is an absolute URI, simply concatenate:
-		else if(strpos($sourcePathUri, "/")) {
+		else if(strpos($sourcePathUri, "/") === 0) {
 			$sourcePathAbsolute =
 				Path::get(Path::SRC)
 				. $sourcePathUri;
@@ -79,8 +78,13 @@ public function calculateFingerprint(Node $domHead) {
 		// $fingerprintSource .= "|||||" . $sourcePathAbsolute . "|||||";
 	}
 
+	if(empty($fingerprintSource)) {
+		// Make it obvious if there is an empty dom head
+		// (it's hard to remember the md5 of an empty string).
+		return str_repeat("0", 32);
+	}
+
 	return md5($fingerprintSource);
-	// return $fingerprintSource;
 }
 
 /**

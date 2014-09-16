@@ -43,7 +43,9 @@ public function setUp() {
 	$this->response		= new Response($cfg);
 }
 
-public function tearDown() {}
+public function tearDown() {
+	\Gt\Test\Helper::cleanup($this->tmp);
+}
 
 public function testManifestCreatedFromDocument() {
 	$document = new Document($this->html);
@@ -55,7 +57,7 @@ public function testManifestCreatedFromDocument() {
 
 public function testCalculateFingerprint() {
 	$scriptStylePathList = [
-		"script" => ["/main.js", "/do-something.js", "jqueer.js"],
+		"script" => ["/main.js", "/do-something.js", "/jqueer.js"],
 		"style" => ["/main.css", "/my-font.css", "/more.css"],
 	];
 	$scriptStyleHtml = "";
@@ -64,7 +66,7 @@ public function testCalculateFingerprint() {
 		foreach ($pathList as $path) {
 			$htmlFragment = str_replace(
 				"<%SOURCE_PATH%>",
-				"$tag/$path",
+				"/$tag$path",
 				$this->scriptStyleTag[$tag]
 			);
 
@@ -103,7 +105,6 @@ public function testCalculateFingerprint() {
 		}
 	}
 	$expectedFingerprint = md5($expectedFingerprint);
-
 	$this->assertEquals($expectedFingerprint, $fingerprint);
 }
 }#

@@ -23,6 +23,7 @@ public function setUp() {
 	$this->pageDir = \Gt\Test\Helper::createTmpDir("/src/Page");
 
 	$cfg = new \Gt\Core\ConfigObj();
+	// $cfg->client_compiled = false;
 
 	$this->request 		= $this->getMock("\Gt\Request\Request", ["getType"], [
 		"/", $cfg,

@@ -13,7 +13,6 @@ class Node {
 
 public $domNode;
 public $tagName;
-public $id;
 
 /**
  *
@@ -38,6 +37,12 @@ array $attributeArray = array(), $nodeValue = null) {
 		$this->setAttribute($key, $value);
 	}
 
+	if($this->domNode instanceof \DOMElement) {
+		// Fix case, according to W3 spec
+		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
+		$this->tagName = strtoupper($this->domNode->tagName);
+	}
+
 	if(!is_null($nodeValue)) {
 		$this->value = $nodeValue;
 	}
@@ -50,13 +55,6 @@ array $attributeArray = array(), $nodeValue = null) {
 		$this->domNode->uuid = $uuid;
 		$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 	}
-
-	if($this->domNode instanceof \DOMElement) {
-		// Fix case, according to W3 spec
-		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
-		$this->tagName = strtoupper($this->domNode->tagName);
-		$this->id = $this->getAttribute("id") ?: null;
-	}
 }
 
 /**
@@ -66,6 +64,11 @@ public function __get($name) {
 	$value = null;
 
 	switch($name) {
+	case "id":
+	case "ID":
+		$value = $this->getAttribute("id");
+		break;
+
 	case "className":
 		$value = $this->getAttribute("class");
 		break;
@@ -277,7 +280,7 @@ public static function wrapNative($node) {
  * returns the first matching element.
  */
 public function querySelector($query) {
-	$nodeList = $this->css($query);
+	$nodeList = $this->css($query, $this);
 	if(count($nodeList) > 0) {
 		// TODO: Might be possible to speed this up?
 		return $nodeList[0];
@@ -297,7 +300,7 @@ public function querySelector($query) {
  * @return NodeList A NodeList with 0 or more matching elements
  */
 public function querySelectorAll($query) {
-	return $this->css($query);
+	return $this->css($query, $this);
 }
 
 /**
@@ -305,12 +308,8 @@ public function querySelectorAll($query) {
  */
 public function css($query, $context = null) {
 	$context = $this->checkContext($context);
-
 	// Second parameter of toXPath is optional query prefix.
 	$xpath = CssSelector::toXPath($query, ".//");
-	// if($query == "#child") {
-	// 	var_dump($xpath);die();
-	// }
 	$domNodeList = $this->xpath($xpath, $context);
 	return new NodeList($domNodeList);
 }
@@ -319,9 +318,27 @@ public function css($query, $context = null) {
  *
  */
 public function xpath($query, $context = null) {
+	if(is_null($context)) {
+		$context = $this;
+	}
 	$context = $this->checkContext($context);
 
-	$xpath = new \DOMXPath($context->ownerDocument);
+	// var_dump($context->tagName);die();
+
+	$domDocument = $this->ownerDocument;
+	if(is_null($domDocument)) {
+		$domDocument = $this->domNode;
+
+		if(isset($domDocument->ownerDocument)) {
+			$domDocument = $domDocument->ownerDocument;
+		}
+	}
+
+	if($domDocument instanceof Document) {
+		$domDocument = $domDocument->domDocument;
+	}
+
+	$xpath = new \DOMXPath($domDocument);
 	$domNodeList = $xpath->query($query, $context);
 
 	return new NodeList($domNodeList);
@@ -340,7 +357,7 @@ public function checkContext($context) {
 	if(is_null($context)) {
 		if($this->getNodePath() === "/") {
 			// This is a document.
-			$context = $this->documentElement;
+			$context = $this->document->documentElement;
 		}
 		else {
 			$context = $this->domNode;

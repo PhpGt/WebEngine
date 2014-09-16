@@ -14,16 +14,16 @@ class FileOrganiser {
 private $response;
 private $manifest;
 
-public function __construct(Response $response, Manifest $manifest) {
+public function __construct($response, Manifest $manifest) {
 	$this->response = $response;
 	$this->manifest = $manifest;
 }
 
 public function organise() {
 	if(!$this->manifest->checkValid()) {
-		if($this->response->client_compiled) {
-			// Compile everything.
-		}
+		// if($this->response->getConfigOption("client_compiled")) {
+		// 	// Compile everything.
+		// }
 		// Do copying of files...
 	}
 
