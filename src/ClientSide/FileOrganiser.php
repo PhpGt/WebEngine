@@ -30,7 +30,6 @@ public function organise() {
 	if(!$this->checkStaticFilesValid()) {
 		// Copy static files.
 	}
-	// die("Call to FileOrganiser organise method...");
 }
 
 /**

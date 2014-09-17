@@ -16,6 +16,8 @@ class PageManifest extends Manifest {
 
 private $fingerprint;
 private $sourceAttributeArray = ["src", "href"];
+private $xpathQuery =
+	"./::script[@src] | ./::link[@rel = 'stylesheet' and (@href)]";
 
 /**
  *
@@ -24,17 +26,35 @@ public function __construct(Node $domHead, $request, $response) {
 	$this->request = $request;
 	$this->response = $response;
 
-	$this->fingerprint = $this->calculateFingerprint($domHead);
-	$this->pathDetails = $this->generatePathArray($domHead);
+	$pathDetails = $this->generatePathDetails($domHead);
+	$this->fingerprint = $this->calculateFingerprint($pathDetails);
+}
+
+/**
+ * Constructs a new PathDetails object from elements matching the manifest's
+ * CSS query selector
+ *
+ * @return PathDetails A PathDetails object describing current dom head's
+ * source paths and representing destination paths
+ */
+public function generatePathDetails(Node $domHead) {
+	$nodeList = $domHead->xpath($this->xpathQuery);
+
+	$pathDetails = new PathDetails($nodeList);
+	return $pathDetails;
 }
 
 /**
  * Creates an MD5 hash representing the combined content and filenames of all
  * client side resorces represented in the dom head.
  *
+ * @param PathDetails $details Representation of client-side files contained
+ * within current dom head ready to fingerprint
+ *
  * @return string MD5 hash representation of current dom head
  */
-public function calculateFingerprint(Node $domHead) {
+public function calculateFingerprint(PathDetails $details) {
+	die("NYI");
 	$nodeList = $domHead->querySelectorAll(
 		"script[src], link[rel='stylesheet'][href]");
 	// The source fingerprint is a concatenation of all files' MD5s, which
@@ -80,19 +100,12 @@ public function calculateFingerprint(Node $domHead) {
 
 /**
  *
- * @return PathDetails A PathDetails object describing current dom head's
- * source paths and representing destination paths
- */
-public function generatePathArray(Node $domHead) {
-
-}
-
-/**
- *
  * @return bool True if the files listed within the dom head are valid (having
  * the same filename and content), False if ANY of the files are invalid
  */
 public function checkValid() {
+	$valid = true;
 
+	return $valid;
 }
 }#
