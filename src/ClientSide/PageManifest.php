@@ -17,6 +17,10 @@ class PageManifest extends Manifest {
 private $fingerprint;
 private $sourceAttributeArray = ["src", "href"];
 
+private $domHead;
+private $request;
+private $response;
+
 public static $xpathQuery =
 	"./script[@src] | ./link[@rel = 'stylesheet' and (@href)]";
 
@@ -24,10 +28,11 @@ public static $xpathQuery =
  *
  */
 public function __construct(Node $domHead, $request, $response) {
+	$this->domHead = $domHead;
 	$this->request = $request;
 	$this->response = $response;
 
-	$pathDetails = $this->generatePathDetails($domHead);
+	$pathDetails = $this->generatePathDetails();
 	$this->fingerprint = $this->calculateFingerprint($pathDetails);
 }
 
@@ -38,8 +43,8 @@ public function __construct(Node $domHead, $request, $response) {
  * @return PathDetails A PathDetails object describing current dom head's
  * source paths and representing destination paths
  */
-public function generatePathDetails(Node $domHead) {
-	$nodeList = $domHead->xpath(self::$xpathQuery);
+public function generatePathDetails() {
+	$nodeList = $this->domHead->xpath(self::$xpathQuery);
 
 	$pathDetails = new PathDetails($nodeList);
 	return $pathDetails;
@@ -54,7 +59,7 @@ public function generatePathDetails(Node $domHead) {
  *
  * @return string MD5 hash representation of current dom head
  */
-public function calculateFingerprint(PathDetails $details) {
+public function calculateFingerprint($details) {
 	// The source fingerprint is a concatenation of all files' MD5s, which
 	// in turn will be hashed to create an output MD5.
 	$fingerprintSource = "";
@@ -106,4 +111,5 @@ public function checkValid() {
 
 	return $valid;
 }
+
 }#

@@ -20,16 +20,22 @@ public function __construct($response, Manifest $manifest) {
 }
 
 public function organise() {
+	$hasOrganisedAnything = false;
+
+	$pathDetails = $this->manifest->generatePathDetails();
+
 	if(!$this->manifest->checkValid()) {
-		// if($this->response->getConfigOption("client_compiled")) {
-		// 	// Compile everything.
-		// }
+		if($this->response->getConfigOption("client_compiled")) {
+			// Compile everything.
+		}
 		// Do copying of files...
 	}
 
 	if(!$this->checkStaticFilesValid()) {
 		// Copy static files.
 	}
+
+	return $hasOrganisedAnything;
 }
 
 /**

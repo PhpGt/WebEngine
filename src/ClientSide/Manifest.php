@@ -7,4 +7,10 @@
  */
 namespace Gt\ClientSide;
 
-class Manifest {}#
+abstract class Manifest {
+
+public abstract function calculateFingerprint($details);
+
+public abstract function checkValid();
+
+}#
