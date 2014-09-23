@@ -323,8 +323,6 @@ public function xpath($query, $context = null) {
 	}
 	$context = $this->checkContext($context);
 
-	// var_dump($context->tagName);die();
-
 	$domDocument = $this->ownerDocument;
 	if(is_null($domDocument)) {
 		$domDocument = $this->domNode;

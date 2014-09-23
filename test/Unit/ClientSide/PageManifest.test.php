@@ -91,8 +91,9 @@ public function testCalculateFingerprint() {
 	$document = new Document($html);
 
 	$manifest = $document->createManifest($this->request, $this->response);
-	$fingerprint = $manifest->calculateFingerprint(
-		$document->querySelector("head"));
+	$details = new PathDetails(
+		$document->head->xpath(PageManifest::$xpathQuery));
+	$fingerprint = $manifest->calculateFingerprint($details);
 
 	$expectedFingerprint = "";
 	foreach ($scriptStylePathList as $tag => $pathList) {
@@ -151,8 +152,9 @@ public function testFingerprintIgnoresExternalFiles() {
 	$document = new Document($html);
 
 	$manifest = $document->createManifest($this->request, $this->response);
-	$fingerprint = $manifest->calculateFingerprint(
-		$document->querySelector("head"));
+	$details = new PathDetails(
+		$document->head->xpath(PageManifest::$xpathQuery));
+	$fingerprint = $manifest->calculateFingerprint($details);
 
 	$expectedFingerprint = "";
 	foreach ($scriptStylePathList as $tag => $pathList) {
@@ -227,8 +229,9 @@ public function testRelativeUris() {
 	$this->request->uri = "/directory/index.html";
 
 	$manifest = $document->createManifest($this->request, $this->response);
-	$fingerprint = $manifest->calculateFingerprint(
-		$document->querySelector("head"));
+	$details = new PathDetails(
+		$document->head->xpath(PageManifest::$xpathQuery));
+	$fingerprint = $manifest->calculateFingerprint($details);
 
 	$expectedFingerprint = "";
 	foreach ($scriptStylePathList as $tag => $pathList) {

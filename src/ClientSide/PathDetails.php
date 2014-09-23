@@ -11,11 +11,14 @@ use \Gt\Dom\NodeList;
 
 class PathDetails {
 
+// TODO: Wrap in Iteratable:
+public $nodeList;
+
 /**
  * @param NodeList $domNodeList List of elements to represent
  */
 public function __construct(NodeList $nodeList) {
-
+	$this->nodeList = $nodeList;
 }
 
 }#
