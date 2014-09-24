@@ -252,4 +252,67 @@ public function testRelativeUris() {
 	$this->assertEquals($expectedFingerprint, $fingerprint);
 }
 
+public function testCheckValidFromGivenFingerprint() {
+	$scriptStylePathList = [
+		"script" => ["/main.js", "/do-something.js", "/jqueer.js"],
+		"style" => ["/main.css", "/my-font.css", "/more.css"],
+	];
+	$scriptStyleHtml = "";
+
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$htmlFragment = str_replace(
+				"<%SOURCE_PATH%>",
+				"/$tag$path",
+				$this->scriptStyleTag[$tag]
+			);
+
+			$scriptStyleHtml .= $htmlFragment;
+
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			// path concatenated with path, to make it easy to remember, but
+			// to avoid common mistake within actual implementation of
+			// accidentally hashing the path and not the file contents.
+			$fileContents = md5($path . $path);
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $fileContents);
+		}
+	}
+
+	$html = str_replace("<%SCRIPT_STYLE_LIST%>", $scriptStyleHtml, $this->html);
+	$document = new Document($html);
+
+	$manifest = $document->createManifest($this->request, $this->response);
+	$details = new PathDetails(
+		$document->head->xpath(PageManifest::$xpathQuery));
+
+	$expectedFingerprint = "";
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			$expectedFingerprint .= md5_file($filePath);
+		}
+	}
+	$expectedFingerprint = md5($expectedFingerprint);
+
+	$this->assertTrue($manifest->checkValid($expectedFingerprint));
+}
+
+public function testCheckValidFromWwwFiles() {
+	// TODO:
+	// 1. Create normal manifest as above.
+	// 2. Copy over files to www directory (into hashed directories).
+	// 3. Check validity.
+	// 4. Add another file to the head.
+	// 5. Check invalidity.
+}
+
 }#

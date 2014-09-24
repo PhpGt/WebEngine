@@ -6,6 +6,7 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Request\Request;
 use \Gt\Response\Response;
 
 class FileOrganiser_Test extends \PHPUnit_Framework_TestCase {
@@ -15,15 +16,24 @@ private $manifest;
 private $pathDetails;
 
 public function setUp() {
+	$document = new \Gt\Dom\Document();
+
 	$cfg = new \Gt\Core\ConfigObj();
+	$request = new Request("/", $cfg);
 	$response = new Response($cfg);
 
-	$this->manifest = $this->getMockForAbstractClass("\Gt\ClientSide\Manifest");
+	// TODO: Update usage of Manifest to Mocked abstract class.
+	$this->manifest = new PageManifest($document->head, $request, $response);
+	// $this->manifest = $this->getMockBuilder("\Gt\ClientSide\Manifest")
+	// 	->setMethods(["generatePathDetails"])
+	// 	->getMock();
+
+	// $this->manifest->expects($this->any())
+	// 	->method("generatePathDetails")
+	// 	->willReturn($this->pathDetails);
+
 	$this->fileOrganiser = new FileOrganiser($response, $this->manifest);
-	$this->pathDetails = $this->getMock("\Gt\ClientSide\PathDetails", [
-		"generatePathDetails",
-		"checkValid",
-	]);
+	$this->pathDetails = $this->getMock("\Gt\ClientSide\PathDetails");
 }
 
 public function tearDown() {
@@ -38,16 +48,12 @@ public function testFileOrganiserConstructs() {
 }
 
 public function testFileOrganiserDoesNotOrganiseWhenValid() {
-	$this->manifest->expects($this->any())
-		->method("generatePathDetails")
-		->will($this->returnValue($this->pathDetails));
+	$pathDetails = $this->manifest->generatePathDetails();
 
-	// $this->manifest->expects($this->any())
-	// 	->method("checkValid")
-	// 	->will($this->returnValue(true));
-
-	$hasOrganisedAnything = $this->fileOrganiser->organise();
+	$hasOrganisedAnything = $this->fileOrganiser->organise($pathDetails);
 	$this->assertFalse($hasOrganisedAnything);
 }
+
+// public function
 
 }#

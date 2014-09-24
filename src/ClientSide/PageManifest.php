@@ -102,12 +102,22 @@ public function calculateFingerprint($details) {
 }
 
 /**
+ * @param string $fingerprintToCheck Pass a fingerprint to check the current
+ * DOMHead against. If null is given, checks the www path for public directory
+ * presence.
  *
  * @return bool True if the files listed within the dom head are valid (having
  * the same filename and content), False if ANY of the files are invalid
  */
-public function checkValid() {
-	$valid = true;
+public function checkValid($fingerprintToCheck = null) {
+	if(!is_null($fingerprintToCheck)) {
+		return $this->calculateFingerprint($this->generatePathDetails())
+			=== $fingerprintToCheck;
+	}
+
+	$valid = false;
+
+	// TODO: Check files in www directory.
 
 	return $valid;
 }

@@ -19,10 +19,14 @@ public function __construct($response, Manifest $manifest) {
 	$this->manifest = $manifest;
 }
 
-public function organise() {
+/**
+ * @param PathDetails $pathDetails Representation of client-side paths
+ *
+ * @return bool True if organiser has copied any files, false if no files have
+ * been coppied
+ */
+public function organise($pathDetails) {
 	$hasOrganisedAnything = false;
-
-	$pathDetails = $this->manifest->generatePathDetails();
 
 	if(!$this->manifest->checkValid()) {
 		if($this->response->getConfigOption("client_compiled")) {
