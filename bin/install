@@ -20,4 +20,20 @@ if(!file_exists("composer.phar")) {
 
 passthru("./composer.phar install");
 
+// OS-dependant stuff:
+switch(PHP_OS) {
+case "Darwin":
+	// OSX
+	// Install Homebrew to install MySQL and PHP versions.
+	passthru("ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/"
+		. "Homebrew/install/master/install)\"");
+
+	// TODO: Manage packages for OSX.
+	break;
+
+default:
+	break;
+}
+var_dump(PHP_OS);die();
+
 echo "\n\nPHP.Gt successfully installed\n\n";
