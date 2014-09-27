@@ -136,6 +136,7 @@ public function process() {
 	$manifest = $content->createManifest($this->request, $this->response);
 	$fileOrganiser = new FileOrganiser($this->response, $manifest);
 	$fileOrganiser->organise();
+	$manifest->expand();
 
 	$content->flush();
 }

@@ -32,7 +32,14 @@ public function setUp() {
 		->method("getType")
 		->will($this->returnValue(\Gt\Request\Request::TYPE_PAGE)
 	);
-	$this->response		= $this->getMock("\Gt\Response\Reponse", null);
+	$this->response		= $this->getMock("\Gt\Response\Reponse",
+		["getConfigOption"]
+	);
+	$this->response->expects($this->any())
+		->method("getConfigOption")
+		->will($this->returnValue(false)
+	);
+
 	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
 		$cfg
 	]);

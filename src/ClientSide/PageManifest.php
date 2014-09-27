@@ -122,4 +122,8 @@ public function checkValid($fingerprintToCheck = null) {
 	return $valid;
 }
 
+public function expand() {
+
+}
+
 }#

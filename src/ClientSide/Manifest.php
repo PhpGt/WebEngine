@@ -13,4 +13,6 @@ public abstract function calculateFingerprint($details);
 
 public abstract function checkValid();
 
+public abstract function expand();
+
 }#

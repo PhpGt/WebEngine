@@ -25,7 +25,7 @@ public function __construct($response, Manifest $manifest) {
  * @return bool True if organiser has copied any files, false if no files have
  * been coppied
  */
-public function organise($pathDetails) {
+public function organise($pathDetails = []) {
 	$hasOrganisedAnything = false;
 
 	if(!$this->manifest->checkValid()) {
