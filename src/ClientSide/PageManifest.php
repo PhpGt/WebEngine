@@ -53,7 +53,7 @@ public function __construct(Node $domHead, $request, $response) {
  * @return PathDetails A PathDetails object describing current dom head's
  * source paths and representing destination paths
  */
-private function generatePathDetails() {
+public function generatePathDetails() {
 	$this->nodeList = $this->domHead->xpath(self::$xpathQuery);
 
 	$pathDetails = new PathDetails($this->nodeList);
@@ -130,19 +130,21 @@ public function checkValid($fingerprintToCheck = null) {
 	$valid = false;
 
 	$wwwPath = Path::get(Path::WWW);
-	foreach (new \DirectoryIterator($wwwPath) as $fileInfo) {
-		if($fileInfo->isDot()) {
-			continue;
-		}
+	if(is_dir($wwwPath)) {
+		foreach (new \DirectoryIterator($wwwPath) as $fileInfo) {
+			if($fileInfo->isDot()) {
+				continue;
+			}
 
-		$fileName = $fileInfo->getFilename();
+			$fileName = $fileInfo->getFilename();
 
-		// Manifest-specific files are coppied into their own www subdirectory
-		// with the fingerprint in the directory name. The fileName ends in
-		// the manifest's fingerprint.
-		if(substr($fileName, -strlen($this->fingerprint))
-		=== $this->fingerprint) {
-			$valid = true;
+			// Manifest-specific files are coppied into their own www
+			// subdirectory with the fingerprint in the directory name. The
+			// fileName ends in the manifest's fingerprint.
+			if(substr($fileName, -strlen($this->fingerprint))
+			=== $this->fingerprint) {
+				$valid = true;
+			}
 		}
 	}
 

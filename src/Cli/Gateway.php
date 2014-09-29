@@ -60,18 +60,21 @@ public static function getAbsoluteFilePath($uri) {
  * @return int The number of bytes served.
  */
 public static function serveStaticFile($filePath) {
-	$mime = Server::$contentTypeDefault;
+	if(!headers_sent()) {
+		$mime = Server::$contentTypeDefault;
 
-	$ext = pathinfo($filePath, PATHINFO_EXTENSION);
-	if(isset(Server::$contentType[$ext])) {
-		$mime = Server::$contentType[$ext];
-	}
-	else {
-		$finfo = new \Finfo(FILEINFO_MIME_TYPE);
-		$mime = $finfo->file($request[0]);
+		$ext = pathinfo($filePath, PATHINFO_EXTENSION);
+		if(isset(Server::$contentType[$ext])) {
+			$mime = Server::$contentType[$ext];
+		}
+		else {
+			$finfo = new \Finfo(FILEINFO_MIME_TYPE);
+			$mime = $finfo->file($filePath);
+		}
+
+		header("Content-type: $mime");
 	}
 
-	header("Content-type: $mime");
 	return readfile($filePath);
 }
 
