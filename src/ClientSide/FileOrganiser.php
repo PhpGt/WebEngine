@@ -50,9 +50,13 @@ public function organise($pathDetails = []) {
  */
 private function copyCompile($pathDetails) {
 	foreach ($pathDetails as $pathDetail) {
+		if(!is_dir(dirname($pathDetail["destination"]))) {
+			mkdir(dirname($pathDetail["destination"]), 0775, true);
+		}
+
 		file_put_contents(
-			$pathDetail->destination,
-			Compiler::parse($pathDetail->source)
+			$pathDetail["destination"],
+			Compiler::parse($pathDetail["source"])
 		);
 	}
 }

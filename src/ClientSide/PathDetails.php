@@ -9,12 +9,20 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Core\Path;
+use \Gt\Dom\Node;
 use \Gt\Dom\NodeList;
 
-class PathDetails implements Iterator {
+class PathDetails implements \Iterator {
 
 private $nodeList;
 private $iteratorIndex = 0;
+private $fingerprint = "{FINGERPRINT}";
+
+private $sourceAttribute = [
+	"SCRIPT" => "src",
+	"LINK" => "href",
+];
 
 /**
  * @param NodeList $domNodeList List of elements to represent
@@ -24,10 +32,33 @@ public function __construct($nodeList = []) {
 }
 
 /**
- * Returns an associative array with two keys: source and destination. The
- * source key is an absolute file path to the source file on disk represented by
- * the Node in the PathDetails object, and the destination key is an absolute
- * file path to the public file on disk.
+ *
+ */
+public function setFingerprint($fingerprint) {
+	$this->fingerprint = $fingerprint;
+}
+
+/**
+ *
+ */
+public function getDetailForNode(Node $sourceNode) {
+	foreach ($this->nodeList as $i => $node) {
+		if($node === $sourceNode) {
+			return $this->buildDetail($i);
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Returns an associative array with four keys: "source", "destination",
+ * "public" and "node".
+ * The source key is an absolute file path to the source file on disk
+ * represented by the Node in the PathDetails object.
+ * The destination key is an absolute file path to the public file on disk.
+ * The public key is the absolute URI as seen by the browser.
+ * The node key is the underlying Dom Node represented by this object.
  *
  * @param int $index Numerical index for which Node in the NodeList to
  * represent
@@ -35,13 +66,16 @@ public function __construct($nodeList = []) {
  * @return array Associative array with two keys: source, destination
  */
 private function buildDetail($index) {
-	$node = $nodeList[$index];
+	$node = $this->nodeList[$index];
 	$source = $this->getSource($node);
 	$destination = $this->getDestination($source);
+	$public = $this->getPublic($destination);
 
 	return [
 		"source" => $source,
 		"destination" => $destination,
+		"public" => $public,
+		"node" => $node,
 	];
 }
 
@@ -54,35 +88,71 @@ private function buildDetail($index) {
  * @return string Absolute file path of source file
  */
 private function getSource(Node $node) {
-
+	$srcPath = Path::get(Path::SRC);
+	$publicPath = $node->getAttribute($this->sourceAttribute[$node->tagName]);
+	$sourcePath = Path::fixCase($srcPath . $publicPath);
+	return $sourcePath;
 }
 
 /**
  * Returns the absolute destination public file path from the corresponding
  * source file path, rewriting the extension if the public file is compiled.
+ * If the fingerprint has not been set for the PathDetails, a placeholder will
+ * be present in the returned path: {FINGERPRINT}
  *
  * @param string $source Absolute file path to source
  *
  * @return string Absolute file path to destination
  */
 private function getDestination($source) {
+	$relativePath = substr($source, strlen(Path::get(Path::SRC)));
+	$relativePath = Path::fixCase($relativePath);
+	// Inject the fingerprint placeholder in place (before second slash).
+	$relativePathFingerprint = substr_replace(
+		$relativePath,
+		"-" . $this->fingerprint,
+		strpos($relativePath, "/", 1),
+		0
+	);
+	$destinationPath = Path::get(Path::WWW);
+	$destinationPath = Path::fixCase($destinationPath);
+	$destinationPath .= $relativePathFingerprint;
 
+	return $destinationPath;
+}
+
+/**
+ * Returns the public (client-side) path from an absolute file path in the www
+ * directory.
+ *
+ * @param string $path Absolute path to file within www directory
+ *
+ * @return string Absolute URI for use on the client-side
+ */
+private function getPublic($path) {
+	$publicPath = $path;
+
+	if(strpos($publicPath, Path::get(Path::WWW)) === 0) {
+		$publicPath = substr($publicPath, strlen(Path::get(Path::WWW)));
+	}
+
+	return $publicPath;
 }
 
 // Iterator ////////////////////////////////////////////////////////////////////
-public current() {
+public function current() {
 	return $this->buildDetail($this->iteratorIndex);
 }
-public key() {
+public function key() {
 	return $this->iteratorIndex;
 }
-public next() {
+public function next() {
 	++$this->iteratorIndex;
 }
-public rewind() {
+public function rewind() {
 	$this->iteratorIndex = 0;
 }
-public valid() {
+public function valid() {
 	return isset($this->nodeList[$this->iteratorIndex]);
 }
 

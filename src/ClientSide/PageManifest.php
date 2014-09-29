@@ -21,6 +21,15 @@ private $domHead;
 private $request;
 private $response;
 
+public $pathDetails;
+private $nodeList;
+
+// TODO: Make this static, utilise in calculateFingerprint().
+private $sourceAttribute = [
+	"SCRIPT" => "src",
+	"LINK" => "href",
+];
+
 public static $xpathQuery =
 	"./script[@src] | ./link[@rel = 'stylesheet' and (@href)]";
 
@@ -32,8 +41,9 @@ public function __construct(Node $domHead, $request, $response) {
 	$this->request = $request;
 	$this->response = $response;
 
-	$pathDetails = $this->generatePathDetails();
-	$this->fingerprint = $this->calculateFingerprint($pathDetails);
+	$this->pathDetails = $this->generatePathDetails();
+	$this->fingerprint = $this->calculateFingerprint($this->pathDetails);
+	$this->pathDetails->setFingerprint($this->fingerprint);
 }
 
 /**
@@ -43,10 +53,10 @@ public function __construct(Node $domHead, $request, $response) {
  * @return PathDetails A PathDetails object describing current dom head's
  * source paths and representing destination paths
  */
-public function generatePathDetails() {
-	$nodeList = $this->domHead->xpath(self::$xpathQuery);
+private function generatePathDetails() {
+	$this->nodeList = $this->domHead->xpath(self::$xpathQuery);
 
-	$pathDetails = new PathDetails($nodeList);
+	$pathDetails = new PathDetails($this->nodeList);
 	return $pathDetails;
 }
 
@@ -54,17 +64,18 @@ public function generatePathDetails() {
  * Creates an MD5 hash representing the combined content and filenames of all
  * client side resorces represented in the dom head.
  *
- * @param PathDetails $details Representation of client-side files contained
+ * @param PathDetails $pathDetails Representation of client-side files contained
  * within current dom head ready to fingerprint
  *
  * @return string MD5 hash representation of current dom head
  */
-public function calculateFingerprint($details) {
+public function calculateFingerprint($pathDetails) {
 	// The source fingerprint is a concatenation of all files' MD5s, which
 	// in turn will be hashed to create an output MD5.
 	$fingerprintSource = "";
 
-	foreach ($details->nodeList as $node) {
+	foreach ($pathDetails as $pathDetail) {
+		$node = $pathDetail["node"];
 		$nodeSourceAttriute = null;
 
 		foreach ($this->sourceAttributeArray as $sourceAttributeValue) {
@@ -138,8 +149,15 @@ public function checkValid($fingerprintToCheck = null) {
 	return $valid;
 }
 
+/**
+ * Expands the DOM head to use fingerprinted and possibly compiled paths.
+ */
 public function expand() {
-
+	foreach ($this->nodeList as $node) {
+		$pathDetail = $this->pathDetails->getDetailForNode($node);
+		$sourceAttribute = $this->sourceAttribute[$node->tagName];
+		$node->setAttribute($sourceAttribute, $pathDetail["public"]);
+	}
 }
 
 }#
