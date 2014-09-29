@@ -88,6 +88,7 @@ public function calculateFingerprint($details) {
 		$sourcePathAbsolute =
 				Path::get(Path::SRC)
 				. $sourcePathUri;
+		$sourcePathAbsolute = Path::fixCase($sourcePathAbsolute);
 
 		$fingerprintSource .= md5_file($sourcePathAbsolute);
 	}
@@ -117,7 +118,22 @@ public function checkValid($fingerprintToCheck = null) {
 
 	$valid = false;
 
-	// TODO: Check files in www directory.
+	$wwwPath = Path::get(Path::WWW);
+	foreach (new \DirectoryIterator($wwwPath) as $fileInfo) {
+		if($fileInfo->isDot()) {
+			continue;
+		}
+
+		$fileName = $fileInfo->getFilename();
+
+		// Manifest-specific files are coppied into their own www subdirectory
+		// with the fingerprint in the directory name. The fileName ends in
+		// the manifest's fingerprint.
+		if(substr($fileName, -strlen($this->fingerprint))
+		=== $this->fingerprint) {
+			$valid = true;
+		}
+	}
 
 	return $valid;
 }

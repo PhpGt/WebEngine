@@ -29,10 +29,11 @@ public function organise($pathDetails = []) {
 	$hasOrganisedAnything = false;
 
 	if(!$this->manifest->checkValid()) {
-		if($this->response->getConfigOption("client_compiled")) {
+		if($this->response->getConfigOption("client_minified")) {
 			// Compile everything.
 		}
 		// Do copying of files...
+		die("copy everything...");
 	}
 
 	if(!$this->checkStaticFilesValid()) {
