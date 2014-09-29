@@ -33,7 +33,7 @@ public function organise($pathDetails = []) {
 			// Compile everything.
 		}
 		// Do copying of files...
-		die("copy everything...");
+		$this->copyCompile($pathDetails);
 	}
 
 	if(!$this->checkStaticFilesValid()) {
@@ -44,11 +44,25 @@ public function organise($pathDetails = []) {
 }
 
 /**
+ * Performs the copying from source directories to the www directory, compiling
+ * files as necessary. For example, source LESS files need to be compiled to
+ * public CSS files in this process.
+ */
+private function copyCompile($pathDetails) {
+	foreach ($pathDetails as $pathDetail) {
+		file_put_contents(
+			$pathDetail->destination,
+			Compiler::parse($pathDetail->source)
+		);
+	}
+}
+
+/**
  * Checks all files within the Asset directory against the www/Asset directory,
  * as well as checking only the static files within the Style directory against
  * the www/Style directory.
  */
-public function checkStaticFilesValid() {
+private function checkStaticFilesValid() {
 	// die(__FUNCTION__ . __FILE__);
 }
 
