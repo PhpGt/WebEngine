@@ -20,6 +20,12 @@ private $approot;
 private $port;
 private $process;
 
+public static $contentTypeDefault = "text/plain";
+public static $contentType = [
+	"css"	=> "text/css",
+	"js"	=> "application/javascript",
+];
+
 /**
  * Sets the gtroot (allowing Gatekeeper to be found), and sets approot and port
  * with values from the ArgvInput object, then creates and runs the php
