@@ -90,11 +90,33 @@ public function testServeDynamicFile($uri) {
 	$this->getTempFilePath($uri, true);
 	$output = Gateway::serve($uri, "\StdClass");
 
-	if("html" === pathinfo($uri, PATHINFO_EXTENSION)) {
+	$this->assertInstanceOf("\StdClass", $output);
+}
 
+/**
+ * @dataProvider data_randomUris
+ * @runInSeparateProcess
+ */
+public function testServeStaticFileSendsCorrectHeaders($uri) {
+	$filePath = $this->getTempFilePath($uri);
+
+	$mime = Server::$contentTypeDefault;
+	$ext = pathinfo($filePath, PATHINFO_EXTENSION);
+
+	if(isset(Server::$contentType[$ext])) {
+		$mime = Server::$contentType[$ext];
+	}
+	else {
+		$finfo = new \Finfo(FILEINFO_MIME_TYPE);
+		$mime = $finfo->file($filePath);
 	}
 
-	$this->assertInstanceOf("\StdClass", $output);
+	Gateway::serveStaticFile($filePath);
+	$this->expectOutputString(self::DUMMY_CONTENT . " (from $uri).");
+
+	$headers = headers_list();
+	$this->assertInternalType("array", $headers);
+	$this->assertContains("Content-type: $mime", $headers, print_r($headers, true));
 }
 
 /**
