@@ -74,6 +74,7 @@ public static function serveStaticFile($filePath) {
 	}
 
 	Headers::add("Content-type", $mime);
+	Headers::send();
 	return readfile($filePath);
 }
 

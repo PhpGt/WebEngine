@@ -25,6 +25,7 @@ public static $contentTypeDefault = "text/plain";
 public static $contentType = [
 	"css"	=> "text/css",
 	"js"	=> "application/javascript",
+	"txt"	=> "text/plain",
 ];
 
 /**
