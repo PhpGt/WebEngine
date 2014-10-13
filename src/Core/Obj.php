@@ -32,8 +32,6 @@ $autoNestProperties = false, $autoCallMethods = false) {
 	$this->autoCallMethods = $autoCallMethods;
 }
 
-// TODO: Add setProperty method to recursively set nested property values,
-// automatically nesting the properties as they are accessed.
 public function __get($name) {
 	if($this->autoNestProperties) {
 		$this->$name = new Obj();
