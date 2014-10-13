@@ -54,6 +54,4 @@ public function testFileOrganiserDoesNotOrganiseWhenValid() {
 	$this->assertFalse($hasOrganisedAnything);
 }
 
-// public function
-
 }#

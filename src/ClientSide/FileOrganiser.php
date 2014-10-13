@@ -29,11 +29,14 @@ public function organise($pathDetails = []) {
 	$hasOrganisedAnything = false;
 
 	if(!$this->manifest->checkValid()) {
+		$passThrough = null;
 		if($this->response->getConfigOption("client_minified")) {
-			// Compile everything.
+			// Minify everything in www
+			$passThrough = new Compiler();
 		}
+
 		// Do copying of files...
-		$this->copyCompile($pathDetails);
+		$this->copyCompile($pathDetails, $passThrough);
 	}
 
 	if(!$this->checkStaticFilesValid()) {
@@ -48,15 +51,20 @@ public function organise($pathDetails = []) {
  * files as necessary. For example, source LESS files need to be compiled to
  * public CSS files in this process.
  */
-private function copyCompile($pathDetails) {
+private function copyCompile($pathDetails, $minifier = null) {
 	foreach ($pathDetails as $pathDetail) {
 		if(!is_dir(dirname($pathDetail["destination"]))) {
 			mkdir(dirname($pathDetail["destination"]), 0775, true);
 		}
 
+		$output = Compiler::parse($pathDetail["source"]);
+		if(!is_null($minifier)) {
+			$output = $minifier->minify($output);
+		}
+
 		file_put_contents(
 			$pathDetail["destination"],
-			Compiler::parse($pathDetail["source"])
+			$output
 		);
 	}
 }
