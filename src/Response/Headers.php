@@ -80,7 +80,7 @@ public static function send() {
 	$rawAll = "";
 	foreach (self::$headerArray as $field => $value) {
 		$raw = self::getRaw($field, $value);
-		header($raw);
+		@header($raw);
 
 		$rawAll .= $raw . PHP_EOL;
 	}
