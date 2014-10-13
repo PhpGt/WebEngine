@@ -16,9 +16,12 @@ abstract class ResponseContent {
  * can have its own type of Manifest-extending object, which it should construct
  * and return in an overriden version of this method.
  *
+ * @param Request $request The current request object
+ * @param Response $response The current response object
+ *
  * @return Manifest The Manfiest of correct type according to this object's type
  */
-public function createManifest() {
+public function createManifest($request, $response) {
 	return new Manifest();
 }
 
