@@ -95,9 +95,8 @@ public function testServeDynamicFile($uri) {
 
 /**
  * @dataProvider data_randomUris
- * @runInSeparateProcess
  */
-public function testServeStaticFileSendsCorrectHeaders($uri) {
+public function testSendsCorrectHeadersServeStaticFile($uri) {
 	$filePath = $this->getTempFilePath($uri);
 
 	$mime = Server::$contentTypeDefault;
@@ -115,8 +114,10 @@ public function testServeStaticFileSendsCorrectHeaders($uri) {
 	$this->expectOutputString(self::DUMMY_CONTENT . " (from $uri).");
 
 	$headers = headers_list();
-	$this->assertInternalType("array", $headers);
-	$this->assertContains("Content-type: $mime", $headers, print_r($headers, true));
+	var_dump($headers);die("!!");
+	// $this->assertInternalType("array", $headers);
+	// $this->assertContains("Content-type: $mime", $headers,
+	// 	print_r($headers, true));
 }
 
 /**
