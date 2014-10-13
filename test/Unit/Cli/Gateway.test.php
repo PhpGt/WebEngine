@@ -44,6 +44,7 @@ public function data_randomUris() {
 	$numPaths = 10;
 	$extArray = [
 		"",
+		".js",
 		".json",
 		".xml",
 		".html",
