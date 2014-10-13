@@ -44,6 +44,12 @@ public function __construct(Node $domHead, $request, $response) {
 	$this->pathDetails = $this->generatePathDetails();
 	$this->fingerprint = $this->calculateFingerprint($this->pathDetails);
 	$this->pathDetails->setFingerprint($this->fingerprint);
+
+	$meta = $this->domHead->ownerDocument->createElement("meta", [
+		"name" => "fingerprint",
+		"content" => $this->fingerprint,
+	]);
+	$this->domHead->appendChild($meta);
 }
 
 /**

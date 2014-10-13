@@ -76,6 +76,11 @@ public function __construct($source = null) {
 	}
 }
 
+public function createElement($node,
+$attributeArray = [], $nodeValue = null) {
+	return new Node($this, $node, $attributeArray, $nodeValue);
+}
+
 /**
  *
  */
