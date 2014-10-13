@@ -46,7 +46,9 @@ public function sendHeader() {
 		throw new HeadersAlreadySentException("Sent from $file:$line.");
 	}
 
-	header("Location: " . $this->uri, true, $this->code);
+	Headers::code($this->code);
+	Headers::add("Location", $this->uri);
+	Headers::send();
 	exit;
 }
 

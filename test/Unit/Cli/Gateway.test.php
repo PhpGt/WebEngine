@@ -6,6 +6,8 @@
  */
 namespace Gt\Cli;
 
+use \Gt\Response\Headers;
+
 class Gateway_Test extends \PHPUnit_Framework_TestCase {
 
 const DUMMY_CONTENT = "!!! DUMMY CONTENT !!!";
@@ -110,14 +112,13 @@ public function testSendsCorrectHeadersServeStaticFile($uri) {
 		$mime = $finfo->file($filePath);
 	}
 
-	Gateway::serveStaticFile($filePath);
 	$this->expectOutputString(self::DUMMY_CONTENT . " (from $uri).");
+	Gateway::serveStaticFile($filePath);
 
-	$headers = headers_list();
-	var_dump($headers);die("!!");
-	// $this->assertInternalType("array", $headers);
-	// $this->assertContains("Content-type: $mime", $headers,
-	// 	print_r($headers, true));
+	$headers = Headers::getAll();
+	$this->assertInternalType("array", $headers);
+	$this->assertArrayHasKey("Content-type", $headers);
+	$this->assertEquals($headers["Content-type"], $mime);
 }
 
 /**

@@ -12,7 +12,22 @@ namespace Gt\Response;
 class Headers {
 
 private static $headerArray = [];
+private static $code = 200;
 
+/**
+ * Gets or sets the HTTP response code.
+ *
+ * @param integer|null $code Code to set, or null to get the current code
+ *
+ * @return integer The current HTTP response code
+ */
+public static function code($code = null) {
+	if(!is_null($code)) {
+		self::$code = (int)$code;
+	}
+
+	return self::$code;
+}
 /**
  * Adds the given HTTP header to the list of headers, to be sent with the HTTP
  * response.
