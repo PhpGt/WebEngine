@@ -21,6 +21,7 @@
 	<filter>
 		<blacklist>
 			<file>Bootstrap.php</file>
+			<file>../../src/Cli/Process.php</file>
 			<directory>../../vendor</directory>
 		</blacklist>
 	</filter>

@@ -19,6 +19,7 @@ private $gtroot;
 private $approot;
 private $port;
 private $process;
+public $processOutput;
 
 public static $contentTypeDefault = "text/plain";
 public static $contentType = [
@@ -34,7 +35,7 @@ public static $contentType = [
  * @param ArgvInput $arguments The arguments passed to the server shell script
  * or default values if none are provided.
  */
-public function __construct(ArgvInput $arguments) {
+public function __construct($arguments, $dummyRun = false) {
 	$this->gtroot = dirname(__DIR__);
 	$this->approot = $arguments->getOption("approot");
 	$this->port = $arguments->getOption("port");
@@ -50,7 +51,8 @@ public function __construct(ArgvInput $arguments) {
 		"t" => $wwwDir,
 		"{$this->gtroot}/Cli/Gatekeeper.php",
 	]);
-	$this->process->run();
+
+	$this->processOutput = $this->process->run($dummyRun);
 }
 
 }#

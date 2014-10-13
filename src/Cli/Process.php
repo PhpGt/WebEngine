@@ -31,20 +31,22 @@ public function __construct($processName, array $processArgs) {
 }
 
 public function __destruct() {
-	pclose($this->fp);
+	if(is_resource($this->fp)) {
+		pclose($this->fp);
+	}
 }
 
-public function run() {
+public function run($dummyRun = false) {
+	if($dummyRun) {
+		return $this->processString;
+	}
+
 	$this->fp = popen(
 		$this->processString
 		// Redirect STDOUT to this process's STDIN.
 		. " 1>&0",
 		"r"
 	);
-
-	if(!is_resource($this->fp)) {
-		throw new ProcessFailedException();
-	}
 
 	// Pass back all output from newly-spawned process.
 	while(false !== ($s = fread($this->fp, 1024)) ) {
