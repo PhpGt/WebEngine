@@ -40,6 +40,10 @@ public function organise($pathDetails = []) {
 		$copied = $this->copyCompile($pathDetails, $callback);
 	}
 
+	if(!$this->checkAssetValid()) {
+		$this->copyAsset();
+	}
+
 	return $copied;
 }
 
@@ -68,6 +72,20 @@ public function copyCompile($pathDetails, $callback = null) {
 			$output
 		);
 	}
+}
+
+/**
+ *
+ */
+public function checkAssetValid() {
+
+}
+
+/**
+ *
+ */
+public function copyAsset() {
+
 }
 
 }#
