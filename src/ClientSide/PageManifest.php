@@ -133,7 +133,7 @@ public function checkValid($fingerprintToCheck = null) {
 			=== $fingerprintToCheck;
 	}
 
-	$valid = true;
+	$valid = false;
 
 	$wwwPath = Path::get(Path::WWW);
 	if(is_dir($wwwPath)) {
@@ -148,8 +148,8 @@ public function checkValid($fingerprintToCheck = null) {
 			// subdirectory with the fingerprint in the directory name. The
 			// fileName ends in the manifest's fingerprint.
 			if(substr($fileName, -strlen($this->fingerprint))
-			!== $this->fingerprint) {
-				$valid = false;
+			=== $this->fingerprint) {
+				$valid = true;
 			}
 		}
 	}

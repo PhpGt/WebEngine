@@ -8,6 +8,7 @@ namespace Gt\ClientSide;
 
 use \Gt\Request\Request;
 use \Gt\Response\Response;
+use \Gt\Core\Path;
 
 class FileOrganiser_Test extends \PHPUnit_Framework_TestCase {
 
@@ -15,7 +16,11 @@ private $fileOrganiser;
 private $manifest;
 private $pathDetails;
 
+private $tmp;
+
 public function setUp() {
+	$tmp = \Gt\Test\Helper::createTmpDir();
+
 	$document = new \Gt\Dom\Document();
 
 	$cfg = new \Gt\Core\ConfigObj();
@@ -37,7 +42,10 @@ public function setUp() {
 }
 
 public function tearDown() {
-
+	\Gt\Test\Helper::cleanup(Path::get(Path::WWW));
+	\Gt\Test\Helper::cleanup(Path::get(Path::ASSET));
+	\Gt\Test\Helper::cleanup(Path::get(Path::SCRIPT));
+	\Gt\Test\Helper::cleanup(Path::get(Path::STYLE));
 }
 
 public function testFileOrganiserConstructs() {
@@ -52,6 +60,38 @@ public function testFileOrganiserDoesNotOrganiseWhenValid() {
 
 	$hasOrganisedAnything = $this->fileOrganiser->organise($pathDetails);
 	$this->assertFalse($hasOrganisedAnything);
+}
+
+public function textStaticFilesValidWithEmptyWWW() {
+	$this->assertTrue($this->fileOrganiser->checkStaticFilesValid());
+}
+
+public function testStaticFilesInvalidAsset() {
+	$dir = $this->getPath(Path::ASSET);
+	file_put_contents("$dir/file.txt", "dummy data");
+	$this->assertFalse($this->fileOrganiser->checkStaticFilesValid());
+}
+
+public function testStaticFilesValidStyleWithSourceStylesheet() {
+	$dir = $this->getPath(Path::STYLE);
+	// Css files should not invalidate the static file validity.
+	file_put_contents("$dir/file.css", "dummy data");
+	$this->assertFalse($this->fileOrganiser->checkStaticFilesValid());
+}
+
+public function testStaticFilesInvalidStyle() {
+	$dir = $this->getPath(Path::STYLE);
+	file_put_contents("$dir/file.txt", "dummy data");
+	$this->assertTrue($this->fileOrganiser->checkStaticFilesValid());
+}
+
+private function getPath($path) {
+	$dir = Path::get($path);
+	if(!is_dir($dir)) {
+		mkdir($dir, 0775, true);
+	}
+
+	return $dir;
 }
 
 }#

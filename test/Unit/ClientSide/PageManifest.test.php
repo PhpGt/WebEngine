@@ -306,13 +306,71 @@ public function testCheckValidFromGivenFingerprint() {
 	$this->assertTrue($manifest->checkValid($expectedFingerprint));
 }
 
-public function testCheckValidFromWwwFiles() {
-	// TODO:
+public function testCheckInvalidAfterAlteration() {
 	// 1. Create normal manifest as above.
 	// 2. Copy over files to www directory (into hashed directories).
 	// 3. Check validity.
 	// 4. Add another file to the head.
 	// 5. Check invalidity.
+	$scriptStylePathList = [
+		"script" => ["/main.js", "/do-something.js", "/jqueer.js"],
+		"style" => ["/main.css", "/my-font.css", "/more.css"],
+	];
+	$scriptStyleHtml = "";
+
+	foreach ($scriptStylePathList as $tag => $pathList) {
+		foreach ($pathList as $path) {
+			$htmlFragment = str_replace(
+				"<%SOURCE_PATH%>",
+				"/$tag$path",
+				$this->scriptStyleTag[$tag]
+			);
+
+			$scriptStyleHtml .= $htmlFragment;
+
+			$filePath = Path::get(Path::SRC);
+			$filePath .= "/$tag";
+			$filePath .= $path;
+
+			// path concatenated with path, to make it easy to remember, but
+			// to avoid common mistake within actual implementation of
+			// accidentally hashing the path and not the file contents.
+			$fileContents = md5($path . $path);
+			if(!is_dir(dirname($filePath))) {
+				mkdir(dirname($filePath), 0775, true);
+			}
+			file_put_contents($filePath, $fileContents);
+		}
+	}
+
+	$html = str_replace("<%SCRIPT_STYLE_LIST%>", $scriptStyleHtml, $this->html);
+	$document = new Document($html);
+
+	$manifest = $document->createManifest($this->request, $this->response);
+	foreach ($manifest->pathDetails as $pathDetail) {
+		$source = $pathDetail["source"];
+		$dest = $pathDetail["destination"];
+
+		if(!is_dir(dirname($dest))) {
+			mkdir(dirname($dest), 0775, true);
+		}
+		copy($source, $dest);
+	}
+
+	$this->assertTrue($manifest->checkValid());
+
+	// Create new file, add it to the head, check validity:
+	$publicPath = "/style/a-new-stylesheet.css";
+	$srcPath = Path::get(Path::SRC) . $publicPath;
+	file_put_contents($srcPath, "dummy data");
+
+	$document->head->appendChild($document->createElement("link", [
+		"rel" => "stylesheet",
+		"href" => $publicPath,
+	]));
+
+	$manifest = $document->createManifest($this->request, $this->response);
+	$this->assertFalse($manifest->checkValid());
 }
 
 }#

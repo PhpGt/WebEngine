@@ -23,29 +23,24 @@ public function __construct($response, Manifest $manifest) {
  * @param PathDetails $pathDetails Representation of client-side paths
  *
  * @return bool True if organiser has copied any files, false if no files have
- * been coppied
+ * been copied
  */
 public function organise($pathDetails = []) {
-	$hasOrganisedAnything = false;
+	$copied = false;
 
 	if(!$this->manifest->checkValid()) {
-		$hasOrganisedAnything = true;
 		$passThrough = null;
+		$callback = null;
 		if($this->response->getConfigOption("client_minified")) {
 			// Minify everything in www
-			$passThrough = [new Minifier(), "minify"];
+			$callback = [new Minifier(), "minify"];
 		}
 
 		// Do copying of files...
-		$this->copyCompile($pathDetails, $passThrough);
+		$copied = $this->copyCompile($pathDetails, $callback);
 	}
 
-	if(!$this->checkStaticFilesValid()) {
-		// Copy static files.
-		$hasOrganisedAnything = true;
-	}
-
-	return $hasOrganisedAnything;
+	return $copied;
 }
 
 /**
@@ -57,7 +52,7 @@ public function organise($pathDetails = []) {
  * @param callable|null $callback The callable to pass output through before
  * writing to disk
  */
-private function copyCompile($pathDetails, $callback = null) {
+public function copyCompile($pathDetails, $callback = null) {
 	foreach ($pathDetails as $pathDetail) {
 		if(!is_dir(dirname($pathDetail["destination"]))) {
 			mkdir(dirname($pathDetail["destination"]), 0775, true);
@@ -73,16 +68,6 @@ private function copyCompile($pathDetails, $callback = null) {
 			$output
 		);
 	}
-}
-
-/**
- * Checks all files within the Asset directory against the www/Asset directory,
- * as well as checking only the static files within the Style directory against
- * the www/Style directory.
- */
-private function checkStaticFilesValid() {
-	// die(__FUNCTION__ . __FILE__);
-	return true;
 }
 
 }#

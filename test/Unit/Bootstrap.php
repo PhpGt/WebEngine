@@ -58,6 +58,10 @@ public static function createTmpDir($dir = null) {
  * @return bool True if directory is successfully removed, otherwise false.
  */
 public static function cleanup($dirPath) {
+	if(!is_dir($dirPath)) {
+		return true;
+	}
+
 	foreach(new \RecursiveIteratorIterator(
 	new \RecursiveDirectoryIterator($dirPath, \FilesystemIterator::SKIP_DOTS),
 	\RecursiveIteratorIterator::CHILD_FIRST)
