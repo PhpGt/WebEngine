@@ -29,10 +29,11 @@ public function organise($pathDetails = []) {
 	$hasOrganisedAnything = false;
 
 	if(!$this->manifest->checkValid()) {
+		$hasOrganisedAnything = true;
 		$passThrough = null;
 		if($this->response->getConfigOption("client_minified")) {
 			// Minify everything in www
-			$passThrough = new Compiler();
+			$passThrough = [new Minifier(), "minify"];
 		}
 
 		// Do copying of files...
@@ -41,6 +42,7 @@ public function organise($pathDetails = []) {
 
 	if(!$this->checkStaticFilesValid()) {
 		// Copy static files.
+		$hasOrganisedAnything = true;
 	}
 
 	return $hasOrganisedAnything;
@@ -50,16 +52,20 @@ public function organise($pathDetails = []) {
  * Performs the copying from source directories to the www directory, compiling
  * files as necessary. For example, source LESS files need to be compiled to
  * public CSS files in this process.
+ *
+ * @param PathDetails $pathDetails
+ * @param callable|null $callback The callable to pass output through before
+ * writing to disk
  */
-private function copyCompile($pathDetails, $minifier = null) {
+private function copyCompile($pathDetails, $callback = null) {
 	foreach ($pathDetails as $pathDetail) {
 		if(!is_dir(dirname($pathDetail["destination"]))) {
 			mkdir(dirname($pathDetail["destination"]), 0775, true);
 		}
 
 		$output = Compiler::parse($pathDetail["source"]);
-		if(!is_null($minifier)) {
-			$output = $minifier->minify($output);
+		if(!is_null($callback)) {
+			$output = call_user_func_array($callback, [$output]);
 		}
 
 		file_put_contents(
@@ -76,6 +82,7 @@ private function copyCompile($pathDetails, $minifier = null) {
  */
 private function checkStaticFilesValid() {
 	// die(__FUNCTION__ . __FILE__);
+	return true;
 }
 
 }#
