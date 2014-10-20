@@ -8,6 +8,7 @@
 namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
+use \Gt\Core\Path;
 
 class FileOrganiser {
 
@@ -26,7 +27,7 @@ public function __construct($response, Manifest $manifest) {
  * been copied
  */
 public function organise($pathDetails = []) {
-	$copied = false;
+	$copyCount = 0;
 
 	if(!$this->manifest->checkValid()) {
 		$passThrough = null;
@@ -37,14 +38,14 @@ public function organise($pathDetails = []) {
 		}
 
 		// Do copying of files...
-		$copied = $this->copyCompile($pathDetails, $callback);
+		$copyCount += $this->copyCompile($pathDetails, $callback);
 	}
 
 	if(!$this->checkAssetValid()) {
-		$this->copyAsset();
+		$copyCount += $this->copyAsset();
 	}
 
-	return $copied;
+	return !!($copyCount);
 }
 
 /**
@@ -55,8 +56,12 @@ public function organise($pathDetails = []) {
  * @param PathDetails $pathDetails
  * @param callable|null $callback The callable to pass output through before
  * writing to disk
+ *
+ * @return int Number of files copied
  */
 public function copyCompile($pathDetails, $callback = null) {
+	$copyCount = 0;
+
 	foreach ($pathDetails as $pathDetail) {
 		if(!is_dir(dirname($pathDetail["destination"]))) {
 			mkdir(dirname($pathDetail["destination"]), 0775, true);
@@ -71,21 +76,76 @@ public function copyCompile($pathDetails, $callback = null) {
 			$pathDetail["destination"],
 			$output
 		);
+		++$copyCount;
 	}
+
+	return $copyCount;
 }
 
 /**
+ * Fingerprints the source Asset directory contents and compares to the
+ * fingerprint cache in the www directory.
  *
+ * @return bool True if the www asset directory is valid, false if it is not
+ * (or if it doesn't exist)
  */
 public function checkAssetValid() {
+	$wwwDir = Path::get(Path::WWW);
+	$assetSrcDir = Path::get(Path::ASSET);
+	$assetWwwDir = $wwwDir . "/" . substr($assetSrcDir, -strlen("asset"));
+	$assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
 
+	if(!is_dir($assetWwwDir)
+	|| !file_exists($assetWwwFingerprintFile)) {
+		return false;
+	}
+
+
+	// Recursive fingerprint whole source directory.
+	$assetWwwFingerprint = file_get_contents($assetWwwFingerprintFile);
+	$assetSrcFingerprint = $this->recursiveFingerprint($assetSrcDir);
+
+	return ($assetWwwFingerprint === $assetSrcFingerprint);
 }
 
 /**
  *
  */
 public function copyAsset() {
+	$copyCount = 0;
+	return $copyCount;
+}
 
+/**
+ * Recursively iterate over all files within given directory and build up a
+ * hash of their contents and file names.
+ *
+ * @param string $dir Directory to iterate
+ *
+ * @return string 32 character hash of directory's contents, or 32 zeros
+ * indicating an empty or non-existant directory
+ */
+private function recursiveFingerprint($dir) {
+	$emptyHash = str_pad("", 32, "0");
+	$hash = "";
+
+	if(!is_dir($dir)) {
+		return $emptyHash;
+	}
+
+	foreach ($iterator = new \RecursiveIteratorIterator(
+	new RecursiveDirectoryIterator($dir,
+		RecursiveDirectoryIterator::SKIP_DOTS),
+	RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		$path = $item->getPathname();
+		$hash .= md5($path) . md5_file($path);
+	}
+
+	if(strlen($hash) === 0) {
+		return $emptyHash;
+	}
+
+	return md5($hash);
 }
 
 }#

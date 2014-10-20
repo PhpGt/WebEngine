@@ -82,6 +82,10 @@ public static function get($name) {
 		$p = self::get(self::SRC) . "/Style";
 		break;
 
+	case self::ASSET:
+		$p = self::get(self::SRC) . "/Asset";
+		break;
+
 	case self::WWW:
 		$p = self::get(self::ROOT) . "/www";
 		break;

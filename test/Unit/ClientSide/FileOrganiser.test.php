@@ -29,14 +29,6 @@ public function setUp() {
 
 	// TODO: Update usage of Manifest to Mocked abstract class.
 	$this->manifest = new PageManifest($document->head, $request, $response);
-	// $this->manifest = $this->getMockBuilder("\Gt\ClientSide\Manifest")
-	// 	->setMethods(["generatePathDetails"])
-	// 	->getMock();
-
-	// $this->manifest->expects($this->any())
-	// 	->method("generatePathDetails")
-	// 	->willReturn($this->pathDetails);
-
 	$this->fileOrganiser = new FileOrganiser($response, $this->manifest);
 	$this->pathDetails = $this->getMock("\Gt\ClientSide\PathDetails");
 }
@@ -62,27 +54,15 @@ public function testFileOrganiserDoesNotOrganiseWhenValid() {
 	$this->assertFalse($hasOrganisedAnything);
 }
 
-public function textStaticFilesValidWithEmptyWWW() {
-	$this->assertTrue($this->fileOrganiser->checkStaticFilesValid());
+public function textAssetInvalidWithEmptyWWW() {
+	$this->assertFalse($this->fileOrganiser->checkAssetValid());
 }
 
-public function testStaticFilesInvalidAsset() {
+public function testAssetInvalidates() {
 	$dir = $this->getPath(Path::ASSET);
 	file_put_contents("$dir/file.txt", "dummy data");
-	$this->assertFalse($this->fileOrganiser->checkStaticFilesValid());
-}
 
-public function testStaticFilesValidStyleWithSourceStylesheet() {
-	$dir = $this->getPath(Path::STYLE);
-	// Css files should not invalidate the static file validity.
-	file_put_contents("$dir/file.css", "dummy data");
-	$this->assertFalse($this->fileOrganiser->checkStaticFilesValid());
-}
-
-public function testStaticFilesInvalidStyle() {
-	$dir = $this->getPath(Path::STYLE);
-	file_put_contents("$dir/file.txt", "dummy data");
-	$this->assertTrue($this->fileOrganiser->checkStaticFilesValid());
+	$this->assertFalse($this->fileOrganiser->checkAssetValid());
 }
 
 private function getPath($path) {
