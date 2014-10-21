@@ -11,4 +11,10 @@ use \Gt\Response\Response;
 
 class Minifier {
 
+public function minify($input) {
+	$output = $input;
+
+	return $output;
+}
+
 }#

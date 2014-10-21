@@ -34,10 +34,7 @@ public function setUp() {
 }
 
 public function tearDown() {
-	\Gt\Test\Helper::cleanup(Path::get(Path::WWW));
-	\Gt\Test\Helper::cleanup(Path::get(Path::ASSET));
-	\Gt\Test\Helper::cleanup(Path::get(Path::SCRIPT));
-	\Gt\Test\Helper::cleanup(Path::get(Path::STYLE));
+	\Gt\Test\Helper::cleanup(Path::get(Path::ROOT));
 }
 
 public function testFileOrganiserConstructs() {
@@ -63,6 +60,108 @@ public function testAssetInvalidates() {
 	file_put_contents("$dir/file.txt", "dummy data");
 
 	$this->assertFalse($this->fileOrganiser->checkAssetValid());
+}
+
+public function testOrganiserMinifies() {
+	$dir = $this->getPath(Path::SCRIPT);
+	$publicDir = substr($dir, strlen(Path::get(Path::SRC)));
+	file_put_contents("$dir/my-script.js", "console.log('hello, test!');");
+
+	$document = new \Gt\Dom\Document();
+	$document->head->appendChild($document->createElement("script", [
+		"src" => $publicDir
+	]));
+
+	$cfg = new \Gt\Core\ConfigObj(["client_minified" => true]);
+	$request = new Request("/", $cfg);
+	$response = new Response($cfg);
+
+	$this->manifest = new PageManifest($document->head, $request, $response);
+	$this->fileOrganiser = new FileOrganiser($response, $this->manifest);
+
+	$this->assertTrue($this->fileOrganiser->organise(
+		$this->manifest->generatePathDetails()
+	));
+}
+
+public function data_uriList() {
+	$typeList = ["script" => "js", "style" => "css"];
+	$paramCallList = [];
+	$uriList = [];
+
+	foreach ($typeList as $type => $ext) {
+		$dir = $type;
+		$file = uniqid() . "-$type.$ext";
+
+
+		for($nesting = 0; $nesting < 5; $nesting++) {
+			$uri = "/$dir";
+
+			for($i = 0; $i < $nesting; $i++) {
+				$uri .= "/" . uniqid();
+			}
+
+			$uri .= "/$file";
+			$uriList []= $uri;
+		}
+	}
+
+	$paramCallList []= [$uriList];
+	return $paramCallList;
+}
+/**
+ * @dataProvider data_uriList
+ */
+public function testOrganiserCopiesListOfFiles($uriList) {
+	$srcPath = Path::get(Path::SRC);
+	$document = new \Gt\Dom\Document();
+
+	// Add element to the head and put dummy content on-disk.
+	foreach ($uriList as $uri) {
+		$type = substr($uri, 1, strpos($uri, "/", 1) - 1);
+		$el = null;
+		$path = $srcPath . $uri;
+		if(!is_dir(dirname($path))) {
+			mkdir(dirname($path), 0775, true);
+		}
+
+		if($type === "script") {
+			$el = $document->createElement("script", [
+				"src" => $uri,
+			]);
+			file_put_contents($path, "console.log(\"script: $uri\");");
+		}
+		else if($type === "style") {
+			$el = $document->createElement("link", [
+				"rel" => "stylesheet",
+				"href" => $uri,
+			]);
+			file_put_contents($path, "/*style: $uri*/ body{background: red;}");
+		}
+
+		$document->head->appendChild($el);
+	}
+
+	$cfg = new \Gt\Core\ConfigObj();
+	$request = new Request("/", $cfg);
+	$response = new Response($cfg);
+
+	$this->manifest = new PageManifest($document->head, $request, $response);
+	$this->fileOrganiser = new FileOrganiser($response, $this->manifest);
+	$fingerprint = $this->manifest->fingerprint;
+	$pathDetails = $this->manifest->generatePathDetails();
+	$pathDetails->setFingerprint($fingerprint);
+	$this->fileOrganiser->organise($pathDetails);
+
+	$wwwPath = Path::get(Path::WWW);
+
+	foreach ($uriList as $uri) {
+		$type = substr($uri, 1, strpos($uri, "/", 1) - 1);
+		$uriAfterType = "-$fingerprint" . substr($uri, strpos($uri, "/", 1));
+		$path = $wwwPath . "/$type" . $uriAfterType;
+
+		$this->assertFileExists($path);
+	}
 }
 
 private function getPath($path) {
