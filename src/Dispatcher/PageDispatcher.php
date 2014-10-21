@@ -10,12 +10,13 @@ namespace Gt\Dispatcher;
 
 use \Gt\Core\Path;
 use \Gt\Response\NotFoundException;
+use \Gt\Response\Transformer;
 
 class PageDispatcher extends Dispatcher {
 
 private static $pageExtensions = [
 	"html",
-	// "md",
+	"md",
 	// "haml",
 ];
 
@@ -67,17 +68,28 @@ public function loadSource($path, $pathFile) {
 			$fileBase = strtok($fileName, ".");
 			$specialName = substr(strtolower($fileBase), 1);
 			$fullPath = implode("/", [$headerFooterPath, $fileName]);
+			$extension = $fileInfo->getExtension();
 
 			switch($specialName) {
 			case "header":
 				if(empty($headerSource)) {
 					$headerSource = file_get_contents($fullPath);
+
+					if(strpos($extension, "htm") !== 0) {
+						$headerSource = Transformer::toHtml(
+							$headerSource, $extension);
+					}
 				}
 				break;
 
 			case "footer":
 				if(empty($footerSource)) {
 					$footerSource = file_get_contents($fullPath);
+
+					if(strpos($extension, "htm") !== 0) {
+						$footerSource = Transformer::toHtml(
+							$footerSource, $extension);
+					}
 				}
 				break;
 			}
@@ -105,6 +117,10 @@ public function loadSource($path, $pathFile) {
 		if(strcasecmp($fileBase, $pathFileBase) === 0) {
 			$fullPath = implode("/", [$path, $fileName]);
 			$source .= file_get_contents($fullPath);
+		}
+
+		if(strpos($extension, "htm") !== 0) {
+			$source = Transformer::toHtml($source, $extension);
 		}
 	}
 
