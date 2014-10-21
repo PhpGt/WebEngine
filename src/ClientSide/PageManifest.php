@@ -14,14 +14,15 @@ use \Gt\Response\Response;
 
 class PageManifest extends Manifest {
 
-private $fingerprint;
+public $fingerprint;
+public $pathDetails;
+
 private $sourceAttributeArray = ["src", "href"];
 
 private $domHead;
 private $request;
 private $response;
 
-public $pathDetails;
 private $nodeList;
 
 // TODO: Make this static, utilise in calculateFingerprint().

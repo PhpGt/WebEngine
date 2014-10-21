@@ -14,13 +14,14 @@ const DATABASE		= "database";
 const PAGE			= "page";
 const PUBLICFILES	= "publicfiles";
 const ROOT			= "root";
+const ASSET			= "asset";
 const SCRIPT		= "script";
+const STYLE			= "style";
 const API			= "api";
 const APILOGIC		= "apilogic";
 const APITOOL		= "apitool";
 const APIVIEW		= "apiview";
 const SRC			= "src";
-const STYLE			= "style";
 const WWW			= "www";
 const GTROOT		= "gtroot";
 
@@ -79,6 +80,10 @@ public static function get($name) {
 
 	case self::STYLE:
 		$p = self::get(self::SRC) . "/Style";
+		break;
+
+	case self::ASSET:
+		$p = self::get(self::SRC) . "/Asset";
 		break;
 
 	case self::WWW:

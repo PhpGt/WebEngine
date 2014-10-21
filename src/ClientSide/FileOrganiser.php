@@ -8,6 +8,7 @@
 namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
+use \Gt\Core\Path;
 
 class FileOrganiser {
 
@@ -23,51 +24,128 @@ public function __construct($response, Manifest $manifest) {
  * @param PathDetails $pathDetails Representation of client-side paths
  *
  * @return bool True if organiser has copied any files, false if no files have
- * been coppied
+ * been copied
  */
 public function organise($pathDetails = []) {
-	$hasOrganisedAnything = false;
+	$copyCount = 0;
 
 	if(!$this->manifest->checkValid()) {
+		$passThrough = null;
+		$callback = null;
 		if($this->response->getConfigOption("client_minified")) {
-			// Compile everything.
+			// Minify everything in www
+			$callback = [new Minifier(), "minify"];
 		}
+
 		// Do copying of files...
-		$this->copyCompile($pathDetails);
+		$copyCount += $this->copyCompile($pathDetails, $callback);
 	}
 
-	if(!$this->checkStaticFilesValid()) {
-		// Copy static files.
+	if(!$this->checkAssetValid()) {
+		$copyCount += $this->copyAsset();
 	}
 
-	return $hasOrganisedAnything;
+	return !!($copyCount);
 }
 
 /**
  * Performs the copying from source directories to the www directory, compiling
  * files as necessary. For example, source LESS files need to be compiled to
  * public CSS files in this process.
+ *
+ * @param PathDetails $pathDetails
+ * @param callable|null $callback The callable to pass output through before
+ * writing to disk
+ *
+ * @return int Number of files copied
  */
-private function copyCompile($pathDetails) {
+public function copyCompile($pathDetails, $callback = null) {
+	$copyCount = 0;
+
 	foreach ($pathDetails as $pathDetail) {
 		if(!is_dir(dirname($pathDetail["destination"]))) {
 			mkdir(dirname($pathDetail["destination"]), 0775, true);
 		}
 
+		$output = Compiler::parse($pathDetail["source"]);
+		if(!is_null($callback)) {
+			$output = call_user_func_array($callback, [$output]);
+		}
+
 		file_put_contents(
 			$pathDetail["destination"],
-			Compiler::parse($pathDetail["source"])
+			$output
 		);
+		++$copyCount;
 	}
+
+	return $copyCount;
 }
 
 /**
- * Checks all files within the Asset directory against the www/Asset directory,
- * as well as checking only the static files within the Style directory against
- * the www/Style directory.
+ * Fingerprints the source Asset directory contents and compares to the
+ * fingerprint cache in the www directory.
+ *
+ * @return bool True if the www asset directory is valid, false if it is not
+ * (or if it doesn't exist)
  */
-private function checkStaticFilesValid() {
-	// die(__FUNCTION__ . __FILE__);
+public function checkAssetValid() {
+	$wwwDir = Path::get(Path::WWW);
+	$assetSrcDir = Path::get(Path::ASSET);
+	$assetWwwDir = $wwwDir . "/" . substr($assetSrcDir, -strlen("asset"));
+	$assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
+
+	if(!is_dir($assetWwwDir)
+	|| !file_exists($assetWwwFingerprintFile)) {
+		return false;
+	}
+
+
+	// Recursive fingerprint whole source directory.
+	$assetWwwFingerprint = file_get_contents($assetWwwFingerprintFile);
+	$assetSrcFingerprint = $this->recursiveFingerprint($assetSrcDir);
+
+	return ($assetWwwFingerprint === $assetSrcFingerprint);
+}
+
+/**
+ *
+ */
+public function copyAsset() {
+	$copyCount = 0;
+	return $copyCount;
+}
+
+/**
+ * Recursively iterate over all files within given directory and build up a
+ * hash of their contents and file names.
+ *
+ * @param string $dir Directory to iterate
+ *
+ * @return string 32 character hash of directory's contents, or 32 zeros
+ * indicating an empty or non-existant directory
+ */
+private function recursiveFingerprint($dir) {
+	$emptyHash = str_pad("", 32, "0");
+	$hash = "";
+
+	if(!is_dir($dir)) {
+		return $emptyHash;
+	}
+
+	foreach ($iterator = new \RecursiveIteratorIterator(
+	new RecursiveDirectoryIterator($dir,
+		RecursiveDirectoryIterator::SKIP_DOTS),
+	RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		$path = $item->getPathname();
+		$hash .= md5($path) . md5_file($path);
+	}
+
+	if(strlen($hash) === 0) {
+		return $emptyHash;
+	}
+
+	return md5($hash);
 }
 
 }#
