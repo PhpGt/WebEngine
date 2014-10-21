@@ -22,5 +22,19 @@ public function theResponseHeadersShouldInclude(TableNode $table) {
 	}
 }
 
+/**
+ * @Given /^I remember (?:|the )head fingerprint$/
+ */
+// public function iRememberTheHeadFingerprint() {
+	// Store fingerprint from dom head (data-fingerprint).
+	// var_dump($this->getSession()->getPage()->find("head"));die();
+// }
+
+/**
+ * @When /^I go to (?:|the )fingerprinted file "([^"]*)"$/
+ */
+// public function iGoToTheFingerprintedFile($sourceUri) {
+	// Inject stored fingerprint and continue to the fingerprinted uri.
+// }
 
 }#

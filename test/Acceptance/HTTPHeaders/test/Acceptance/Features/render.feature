@@ -18,3 +18,13 @@ Feature: Test that HTTP response headers are sent
 		And the response headers should include:
 		| Header name		| Header value		|
 		| Content-type		| text/plain		|
+
+	Scenario: View stylesheet placed in style source directory
+		Given I go to the homepage
+		And I remember the head fingerprint
+		When I go to the fingerprinted file "/style/test.css"
+		Then the response status code should be 200
+		And the response should contain "body {"
+		And the response headers should include:
+		| Header name		| Header value		|
+		| Content-type		| text/css			|
