@@ -149,6 +149,13 @@ public function __call($name, $args) {
 }
 
 /**
+ * Removes the node from the tree it belongs to.
+ */
+public function remove() {
+	return $this->parentNode->removeChild($this);
+}
+
+/**
  * Gets the node value according to the node type. Typical block element'
  * value represents its textContent, however certain elements can have a value
  * attribute (such as input elements).

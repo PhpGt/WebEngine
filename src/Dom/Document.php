@@ -74,6 +74,8 @@ public function __construct($source = null) {
 		$this->insertBefore(
 			$this->body, $this->firstChild);
 	}
+
+	$this->tidy();
 }
 
 public function createElement($node,
@@ -134,13 +136,6 @@ public function getNode($domNode) {
 }
 
 /**
- *
- */
-public function __toString() {
-	return $this->domDocument->saveHTML();
-}
-
-/**
  * Allows unserialization of one or more HTML files.
  * @param string|array $content A string of raw-HTML, or an array of strings
  * containing raw-HTML to concatenate and unserialize.
@@ -167,10 +162,48 @@ public function load($content = null) {
 }
 
 /**
+ * Tidies up elements within the body and puts them in the head.
+ * For example, meta tags and title tags should be put into the head, but may
+ * be useful to declare them in the body.
+ */
+public function tidy() {
+	$tagArray = [
+		"meta" => "name",
+		"link" => "rel",
+		"title" => null,
+	];
+
+	foreach ($tagArray as $tag => $attr) {
+		$selector = $tag;
+		$insertBeforeNode = null;
+		if(!is_null($attr)) {
+			$selector .= "[$attr]";
+		}
+
+		// Remove existing nodes that have the given attribute.
+		foreach($this->head->querySelectorAll($selector) as $element) {
+			$insertBeforeNode = $element->nextSibling;
+			$element->remove();
+		}
+
+		foreach($this->body->querySelectorAll($selector) as $element) {
+			$this->head->insertBefore($element, $insertBeforeNode);
+		}
+	}
+}
+
+/**
+ *
+ */
+public function __toString() {
+	return $this->domDocument->saveHTML();
+}
+
+/**
  *
  */
 public function __call($name, $args) {
-	// TODO: Throw exception on appendChikd related stuff.
+	// TODO: Throw exception on appendChild related stuff.
 	// See what JavaScript does: document.appendChild(something)
 	// "HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Nodes
 	// of type 'DIV' may not be inserted inside nodes of type '#document'."
