@@ -151,6 +151,7 @@ public function testDocumentTidy() {
 			<meta charset='utf-8' />
 			<title>The old title</title>
 			<link rel='next' href='/incorrect-next' />
+			<link rel='prev' href='prev-page' />
 		</head>
 		<body>
 			<h1>Correct title</h1>
@@ -163,10 +164,13 @@ public function testDocumentTidy() {
 
 	$title = $document->querySelector("title");
 	$linkList = $document->querySelectorAll("link");
-	$this->assertCount(1, $linkList, 'The body link should only exist once');
+	$this->assertCount(2, $linkList, 'There should be two links in total');
 
 	$this->assertEquals("Correct title", $title->textContent);
+
+	// This tests the order of the inserted node too:
 	$this->assertEquals("next-page", $linkList[0]->getAttribute("href"));
+	$this->assertEquals("prev-page", $linkList[1]->getAttribute("href"));
 }
 
 }#
