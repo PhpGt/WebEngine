@@ -10,14 +10,13 @@ namespace Gt\Dispatcher;
 
 use \Gt\Core\Path;
 use \Gt\Response\NotFoundException;
-use \Gt\Response\Transformer;
+use \Gt\Page\Transformer;
 
 class PageDispatcher extends Dispatcher {
 
 private static $pageExtensions = [
 	"html",
-	"md",
-	// "haml",
+	Transformer::TYPE_MARKDOWN,
 ];
 
 public function getPath($uri, &$fixedUri) {
