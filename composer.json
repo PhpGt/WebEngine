@@ -31,7 +31,8 @@
 		"behat/mink": "*",
 		"behat/mink-extension": "*",
 		"behat/mink-goutte-driver": "*",
-		"sensiolabs/behat-page-object-extension": "*"
+		"sensiolabs/behat-page-object-extension": "*",
+		"fabpot/goutte": "1.*"
 	},
 
 	"prefer-stable": true,
