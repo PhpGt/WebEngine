@@ -30,6 +30,7 @@ public function setCode(ResponseCode $code) {
  */
 public function setContentObject(ResponseContent $content) {
 	$this->content = $content;
+	$this->content->config = $config;
 }
 
 /**
