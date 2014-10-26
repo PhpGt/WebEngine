@@ -25,7 +25,7 @@ private $apiFactory;
 private $dbFactory;
 
 public function __construct($appNamespace, $request, $response,
-$apiFactory, $dbFactory, $templateFactory) {
+$apiFactory, $dbFactory) {
 	$this->appNamespace = $appNamespace;
 	$this->request = $request;
 	$this->response = $response;
