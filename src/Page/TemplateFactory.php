@@ -10,7 +10,7 @@ namespace Gt\Page;
 
 class TemplateFactory {
 
-private $list = [];
+public $elementArray = [];
 
 /**
  * @param The dom document to scrape template elements from
@@ -21,7 +21,7 @@ public function __construct($document) {
 
 	foreach ($elementList as $element) {
 		$name = $element->getAttribute($templateAttribute);
-		$this->list[$name] = $element;
+		$this->elementArray[$name] = $element;
 
 		$element->templateParentNode = $element->parentNode;
 		$element->templateNextSibling = $element->nextSibling;
@@ -30,8 +30,22 @@ public function __construct($document) {
 	}
 }
 
+/**
+ * Gets a templated element by name, or null if no template is found by the
+ * provided name.
+ *
+ * @param string $name Name of the template - either the `data-template`
+ * attribute value, the `id` of the `<template>` element, or the name of the
+ * templated html file
+ *
+ * @return \Gt\Dom\Node|null A clone of the node, or null if no template found
+ */
 public function get($name) {
+	if(isset($this->elementArray[$name])) {
+		return $this->elementArray[$name];
+	}
 
+	return null;
 }
 
 }#

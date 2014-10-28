@@ -31,7 +31,7 @@ public function testTemplatesInHead() {
 	$document->config = $this->config;
 
 	$template = new TemplateFactory($document);
-	$this->assertCount(1, $template->list);
+	$this->assertCount(1, $template->elementArray);
 }
 
 public function testTemplatesInBody() {
@@ -48,7 +48,7 @@ public function testTemplatesInBody() {
 	$document->config = $this->config;
 
 	$template = new TemplateFactory($document);
-	$this->assertCount(1, $template->list);
+	$this->assertCount(1, $template->elementArray);
 }
 
 public function testMultipleTemplates() {
@@ -70,7 +70,7 @@ public function testMultipleTemplates() {
 	$document->config = $this->config;
 
 	$template = new TemplateFactory($document);
-	$this->assertCount(3, $template->list);
+	$this->assertCount(3, $template->elementArray);
 }
 
 public function testConfigurableAttribute() {
@@ -85,9 +85,10 @@ public function testConfigurableAttribute() {
 	]);
 
 	$template = new TemplateFactory($document);
-	$this->assertCount(1, $template->list);
-	$this->assertEquals("Test list item!",
-		$template->get("test-item")->textContent);
+	$this->assertCount(1, $template->elementArray);
+	$element = $template->get("test-item");
+	$this->assertInstanceOf("\Gt\Dom\Node", $element, 'Should be a node');
+	$this->assertEquals("Test list item!", $element->textContent);
 }
 
 public function testTemplatesAreRemoved() {
