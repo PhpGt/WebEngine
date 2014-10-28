@@ -33,7 +33,7 @@ public $config; // Response configuration
  * DOMDocument to represent
  * @param ConfigObj $config Response configuration object
  */
-public function __construct($source = null, $config) {
+public function __construct($source = null, $config = null) {
 	if($source instanceof \DOMDocument) {
 		$this->domDocument = $source;
 	}
