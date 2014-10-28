@@ -127,4 +127,50 @@ public function testDocumentConstructedWithDomDocumentSource() {
 	$this->assertSame($domDocument, $document->domDocument);
 }
 
+public function testDocumentTidy() {
+	$html = "<!doctype html><body><h1>Test</h1><meta name=\"test\" /></body>";
+	$document = new Document($html);
+
+	$meta = $document->querySelector("meta[name='test']");
+	$this->assertNotNull($meta);
+
+	$this->assertSame($meta->parentNode, $document->head,
+		"Meta should be moved into the head");
+
+	$html = "<!doctype html><title>Old title</title>"
+		."<h1>Test</h1><title>New title</title>";
+	$document = new Document($html);
+
+	$titleList = $document->querySelectorAll("title");
+	$this->assertCount(1, $titleList, "Should only be one title");
+	$this->assertSame($titleList[0]->parentNode, $document->head);
+
+	// A more complex, multi-element example:
+	$html = "<!doctyle html>
+		<head>
+			<meta charset='utf-8' />
+			<title>The old title</title>
+			<link rel='next' href='/incorrect-next' />
+			<link rel='prev' href='prev-page' />
+		</head>
+		<body>
+			<h1>Correct title</h1>
+			<title>Correct title</title>
+			<p>Some content</p>
+			<a href='/next'>Next</a>
+			<link rel='next' href='next-page' />
+		</body>";
+	$document = new Document($html);
+
+	$title = $document->querySelector("title");
+	$linkList = $document->querySelectorAll("link");
+	$this->assertCount(2, $linkList, 'There should be two links in total');
+
+	$this->assertEquals("Correct title", $title->textContent);
+
+	// This tests the order of the inserted node too:
+	$this->assertEquals("next-page", $linkList[0]->getAttribute("href"));
+	$this->assertEquals("prev-page", $linkList[1]->getAttribute("href"));
+}
+
 }#

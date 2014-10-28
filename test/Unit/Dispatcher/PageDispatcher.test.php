@@ -39,6 +39,7 @@ public function setUp() {
 		->method("getConfigOption")
 		->will($this->returnValue(false)
 	);
+	$this->response->config = null;
 
 	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
 		$cfg
@@ -234,7 +235,7 @@ public function testLoadSourceFromPathWithHeaderFooter($uri) {
 
 public function testCreateResponseContentFromHtml() {
 	$html = "<!doctype html><h1>Test!</h1>";
-	$responseContent = $this->dispatcher->createResponseContent($html);
+	$responseContent = $this->dispatcher->createResponseContent($html, null);
 	$this->assertInstanceOf("\Gt\Response\ResponseContent", $responseContent);
 	$this->assertInstanceOf("\Gt\Dom\Document", $responseContent);
 }
@@ -243,7 +244,7 @@ public function testCreateResponseContentThrowsTypeException() {
 	$this->setExpectedException(
 		"\Gt\Core\Exception\InvalidArgumentTypeException");
 	$notHtml = new \StdClass();
-	$responseContent = $this->dispatcher->createResponseContent($notHtml);
+	$responseContent = $this->dispatcher->createResponseContent($notHtml, null);
 }
 
 /**
@@ -326,7 +327,7 @@ public function testDispatcherProcessFixesUri($uri) {
 public function testDispatcherFlushes() {
 	$html = "<!doctype html><h1>Test</h1>";
 	$this->expectOutputRegex("/<!DOCTYPE html>.*<h1>Test<\/h1>.*<\/html>/s");
-	$content = $this->dispatcher->createResponseContent($html);
+	$content = $this->dispatcher->createResponseContent($html, null);
 
 	$content->flush();
 }

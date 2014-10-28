@@ -10,13 +10,13 @@ namespace Gt\Dispatcher;
 
 use \Gt\Core\Path;
 use \Gt\Response\NotFoundException;
+use \Gt\Page\Transformer;
 
 class PageDispatcher extends Dispatcher {
 
 private static $pageExtensions = [
 	"html",
-	// "md",
-	// "haml",
+	Transformer::TYPE_MARKDOWN,
 ];
 
 public function getPath($uri, &$fixedUri) {
@@ -67,17 +67,28 @@ public function loadSource($path, $pathFile) {
 			$fileBase = strtok($fileName, ".");
 			$specialName = substr(strtolower($fileBase), 1);
 			$fullPath = implode("/", [$headerFooterPath, $fileName]);
+			$extension = $fileInfo->getExtension();
 
 			switch($specialName) {
 			case "header":
 				if(empty($headerSource)) {
 					$headerSource = file_get_contents($fullPath);
+
+					if(strpos($extension, "htm") !== 0) {
+						$headerSource = Transformer::toHtml(
+							$headerSource, $extension);
+					}
 				}
 				break;
 
 			case "footer":
 				if(empty($footerSource)) {
 					$footerSource = file_get_contents($fullPath);
+
+					if(strpos($extension, "htm") !== 0) {
+						$footerSource = Transformer::toHtml(
+							$footerSource, $extension);
+					}
 				}
 				break;
 			}
@@ -106,6 +117,10 @@ public function loadSource($path, $pathFile) {
 			$fullPath = implode("/", [$path, $fileName]);
 			$source .= file_get_contents($fullPath);
 		}
+
+		if(strpos($extension, "htm") !== 0) {
+			$source = Transformer::toHtml($source, $extension);
+		}
 	}
 
 	return implode("\n", [
@@ -117,12 +132,12 @@ public function loadSource($path, $pathFile) {
 	throw new NotFoundException(implode("/", [$path, $pathFile]));
 }
 
-public function createResponseContent($html) {
+public function createResponseContent($html, $config) {
 	if(!is_string($html)) {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
 			gettype($html) . " is not a string");
 	}
-	$domDocument = new \Gt\Dom\Document($html);
+	$domDocument = new \Gt\Dom\Document($html, $config);
 
 	return $domDocument;
 }

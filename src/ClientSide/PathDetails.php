@@ -24,6 +24,13 @@ private $sourceAttribute = [
 	"LINK" => "href",
 ];
 
+private $extensionMap = [
+	"scss"		=> "css",
+	"less"		=> "css",
+	"ts"		=> "js",
+	"coffee"	=> "js",
+];
+
 /**
  * @param NodeList $domNodeList List of elements to represent
  */
@@ -118,7 +125,35 @@ private function getDestination($source) {
 	$destinationPath = Path::fixCase($destinationPath);
 	$destinationPath .= $relativePathFingerprint;
 
+	$destinationPath = $this->fixExtension($destinationPath);
+
 	return $destinationPath;
+}
+
+/**
+ * Replace the path extension with the corresponding extension in the
+ * $extensionMap array, if one exists.
+ *
+ * @param string $path Input path
+ *
+ * @return string Path with corrected extension
+ */
+private function fixExtension($path) {
+	$extension = pathinfo($path, PATHINFO_EXTENSION);
+	$extension = strtolower($extension);
+
+	if(!array_key_exists($extension, $this->extensionMap)) {
+		return $path;
+	}
+
+	if(empty($extension)) {
+		return $path;
+	}
+
+	$path = substr($path, 0, strrpos($path, ".") + 1);
+	$path .= $this->extensionMap[$extension];
+
+	return $path;
 }
 
 /**

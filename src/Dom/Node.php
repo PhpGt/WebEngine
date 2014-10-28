@@ -115,6 +115,12 @@ public function __set($name, $value) {
 		$this->setValue($value);
 		break;
 
+	case "templateParentNode":
+	case "templatePreviousSibling":
+	case "templateNextSibling":
+		$this->domNode->$name = $value;
+		break;
+
 	default:
 		throw new InvalidNodePropertyException($name);
 	}
@@ -144,8 +150,26 @@ public function __call($name, $args) {
 		return $value;
 	}
 
+	// TODO: attach template parent stuff...
+	// switch ($name) {
+	// 	case 'value':
+	// 		# code...
+	// 		break;
+
+	// 	default:
+	// 		# code...
+	// 		break;
+	// }
+
 	throw new NodeMethodNotDefinedException($name);
 	break;
+}
+
+/**
+ * Removes the node from the tree it belongs to.
+ */
+public function remove() {
+	return $this->parentNode->removeChild($this);
 }
 
 /**
