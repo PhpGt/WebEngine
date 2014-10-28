@@ -26,7 +26,7 @@ public function loadSource($path, $pathFile) {
 /**
  *
  */
-public function createResponseContent($content) {
+public function createResponseContent($content, $config) {
 	$apiObj = new \Gt\Response\StructuredData\Container();
 
 	return $apiObj;

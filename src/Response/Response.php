@@ -12,7 +12,7 @@ class Response {
 public $code;
 public $content;
 
-private $config;
+public $config;
 
 public function __construct($config) {
 	$this->config = $config;
@@ -30,6 +30,7 @@ public function setCode(ResponseCode $code) {
  */
 public function setContentObject(ResponseContent $content) {
 	$this->content = $content;
+	$this->content->config = $config;
 }
 
 /**

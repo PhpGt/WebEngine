@@ -132,12 +132,12 @@ public function loadSource($path, $pathFile) {
 	throw new NotFoundException(implode("/", [$path, $pathFile]));
 }
 
-public function createResponseContent($html) {
+public function createResponseContent($html, $config) {
 	if(!is_string($html)) {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
 			gettype($html) . " is not a string");
 	}
-	$domDocument = new \Gt\Dom\Document($html);
+	$domDocument = new \Gt\Dom\Document($html, $config);
 
 	return $domDocument;
 }

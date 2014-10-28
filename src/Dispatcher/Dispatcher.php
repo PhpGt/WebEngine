@@ -62,7 +62,7 @@ abstract public function loadSource($path, $filename);
  *
  * @return ResponseContent The object to serialise as part of the HTTP response
  */
-abstract public function createResponseContent($content);
+abstract public function createResponseContent($content, $config);
 
 /**
  * Performs the dispatch cycle.
@@ -107,7 +107,7 @@ public function process() {
 	}
 
 	// Instantiate the response content object, for manipulation in Code.
-	$content = $this->createResponseContent($source);
+	$content = $this->createResponseContent($source, $this->response->config);
 
 	// Construct and assign Logic object, which is a collection of
 	// Logic class instantiations in order of execution.

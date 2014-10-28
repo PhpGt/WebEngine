@@ -8,6 +8,7 @@
 namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
+use \scssc as ScssParser;
 
 class Compiler {
 
@@ -22,14 +23,19 @@ class Compiler {
 public static function parse($inputFile) {
 	$ext = strtolower(pathinfo($inputFile, PATHINFO_EXTENSION));
 
+	$content = file_get_contents($inputFile);
+
 	switch ($ext) {
-	case ".compiledfile":
+	case "scss":
+		$scss = new ScssParser();
+		$content = $scss->compile($content);
 		break;
 
 	default:
-		return file_get_contents($inputFile);
 		break;
 	}
+
+	return $content;
 }
 
 }#

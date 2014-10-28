@@ -28,7 +28,7 @@ public $headers;
 public $indexFilename;
 public $forceExtension;
 
-private $config;
+public $config;
 
 /**
  * @param string $uri The requested absolute uri

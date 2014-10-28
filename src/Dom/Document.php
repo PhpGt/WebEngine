@@ -23,14 +23,17 @@ public $nodeMap = [];
 public $head;
 public $body;
 
+public $config; // Response configuration
+
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
  * calls the load function with provided HTML content.
  *
  * @param string|DOMDocument $source Raw HTML string, or existing native
  * DOMDocument to represent
+ * @param ConfigObj $config Response configuration object
  */
-public function __construct($source = null) {
+public function __construct($source = null, $config = null) {
 	if($source instanceof \DOMDocument) {
 		$this->domDocument = $source;
 	}
@@ -44,6 +47,8 @@ public function __construct($source = null) {
 			$this->load($source);
 		}
 	}
+
+	$this->config = $config;
 
 	if(!isset($this->node)) {
 		$this->node = new Node($this, $this->domDocument);
@@ -180,13 +185,20 @@ public function tidy() {
 			$selector .= "[$attr]";
 		}
 
-		// Remove existing nodes that have the given attribute.
-		foreach($this->head->querySelectorAll($selector) as $element) {
-			$insertBeforeNode = $element->nextSibling;
-			$element->remove();
-		}
 
 		foreach($this->body->querySelectorAll($selector) as $element) {
+			// Remove existing nodes that have the same value for
+			// their given attribute.
+			foreach($this->head->querySelectorAll($selector) as $headElement) {
+				if($headElement->getAttribute($attr)
+				!== $element->getAttribute($attr)) {
+					continue;
+				}
+
+				$insertBeforeNode = $headElement->nextSibling;
+				$headElement->remove();
+			}
+
 			$this->head->insertBefore($element, $insertBeforeNode);
 		}
 	}
