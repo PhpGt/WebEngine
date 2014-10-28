@@ -12,7 +12,7 @@ class Response {
 public $code;
 public $content;
 
-private $config;
+public $config;
 
 public function __construct($config) {
 	$this->config = $config;

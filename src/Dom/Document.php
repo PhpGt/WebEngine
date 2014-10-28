@@ -31,8 +31,9 @@ public $config; // Response configuration
  *
  * @param string|DOMDocument $source Raw HTML string, or existing native
  * DOMDocument to represent
+ * @param ConfigObj $config Response configuration object
  */
-public function __construct($source = null) {
+public function __construct($source = null, $config) {
 	if($source instanceof \DOMDocument) {
 		$this->domDocument = $source;
 	}
@@ -46,6 +47,8 @@ public function __construct($source = null) {
 			$this->load($source);
 		}
 	}
+
+	$this->config = $config;
 
 	if(!isset($this->node)) {
 		$this->node = new Node($this, $this->domDocument);
