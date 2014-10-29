@@ -9,6 +9,7 @@ namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
 use \Gt\Core\Path;
+use \Gt\Core\DirectoryIterator;
 
 class FileOrganiser {
 
@@ -158,14 +159,16 @@ public function copyAsset() {
 				// TODO: Handle exception.
 			}
 		}
-
 	}
 
 	if(strlen($hash) === 0) {
 		$hash = $this->emptyHash;
 	}
+	else {
+		$hash = md5($hash);
+	}
 
-	file_put_contents($this->assetWwwFingerprintFile, md5($hash));
+	file_put_contents($this->assetWwwFingerprintFile, $hash);
 
 	return $copyCount;
 }
@@ -180,29 +183,34 @@ public function copyAsset() {
  * indicating an empty or non-existant directory
  */
 private function recursiveFingerprint($dir) {
-	$hash = "";
-
 	if(!is_dir($dir)) {
 		return $this->emptyHash;
 	}
 
-	// TODO: Refactor into Core/DirectoryWalker
-	foreach ($iterator = new \RecursiveIteratorIterator(
-	new \RecursiveDirectoryIterator($dir,
-		\RecursiveDirectoryIterator::SKIP_DOTS),
-	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
-		$path = $item->getPathname();
-
-		if(!$item->isDir()) {
-			$hash .= md5($path) . md5_file($path);
-		}
-	}
-
-	if(strlen($hash) === 0) {
+	$hash = DirectoryIterator::hash($dir);
+	if($hash === md5("")) {
 		return $this->emptyHash;
 	}
 
-	return md5($hash);
+	return $hash;
+
+	// // TODO: Refactor into Core/DirectoryWalker
+	// foreach ($iterator = new \RecursiveIteratorIterator(
+	// new \RecursiveDirectoryIterator($dir,
+	// 	\RecursiveDirectoryIterator::SKIP_DOTS),
+	// \RecursiveIteratorIterator::SELF_FIRST) as $item) {
+	// 	$path = $item->getPathname();
+
+	// 	if(!$item->isDir()) {
+	// 		$hash .= md5($path) . md5_file($path);
+	// 	}
+	// }
+
+	// if(strlen($hash) === 0) {
+	// 	return $this->emptyHash;
+	// }
+
+	// return md5($hash);
 }
 
 }#

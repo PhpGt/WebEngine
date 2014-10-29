@@ -123,18 +123,75 @@ public function testAssetValidAfterCopy() {
 		"assets should be valid after copy");
 }
 
-public function testAssetInvalidatesAfterCopy() {
+public function testAssetInvalidatesAfterSourceUpdated() {
+	$dir = $this->getPath(Path::ASSET);
+	$fileArray = [
+		"text-file.txt",
+		"picture.jpg",
+		"directory/markdown-file.md",
+		"directory/another-text-file.txt",
+	];
+	foreach ($fileArray as $file) {
+		$filePath = "$dir/$file";
+		if(!is_dir(dirname($filePath))) {
+			mkdir(dirname($filePath), 0775, true);
+		}
 
+		file_put_contents($filePath, uniqid() . "\n$file\n" . uniqid() );
+	}
+
+	$this->fileOrganiser->copyAsset();
+
+	file_put_contents("$dir/$fileArray[0]", "updated!");
+
+	$this->assertFalse($this->fileOrganiser->checkAssetValid(),
+		"assets should be invalid after source updated");
 }
 
 public function testAssetCopyCreatesCorrectHash() {
 	// Check hash is 0000000 when no source assets.
+	$dir = $this->getPath(Path::ASSET);
+	$wwwDir = Path::get(Path::WWW);
+	$assetFingerprintFile = "$wwwDir/asset-fingerprint";
+
+	mkdir("$dir/directory");
+	$this->fileOrganiser->copyAsset();
+
+	$assetFingerprint = file_get_contents($assetFingerprintFile);
+	$this->assertContains(str_pad("", 32, "0"), $assetFingerprint,
+		"asset fingerprint should be all zeroes when no files present");
 
 	// Check hash is correct when source assets are copied.
 }
 
 public function testAssetValidIfNoSourceDirectory() {
 	$this->assertTrue($this->fileOrganiser->checkAssetValid());
+}
+
+public function testAssetDoesNotCopyIfNoSourceDirectory() {
+	$this->assertEquals(0, $this->fileOrganiser->copyAsset(),
+		"shouldn't copy any files if no source directory present");
+}
+
+public function testOrganiseFunctionCopiesAssets() {
+	$dir = $this->getPath(Path::ASSET);
+	$fileArray = [
+		"text-file.txt",
+		"picture.jpg",
+		"directory/markdown-file.md",
+		"directory/another-text-file.txt",
+	];
+	foreach ($fileArray as $file) {
+		$filePath = "$dir/$file";
+		if(!is_dir(dirname($filePath))) {
+			mkdir(dirname($filePath), 0775, true);
+		}
+
+		file_put_contents($filePath, uniqid() . "\n$file\n" . uniqid() );
+	}
+
+	$this->assertEquals(count($fileArray), $this->fileOrganiser->organise(),
+		"organise method should copy the correct number of files");
 }
 
 public function testOrganiserMinifies() {
