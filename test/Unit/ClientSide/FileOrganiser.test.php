@@ -98,7 +98,29 @@ public function testAssetCopies() {
 }
 
 public function testAssetValidAfterCopy() {
+	$dir = $this->getPath(Path::ASSET);
+	$fileArray = [
+		"text-file.txt",
+		"picture.jpg",
+		"directory/markdown-file.md",
+		"directory/another-text-file.txt",
+	];
+	foreach ($fileArray as $file) {
+		$filePath = "$dir/$file";
+		if(!is_dir(dirname($filePath))) {
+			mkdir(dirname($filePath), 0775, true);
+		}
 
+		file_put_contents($filePath, uniqid() . "\n$file\n" . uniqid() );
+	}
+
+	$this->assertFalse($this->fileOrganiser->checkAssetValid(),
+		"assets should be invalid before copy");
+
+	$copyCount = $this->fileOrganiser->copyAsset();
+
+	$this->assertTrue($this->fileOrganiser->checkAssetValid(),
+		"assets should be valid after copy");
 }
 
 public function testAssetInvalidatesAfterCopy() {
@@ -109,6 +131,10 @@ public function testAssetCopyCreatesCorrectHash() {
 	// Check hash is 0000000 when no source assets.
 
 	// Check hash is correct when source assets are copied.
+}
+
+public function testAssetValidIfNoSourceDirectory() {
+	$this->assertTrue($this->fileOrganiser->checkAssetValid());
 }
 
 public function testOrganiserMinifies() {

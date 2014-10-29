@@ -15,11 +15,15 @@ class FileOrganiser {
 private $response;
 private $manifest;
 private $emptyHash;
+private $assetWwwFingerprintFile;
 
 public function __construct($response, Manifest $manifest) {
-	$this->emptyHash = str_pad("", 32, "0");
 	$this->response = $response;
 	$this->manifest = $manifest;
+
+	$wwwDir = Path::get(Path::WWW);
+	$this->emptyHash = str_pad("", 32, "0");
+	$this->assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
 }
 
 /**
@@ -95,15 +99,18 @@ public function checkAssetValid() {
 	$wwwDir = Path::get(Path::WWW);
 	$assetSrcDir = Path::get(Path::ASSET);
 	$assetWwwDir = $wwwDir . "/" . substr($assetSrcDir, -strlen("asset"));
-	$assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
+
+	if(!is_dir($assetSrcDir)) {
+		return true;
+	}
 
 	if(!is_dir($assetWwwDir)
-	|| !file_exists($assetWwwFingerprintFile)) {
+	|| !file_exists($this->assetWwwFingerprintFile)) {
 		return false;
 	}
 
 	// Recursive fingerprint whole source directory.
-	$assetWwwFingerprint = file_get_contents($assetWwwFingerprintFile);
+	$assetWwwFingerprint = file_get_contents($this->assetWwwFingerprintFile);
 	$assetSrcFingerprint = $this->recursiveFingerprint($assetSrcDir);
 
 	return ($assetWwwFingerprint === $assetSrcFingerprint);
@@ -120,7 +127,7 @@ public function copyAsset() {
 	$wwwDir = Path::get(Path::WWW);
 	$assetSrcDir = Path::get(Path::ASSET);
 	$assetWwwDir = $wwwDir . "/" . pathinfo($assetSrcDir, PATHINFO_BASENAME);
-	$assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
+	$this->assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
 
 	if(!is_dir($assetSrcDir)) {
 		return $copyCount;
@@ -136,8 +143,6 @@ public function copyAsset() {
 		$path = $item->getPathname();
 		$subPath = $iterator->getSubPathname();
 		$wwwPath = $assetWwwDir . "/" . $subPath;
-
-// var_dump($path, $subPath, $wwwPath);die();
 
 		if(!is_dir(dirname($wwwPath))) {
 			mkdir(dirname($wwwPath), 0775, true);
@@ -160,7 +165,7 @@ public function copyAsset() {
 		$hash = $this->emptyHash;
 	}
 
-	file_put_contents($assetWwwFingerprintFile, $hash);
+	file_put_contents($this->assetWwwFingerprintFile, md5($hash));
 
 	return $copyCount;
 }
@@ -187,7 +192,10 @@ private function recursiveFingerprint($dir) {
 		\RecursiveDirectoryIterator::SKIP_DOTS),
 	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
 		$path = $item->getPathname();
-		$hash .= md5($path) . md5_file($path);
+
+		if(!$item->isDir()) {
+			$hash .= md5($path) . md5_file($path);
+		}
 	}
 
 	if(strlen($hash) === 0) {
