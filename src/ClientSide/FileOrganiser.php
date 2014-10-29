@@ -14,8 +14,10 @@ class FileOrganiser {
 
 private $response;
 private $manifest;
+private $emptyHash;
 
 public function __construct($response, Manifest $manifest) {
+	$this->emptyHash = str_pad("", 32, "0");
 	$this->response = $response;
 	$this->manifest = $manifest;
 }
@@ -100,7 +102,6 @@ public function checkAssetValid() {
 		return false;
 	}
 
-
 	// Recursive fingerprint whole source directory.
 	$assetWwwFingerprint = file_get_contents($assetWwwFingerprintFile);
 	$assetSrcFingerprint = $this->recursiveFingerprint($assetSrcDir);
@@ -115,6 +116,52 @@ public function checkAssetValid() {
  */
 public function copyAsset() {
 	$copyCount = 0;
+
+	$wwwDir = Path::get(Path::WWW);
+	$assetSrcDir = Path::get(Path::ASSET);
+	$assetWwwDir = $wwwDir . "/" . pathinfo($assetSrcDir, PATHINFO_BASENAME);
+	$assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
+
+	if(!is_dir($assetSrcDir)) {
+		return $copyCount;
+	}
+
+	$hash = "";
+
+	// TODO: Refactor into Core/DirectoryWalker
+	foreach ($iterator = new \RecursiveIteratorIterator(
+	new \RecursiveDirectoryIterator($assetSrcDir,
+		\RecursiveDirectoryIterator::SKIP_DOTS),
+	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
+		$path = $item->getPathname();
+		$subPath = $iterator->getSubPathname();
+		$wwwPath = $assetWwwDir . "/" . $subPath;
+
+// var_dump($path, $subPath, $wwwPath);die();
+
+		if(!is_dir(dirname($wwwPath))) {
+			mkdir(dirname($wwwPath), 0775, true);
+		}
+
+		if(!$item->isDir()) {
+			$hash .= md5($path) . md5_file($path);
+
+			if(copy($path, $wwwPath)) {
+				$copyCount++;
+			}
+			else {
+				// TODO: Handle exception.
+			}
+		}
+
+	}
+
+	if(strlen($hash) === 0) {
+		$hash = $this->emptyHash;
+	}
+
+	file_put_contents($assetWwwFingerprintFile, $hash);
+
 	return $copyCount;
 }
 
@@ -128,23 +175,23 @@ public function copyAsset() {
  * indicating an empty or non-existant directory
  */
 private function recursiveFingerprint($dir) {
-	$emptyHash = str_pad("", 32, "0");
 	$hash = "";
 
 	if(!is_dir($dir)) {
-		return $emptyHash;
+		return $this->emptyHash;
 	}
 
+	// TODO: Refactor into Core/DirectoryWalker
 	foreach ($iterator = new \RecursiveIteratorIterator(
-	new RecursiveDirectoryIterator($dir,
-		RecursiveDirectoryIterator::SKIP_DOTS),
-	RecursiveIteratorIterator::SELF_FIRST) as $item) {
+	new \RecursiveDirectoryIterator($dir,
+		\RecursiveDirectoryIterator::SKIP_DOTS),
+	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
 		$path = $item->getPathname();
 		$hash .= md5($path) . md5_file($path);
 	}
 
 	if(strlen($hash) === 0) {
-		return $emptyHash;
+		return $this->emptyHash;
 	}
 
 	return md5($hash);

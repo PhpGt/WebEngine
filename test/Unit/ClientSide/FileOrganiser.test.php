@@ -105,6 +105,12 @@ public function testAssetInvalidatesAfterCopy() {
 
 }
 
+public function testAssetCopyCreatesCorrectHash() {
+	// Check hash is 0000000 when no source assets.
+
+	// Check hash is correct when source assets are copied.
+}
+
 public function testOrganiserMinifies() {
 	$dir = $this->getPath(Path::SCRIPT);
 	$publicDir = substr($dir, strlen(Path::get(Path::SRC)));
