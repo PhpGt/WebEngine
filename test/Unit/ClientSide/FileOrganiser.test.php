@@ -55,11 +55,54 @@ public function textAssetInvalidWithEmptyWWW() {
 	$this->assertFalse($this->fileOrganiser->checkAssetValid());
 }
 
-public function testAssetInvalidates() {
+public function testAssetInvalidatesFromEmpty() {
 	$dir = $this->getPath(Path::ASSET);
 	file_put_contents("$dir/file.txt", "dummy data");
 
 	$this->assertFalse($this->fileOrganiser->checkAssetValid());
+}
+
+public function testAssetCopies() {
+	$dir = $this->getPath(Path::ASSET);
+	$fileArray = [
+		"text-file.txt",
+		"picture.jpg",
+		"directory/markdown-file.md",
+		"directory/another-text-file.txt",
+	];
+	foreach ($fileArray as $file) {
+		$filePath = "$dir/$file";
+		if(!is_dir(dirname($filePath))) {
+			mkdir(dirname($filePath), 0775, true);
+		}
+
+		file_put_contents($filePath, uniqid() . "\n$file\n" . uniqid() );
+	}
+
+	$copyCount = $this->fileOrganiser->copyAsset();
+	$this->assertEquals(count($fileArray), $copyCount);
+
+	$this->assertFileExists(Path::get(Path::WWW) . "/asset-fingerprint");
+
+	// Check contents of copied files.
+	$wwwAssetDir = Path::get(Path::WWW) . "/Asset";
+	foreach ($fileArray as $file) {
+		$wwwFilePath = "$wwwAssetDir/$file";
+		$filePath = "$dir/$file";
+		$wwwFileContents = file_get_contents($wwwFilePath);
+		$sourceFileContents = file_get_contents($filePath);
+
+		$this->assertEquals($sourceFileContents, $wwwFileContents,
+			"www asset file should have the same contents as the source file");
+	}
+}
+
+public function testAssetValidAfterCopy() {
+
+}
+
+public function testAssetInvalidatesAfterCopy() {
+
 }
 
 public function testOrganiserMinifies() {

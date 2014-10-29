@@ -109,7 +109,9 @@ public function checkAssetValid() {
 }
 
 /**
- *
+ * Copies the source asset directory to the www directory and stores a
+ * fingerprint of the source directory in a separate public file, for use in
+ * checkAssetValid().
  */
 public function copyAsset() {
 	$copyCount = 0;
