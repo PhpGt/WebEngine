@@ -143,19 +143,15 @@ public function copyAsset() {
 	$hash = "";
 	$copyCount = 0;
 
-	$hash = DirectoryIterator::hash($assetSrcDir);
+	$hash = $this->recursiveFingerprint($assetSrcDir);
 	DirectoryIterator::walk(
 		$assetSrcDir,
 		[$this, "copyAssetCallback"],
 		$copyCount
 	);
 
-	if(strlen($hash) === 0
-	|| $hash === md5("")) {
-		$hash = $this->emptyHash;
-	}
-	else {
-		$hash = md5($hash);
+	if(!is_dir(dirname($this->assetWwwFingerprintFile))) {
+		mkdir(dirname($this->assetWwwFingerprintFile), 0775, true);
 	}
 
 	file_put_contents($this->assetWwwFingerprintFile, $hash);
@@ -166,29 +162,6 @@ public function copyAsset() {
  *
  */
 public function copyAssetCallback($file, $iterator, &$out) {
-	// foreach ($iterator = new \RecursiveIteratorIterator(
-	// new \RecursiveDirectoryIterator($assetSrcDir,
-	// 	\RecursiveDirectoryIterator::SKIP_DOTS),
-	// \RecursiveIteratorIterator::SELF_FIRST) as $item) {
-	// 	$path = $item->getPathname();
-	// 	$subPath = $iterator->getSubPathname();
-	// 	$wwwPath = $assetWwwDir . "/" . $subPath;
-
-	// 	if(!is_dir(dirname($wwwPath))) {
-	// 		mkdir(dirname($wwwPath), 0775, true);
-	// 	}
-
-	// 	if(!$item->isDir()) {
-	// 		$hash .= md5($path) . md5_file($path);
-
-	// 		if(copy($path, $wwwPath)) {
-	// 			$copyCount++;
-	// 		}
-	// 		else {
-	// 			// TODO: Handle exception.
-	// 		}
-	// 	}
-	// }
 	if($file->isDir()) {
 		return;
 	}
