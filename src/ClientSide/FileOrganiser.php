@@ -16,6 +16,7 @@ class FileOrganiser {
 private $response;
 private $manifest;
 private $emptyHash;
+private $assetWwwDir;
 private $assetWwwFingerprintFile;
 
 public function __construct($response, Manifest $manifest) {
@@ -24,6 +25,11 @@ public function __construct($response, Manifest $manifest) {
 
 	$wwwDir = Path::get(Path::WWW);
 	$this->emptyHash = str_pad("", 32, "0");
+
+	$assetPath = Path::get(Path::ASSET);
+	$assetDirName = substr($assetPath, strrpos($assetPath, "/") + 1);
+
+	$this->assetWwwDir = "$wwwDir/$assetDirName";
 	$this->assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
 }
 
@@ -135,33 +141,17 @@ public function copyAsset() {
 	}
 
 	$hash = "";
+	$copyCount = 0;
 
-	// TODO: Refactor into Core/DirectoryWalker
-	foreach ($iterator = new \RecursiveIteratorIterator(
-	new \RecursiveDirectoryIterator($assetSrcDir,
-		\RecursiveDirectoryIterator::SKIP_DOTS),
-	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
-		$path = $item->getPathname();
-		$subPath = $iterator->getSubPathname();
-		$wwwPath = $assetWwwDir . "/" . $subPath;
+	$hash = DirectoryIterator::hash($assetSrcDir);
+	DirectoryIterator::walk(
+		$assetSrcDir,
+		[$this, "copyAssetCallback"],
+		$copyCount
+	);
 
-		if(!is_dir(dirname($wwwPath))) {
-			mkdir(dirname($wwwPath), 0775, true);
-		}
-
-		if(!$item->isDir()) {
-			$hash .= md5($path) . md5_file($path);
-
-			if(copy($path, $wwwPath)) {
-				$copyCount++;
-			}
-			else {
-				// TODO: Handle exception.
-			}
-		}
-	}
-
-	if(strlen($hash) === 0) {
+	if(strlen($hash) === 0
+	|| $hash === md5("")) {
 		$hash = $this->emptyHash;
 	}
 	else {
@@ -169,8 +159,50 @@ public function copyAsset() {
 	}
 
 	file_put_contents($this->assetWwwFingerprintFile, $hash);
-
 	return $copyCount;
+}
+
+/**
+ *
+ */
+public function copyAssetCallback($file, $iterator, &$out) {
+	// foreach ($iterator = new \RecursiveIteratorIterator(
+	// new \RecursiveDirectoryIterator($assetSrcDir,
+	// 	\RecursiveDirectoryIterator::SKIP_DOTS),
+	// \RecursiveIteratorIterator::SELF_FIRST) as $item) {
+	// 	$path = $item->getPathname();
+	// 	$subPath = $iterator->getSubPathname();
+	// 	$wwwPath = $assetWwwDir . "/" . $subPath;
+
+	// 	if(!is_dir(dirname($wwwPath))) {
+	// 		mkdir(dirname($wwwPath), 0775, true);
+	// 	}
+
+	// 	if(!$item->isDir()) {
+	// 		$hash .= md5($path) . md5_file($path);
+
+	// 		if(copy($path, $wwwPath)) {
+	// 			$copyCount++;
+	// 		}
+	// 		else {
+	// 			// TODO: Handle exception.
+	// 		}
+	// 	}
+	// }
+	if($file->isDir()) {
+		return;
+	}
+
+	$source = $file->getPathname();
+	$dest = $this->assetWwwDir . "/" . $iterator->getSubPathname();
+
+	if(!is_dir(dirname($dest))) {
+		mkdir(dirname($dest), 0775, true);
+	}
+
+	if(copy($source, $dest)) {
+		$out++;
+	}
 }
 
 /**
@@ -193,24 +225,6 @@ private function recursiveFingerprint($dir) {
 	}
 
 	return $hash;
-
-	// // TODO: Refactor into Core/DirectoryWalker
-	// foreach ($iterator = new \RecursiveIteratorIterator(
-	// new \RecursiveDirectoryIterator($dir,
-	// 	\RecursiveDirectoryIterator::SKIP_DOTS),
-	// \RecursiveIteratorIterator::SELF_FIRST) as $item) {
-	// 	$path = $item->getPathname();
-
-	// 	if(!$item->isDir()) {
-	// 		$hash .= md5($path) . md5_file($path);
-	// 	}
-	// }
-
-	// if(strlen($hash) === 0) {
-	// 	return $this->emptyHash;
-	// }
-
-	// return md5($hash);
 }
 
 }#

@@ -20,16 +20,7 @@ public function testCallback() {
 	$path = Path::get(Path::ROOT);
 	$filePathArray = [];
 
-	for ($depth = 0; $depth < 5; $depth++) {
-		$path .= "/" . uniqid();
-		mkdir($path);
-
-		for ($directoryIndex = 0; $directoryIndex < 5; $directoryIndex++) {
-			$filePath = $path . "/" . uniqid();
-			$filePathArray []= $filePath;
-			file_put_contents($filePath, "This is file $filePath");
-		}
-	}
+	$this->createDirectoryStructure($path, 5, 5);
 
 	$outputArray = DirectoryIterator::walk(
 		Path::get(Path::ROOT), [$this, "walkCallback"]);
@@ -49,34 +40,33 @@ public function testWalkOnDirectoryThatDoesNotExist() {
 }
 
 public function testHash() {
-	/**
-	 	TODO:
-	 	files are being created wrong... loop logic wrong.
-	 			me tired
-	 						me sleep now
-	 */
 	$path = Path::get(Path::ROOT);
-	$md5Array = [];
+	$this->createDirectoryStructure($path, 5, 5);
 
-	for ($depth = 0; $depth < 5; $depth++) {
-		$path = "/" . uniqid();
-		mkdir($path);
-
-		for ($directoryIndex = 0; $directoryIndex < 5; $directoryIndex++) {
-			$filePath = $path . "/" . uniqid();
-			file_put_contents($filePath . ".file",
-				"This is file $filePath.file");
-			$md5Array []= "$filePath\n";
-			// $md5Array []= md5($filePath) . md5_file($filePath);
-		}
-	}
-
-	sort($md5Array);
+	$md5Array = DirectoryIterator::walk($path, [$this, "hashCallback"]);
 	$md5 = implode("", $md5Array);
-	// $md5 = md5($md5);
+
+	$md5 = md5($md5);
 
 	$hash = DirectoryIterator::hash(Path::get(Path::ROOT));
 	$this->assertEquals($md5, $hash);
+}
+
+private function createDirectoryStructure($basePath, $depth, $leaves) {
+	for($d = 1; $d < $depth; $d++) {
+		$path = "$basePath/";
+		$path .= implode("/", array_fill(0, $d, "dir"));
+
+		if(!is_dir($path)) {
+			mkdir($path, 0775, true);
+		}
+
+		for($l = 1; $l <= $leaves; $l++) {
+			$leaf = "$path/leaf-$l.file";
+
+			file_put_contents($leaf, "File contents of leaf-$l");
+		}
+	}
 }
 
 /**
@@ -85,6 +75,18 @@ public function testHash() {
 public function walkCallback($file, $iterator) {
 	$path = $file->getPathname();
 	return $path;
+}
+
+/**
+ *
+ */
+public function hashCallback($file, $iterator) {
+	if($file->isDir()) {
+		return null;
+	}
+
+	$path = $file->getPathname();
+	return md5($path) . md5_file($path);
 }
 
 }#

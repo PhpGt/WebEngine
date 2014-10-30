@@ -14,7 +14,7 @@ class DirectoryIterator {
 /**
  *
  */
-public static function walk($directory, $callback) {
+public static function walk($directory, $callback, &$out = null) {
 	if(!is_dir($directory)) {
 		throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
 			$directory);
@@ -27,12 +27,12 @@ public static function walk($directory, $callback) {
 		\RecursiveDirectoryIterator::SKIP_DOTS),
 	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
 
-		var_dump($item->getPathname());
-		// $output []= call_user_func_array($callback, [$item, $iterator]);
+		$output []= call_user_func_array($callback, [
+			$item, $iterator, &$out
+		]);
 	}
 
-	die();
-
+	sort($output);
 	return $output;
 }
 
@@ -43,8 +43,7 @@ public static function hash($directory) {
 	$md5Array = self::walk($directory, "self::hashFile");
 	$md5 = implode("", $md5Array);
 
-	return $md5;
-	// return md5($md5);
+	return md5($md5);
 }
 
 /**
@@ -56,8 +55,7 @@ private static function hashFile($file, $iterator) {
 	}
 
 	$path = $file->getPathname();
-	return "---$path---\n";
-	// return md5($path) . md5_file($path);
+	return md5($path) . md5_file($path);
 }
 
 }#
