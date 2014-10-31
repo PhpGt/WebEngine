@@ -9,7 +9,7 @@ namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
 use \Gt\Core\Path;
-use \Gt\Core\DirectoryRecurser;
+use \Gt\Core\DirectoryRecursor;
 
 class FileOrganiser {
 
@@ -122,7 +122,7 @@ public function purgeStaticWwwFiles() {
 		if($filename === $assetDirName
 		|| strpos($filename, $scriptDirName) . "-" === 0
 		|| strpos($filename, $styleDirName) . "-" === 0) {
-			DirectoryRecurser::purge($item->getPathname());
+			DirectoryRecursor::purge($item->getPathname());
 		}
 	}
 }
@@ -218,7 +218,7 @@ public function copyAsset() {
 	$copyCount = 0;
 
 	$hash = $this->recursiveFingerprint($assetSrcDir);
-	DirectoryRecurser::walk(
+	DirectoryRecursor::walk(
 		$assetSrcDir,
 		[$this, "copyAssetCallback"],
 		$copyCount
@@ -284,7 +284,7 @@ private function recursiveFingerprint($dir) {
 			continue;
 		}
 
-		$hash = DirectoryRecurser::hash($d);
+		$hash = DirectoryRecursor::hash($d);
 		if($hash === md5("")) {
 			$hash = "";
 		}

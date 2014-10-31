@@ -40,6 +40,7 @@ public function setUp() {
 		->will($this->returnValue(false)
 	);
 	$this->response->config = null;
+	$this->response->production = false;
 
 	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
 		$cfg
