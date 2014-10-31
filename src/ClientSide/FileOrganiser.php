@@ -175,7 +175,6 @@ public function checkStaticValid() {
 	$assetSrcDir  = Path::get(Path::ASSET);
 	$scriptSrcDir = Path::get(Path::SCRIPT);
 	$styleSrcDir  = Path::get(Path::STYLE);
-	$assetWwwDir  = $wwwDir . "/" . substr($assetSrcDir, -strlen("asset"));
 
 	if(!is_dir($assetSrcDir)
 	&& !is_dir($scriptSrcDir)
