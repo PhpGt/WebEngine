@@ -9,7 +9,7 @@
  */
 namespace Gt\Core;
 
-class DirectoryRecurser {
+class DirectoryRecursor {
 
 /**
  *
