@@ -106,11 +106,11 @@ public static function get($name) {
  * correcting it according to what is actually stored on disk.
  *
  * @param string $path Original path
- * @param bool|string $stripPrefix Defaults to false. Set to non-false string to
- * treat the returned path as a uri, removing the provided urlPath prefix
+ * @param boolean|string $stripPrefix Defaults to false. Set to non-false string
+ * to treat the returned path as a uri, removing the provided urlPath prefix
  * automatically in order to use as an absolute URI.
- * @param bool|string $stripSuffix Defaults to false. Set to non-false string to
- * automatically remove the provided string ending.
+ * @param boolean|string $stripSuffix Defaults to false. Set to non-false string
+ * to automatically remove the provided string ending.
  *
  * @return string Correctly-cased path. Returns in URI style if $stripPrefix
  * is set to a non-null string.
