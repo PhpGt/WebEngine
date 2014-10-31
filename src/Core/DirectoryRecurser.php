@@ -9,12 +9,13 @@
  */
 namespace Gt\Core;
 
-class DirectoryIterator {
+class DirectoryRecurser {
 
 /**
  *
  */
-public static function walk($directory, $callback, &$out = null) {
+public static function walk($directory, $callback, &$out = null,
+$order = \RecursiveIteratorIterator::SELF_FIRST) {
 	if(!is_dir($directory)) {
 		throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
 			$directory);
@@ -24,8 +25,7 @@ public static function walk($directory, $callback, &$out = null) {
 
 	foreach ($iterator = new \RecursiveIteratorIterator(
 	new \RecursiveDirectoryIterator($directory,
-		\RecursiveDirectoryIterator::SKIP_DOTS),
-	\RecursiveIteratorIterator::SELF_FIRST) as $item) {
+	\RecursiveDirectoryIterator::SKIP_DOTS), $order) as $item) {
 
 		$output []= call_user_func_array($callback, [
 			$item, $iterator, &$out
@@ -56,6 +56,35 @@ private static function hashFile($file, $iterator) {
 
 	$path = $file->getPathname();
 	return md5($path) . md5_file($path);
+}
+
+/**
+ * Removes a directory and all its contents.
+ *
+ * @return int Number of files and directories removed
+ */
+public static function purge($path) {
+	$count = 0;
+
+	self::walk($path, ["self::purgeFile"], $count,
+		\RecursiveIteratorIterator::CHILD_FIRST);
+
+	return $count;
+}
+
+public static function purgeFile($file, $iterator) {
+	$pathname = $file->getPathname();
+
+	if($file->isDir()) {
+		rmdir($pathname);
+		return 1;
+	}
+	else {
+		unlink($pathname);
+		return 1;
+	}
+
+	return 0;
 }
 
 }#
