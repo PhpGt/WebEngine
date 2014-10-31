@@ -224,8 +224,6 @@ public function __call($name, $args) {
 }
 
 public function __get($name) {
-	$value = null;
-
 	if(property_exists($this->domDocument, $name)) {
 		$value = Node::wrapNative($this->domDocument->$name);
 	}
