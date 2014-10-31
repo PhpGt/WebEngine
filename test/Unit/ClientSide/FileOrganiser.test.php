@@ -52,14 +52,14 @@ public function testFileOrganiserDoesNotOrganiseWhenValid() {
 }
 
 public function textAssetInvalidWithEmptyWWW() {
-	$this->assertFalse($this->fileOrganiser->checkAssetValid());
+	$this->assertFalse($this->fileOrganiser->checkStaticValid());
 }
 
 public function testAssetInvalidatesFromEmpty() {
 	$dir = $this->getPath(Path::ASSET);
 	file_put_contents("$dir/file.txt", "dummy data");
 
-	$this->assertFalse($this->fileOrganiser->checkAssetValid());
+	$this->assertFalse($this->fileOrganiser->checkStaticValid());
 }
 
 public function testAssetCopies() {
@@ -82,7 +82,7 @@ public function testAssetCopies() {
 	$copyCount = $this->fileOrganiser->copyAsset();
 	$this->assertEquals(count($fileArray), $copyCount);
 
-	$this->assertFileExists(Path::get(Path::WWW) . "/asset-fingerprint");
+	$this->assertFileExists(Path::get(Path::WWW) . "/static-fingerprint");
 
 	// Check contents of copied files.
 	$wwwAssetDir = Path::get(Path::WWW) . "/Asset";
@@ -114,12 +114,12 @@ public function testAssetValidAfterCopy() {
 		file_put_contents($filePath, uniqid() . "\n$file\n" . uniqid() );
 	}
 
-	$this->assertFalse($this->fileOrganiser->checkAssetValid(),
+	$this->assertFalse($this->fileOrganiser->checkStaticValid(),
 		"assets should be invalid before copy");
 
 	$copyCount = $this->fileOrganiser->copyAsset();
 
-	$this->assertTrue($this->fileOrganiser->checkAssetValid(),
+	$this->assertTrue($this->fileOrganiser->checkStaticValid(),
 		"assets should be valid after copy");
 }
 
@@ -144,7 +144,7 @@ public function testAssetInvalidatesAfterSourceUpdated() {
 
 	file_put_contents("$dir/$fileArray[0]", "updated!");
 
-	$this->assertFalse($this->fileOrganiser->checkAssetValid(),
+	$this->assertFalse($this->fileOrganiser->checkStaticValid(),
 		"assets should be invalid after source updated");
 }
 
@@ -152,20 +152,21 @@ public function testAssetCopyCreatesCorrectHash() {
 	// Check hash is 0000000 when no source assets.
 	$dir = $this->getPath(Path::ASSET);
 	$wwwDir = Path::get(Path::WWW);
-	$assetFingerprintFile = "$wwwDir/asset-fingerprint";
+	$staticFingerprintFile = "$wwwDir/static-fingerprint";
 
 	mkdir("$dir/directory");
 	$this->fileOrganiser->copyAsset();
+	$this->fileOrganiser->createStaticFingerprint();
 
-	$assetFingerprint = file_get_contents($assetFingerprintFile);
-	$this->assertContains(str_pad("", 32, "0"), $assetFingerprint,
+	$staticFingerprint = file_get_contents($staticFingerprintFile);
+	$this->assertContains(str_pad("", 32, "0"), $staticFingerprint,
 		"asset fingerprint should be all zeroes when no files present");
 
 	// Check hash is correct when source assets are copied.
 }
 
 public function testAssetValidIfNoSourceDirectory() {
-	$this->assertTrue($this->fileOrganiser->checkAssetValid());
+	$this->assertTrue($this->fileOrganiser->checkStaticValid());
 }
 
 public function testAssetDoesNotCopyIfNoSourceDirectory() {

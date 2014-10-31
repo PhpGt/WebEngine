@@ -57,8 +57,9 @@ public function organise($pathDetails = []) {
 	}
 
 	if(!$staticValid) {
-		$this->purgeStaticFiles();
+		$this->purgeStaticWwwFiles();
 		$copyCount += $this->copyAsset();
+		$this->createStaticFingerprint();
 	}
 
 	if(!$this->manifest->checkValid()) {
@@ -76,6 +77,22 @@ public function organise($pathDetails = []) {
 }
 
 /**
+ *
+ */
+public function createStaticFingerprint() {
+	$staticSrcFingerprint = $this->recursiveFingerprint([
+		Path::get(Path::ASSET),
+		Path::get(Path::SCRIPT),
+		Path::get(Path::STYLE),
+	]);
+
+	if(!is_dir(dirname($this->staticFingerprintFile))) {
+		mkdir(dirname($this->staticFingerprintFile), 0775, true);
+	}
+	file_put_contents($this->staticFingerprintFile, $staticSrcFingerprint);
+}
+
+/**
  * Removes any static files found in the www directory and removes the static
  * file fingerprint.
  */
@@ -86,7 +103,7 @@ public function purgeStaticWwwFiles() {
 
 	$assetDirName  = substr($assetPath,  strrpos($assetPath, "/") + 1);
 	$scriptDirName = substr($scriptPath, strrpos($scriptPath, "/") + 1);
-	$styleDirName  = substr($stylePath,  strrpos($styleDirName, "/") + 1);
+	$styleDirName  = substr($stylePath,  strrpos($stylePath, "/") + 1);
 
 	if(file_exists($this->staticFingerprintFile)) {
 		unlink($this->staticFingerprintFile);
@@ -95,13 +112,17 @@ public function purgeStaticWwwFiles() {
 	// Remove the Asset directory, and all directories that start with the
 	// script & style directory name followed by a dash. (Script and Style
 	// directories in the WWW directory have their fingerprint appended).
+	if(!is_dir(Path::get(Path::WWW))) {
+		return;
+	}
+
 	foreach(new \DirectoryIterator(Path::get(Path::WWW)) as $item) {
 		$filename = $item->getFilename();
 
 		if($filename === $assetDirName
 		|| strpos($filename, $scriptDirName) . "-" === 0
 		|| strpos($filename, $styleDirName) . "-" === 0) {
-			DirectoryRecurser::s($item->getPathname());
+			DirectoryRecurser::purge($item->getPathname());
 		}
 	}
 }
@@ -188,7 +209,6 @@ public function copyAsset() {
 	$wwwDir = Path::get(Path::WWW);
 	$assetSrcDir = Path::get(Path::ASSET);
 	$assetWwwDir = $wwwDir . "/" . pathinfo($assetSrcDir, PATHINFO_BASENAME);
-	$this->staticFingerprintFile = $wwwDir . "/asset-fingerprint";
 
 	if(!is_dir($assetSrcDir)) {
 		return $copyCount;
@@ -260,16 +280,20 @@ private function recursiveFingerprint($dir) {
 	$hashArray = [];
 
 	foreach ($dir as $d) {
+		if(!is_dir($d)) {
+			continue;
+		}
+
 		$hash = DirectoryRecurser::hash($d);
 		if($hash === md5("")) {
-			return $hash = "";
+			$hash = "";
 		}
 
 		$hashArray []= $hash;
 	}
 
 	$hash = implode("", $hashArray);
-	if($hash === md5("")) {
+	if(strlen($hash) === 0) {
 		return $this->emptyHash;
 	}
 
