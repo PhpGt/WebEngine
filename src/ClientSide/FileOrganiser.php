@@ -35,7 +35,7 @@ public function __construct($response, Manifest $manifest) {
 }
 
 /**
- * @param PathDetails $pathDetails Representation of client-side paths
+ * @param PathDetails|array $pathDetails Representation of client-side paths
  *
  * @return bool True if organiser has copied any files, false if no files have
  * been copied
