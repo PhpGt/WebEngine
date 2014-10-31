@@ -92,7 +92,6 @@ public function calculateFingerprint($pathDetails) {
 		}
 
 		$sourcePathUri = $node->getAttribute($nodeSourceAttriute);
-		$sourcePathAbsolute = "";
 
 		// Do not add external files to the fingerprint:
 		if(strstr($sourcePathUri, "//")) {
