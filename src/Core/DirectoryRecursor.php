@@ -66,8 +66,9 @@ private static function hashFile($file, $iterator) {
 public static function purge($path) {
 	$count = 0;
 
-	self::walk($path, ["self::purgeFile"], $count,
+	self::walk($path, "self::purgeFile", $count,
 		\RecursiveIteratorIterator::CHILD_FIRST);
+	rmdir($path);
 
 	return $count;
 }

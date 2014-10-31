@@ -174,6 +174,10 @@ public function testAssetDoesNotCopyIfNoSourceDirectory() {
 		"shouldn't copy any files if no source directory present");
 }
 
+public function testStaticSourceFileEditInvalidates() {
+	// TODO.
+}
+
 public function testOrganiseFunctionCopiesAssets() {
 	$dir = $this->getPath(Path::ASSET);
 	$fileArray = [

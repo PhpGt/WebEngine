@@ -119,9 +119,10 @@ public function purgeStaticWwwFiles() {
 	foreach(new \DirectoryIterator(Path::get(Path::WWW)) as $item) {
 		$filename = $item->getFilename();
 
+
 		if($filename === $assetDirName
-		|| strpos($filename, $scriptDirName) . "-" === 0
-		|| strpos($filename, $styleDirName) . "-" === 0) {
+		|| strpos($filename, $scriptDirName . "-") === 0
+		|| strpos($filename, $styleDirName . "-") === 0) {
 			DirectoryRecursor::purge($item->getPathname());
 		}
 	}
@@ -189,13 +190,13 @@ public function checkStaticValid() {
 	// Recursive fingerprint whole source directory.
 	$staticWwwFingerprint = file_get_contents($this->staticFingerprintFile);
 
-	$assetSrcFingerprint = $this->recursiveFingerprint([
+	$staticSrcFingerprint = $this->recursiveFingerprint([
 		$assetSrcDir,
 		$scriptSrcDir,
 		$styleSrcDir,
 	]);
 
-	return ($staticWwwFingerprint === $assetSrcFingerprint);
+	return ($staticWwwFingerprint === $staticSrcFingerprint);
 }
 
 /**
@@ -297,7 +298,7 @@ private function recursiveFingerprint($dir) {
 		return $this->emptyHash;
 	}
 
-	return $hash;
+	return md5($hash);
 }
 
 }#
