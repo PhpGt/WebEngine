@@ -209,7 +209,6 @@ public function copyAsset() {
 
 	$wwwDir = Path::get(Path::WWW);
 	$assetSrcDir = Path::get(Path::ASSET);
-	$assetWwwDir = $wwwDir . "/" . pathinfo($assetSrcDir, PATHINFO_BASENAME);
 
 	if(!is_dir($assetSrcDir)) {
 		return $copyCount;
