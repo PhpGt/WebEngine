@@ -45,7 +45,7 @@ public function __construct($uri) {
 	$this->redirect($uri, $uriFixed, $production);
 
 	$request  = new Request ($uri, $config["request"]);
-	$response = new Response($config["response"]);
+	$response = new Response($config["response"], $production);
 
 	$apiFactory = new ApiFactory($config["api"]);
 	$dbFactory  = new DatabaseFactory($config["database"]);

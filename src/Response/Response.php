@@ -13,9 +13,14 @@ public $code;
 public $content;
 
 public $config;
+public $production;
 
-public function __construct($config) {
+/**
+ *
+ */
+public function __construct($config, $production = false) {
 	$this->config = $config;
+	$this->production = $production;
 }
 
 /**

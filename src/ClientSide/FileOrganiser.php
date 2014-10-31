@@ -9,7 +9,7 @@ namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
 use \Gt\Core\Path;
-use \Gt\Core\DirectoryIterator;
+use \Gt\Core\DirectoryRecurser;
 
 class FileOrganiser {
 
@@ -17,7 +17,8 @@ private $response;
 private $manifest;
 private $emptyHash;
 private $assetWwwDir;
-private $assetWwwFingerprintFile;
+
+private $staticFingerprintFile;
 
 public function __construct($response, Manifest $manifest) {
 	$this->response = $response;
@@ -30,7 +31,7 @@ public function __construct($response, Manifest $manifest) {
 	$assetDirName = substr($assetPath, strrpos($assetPath, "/") + 1);
 
 	$this->assetWwwDir = "$wwwDir/$assetDirName";
-	$this->assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
+	$this->staticFingerprintFile = $wwwDir . "/static-fingerprint";
 }
 
 /**
@@ -41,9 +42,26 @@ public function __construct($response, Manifest $manifest) {
  */
 public function organise($pathDetails = []) {
 	$copyCount = 0;
+	$staticValid = true;
+
+	// Performing the 10 steps as described here:
+	// http://php.gt/docs/static-file-fingerprinting
+	if(!file_exists($this->staticFingerprintFile)) {
+		$staticValid = false;
+	}
+
+	if(!$this->response->production) {
+		if(!$this->checkStaticValid()) {
+			$staticValid = false;
+		}
+	}
+
+	if(!$staticValid) {
+		$this->purgeStaticFiles();
+		$copyCount += $this->copyAsset();
+	}
 
 	if(!$this->manifest->checkValid()) {
-		$passThrough = null;
 		$callback = null;
 		if($this->response->getConfigOption("client_minified")) {
 			// Minify everything in www
@@ -54,11 +72,38 @@ public function organise($pathDetails = []) {
 		$copyCount += $this->copyCompile($pathDetails, $callback);
 	}
 
-	if(!$this->checkAssetValid()) {
-		$copyCount += $this->copyAsset();
+	return !!($copyCount);
+}
+
+/**
+ * Removes any static files found in the www directory and removes the static
+ * file fingerprint.
+ */
+public function purgeStaticWwwFiles() {
+	$assetPath  = Path::get(Path::ASSET);
+	$scriptPath = Path::get(Path::SCRIPT);
+	$stylePath  = Path::get(Path::STYLE);
+
+	$assetDirName  = substr($assetPath,  strrpos($assetPath, "/") + 1);
+	$scriptDirName = substr($scriptPath, strrpos($scriptPath, "/") + 1);
+	$styleDirName  = substr($stylePath,  strrpos($styleDirName, "/") + 1);
+
+	if(file_exists($this->staticFingerprintFile)) {
+		unlink($this->staticFingerprintFile);
 	}
 
-	return !!($copyCount);
+	// Remove the Asset directory, and all directories that start with the
+	// script & style directory name followed by a dash. (Script and Style
+	// directories in the WWW directory have their fingerprint appended).
+	foreach(new \DirectoryIterator(Path::get(Path::WWW)) as $item) {
+		$filename = $item->getFilename();
+
+		if($filename === $assetDirName
+		|| strpos($filename, $scriptDirName) . "-" === 0
+		|| strpos($filename, $styleDirName) . "-" === 0) {
+			DirectoryRecurser::s($item->getPathname());
+		}
+	}
 }
 
 /**
@@ -96,31 +141,40 @@ public function copyCompile($pathDetails, $callback = null) {
 }
 
 /**
- * Fingerprints the source Asset directory contents and compares to the
- * fingerprint cache in the www directory.
+ * Fingerprints the source Asset, Script and Style directory contents and
+ * compares to the fingerprint cache in the www directory.
  *
- * @return bool True if the www asset directory is valid, false if it is not
- * (or if it doesn't exist)
+ * @return bool True if the www static directory contents are valid,
+ * false if they are not (or if they do not exist)
  */
-public function checkAssetValid() {
+public function checkStaticValid() {
 	$wwwDir = Path::get(Path::WWW);
-	$assetSrcDir = Path::get(Path::ASSET);
-	$assetWwwDir = $wwwDir . "/" . substr($assetSrcDir, -strlen("asset"));
 
-	if(!is_dir($assetSrcDir)) {
+	$assetSrcDir  = Path::get(Path::ASSET);
+	$scriptSrcDir = Path::get(Path::SCRIPT);
+	$styleSrcDir  = Path::get(Path::STYLE);
+	$assetWwwDir  = $wwwDir . "/" . substr($assetSrcDir, -strlen("asset"));
+
+	if(!is_dir($assetSrcDir)
+	&& !is_dir($scriptSrcDir)
+	&& !is_dir($styleSrcDir)) {
 		return true;
 	}
 
-	if(!is_dir($assetWwwDir)
-	|| !file_exists($this->assetWwwFingerprintFile)) {
+	if(!file_exists($this->staticFingerprintFile)) {
 		return false;
 	}
 
 	// Recursive fingerprint whole source directory.
-	$assetWwwFingerprint = file_get_contents($this->assetWwwFingerprintFile);
-	$assetSrcFingerprint = $this->recursiveFingerprint($assetSrcDir);
+	$staticWwwFingerprint = file_get_contents($this->staticFingerprintFile);
 
-	return ($assetWwwFingerprint === $assetSrcFingerprint);
+	$assetSrcFingerprint = $this->recursiveFingerprint([
+		$assetSrcDir,
+		$scriptSrcDir,
+		$styleSrcDir,
+	]);
+
+	return ($staticWwwFingerprint === $assetSrcFingerprint);
 }
 
 /**
@@ -134,7 +188,7 @@ public function copyAsset() {
 	$wwwDir = Path::get(Path::WWW);
 	$assetSrcDir = Path::get(Path::ASSET);
 	$assetWwwDir = $wwwDir . "/" . pathinfo($assetSrcDir, PATHINFO_BASENAME);
-	$this->assetWwwFingerprintFile = $wwwDir . "/asset-fingerprint";
+	$this->staticFingerprintFile = $wwwDir . "/asset-fingerprint";
 
 	if(!is_dir($assetSrcDir)) {
 		return $copyCount;
@@ -144,17 +198,17 @@ public function copyAsset() {
 	$copyCount = 0;
 
 	$hash = $this->recursiveFingerprint($assetSrcDir);
-	DirectoryIterator::walk(
+	DirectoryRecurser::walk(
 		$assetSrcDir,
 		[$this, "copyAssetCallback"],
 		$copyCount
 	);
 
-	if(!is_dir(dirname($this->assetWwwFingerprintFile))) {
-		mkdir(dirname($this->assetWwwFingerprintFile), 0775, true);
+	if(!is_dir(dirname($this->staticFingerprintFile))) {
+		mkdir(dirname($this->staticFingerprintFile), 0775, true);
 	}
 
-	file_put_contents($this->assetWwwFingerprintFile, $hash);
+	file_put_contents($this->staticFingerprintFile, $hash);
 	return $copyCount;
 }
 
@@ -179,20 +233,42 @@ public function copyAssetCallback($file, $iterator, &$out) {
 }
 
 /**
- * Recursively iterate over all files within given directory and build up a
+ * Recursively iterate over all files within given directories and build up a
  * hash of their contents and file names.
  *
- * @param string $dir Directory to iterate
+ * @param string|array $dir Directory to iterate, or an array of directories
  *
  * @return string 32 character hash of directory's contents, or 32 zeros
  * indicating an empty or non-existant directory
  */
 private function recursiveFingerprint($dir) {
-	if(!is_dir($dir)) {
+	if(!is_array($dir)) {
+		$dir = [$dir];
+	}
+
+	// Return a special zeroed hash for when there are no source directories.
+	$noSourceDirectories = true;
+	foreach ($dir as $d) {
+		if(is_dir($d)) {
+			$noSourceDirectories = false;
+		}
+	}
+	if($noSourceDirectories) {
 		return $this->emptyHash;
 	}
 
-	$hash = DirectoryIterator::hash($dir);
+	$hashArray = [];
+
+	foreach ($dir as $d) {
+		$hash = DirectoryRecurser::hash($d);
+		if($hash === md5("")) {
+			return $hash = "";
+		}
+
+		$hashArray []= $hash;
+	}
+
+	$hash = implode("", $hashArray);
 	if($hash === md5("")) {
 		return $this->emptyHash;
 	}
