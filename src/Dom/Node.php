@@ -368,10 +368,10 @@ public function xpath($query, $context = null) {
  * Ensures the provided context is of a native DOMDocument type rather than
  * an enhanced object, so it can be used with native DOMDocument methods.
  *
- * @param Node|DOMNode|null $context The current context. If null is provided,
+ * @param Node|\DOMNode|null $context The current context. If null is provided,
  * this current Node's DOMNode is used.
  *
- * @return DOMNode The contextual DOMNode
+ * @return \DOMNode The contextual DOMNode
  */
 public function checkContext($context) {
 	if(is_null($context)) {
