@@ -61,8 +61,6 @@ array $attributeArray = array(), $nodeValue = null) {
  *
  */
 public function __get($name) {
-	$value = null;
-
 	switch($name) {
 	case "id":
 	case "ID":
