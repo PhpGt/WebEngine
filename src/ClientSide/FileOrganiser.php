@@ -213,7 +213,6 @@ public function copyAsset() {
 		return $copyCount;
 	}
 
-	$hash = "";
 	$copyCount = 0;
 
 	$hash = $this->recursiveFingerprint($assetSrcDir);
