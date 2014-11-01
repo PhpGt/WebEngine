@@ -202,8 +202,6 @@ public function checkStaticValid() {
  */
 public function copyAsset() {
 	$copyCount = 0;
-
-	$wwwDir = Path::get(Path::WWW);
 	$assetSrcDir = Path::get(Path::ASSET);
 
 	if(!is_dir($assetSrcDir)) {
