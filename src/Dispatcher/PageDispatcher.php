@@ -71,25 +71,11 @@ public function loadSource($path, $pathFile) {
 
 			switch($specialName) {
 			case "header":
-				if(empty($headerSource)) {
-					$headerSource = file_get_contents($fullPath);
-
-					if(strpos($extension, "htm") !== 0) {
-						$headerSource = Transformer::toHtml(
-							$headerSource, $extension);
-					}
-				}
+				$this->readSourceContent($fullPath, $headerSource, true);
 				break;
 
 			case "footer":
-				if(empty($footerSource)) {
-					$footerSource = file_get_contents($fullPath);
-
-					if(strpos($extension, "htm") !== 0) {
-						$footerSource = Transformer::toHtml(
-							$footerSource, $extension);
-					}
-				}
+				$this->readSourceContent($fullPath, $footerSource, true);
 				break;
 			}
 		}
@@ -115,11 +101,7 @@ public function loadSource($path, $pathFile) {
 
 		if(strcasecmp($fileBase, $pathFileBase) === 0) {
 			$fullPath = implode("/", [$path, $fileName]);
-			$source .= file_get_contents($fullPath);
-		}
-
-		if(strpos($extension, "htm") !== 0) {
-			$source = Transformer::toHtml($source, $extension);
+			$this->readSourceContent($fullPath, $source);
 		}
 	}
 
@@ -132,6 +114,33 @@ public function loadSource($path, $pathFile) {
 	throw new NotFoundException(implode("/", [$path, $pathFile]));
 }
 
+/**
+ * If $out variable is empty, reads the source file provided, transforming
+ * where necessary, providing $out with the HTML source.
+ *
+ * @param string $fullPath Absolute path to source file on disk
+ * @param string &$out Reference to variable to write HTML source to
+ * @param boolean $replaceOut When true, $out's contents will be replaced. When
+ * false, if $out has contents already it will be ignored
+ */
+private function readSourceContent($fullPath, &$out, $replaceOut = false) {
+	if($replaceOut
+	&& !empty($out)) {
+		return;
+	}
+
+	$source = file_get_contents($fullPath);
+	$extension = pathinfo($fullPath, PATHINFO_EXTENSION);
+	if(strpos($extension, "htm") !== 0) {
+		$source = Transformer::toHtml($source, $extension);
+	}
+
+	$out = $source;
+}
+
+/**
+ *
+ */
 public function createResponseContent($html, $config) {
 	if(!is_string($html)) {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException(

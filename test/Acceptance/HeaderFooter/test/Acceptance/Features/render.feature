@@ -25,4 +25,5 @@ Feature: Test that HTML headers and footers are included
 		Given I go to "/directory-with-own-header"
 		Then I should see "This page should have its own header"
 		And I should see "Test Website (overridden header)"
+		And I should not see "Test Website (base header)"
 		And I should see "This is the footer"
