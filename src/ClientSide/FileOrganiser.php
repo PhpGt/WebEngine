@@ -133,7 +133,7 @@ public function purgeStaticWwwFiles() {
  * files as necessary. For example, source LESS files need to be compiled to
  * public CSS files in this process.
  *
- * @param PathDetails $pathDetails
+ * @param PathDetails|array $pathDetails
  * @param callable|null $callback The callable to pass output through before
  * writing to disk
  *
