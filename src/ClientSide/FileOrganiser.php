@@ -197,6 +197,8 @@ public function checkStaticValid() {
  * Copies the source asset directory to the www directory and stores a
  * fingerprint of the source directory in a separate public file, for use in
  * checkAssetValid().
+ *
+ * @return int Number of files copied
  */
 public function copyAsset() {
 	$copyCount = 0;
