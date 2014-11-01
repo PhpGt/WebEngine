@@ -167,8 +167,6 @@ public function copyCompile($pathDetails, $callback = null) {
  * false if they are not (or if they do not exist)
  */
 public function checkStaticValid() {
-	$wwwDir = Path::get(Path::WWW);
-
 	$assetSrcDir  = Path::get(Path::ASSET);
 	$scriptSrcDir = Path::get(Path::SCRIPT);
 	$styleSrcDir  = Path::get(Path::STYLE);
