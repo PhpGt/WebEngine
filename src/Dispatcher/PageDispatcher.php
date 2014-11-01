@@ -67,7 +67,6 @@ public function loadSource($path, $pathFile) {
 			$fileBase = strtok($fileName, ".");
 			$specialName = substr(strtolower($fileBase), 1);
 			$fullPath = implode("/", [$headerFooterPath, $fileName]);
-			$extension = $fileInfo->getExtension();
 
 			switch($specialName) {
 			case "header":
