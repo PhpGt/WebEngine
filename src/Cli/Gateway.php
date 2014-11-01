@@ -62,8 +62,6 @@ public static function getAbsoluteFilePath($uri) {
  * @return int The number of bytes served.
  */
 public static function serveStaticFile($filePath) {
-	$mime = Server::$contentTypeDefault;
-
 	$ext = pathinfo($filePath, PATHINFO_EXTENSION);
 	if(isset(Server::$contentType[$ext])) {
 		$mime = Server::$contentType[$ext];
