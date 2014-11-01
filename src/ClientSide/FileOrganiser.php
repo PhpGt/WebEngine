@@ -86,10 +86,7 @@ public function createStaticFingerprint() {
 		Path::get(Path::STYLE),
 	]);
 
-	if(!is_dir(dirname($this->staticFingerprintFile))) {
-		mkdir(dirname($this->staticFingerprintFile), 0775, true);
-	}
-	file_put_contents($this->staticFingerprintFile, $staticSrcFingerprint);
+	$this->writeStaticFingerprint($staticSrcFingerprint);
 }
 
 /**
@@ -222,12 +219,16 @@ public function copyAsset() {
 		$copyCount
 	);
 
+	$this->writeStaticFingerprint($hash);
+
+	return $copyCount;
+}
+
+private function writeStaticFingerprint($fingerprint) {
 	if(!is_dir(dirname($this->staticFingerprintFile))) {
 		mkdir(dirname($this->staticFingerprintFile), 0775, true);
 	}
-
-	file_put_contents($this->staticFingerprintFile, $hash);
-	return $copyCount;
+	file_put_contents($this->staticFingerprintFile, $fingerprint);
 }
 
 /**
