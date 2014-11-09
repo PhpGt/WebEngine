@@ -8,6 +8,9 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
+die(PHP_EOL . PHP_EOL
+	. "PHP.Gt install script is not yet ready on master branch."
+	. PHP_EOL . "");
 $HOME = $_SERVER["HOME"];
 $gtDir = "$HOME/.gt";
 if(!is_dir($gtDir)) {
