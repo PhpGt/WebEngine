@@ -8,8 +8,16 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-chdir(__DIR__);
-chdir("..");
+$gtDir = "~/.gt";
+if(!is_dir($gtDir)) {
+	mkdir($gtDir);
+}
+chdir($gtDir);
+
+var_dump(getcwd());
+die();
+
+// chdir("..");
 if(!file_exists("composer.phar")) {
 	$tempFile = "./.install.php";
 	$installScript = file_get_contents("https://getcomposer.org/installer");
