@@ -10,7 +10,7 @@
  */
 die(PHP_EOL . PHP_EOL
 	. "PHP.Gt install script is not yet ready on master branch."
-	. PHP_EOL . "");
+	. PHP_EOL . PHP_EOL);
 $HOME = $_SERVER["HOME"];
 $gtDir = "$HOME/.gt";
 if(!is_dir($gtDir)) {
