@@ -7,6 +7,7 @@
  */
 namespace Gt\ClientSide;
 
+use \Gt\Core\Path;
 use \Gt\Response\Response;
 use \scssc as ScssParser;
 
@@ -28,6 +29,7 @@ public static function parse($inputFile) {
 	switch ($ext) {
 	case "scss":
 		$scss = new ScssParser();
+		$scss->addImportPath(Path::get(Path::STYLE));
 		$content = $scss->compile($content);
 		break;
 
