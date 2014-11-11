@@ -53,7 +53,7 @@ public function __construct($arguments, $dummyRun = false) {
 
 	$this->process = new Process(
 		"php", [
-		"S" => "localhost:{$this->port}",
+		"S" => "0.0.0.0:{$this->port}",
 		"t" => $wwwDir,
 		"{$this->gtroot}/Cli/Gatekeeper.php",
 	]);
