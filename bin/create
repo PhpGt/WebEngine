@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Creates a new empty project using the blueprint-empty repository.
+ *
+ * PHP.Gt (http://php.gt)
+ * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
+ * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ */
+use	Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\ArgvInput;
+
+require(__DIR__ . "/../vendor/autoload.php");
+
+$definition = new InputDefinition([
+	new InputArgument("approot", InputArgument::REQUIRED),
+]);
+
+try {
+	$input = new ArgvInput($argv, $definition);
+	$projectName = $input->getArgument("approot");
+	mkdir($projectName);
+	chdir($projectName);
+	die("In $projectName");
+	exit(0);
+}
+catch(Exception $e) {
+	echo "\ncreate shell script usage:\n";
+	echo $definition->getSynopsis();
+	echo "\n\n";
+	echo strip_tags($definition->asText());
+	echo "\n";
+	exit(1);
+}
