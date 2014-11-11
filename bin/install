@@ -8,11 +8,11 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-die(PHP_EOL . PHP_EOL
-	. "PHP.Gt install script is not yet ready on master branch."
-	. PHP_EOL . PHP_EOL);
+$binDir = __DIR__;
 $HOME = $_SERVER["HOME"];
 $gtDir = "$HOME/.gt";
+$gtBinDir = "$gtDir/bin";
+
 if(!is_dir($gtDir)) {
 	mkdir($gtDir);
 }
@@ -21,24 +21,19 @@ chdir($gtDir);
 if(!file_exists("composer.phar")) {
 	echo "Installing composer..." . PHP_EOL;
 	$tempFile = "install-composer.php";
-	$installScript = file_get_contents("https://getcomposer.org/installer");
+	$installScript = @file_get_contents("https://getcomposer.org/installer");
+	if(!$installScript) {
+		die("Failed installing composer. " . PHP_EOL
+			. "Are you connected to the internet?" . PHP_EOL);
+	}
 	file_put_contents($tempFile, $installScript);
-	passthru("php $tempFile");
+	passthru("php $tempFile", $composerReturn);
 	unlink($tempFile);
 
-	// echo "Installing composer..." . PHP_EOL;
-	// $returnVar = 0;
-	// passthru("./composer.phar install", $returnVar);
-	// if($returnVar == 0) {
-	// 	echo "Composer installed successfully!" . PHP_EOL . PHP_EOL;
-	// }
-	// else {
-	// 	echo "Error installing Composer :(" . PHP_EOL;
-	// 	exit($returnVar);
-	// }
+	if($composerReturn != 0) {
+		die("Something went wrong installing composer :(" . PHP_EOL);
+	}
 }
-
-die("AFOSDGJDFKDMFSNG");
 
 // OS-dependant stuff:
 switch(PHP_OS) {
@@ -73,6 +68,48 @@ case "Darwin":
 default:
 	break;
 }
-var_dump(PHP_OS);die();
 
-echo "\n\nPHP.Gt successfully installed\n\n";
+if(!is_dir($gtBinDir)) {
+	mkdir($gtBinDir, 0775, true);
+}
+
+foreach (new DirectoryIterator($binDir) as $item) {
+	if($item->isDot()) {
+		continue;
+	}
+
+	$filename = $item->getFilename();
+	$pathname = $item->getPathname();
+	$linkname = "$gtBinDir/gt-$filename";
+
+	if(file_exists($linkname)) {
+		unlink($linkname);
+	}
+
+	symlink($pathname, $linkname);
+}
+
+$bashLoadScript = "$HOME/.bash_profile";
+$bashExisting = "";
+if(file_exists($bashLoadScript)) {
+	$bashExisting = file_get_contents($bashLoadScript);
+}
+if(!strstr($bashExisting, "#gt")) {
+	// TODO: Remove existing gt snippet rather than ignoring completely.
+	// Add gtBinDir to path.
+	$bash = <<<BASH
+
+#gt
+if [[ ":\$PATH:" != *":$gtBinDir:"* ]]; then
+  PATH=\$PATH:$gtBinDir
+  export PATH
+fi
+#gt-end
+
+BASH;
+	file_put_contents($bashLoadScript, $bash, FILE_APPEND);
+}
+
+echo PHP_EOL . "PHP.Gt successfully installed." . PHP_EOL
+	. "Log out and log in again to use gt-* commands." . PHP_EOL
+	. PHP_EOL;

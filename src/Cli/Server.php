@@ -41,6 +41,11 @@ public function __construct($arguments, $dummyRun = false) {
 	$this->approot = $arguments->getOption("approot");
 	$this->port = $arguments->getOption("port");
 
+	$overrideApproot = $arguments->getArgument("approot");
+	if(!is_null($overrideApproot)) {
+		$this->approot = $overrideApproot;
+	}
+
 	$wwwDir = "{$this->approot}/www";
 	if(!is_dir($wwwDir)) {
 		mkdir($wwwDir, 0775, true);

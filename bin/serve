@@ -23,6 +23,7 @@ $defaults = [
 ];
 
 $definition = new InputDefinition([
+	new InputArgument("approot", InputArgument::OPTIONAL),
 	new InputOption("approot", "a", InputOption::VALUE_OPTIONAL,
 		"Application root directory", $defaults["approot"]),
 	new InputOption("port", "p", InputOption::VALUE_OPTIONAL,
