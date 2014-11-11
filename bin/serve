@@ -9,11 +9,11 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-use Gt\Cli\Server,
-	Symfony\Component\Console\Input\InputDefinition,
-	Symfony\Component\Console\Input\InputArgument,
-	Symfony\Component\Console\Input\InputOption,
-	Symfony\Component\Console\Input\ArgvInput;
+use Gt\Cli\Server;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\ArgvInput;
 
 require(__DIR__ . "/../vendor/autoload.php");
 
