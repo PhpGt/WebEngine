@@ -23,7 +23,12 @@ try {
 	$projectName = $input->getArgument("approot");
 	mkdir($projectName);
 	chdir($projectName);
-	die("In $projectName");
+	$pwd = getcwd();
+
+	// Create new project with PHP.Gt in composer.json
+	// Install via composer.
+
+	echo "\nNew project $projectName created in $pwd\n\n";
 	exit(0);
 }
 catch(Exception $e) {
