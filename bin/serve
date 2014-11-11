@@ -40,7 +40,6 @@ catch(Exception $e) {
 	echo $definition->getSynopsis();
 	echo "\n\n";
 	echo strip_tags($definition->asText());
-
 	echo "\n";
 	exit(1);
 }
