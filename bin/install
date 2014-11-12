@@ -39,27 +39,26 @@ if(!file_exists("composer.phar")) {
 switch(PHP_OS) {
 case "Darwin":
 	// OSX
-	// Install Homebrew to install MySQL and PHP versions.
-	passthru("hash brew 2> /dev/null", $brewMissing);
-	if($brewMissing) {
-		echo "Downloading homebrew..." . PHP_EOL;
-		$tempFile = "install-homebrew.php";
-		$installScript = file_get_contents(
-			"https://raw.githubusercontent.com/Homebrew/install/master/install"
-		);
-		file_put_contents($tempFile, $installScript);
+	// OSX does not load .bashrc, instead it loads .bash_profile...
+	// let's fix that.
+	$bashLoadScript = "$HOME/.bash_profile";
 
-		echo "Installing homebrew..." . PHP_EOL;
-		passthru("ruby -e $tempFile", $returnVar);
-		unlink($tempFile);
+	$bashExisting = "";
+	if(file_exists($bashLoadScript)) {
+		$bashExisting = file_get_contents($bashLoadScript);
+	}
+	if(!strstr($bashExisting, "#gt")) {
+		// TODO: Remove existing gt snippet rather than ignoring completely.
+		$bash = <<<BASH
 
-		if($returnVar == 0) {
-			echo "Homebrew installed successfully!" . PHP_EOL . PHP_EOL;
-		}
-		else {
-			echo "Error installing Homebrew :(" . PHP_EOL;
-			exit($returnVar);
-		}
+#gt
+
+[[ -s ~/.bashrc ]] && source ~/.bashrc
+
+#gt-end
+
+BASH;
+	file_put_contents($bashLoadScript, $bash, FILE_APPEND);
 	}
 
 	// TODO: Manage packages for OSX.
@@ -89,7 +88,7 @@ foreach (new DirectoryIterator($binDir) as $item) {
 	symlink($pathname, $linkname);
 }
 
-$bashLoadScript = "$HOME/.bash_profile";
+$bashLoadScript = "$HOME/.bashrc";
 $bashExisting = "";
 if(file_exists($bashLoadScript)) {
 	$bashExisting = file_get_contents($bashLoadScript);
@@ -100,10 +99,12 @@ if(!strstr($bashExisting, "#gt")) {
 	$bash = <<<BASH
 
 #gt
+
 if [[ ":\$PATH:" != *":$gtBinDir:"* ]]; then
   PATH=\$PATH:$gtBinDir
   export PATH
 fi
+
 #gt-end
 
 BASH;
@@ -111,5 +112,5 @@ BASH;
 }
 
 echo PHP_EOL . "PHP.Gt successfully installed." . PHP_EOL
-	. "Log out and log in again to use gt-* commands." . PHP_EOL
+	. "Restart your terminal to use gt-* commands." . PHP_EOL
 	. PHP_EOL;
