@@ -60,8 +60,6 @@ case "Darwin":
 BASH;
 	file_put_contents($bashLoadScript, $bash, FILE_APPEND);
 	}
-
-	// TODO: Manage packages for OSX.
 	break;
 
 default:
