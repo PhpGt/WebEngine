@@ -15,8 +15,10 @@ public function setUp() {
 	$this->approot = \Gt\Test\Helper::createTmpDir();
 
 	$this->arguments = $this->getMock(
-		"\Symfony\Component\Console\Input\ArgvInput", ["getOption"]);
-
+		"\Symfony\Component\Console\Input\ArgvInput", [
+		"getOption",
+		"getArgument",
+	]);
 }
 
 public function tearDown() {
@@ -31,9 +33,11 @@ public function testArgsSet() {
 
 	$this->arguments->method("getOption")
 		->will($this->returnValueMap($map));
+	$this->arguments->method("getArgument")
+		->will($this->returnValueMap($map));
 
 	$server = new Server($this->arguments, true);
-	$this->assertContains("php -S=localhost:8089", $server->processOutput);
+	$this->assertContains("php -S=0.0.0.0:8089", $server->processOutput);
 	$this->assertContains("-t={$this->approot}/www", $server->processOutput);
 	$this->assertContains("/PHP.Gt/src/Cli/Gatekeeper.php",
 		$server->processOutput);

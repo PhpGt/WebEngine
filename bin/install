@@ -8,9 +8,9 @@
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
-$binDir = __DIR__;
 $HOME = $_SERVER["HOME"];
 $gtDir = "$HOME/.gt";
+$binDir = "$gtDir/PHP.Gt/bin";
 $gtBinDir = "$gtDir/bin";
 
 if(!is_dir($gtDir)) {
@@ -23,46 +23,52 @@ if(!file_exists("composer.phar")) {
 	$tempFile = "install-composer.php";
 	$installScript = @file_get_contents("https://getcomposer.org/installer");
 	if(!$installScript) {
-		die("Failed installing composer. " . PHP_EOL
+		echo("Failed installing composer. " . PHP_EOL
 			. "Are you connected to the internet?" . PHP_EOL);
+		exit(1);
 	}
 	file_put_contents($tempFile, $installScript);
 	passthru("php $tempFile", $composerReturn);
 	unlink($tempFile);
 
 	if($composerReturn != 0) {
-		die("Something went wrong installing composer :(" . PHP_EOL);
+		echo("Something went wrong installing composer :(" . PHP_EOL);
 	}
+}
+
+passthru("./composer.phar create-project brightflair/php.gt PHP.Gt "
+	. "-s'dev' --keep-vcs", $installReturn);
+if($installReturn != 0) {
+	echo("Something went wrong downloading PHP.Gt :(". PHP_EOL
+		. "Are you connected to the internet?" . PHP_EOL);
+	exit(1);
 }
 
 // OS-dependant stuff:
 switch(PHP_OS) {
 case "Darwin":
 	// OSX
-	// Install Homebrew to install MySQL and PHP versions.
-	passthru("hash brew 2> /dev/null", $brewMissing);
-	if($brewMissing) {
-		echo "Downloading homebrew..." . PHP_EOL;
-		$tempFile = "install-homebrew.php";
-		$installScript = file_get_contents(
-			"https://raw.githubusercontent.com/Homebrew/install/master/install"
-		);
-		file_put_contents($tempFile, $installScript);
+	// OSX does not load .bashrc, instead it loads .bash_profile...
+	// let's fix that.
+	$bashLoadScript = "$HOME/.bash_profile";
 
-		echo "Installing homebrew..." . PHP_EOL;
-		passthru("ruby -e $tempFile", $returnVar);
-		unlink($tempFile);
-
-		if($returnVar == 0) {
-			echo "Homebrew installed successfully!" . PHP_EOL . PHP_EOL;
-		}
-		else {
-			echo "Error installing Homebrew :(" . PHP_EOL;
-			exit($returnVar);
-		}
+	$bashExisting = "";
+	if(file_exists($bashLoadScript)) {
+		$bashExisting = file_get_contents($bashLoadScript);
 	}
+	if(!strstr($bashExisting, "#gt")) {
+		// TODO: Remove existing gt snippet rather than ignoring completely.
+		$bash = <<<BASH
 
-	// TODO: Manage packages for OSX.
+#gt
+
+[[ -s ~/.bashrc ]] && source ~/.bashrc
+
+#gt-end
+
+BASH;
+	file_put_contents($bashLoadScript, $bash, FILE_APPEND);
+	}
 	break;
 
 default:
@@ -89,7 +95,7 @@ foreach (new DirectoryIterator($binDir) as $item) {
 	symlink($pathname, $linkname);
 }
 
-$bashLoadScript = "$HOME/.bash_profile";
+$bashLoadScript = "$HOME/.bashrc";
 $bashExisting = "";
 if(file_exists($bashLoadScript)) {
 	$bashExisting = file_get_contents($bashLoadScript);
@@ -100,10 +106,12 @@ if(!strstr($bashExisting, "#gt")) {
 	$bash = <<<BASH
 
 #gt
+
 if [[ ":\$PATH:" != *":$gtBinDir:"* ]]; then
   PATH=\$PATH:$gtBinDir
   export PATH
 fi
+
 #gt-end
 
 BASH;
@@ -111,5 +119,5 @@ BASH;
 }
 
 echo PHP_EOL . "PHP.Gt successfully installed." . PHP_EOL
-	. "Log out and log in again to use gt-* commands." . PHP_EOL
+	. "Restart your terminal to use gt-* commands." . PHP_EOL
 	. PHP_EOL;
