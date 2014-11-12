@@ -42,7 +42,7 @@ public function __construct($document) {
  */
 public function get($name) {
 	if(isset($this->elementArray[$name])) {
-		return $this->elementArray[$name];
+		return $this->elementArray[$name]->cloneNode(true);
 	}
 
 	return null;
