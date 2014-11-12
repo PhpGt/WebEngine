@@ -15,10 +15,17 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArgvInput;
 
-require(__DIR__ . "/../vendor/autoload.php");
+$cwd = getcwd();
+$vendorAutoLoadFile = realpath(__DIR__ . "/../vendor/autoload.php");
+if(!file_exists($vendorAutoLoadFile)) {
+	// If this script exists within the vendor/brightflair/php.gt directory:
+	$vendorAutoLoadFile = realpath(__DIR__ . "/../../../autoload.php");
+	$cwd = realpath(__DIR__ . "/../../..");
+}
+require($vendorAutoLoadFile);
 
 $defaults = [
-	"approot" => getcwd(),
+	"approot" => $cwd,
 	"port" => 8080,
 ];
 
@@ -40,9 +47,18 @@ try {
 	// Change autoloaders so we are definitely using the current project's
 	// dependencies (rather than the global PHP.Gt dependencies).
 	$projectAutoloader = "$approot/vendor/autoload.php";
-	if(file_exists($projectAutoloader)) {
-		require($projectAutoloader);
+	if(!file_exists($projectAutoloader)) {
+		// We must be running the bin/serve script manually...
+		$projectAutoloader = $vendorAutoLoadFile;
 	}
+
+	if(!file_exists($projectAutoloader)) {
+		echo "\nYour project must require PHP.Gt "
+			. "as a dependency using composer.\n\n"
+			. "See http://www.php.gt/docs/installation for more information.";
+		exit(1);
+	}
+	require($projectAutoloader);
 	new Server($input);
 	exit(0);
 }
