@@ -39,7 +39,7 @@ if(!file_exists("composer.phar")) {
 passthru("./composer.phar create-project brightflair/php.gt PHP.Gt "
 	. "-s'dev' --no-install --keep-vcs", $installReturn);
 if($installReturn != 0) {
-	echo "Something went wrong downloading PHP.Gt :(". PHP_EOL
+	echo("Something went wrong downloading PHP.Gt :(". PHP_EOL
 		. "Are you connected to the internet?" . PHP_EOL);
 	exit(1);
 }
