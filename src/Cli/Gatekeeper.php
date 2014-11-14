@@ -37,5 +37,5 @@ case "cli":
 
 default:
 	// When using third-party webserver:
-	return new \Gt\Core\Start();
+	return new \Gt\Core\Start($_SERVER["REQUEST_URI"]);
 }
