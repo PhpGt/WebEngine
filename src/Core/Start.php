@@ -70,7 +70,7 @@ public function __construct($uri) {
  * @param string $appNamespace Base namespace containing all application logic
  */
 private function addAppAutoloader($appNamespace) {
-	$autoloadPath = Path::get(Path::GTROOT) . "../../autoload.php";
+	$autoloadPath = realpath(Path::get(Path::GTROOT) . "/../../autoload.php");
 	if(false === $autoloadPath) {
 		$autoloadPath = realpath(Path::get(Path::GTROOT)
 			. "/vendor/autoload.php");
