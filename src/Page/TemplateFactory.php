@@ -11,11 +11,18 @@ namespace Gt\Page;
 class TemplateFactory {
 
 public $elementArray = [];
+private $templateNodeMap = [
+	"parent" => [],
+	"nextSibling" => [],
+	"previousSibling" => [],
+];
+private $document;
 
 /**
  * @param The dom document to scrape template elements from
  */
 public function __construct($document) {
+	$this->document = $document;
 	$templateAttribute = $document->config->template_element_attribute;
 	$elementList = $document->xpath(".//*[@$templateAttribute]");
 
@@ -23,9 +30,11 @@ public function __construct($document) {
 		$name = $element->getAttribute($templateAttribute);
 		$this->elementArray[$name] = $element;
 
-		$element->templateParentNode = $element->parentNode;
-		$element->templateNextSibling = $element->nextSibling;
-		$element->templatePreviousSibling = $element->nextSibling;
+		$this->templateNodeMap["parent"][$name] = $element->parentNode;
+		$this->templateNodeMap["nextSibling"][$name] = $element->nextSibling;
+		$this->templateNodeMap["previousSibling"][$name] =
+			$element->previousSibling;
+
 		$element->remove();
 	}
 }
@@ -42,7 +51,9 @@ public function __construct($document) {
  */
 public function get($name) {
 	if(isset($this->elementArray[$name])) {
-		return $this->elementArray[$name]->cloneNode(true);
+		$node = $this->elementArray[$name]->cloneNode(true);
+		$node->templateParentNode = $this->templateNodeMap["parent"][$name];
+		return $node;
 	}
 
 	return null;
