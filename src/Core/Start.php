@@ -50,6 +50,7 @@ public function __construct($uri) {
 	$apiFactory = new ApiFactory($config["api"]);
 	$dbFactory  = new DatabaseFactory($config["database"]);
 
+	session_start();
 	$dispatcher = DispatcherFactory::createDispatcher(
 		$appNamespace,
 		$request,
