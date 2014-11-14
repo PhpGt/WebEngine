@@ -13,7 +13,13 @@
  */
 namespace Gt\Cli;
 
-$autoloader = realpath(__DIR__ . "/../../vendor/autoload.php");
+$autoloader = realpath(__DIR__ . "/../../../../autoload.php");
+if(false === $autoloader) {
+	// Assume installed globally.
+	$autoloader = realpath(__DIR__ . "/../../vendor/autoload.php");
+
+}
+
 if(false === $autoloader) {
 	die("Composer autoloader missing. Have you installed correctly?");
 }
