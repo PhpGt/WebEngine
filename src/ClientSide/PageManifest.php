@@ -144,6 +144,10 @@ public function checkValid($fingerprintToCheck = null) {
 
 			$fileName = $fileInfo->getFilename();
 
+			if(strpos(strtolower($fileName), "asset") === 0) {
+				continue;
+			}
+
 			// Manifest-specific files are coppied into their own www
 			// subdirectory with the fingerprint in the directory name. The
 			// fileName ends in the manifest's fingerprint.

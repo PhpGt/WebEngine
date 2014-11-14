@@ -37,5 +37,5 @@ case "cli":
 
 default:
 	// When using third-party webserver:
-	return new \Gt\Core\Go();
+	return new \Gt\Core\Start();
 }

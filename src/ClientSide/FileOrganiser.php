@@ -44,6 +44,7 @@ public function organise($pathDetails = []) {
 	$copyCount = 0;
 	$staticValid = true;
 
+
 	// Performing the 10 steps as described here:
 	// http://php.gt/docs/static-file-fingerprinting
 	if(!file_exists($this->staticFingerprintFile)) {
