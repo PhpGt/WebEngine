@@ -329,8 +329,65 @@ public function testDoesNotCopyIfErrorInSource() {
 	$this->assertFileNotExists(Path::get(Path::WWW) . $filename);
 }
 
+public function testPurgeStaticWwwFilesRemovesStaticFingerprintFile() {
+	$staticFingerprintFile = $this->fileOrganiser->getStaticFingerprintFile();
+	$fingerprintPath = $this->getPath($staticFingerprintFile);
+	file_put_contents($staticFingerprintFile, "test-fingerprint");
+
+	$this->fileOrganiser->purgeStaticWwwFiles();
+	$this->assertFileNotExists($staticFingerprintFile,
+		'Static fingerprint file should not exist after purge');
+}
+
+public function testPurgeStaticWwwFilesPurgesAssetStyleScriptButLeavesOthers() {
+	$wwwDir = $this->getPath(Path::WWW);
+	$directoriesToCreate = ["Asset", "Script", "Style"];
+	$filesThatShouldStay = ["sitemap.xml", "favicon.ico", "robots.txt"];
+
+	foreach ($directoriesToCreate as $dir) {
+		$dirName = $dir . "-" . uniqid();
+		$dirPath = "$wwwDir/$dirName";
+
+		mkdir($dirPath, 0775, true);
+
+		// Create some random files inside.
+		for ($i = 0; $i < 5; $i++) {
+			touch($dirPath . "/" . uniqid());
+		}
+	}
+
+	foreach ($filesThatShouldStay as $file) {
+		$filePath = "$wwwDir/$file";
+		file_put_contents($filePath, uniqid());
+	}
+
+	$this->fileOrganiser->purgeStaticWwwFiles();
+
+	foreach ($directoriesToCreate as $dir) {
+		$dirName = $dir . "-" . uniqid();
+		$dirPath = "$wwwDir/$dirName";
+
+		$this->assertFileNotExists($dirPath,
+			'www subdirectory should not exist');
+	}
+
+	foreach ($filesThatShouldStay as $file) {
+		$filePath = "$wwwDir/$file";
+
+		$this->assertFileExists($filePath, 'www file should exist');
+	}
+}
+
 private function getPath($path) {
-	$dir = Path::get($path);
+	$dir = null;
+
+	try {
+		$dir = Path::get($path);
+	}
+	catch(\UnexpectedValueException $e) {
+		$dir = dirname($path);
+	}
+
 	if(!is_dir($dir)) {
 		mkdir($dir, 0775, true);
 	}

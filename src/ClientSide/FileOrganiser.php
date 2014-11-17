@@ -298,4 +298,8 @@ private function recursiveFingerprint($dir) {
 	return md5($hash);
 }
 
+public function getStaticFingerprintFile() {
+	return $this->staticFingerprintFile;
+}
+
 }#
