@@ -301,6 +301,34 @@ public function testOrganiserCopiesListOfFiles($uriList) {
 	}
 }
 
+/**
+ * @expectedException \Gt\ClientSide\CompilerParseException
+ */
+public function testDoesNotCopyIfErrorInSource() {
+	$dir = $this->getPath(Path::STYLE);
+	$filename = "/broken-style.scss";
+
+	file_put_contents($dir . $filename, "malformed { opacity: opacity: }");
+
+	$html = "<!doctype html>
+	<html><head>
+		<link rel='stylesheet' href='/Style$filename' />
+	</head><body><h1>Test</h1></body></html>";
+	$document = new \Gt\Dom\Document($html);
+	$cfg = new \Gt\Core\ConfigObj();
+	$request = new Request("/", $cfg);
+	$response = new Response($cfg);
+	$this->manifest = new PageManifest($document->head, $request, $response);
+
+	$this->fileOrganiser = new FileOrganiser($response, $this->manifest);
+	$pathDetails = $this->manifest->generatePathDetails();
+
+	$copyCount = $this->fileOrganiser->copyCompile($pathDetails);
+	$this->assertEquals(0, $copyCount);
+
+	$this->assertFileNotExists(Path::get(Path::WWW) . $filename);
+}
+
 private function getPath($path) {
 	$dir = Path::get($path);
 	if(!is_dir($dir)) {

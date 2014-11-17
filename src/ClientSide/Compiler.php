@@ -30,7 +30,16 @@ public static function parse($inputFile) {
 	case "scss":
 		$scss = new ScssParser();
 		$scss->addImportPath(Path::get(Path::STYLE));
-		$content = $scss->compile($content);
+
+		try {
+			$content = $scss->compile($content);
+		}
+		catch(\Exception $e) {
+			$msg = $e->getMessage();
+			if(strpos($msg, "parse error") < 1) {
+				throw new CompilerParseException("SCSS $msg");
+			}
+		}
 		break;
 
 	default:
