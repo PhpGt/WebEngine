@@ -373,4 +373,49 @@ public function testCheckInvalidAfterAlteration() {
 	$this->assertFalse($manifest->checkValid());
 }
 
+public function testExpands() {
+	$elSourceAttr = [
+		"SCRIPT" => "src",
+		"LINK" => "href",
+	];
+
+	$html = "<!doctype html>
+		<html>
+		<head>
+			<link rel='stylesheet' href='/style/one.css' />
+			<link rel='stylesheet' href='/style/two.scss' />
+			<link rel='stylesheet' href='/style/three/four.less' />
+
+			<script src='/script/one.js'></script>
+			<script src='/script/two.ts'></script>
+			<script src='/script/three.coffee'></script>
+		</head>
+		<body><h1>Test</h1></body>
+		</html>";
+	$document = new Document($html);
+
+	foreach ($document->querySelectorAll("head>link,head>script") as $el) {
+		$path = $el->getAttribute($elSourceAttr[$el->tagName]);
+		$fullPath = Path::get(Path::SRC) . $path;
+
+		if(!is_dir(dirname($fullPath))) {
+			mkdir(dirname($fullPath), 0775, true);
+		}
+		file_put_contents($fullPath, uniqid());
+	}
+
+	$manifest = new PageManifest(
+		$document->head, $this->request, $this->response);
+	$manifest->expand();
+
+	foreach ($document->querySelectorAll("head>link") as $i => $link) {
+		$ext = pathinfo($link->getAttribute("href"), PATHINFO_EXTENSION);
+		$this->assertEquals($ext, "css");
+	}
+	foreach ($document->querySelectorAll("head>script") as $i => $script) {
+		$ext = pathinfo($script->getAttribute("src"), PATHINFO_EXTENSION);
+		$this->assertEquals($ext, "js");
+	}
+}
+
 }#
