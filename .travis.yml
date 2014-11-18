@@ -5,9 +5,9 @@ php:
 install: "./bin/install"
 
 after_script:
-  - php ./vendor/bin/coveralls
+  - php ~/.gt/PHP.Gt/vendor/bin/coveralls
 
-script: ./test/run
+script: ~/.gt/PHP.Gt/test/run
 
 notifications:
   email:
