@@ -13,7 +13,10 @@ $gtDir = "$HOME/.gt";
 $binDir = "$gtDir/PHP.Gt/bin";
 $gtBinDir = "$gtDir/bin";
 
-if(!is_dir($gtDir)) {
+if(is_dir($gtDir)) {
+	exec("rm -rf $gtDir");
+}
+else {
 	mkdir($gtDir);
 }
 chdir($gtDir);
