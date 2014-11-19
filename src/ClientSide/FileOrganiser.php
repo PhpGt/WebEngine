@@ -1,5 +1,8 @@
 <?php
 /**
+ * Responsible for maintaining the organisation of the public web root (www)
+ * directory and the contents and cache validity of the client-side files that
+ * are copied there.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -20,6 +23,12 @@ private $assetWwwDir;
 
 private $staticFingerprintFile;
 
+/**
+ * @param \Gt\Response\Response $response The object representing the current
+ * Page or Api response
+ * @param \Gt\ClientSide\Manifest $manifest The representation of the current
+ * response's public ststic files
+ */
 public function __construct($response, Manifest $manifest) {
 	$this->response = $response;
 	$this->manifest = $manifest;
@@ -43,7 +52,6 @@ public function __construct($response, Manifest $manifest) {
 public function organise($pathDetails = []) {
 	$copyCount = 0;
 	$staticValid = true;
-
 
 	// Performing the 10 steps as described here:
 	// http://php.gt/docs/static-file-fingerprinting
@@ -78,7 +86,9 @@ public function organise($pathDetails = []) {
 }
 
 /**
- *
+ * Recurses over the source directories containing static files, providing an
+ * MD5 hash of the contents and writes it to a special file inside the
+ * public web root.
  */
 public function createStaticFingerprint() {
 	$staticSrcFingerprint = $this->recursiveFingerprint([
