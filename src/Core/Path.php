@@ -146,14 +146,14 @@ $stripPrefix = false, $stripSuffix = false) {
 
 	$result = implode("/", $pathArray);
 
-	if(false !== $stripPrefix
-	&& strpos($result, $stripPrefix) === 0) {
-		$result = substr($result, strlen($stripPrefix) );
-	}
+	if(is_string($stripPrefix)) {
+		if(strpos($result, $stripPrefix) === 0) {
+			$result = substr($result, strlen($stripPrefix) );
+		}
 
-	if(false !== $stripSuffix
-	&& substr($result, -strlen($stripSuffix)) === $stripSuffix) {
-		$result = substr($result, 0, -strlen($stripSuffix));
+		if(substr($result, -strlen($stripSuffix)) === $stripSuffix) {
+			$result = substr($result, 0, -strlen($stripSuffix));
+		}
 	}
 
 	return $result;
