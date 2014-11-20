@@ -36,22 +36,30 @@ public function __destruct() {
 	}
 }
 
+/**
+ * Spawns a new process and writes the process's output to STDOUT.
+ *
+ * @param bool $dummyRun Defaults to false. Set to true to skip opening of the
+ * new process and instead just return the process string
+ *
+ * @return string The exact string executed on the system
+ */
 public function run($dummyRun = false) {
-	if($dummyRun) {
-		return $this->processString;
+	if(!$dummyRun) {
+		$this->fp = popen(
+			$this->processString
+			// Redirect STDOUT to this process's STDIN.
+			. " 1>&0",
+			"r"
+		);
+
+		// Pass back all output from newly-spawned process.
+		while(false !== ($s = fread($this->fp, 1024)) ) {
+			fwrite(STDOUT, $s);
+		}
 	}
 
-	$this->fp = popen(
-		$this->processString
-		// Redirect STDOUT to this process's STDIN.
-		. " 1>&0",
-		"r"
-	);
-
-	// Pass back all output from newly-spawned process.
-	while(false !== ($s = fread($this->fp, 1024)) ) {
-		fwrite(STDOUT, $s);
-	}
+	return $this->processString;
 }
 
 }#

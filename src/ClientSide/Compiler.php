@@ -1,5 +1,7 @@
 <?php
 /**
+ * Provides a standard interface for compiling client-side scripts such as
+ * pre-processed Style Sheets or JavaScript.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
