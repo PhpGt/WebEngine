@@ -21,8 +21,12 @@ $definition = new InputDefinition([
 try {
 	$input = new ArgvInput($argv, $definition);
 	$projectName = $input->getArgument("approot");
-	mkdir($projectName);
+	// mkdir($projectName);
+	exec("git clone https://github.com/BrightFlair/blueprint-empty "
+		. $projectName);
 	chdir($projectName);
+	exec("rm -rf .git");
+	exec("~/.gt/composer.phar install");
 	$pwd = getcwd();
 
 	// Create new project with PHP.Gt in composer.json
