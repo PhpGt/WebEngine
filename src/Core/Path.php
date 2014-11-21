@@ -150,7 +150,8 @@ $stripPrefix = false, $stripSuffix = false) {
 		if(strpos($result, $stripPrefix) === 0) {
 			$result = substr($result, strlen($stripPrefix) );
 		}
-
+	}
+	if(is_string($stripSuffix)) {
 		if(substr($result, -strlen($stripSuffix)) === $stripSuffix) {
 			$result = substr($result, 0, -strlen($stripSuffix));
 		}
