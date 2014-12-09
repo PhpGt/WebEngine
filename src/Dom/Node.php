@@ -1,5 +1,13 @@
 <?php
 /**
+ * This class is an extension to the native DOMElement present in PHP, aiming
+ * to provide a DOM-level-4-capable interface by defining missing methods and
+ * properties.
+ *
+ * A Node is an interface from which a number of DOM types inherit, and allows
+ * these various types to be treated (or tested) similarly. It represents an
+ * object within a DOM Document. This class describes methods and properties
+ * common to all kinds of Node elements.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -9,6 +17,38 @@ namespace Gt\Dom;
 
 use Symfony\Component\CssSelector\CssSelector;
 
+/**
+ * @property string $nodeValue
+ * @property string $textContent
+ * @property-read Node $parentNode
+ * @property-read NodeList $childNodes
+ * @property-read Node $firstChild
+ * @property-read Node $lastChild
+ * @property-read Node $previousSibling
+ * @property-read Node $nextSibling
+ * @property-read DOMNamedNodeMap $attributes
+ * @property-read Document $ownerDocument
+ *
+ * @method Node appendChild(Node $newNode)
+ * @method Node cloneNode(bool $deep)
+ * @method string getAttribute(string name)
+ * @method Node getElementById(string $ID)
+* @method NodeList getElementsByClassName(string $name)
+* @method NodeList getElementsByName(string $name)
+ * @method NodeList getElementsByTagName(string $name)
+ * @method int getLineNo()
+ * @method bool hasAttribute(string $name)
+ * @method bool hasAttributes()
+ * @method bool hasChildNodes()
+ * @method Node insertBefore(Node $newNode, Node $refNode)
+ * @method bool isSameNode(Node $node)
+ * @method void normalize()
+ * @method bool removeAttribute(string $name)
+ * @method Node removeChild(Node $oldNode)
+ * @method Node replaceChild(Node $newNode, Node $oldNode)
+ * @method DOMAttr setAttribute(string $name, string $value)
+ *
+ */
 class Node {
 
 public $domNode;
