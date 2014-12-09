@@ -19,6 +19,11 @@ public function __construct($apiFactory, $dbFactory, $content) {
 	$this->content = $content;
 }
 
+/**
+ * Called to execute user code before page renders.
+ *
+ * @return void
+ */
 abstract public function go();
 
 }#
