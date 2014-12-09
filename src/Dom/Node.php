@@ -29,6 +29,7 @@ use Symfony\Component\CssSelector\CssSelector;
  * @property-read Node $nextSibling
  * @property-read DOMNamedNodeMap $attributes
  * @property-read Document $ownerDocument
+ * @property Document $document
  *
  * @method Node appendChild(Node $newNode)
  * @method Node cloneNode(bool $deep)

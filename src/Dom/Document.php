@@ -30,6 +30,7 @@ use \Gt\ClientSide\PageManifest;
  * @property Node $body
  * @property-read DOMConfiguration $config
  * @property-read DOMConfiguration $config
+ * @property Document $document
  * @property string $documentURI
  * @property string $encoding
 * @property Node $firstChild
