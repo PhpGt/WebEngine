@@ -49,7 +49,8 @@ public function __construct($uri, ConfigObj $config) {
 
 /**
  * Returns the type of request made, whether it is to a page or an API.
- * @return mixed A Request type constant.
+ *
+ * @return string A Request type constant.
  */
 public function getType() {
 	$apiPrefix = "/" . $this->config->api_prefix;
