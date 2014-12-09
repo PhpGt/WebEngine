@@ -32,6 +32,11 @@ $autoNestProperties = false, $autoCallMethods = false) {
 	$this->autoCallMethods = $autoCallMethods;
 }
 
+/**
+ * @param string $name Property name
+ *
+ * @return mixed Value of given property name
+ */
 public function __get($name) {
 	if($this->autoNestProperties) {
 		$this->$name = new Obj();

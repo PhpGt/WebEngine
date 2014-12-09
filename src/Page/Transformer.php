@@ -15,7 +15,11 @@ const TYPE_MARKDOWN	= "md";
 const TYPE_HAML		= "haml";
 
 /**
+ * @param string $source Plain-text source content
+ * @param string $type Type of source content, must be one of this class's
+ * type constants
  *
+ * @return string HTML source transformed from provided source content
  */
 public static function toHtml($source, $type) {
 	$type = strtolower($type);
