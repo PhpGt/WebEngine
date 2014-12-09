@@ -6,4 +6,5 @@
  * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
  */
 namespace Gt\Request;
+
 class InvalidRequestTypeException extends \Gt\Core\Exception\GtException {}#
