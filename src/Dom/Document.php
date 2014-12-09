@@ -1,6 +1,14 @@
 <?php
 /**
- * TODO: Docs
+ * Each web page loaded in the browser has its own document object.
+ * The Document interface serves as an entry point into the web page's
+ * content (the DOM tree, including elements such as <body> and <table>)
+ * and provides functionality which is global to the document (such as
+ * creating new elements in the document).
+ *
+ * This class is an extension to the native DOMDocument present in PHP, aiming
+ * to provide a DOM-level-4-capable interface by defining missing methods and
+ * properties.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -13,6 +21,73 @@ use \Gt\Response\Response;
 use \Gt\Response\ResponseContent;
 use \Gt\ClientSide\PageManifest;
 
+/**
+ * Note: The Document interface also inherits properties and methods from the
+ * Node interface.
+ *
+ * @property-read string $actualEncoding
+* @property NodeList $anchors
+ * @property Node $body
+ * @property-read DOMConfiguration $config
+ * @property-read DOMConfiguration $config
+ * @property string $documentURI
+ * @property string $encoding
+* @property Node $firstChild
+ * @property bool $formatOutput
+* @property NodeList $forms
+ * @property Node $head
+* @property NodeList $images
+ * @property-read DOMImplementation $implementation
+* @property NodeList $links
+ * @property bool $preserveWhiteSpace
+ * @property bool $recover
+* @property string $referrer
+ * @property bool $resolveExternals
+ * @property bool $standalone
+ * @property bool $strictErrorChecking
+ * @property bool $substituteEntities
+* @property string textContent
+* @property string $title
+ * @property bool $validateOnParse
+ * @property string $version
+ * @property-read string $xmlEncoding
+ * @property bool $xmlStandalone
+ * @property string $xmlVersion
+ *
+ * @method Node adoptNode(Node $externalNode)
+ * @method Node appendChild(Node $newNode)
+ * @method Node cloneNode(bool $deep)
+ * @method DOMAttr createAttribute(string $name)
+ * @method DOMCDATASection createCDATASection(string $data)
+ * @method DOMComment createComment(string $data)
+ * @method DOMDocumentFragment createDocumentFragment()
+ * @method Node createElement(string $tagName [, array $attributeArray, string $nodeValue])
+ * @method DOMEntityReference createEntityReference(string $name)
+ * @method DOMProcessingInstruction createProcessingInstruction(string $target [, string $data])
+ * @method DOMText createTextNode(string $content)
+ * @method Node getElementById(string $ID)
+* @method NodeList getElementsByClassName(string $name)
+* @method NodeList getElementsByName(string $name)
+ * @method NodeList getElementsByTagName(string $name)
+ * @method int getLineNo()
+ * @method string getNodePath()
+ * @method bool hasAttributes()
+ * @method bool hasChildNodes()
+ * @method Node insertBefore(Node $newNode, Node $refNode)
+ * @method Node importNode(Node $importedNode [, bool $deep])
+ * @method bool isDefaultNamespace(string $namespaceURI)
+ * @method bool isSameNode(Node $node)
+ * @method bool isSupported(string $feature, string $version)
+ * @method string lookupNamespaceURI(string $prefix)
+ * @method string lookupPrefix($namespaceURI)
+ * @method void normalize()
+ * @method void normalizeDocument()
+ * @method Node querySelector($selector)
+ * $method NodeList querySelectorAll($selector)
+ * @method Node removeChild(Node $oldNode)
+ * @method Node replaceChild(Node $newNode, Node $oldNode)
+ * @method bool validate()
+ */
 class Document extends ResponseContent {
 
 const DEFAULT_HTML = "<!doctype html>";
