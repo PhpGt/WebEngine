@@ -37,6 +37,7 @@ use Symfony\Component\CssSelector\CssSelector;
 * @method NodeList getElementsByName(string $name)
  * @method NodeList getElementsByTagName(string $name)
  * @method int getLineNo()
+ * @method string getNodePath()
  * @method bool hasAttribute(string $name)
  * @method bool hasAttributes()
  * @method bool hasChildNodes()
