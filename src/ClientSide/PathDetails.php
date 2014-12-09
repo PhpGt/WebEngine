@@ -32,7 +32,7 @@ private $extensionMap = [
 ];
 
 /**
- * @param NodeList $domNodeList List of elements to represent
+ * @param NodeList|array $domNodeList List of elements to represent
  */
 public function __construct($nodeList = []) {
 	$this->nodeList = $nodeList;
