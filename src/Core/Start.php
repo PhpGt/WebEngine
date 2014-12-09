@@ -80,14 +80,15 @@ private function addAppAutoloader($appNamespace) {
 }
 
 /**
- * @param string $uri1 Originally requested URI.
- * @param string $uri2 Fixed or changed URI.
+ * @param string $uri1 Originally requested URI
+ * @param string $uri2 Fixed or changed URI
  *
- * @return Redirect Object representing the redirection.
+ * @return Redirect|null Object representing the redirection, or null if either
+ * uri is provided as null
  */
 private function redirect($uri1, $uri2, $production) {
 	if(is_null($uri1) || is_null($uri2)) {
-		return;
+		return null;
 	}
 
 	if(strcmp($uri1, $uri2) !== 0) {
