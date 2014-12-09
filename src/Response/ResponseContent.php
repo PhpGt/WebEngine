@@ -11,6 +11,8 @@ use \Gt\ClientSide\Manifest;
 
 abstract class ResponseContent {
 
+public $config;	// Response config.
+
 /**
  * By default, a Manifest has no capabilities, but each type of ResponseContent
  * can have its own type of Manifest-extending object, which it should construct

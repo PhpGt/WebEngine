@@ -100,8 +100,6 @@ public $nodeMap = [];
 public $head;
 public $body;
 
-public $config; // Response configuration
-
 /**
  * Passing in the HTML to parse as an optional first parameter automatically
  * calls the load function with provided HTML content.
