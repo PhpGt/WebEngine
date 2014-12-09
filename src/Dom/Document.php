@@ -136,24 +136,18 @@ public function __construct($source = null, $config = null) {
 	$uuid = uniqid("nodeMap-", true);
 	$this->domDocument->uuid = $uuid;
 
-	$head = $this->domDocument->getElementsByTagName("head");
-	if($head->length > 0) {
-		$this->head = Node::wrapNative($head->item(0));
-	}
-	else {
-		$this->head = $this->createElement("head");
-		$this->insertBefore(
-			$this->head, $this->firstChild);
-	}
-
-	$body = $this->domDocument->getElementsByTagName("body");
-	if($body->length > 0) {
-		$this->body = Node::wrapNative($body->item(0));
-	}
-	else {
-		$this->body = $this->createElement("body");
-		$this->insertBefore(
-			$this->body, $this->firstChild);
+	// Check the head and body tags exist in the document, no matter what.
+	$requiredRootTagArray = ["head", "body"];
+	foreach ($requiredRootTagArray as $tag) {
+		$nodeList = $this->domDocument->getElementsByTagName($tag);
+		if($nodeList->length > 0) {
+			$this->$tag = Node::wrapNative($nodeList->item(0));
+		}
+		else {
+			$this->$tag = $this->createElement($tag);
+			$this->insertBefore(
+				$this->$tag, $this->firstChild);
+		}
 	}
 
 	$this->tidy();
