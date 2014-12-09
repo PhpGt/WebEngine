@@ -105,7 +105,7 @@ private function redirect($uri1, $uri2, $production) {
  * Simple bootstrapping function to set PHP environment according to
  * configuration options.
  *
- * @param ConfigObj $config This application's Configuration object
+ * @param Config $config This application's Configuration object
  */
 private function setupEnvironment($config) {
 	ini_set("default_charset", $config["app"]->encoding);
