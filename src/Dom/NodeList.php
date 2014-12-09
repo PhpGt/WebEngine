@@ -1,5 +1,11 @@
 <?php
 /**
+ * NodeList objects are collections of nodes such as those returned by
+ * Node->childNodes and the querySelectorAll method.
+ *
+ * This class is an extension to the native DOMNodeList present in PHP, aiming
+ * to provide a DOM-level-4-capable interface by defining missing methods and
+ * properties.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -7,6 +13,11 @@
  */
 namespace Gt\Dom;
 
+/**
+ * @property <type> name Description
+ *
+ * @method <returnType> name(<type> [parameter]) Description
+ */
 class NodeList implements \Countable, \Iterator, \ArrayAccess {
 
 private $iteratorIndex = 0;
