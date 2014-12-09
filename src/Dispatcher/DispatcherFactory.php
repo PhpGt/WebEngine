@@ -21,7 +21,7 @@ class DispatcherFactory {
  * @param ApiFactory $apiFactory API Access Layer
  * @param DatabaseFactory $databaseFactory Database Access Layer
  *
- * @return Dispatcher Either an ApiDispatcher or PageDispatcher
+ * @return ApiDispatcher|PageDispatcher The appropriate Dispatcher object
  */
 public static function createDispatcher($appNamespace,
 Request $request, Response $response,
