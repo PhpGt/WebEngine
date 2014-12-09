@@ -260,6 +260,10 @@ public function tidy() {
 			$selector .= "[$attr]";
 		}
 
+		// Skip if no body assigned.
+		if(!$this->body instanceof Node) {
+			continue;
+		}
 
 		foreach($this->body->querySelectorAll($selector) as $element) {
 			// Remove existing nodes that have the same value for
