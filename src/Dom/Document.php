@@ -83,7 +83,7 @@ use \Gt\ClientSide\PageManifest;
  * @method void normalize()
  * @method void normalizeDocument()
  * @method Node querySelector($selector)
- * $method NodeList querySelectorAll($selector)
+ * @method NodeList querySelectorAll($selector)
  * @method Node removeChild(Node $oldNode)
  * @method Node replaceChild(Node $newNode, Node $oldNode)
  * @method bool validate()
@@ -264,6 +264,10 @@ public function tidy() {
 		foreach($this->body->querySelectorAll($selector) as $element) {
 			// Remove existing nodes that have the same value for
 			// their given attribute.
+			// Skip if there is no head assigned.
+			if(!$this->head instanceof Node) {
+				continue;
+			}
 			foreach($this->head->querySelectorAll($selector) as $headElement) {
 				if($headElement->getAttribute($attr)
 				!== $element->getAttribute($attr)) {
