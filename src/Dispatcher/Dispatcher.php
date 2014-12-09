@@ -52,6 +52,8 @@ abstract public function getPath($uri, &$fixedUri);
  * @param string $path The absolute path on disk to the requested source
  * directory
  * @param string $filename The requested base filename
+ *
+ * @return mixed The full, raw source after loading and any optional processing
  */
 abstract public function loadSource($path, $filename);
 
