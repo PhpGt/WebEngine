@@ -120,6 +120,11 @@ public function offsetUnset($offset) {
 	throw new \Gt\Core\Exception\InvalidAccessException();
 }
 
+/**
+ * @param string $name Header name
+ *
+ * @return string Header value
+ */
 public function __get($name) {
 	$name = strtolower($name);
 
