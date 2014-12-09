@@ -14,9 +14,9 @@
 namespace Gt\Dom;
 
 /**
- * @property <type> name Description
+ * //property <type> name
  *
- * @method <returnType> name(<type> [parameter]) Description
+ * @method Node item(int $index)
  */
 class NodeList implements \Countable, \Iterator, \ArrayAccess {
 
