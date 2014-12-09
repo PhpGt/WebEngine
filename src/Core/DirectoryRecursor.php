@@ -78,10 +78,18 @@ public static function purge($path) {
 	return $count;
 }
 
-public static function purgeFile($file, $iterator) {
-	$pathname = $file->getPathname();
+/**
+ * Removes the provided file or directory, returning the number of successful
+ * operations (for use in other functions to count total operations).
+ *
+ * @param string $path Path to file or directory
+ *
+ * @return int Number of successful operations
+ */
+public static function purgeFile($path) {
+	$pathname = $path->getPathname();
 
-	if($file->isDir()) {
+	if($path->isDir()) {
 		rmdir($pathname);
 		return 1;
 	}
