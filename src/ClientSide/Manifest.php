@@ -9,10 +9,19 @@ namespace Gt\ClientSide;
 
 abstract class Manifest {
 
+/**
+ * @return string MD5 hash representation
+ */
 abstract public function calculateFingerprint($details);
 
+/**
+ * @return bool True if valid, false if invalid
+ */
 abstract public function checkValid();
 
+/**
+ * @return void
+ */
 abstract public function expand();
 
 }#
