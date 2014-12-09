@@ -39,7 +39,9 @@ public function setContentObject(ResponseContent $content) {
 }
 
 /**
+ * @param string $name Configuration option name
  *
+ * @return string Configuration option value
  */
 public function getConfigOption($name) {
 	return $this->config->$name;
