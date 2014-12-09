@@ -12,7 +12,12 @@ namespace Gt\Core;
 class DirectoryRecursor {
 
 /**
+ * @param string $directory Absolute path to directory
+ * @param callback $callback Function to call for each iteration
+ * @param mixed $out Value passed by reference into callback
+ * @param int $order One of the RecursiveIteratorIterator's class constants
  *
+ * @return array Sorted array containing each callback's return value
  */
 public static function walk($directory, $callback, &$out = null,
 $order = \RecursiveIteratorIterator::SELF_FIRST) {
