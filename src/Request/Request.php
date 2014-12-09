@@ -55,10 +55,10 @@ public function getType() {
 	$apiPrefix = "/" . $this->config->api_prefix;
 
 	if(strpos($this->uri, $apiPrefix) === 0) {
-		return Request::TYPE_API;
+		return self::TYPE_API;
 	}
 
-	return Request::TYPE_PAGE;
+	return self::TYPE_PAGE;
 }
 
 }#
