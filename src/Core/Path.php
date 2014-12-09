@@ -35,8 +35,6 @@ const GTROOT		= "gtroot";
  * @return string The absolute path on disk.
  */
 public static function get($name) {
-	$p = null;
-
 	switch($name) {
 	case self::DATABASE:
 		$p = self::get(self::SRC) . "/Database";
