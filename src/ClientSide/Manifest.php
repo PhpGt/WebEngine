@@ -9,10 +9,10 @@ namespace Gt\ClientSide;
 
 abstract class Manifest {
 
-public abstract function calculateFingerprint($details);
+abstract public function calculateFingerprint($details);
 
-public abstract function checkValid();
+abstract public function checkValid();
 
-public abstract function expand();
+abstract public function expand();
 
 }#
