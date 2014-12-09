@@ -192,15 +192,6 @@ public function __call($name, $args) {
 	}
 
 	// TODO: attach template parent stuff...
-	// switch ($name) {
-	// 	case 'value':
-	// 		# code...
-	// 		break;
-
-	// 	default:
-	// 		# code...
-	// 		break;
-	// }
 
 	throw new NodeMethodNotDefinedException($name);
 	break;

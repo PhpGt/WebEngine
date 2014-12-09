@@ -31,6 +31,7 @@ use \Gt\ClientSide\PageManifest;
  * @property-read DOMConfiguration $config
  * @property-read DOMConfiguration $config
  * @property Document $document
+ * @property DOMDocument $documentElement
  * @property string $documentURI
  * @property string $encoding
 * @property Node $firstChild
