@@ -19,6 +19,7 @@ use Symfony\Component\CssSelector\CssSelector;
 
 /**
  * @property string $nodeValue
+ * @property string $value
  * @property string $textContent
  * @property-read Node $parentNode
  * @property-read NodeList $childNodes

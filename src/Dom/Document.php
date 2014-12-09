@@ -49,6 +49,7 @@ use \Gt\ClientSide\PageManifest;
 * @property string textContent
 * @property string $title
  * @property bool $validateOnParse
+ * @property string $value
  * @property string $version
  * @property-read string $xmlEncoding
  * @property bool $xmlStandalone
