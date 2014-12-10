@@ -63,7 +63,7 @@ public static function hash($directory) {
  * Returns a hash of a file's content and its path, meaning that if either the
  * content or the file name is modified, so will the hash.
  *
- * @param string $file Absolute file path to the file to hash
+ * @param \SplFileInfo $file Iterator's current item
  * @param \Iterator $iterator Current iterator being used in the self::walk
  * method
  *
@@ -84,6 +84,9 @@ private static function hashFile($file, $iterator) {
 /**
  * Removes a directory and all its contents.
  *
+ * @param string $path Absolute file path to purge. If the provided path is to
+ * a directory, it will be recursively purged
+ *
  * @return int Number of files and directories removed
  */
 public static function purge($path) {
@@ -100,14 +103,15 @@ public static function purge($path) {
  * Removes the provided file or directory, returning the number of successful
  * operations (for use in other functions to count total operations).
  *
- * @param string $path Path to file or directory
+ * @param \SplFileInfo $path Iterator's current item
+ * @param \Iterator $iterator Iterator used by walk method
  *
  * @return int Number of successful operations
  */
-public static function purgeFile($path) {
-	$pathname = $path->getPathname();
+public static function purgeFile($file, $file) {
+	$pathname = $file->getPathname();
 
-	if($path->isDir()) {
+	if($file->isDir()) {
 		rmdir($pathname);
 		return 1;
 	}
