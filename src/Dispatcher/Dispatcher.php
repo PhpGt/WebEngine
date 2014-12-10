@@ -108,6 +108,7 @@ public function process() {
 	}
 	catch(NotFoundException $e) {
 		// TODO: Handle 404 error here.
+		$source = $this->loadError($path, $filename, 404);
 	}
 
 	// Instantiate the response content object, for manipulation in Code.

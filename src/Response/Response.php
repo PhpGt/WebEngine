@@ -9,9 +9,9 @@ namespace Gt\Response;
 
 class Response {
 
-public $code;
-public $content;
+private $code;
 
+public $content;
 public $config;
 public $production;
 
@@ -24,10 +24,23 @@ public function __construct($config, $production = false) {
 }
 
 /**
+ * @param int|ResponseCode $code HTTP response code
  *
+ * @return ResponseCode The ResponseCode object holding the current response
+ * code
  */
-public function setCode(ResponseCode $code) {
-	$this->code = $code;
+public function setCode($code) {
+	if(is_int($code)) {
+		$this->code->setCode($code);
+	}
+	else if($code instanceof ResponseCode) {
+		$this->code = $code;
+	}
+	else {
+		throw new \Gt\Core\Exception\InvalidArgumentTypeException();
+	}
+
+	return $this->code;
 }
 
 /**
