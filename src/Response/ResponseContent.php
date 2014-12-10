@@ -1,5 +1,7 @@
 <?php
 /**
+ * The ResponseContent object represents the data that will be passed back to
+ * the browser in the response.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)

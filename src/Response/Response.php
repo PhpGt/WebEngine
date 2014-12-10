@@ -44,7 +44,8 @@ public function setCode($code) {
 }
 
 /**
- *
+ * The ResponseContent object represents the data that will be passed back to
+ * the browser in the response.
  */
 public function setContentObject(ResponseContent $content) {
 	$this->content = $content;
