@@ -20,7 +20,8 @@ if(false === $autoloader) {
 
 }
 
-if(false === $autoloader) {
+if(false === $autoloader
+|| empty($autoloader)) {
 	die("Composer autoloader missing. Have you installed correctly?");
 }
 require($autoloader);

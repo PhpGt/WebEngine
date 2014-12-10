@@ -21,6 +21,7 @@ public $production;
 public function __construct($config, $production = false) {
 	$this->config = $config;
 	$this->production = $production;
+	$this->code = new ResponseCode();
 }
 
 /**
@@ -37,15 +38,27 @@ public function setCode($code) {
 		$this->code = $code;
 	}
 	else {
-		throw new \Gt\Core\Exception\InvalidArgumentTypeException();
+		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
+			"Response Code muse be integer value");
 	}
 
 	return $this->code;
 }
 
 /**
- * The ResponseContent object represents the data that will be passed back to
- * the browser in the response.
+ * Obtain the HTTP response code
+ *
+ * @return ResponseCode The current HTTP response code object
+ */
+public function getCode() {
+	return $this->code;
+}
+
+/**
+ * Sets the response's content object that must be an object that extends
+ * ResponseContent.
+ *
+ * @param \Gt\Dom\Document|\Gt\Api\Payload $paramname description
  */
 public function setContentObject(ResponseContent $content) {
 	$this->content = $content;

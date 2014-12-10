@@ -33,12 +33,26 @@ public function setUp() {
 		->will($this->returnValue(\Gt\Request\Request::TYPE_PAGE)
 	);
 	$this->response		= $this->getMock("\Gt\Response\Reponse",
-		["getConfigOption"]
+		[
+			"getConfigOption",
+			"getCode",
+		]
 	);
+	$responseCode = $this->getMock("\Gt\Response\ResponseCode",
+		["getType"]
+	);
+	$responseCode->expects($this->any())
+		->method("getType")
+		->will($this->returnValue(\Gt\Response\ResponseCode::TYPE_SUCCESS));
+
 	$this->response->expects($this->any())
 		->method("getConfigOption")
-		->will($this->returnValue(false)
-	);
+		->will($this->returnValue(false));
+
+	$this->response->expects($this->any())
+		->method("getCode")
+		->will($this->returnValue($responseCode));
+
 	$this->response->config = null;
 	$this->response->production = false;
 

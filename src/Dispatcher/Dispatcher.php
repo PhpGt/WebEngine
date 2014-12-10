@@ -9,6 +9,7 @@ namespace Gt\Dispatcher;
 
 use \Gt\Request\Request;
 use \Gt\Response\Response;
+use \Gt\Response\ResponseCode;
 use \Gt\Api\ApiFactory;
 use \Gt\Database\DatabaseFactory;
 use \Gt\Response\NotFoundException;
@@ -77,6 +78,8 @@ public function process() {
 	// Get the directory path representing the request.
 	$source = "";
 	$fullUri = "";
+	$responseCode = $this->response->getCode();
+
 	try {
 		$path = $this->getPath($this->request->uri, $fixedUri);
 		if($this->request->forceExtension) {
@@ -107,36 +110,41 @@ public function process() {
 		$source = $this->loadSource($path, $filename);
 	}
 	catch(NotFoundException $e) {
-		// TODO: Handle 404 error here.
-		$source = $this->loadError($path, $filename, 404);
+		// Handle 404 error here.
+		$responseCode = $this->response->setCode(404);
+		$source = $this->loadError($path, $filename, $responseCode);
 	}
 
 	// Instantiate the response content object, for manipulation in Code.
 	$content = $this->createResponseContent($source, $this->response->config);
-
-	// Construct and assign Logic object, which is a collection of
-	// Logic class instantiations in order of execution.
-	$logicList = LogicFactory::create(
-		$this->appNamespace,
-		$fullUri,
-		$this->apiFactory,
-		$this->dbFactory,
-		$content
-	);
-
 	$this->cleanBuffer();
 
-	// Call the correct methods on each Logic object:
-	foreach ($logicList as $logicObj) {
-		$logicObj->go();
-	}
-	foreach (array_reverse($logicList) as $logicObj) {
-		if(!method_exists($logicObj, "endGo")) {
-			continue;
-		}
+	// Only execute Logic if the response is a success.
+	if($responseCode->getType() === ResponseCode::TYPE_SUCCESS) {
+		// Construct and assign Logic object, which is a collection of
+		// Logic class instantiations in order of execution.
+		$logicList = LogicFactory::create(
+			$this->appNamespace,
+			$fullUri,
+			$this->apiFactory,
+			$this->dbFactory,
+			$content
+		);
 
-		$logicObj->endGo();
+
+		// Call the correct methods on each Logic object:
+		foreach ($logicList as $logicObj) {
+			$logicObj->go();
+		}
+		foreach (array_reverse($logicList) as $logicObj) {
+			if(!method_exists($logicObj, "endGo")) {
+				continue;
+			}
+
+			$logicObj->endGo();
+		}
 	}
+
 
 	$manifest = $content->createManifest($this->request, $this->response);
 	$fileOrganiser = new FileOrganiser($this->response, $manifest);
