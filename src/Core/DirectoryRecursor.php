@@ -42,7 +42,15 @@ $order = \RecursiveIteratorIterator::SELF_FIRST) {
 }
 
 /**
+ * Recursively hashes a whole directory tree, providing a single hash
+ * representation of all files' content and paths.
  *
+ * @param string $directory Absolute path to directory
+ *
+ * @return string Hash representation of directory's content
+ *
+ * @uses self::walk Uses the walk method to recursively iterate over the
+ * directory
  */
 public static function hash($directory) {
 	$md5Array = self::walk($directory, "self::hashFile");
@@ -52,7 +60,17 @@ public static function hash($directory) {
 }
 
 /**
+ * Returns a hash of a file's content and its path, meaning that if either the
+ * content or the file name is modified, so will the hash.
  *
+ * @param string $file Absolute file path to the file to hash
+ * @param \Iterator $iterator Current iterator being used in the self::walk
+ * method
+ *
+ * @return string Hash representation of file
+ *
+ * @used-by self::hash to build up a hash of all files contained within a
+ * directory
  */
 private static function hashFile($file, $iterator) {
 	if($file->isDir()) {
