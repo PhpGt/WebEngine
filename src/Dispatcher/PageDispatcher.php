@@ -19,6 +19,15 @@ private static $pageExtensions = [
 	Transformer::TYPE_MARKDOWN,
 ];
 
+/**
+ * Gets the absolute file path of a source file according to the provided URI,
+ * and updates the fixedUri parameter accordingly.
+ *
+ * @param string $uri The URI as requested by the browser
+ * @param string $fixedUri The URI after it has been adjusted
+ *
+ * @return string The absolute file path on disk of the source file
+ */
 public function getPath($uri, &$fixedUri) {
 	$pagePath = Path::get(Path::PAGE);
 	$pageDir = Path::fixCase($pagePath . $uri);
@@ -44,11 +53,24 @@ public function getPath($uri, &$fixedUri) {
 	return rtrim($pageDir, "/");
 }
 
-public function loadSource($path, $pathFile) {
+/**
+ * From given file path, return the serialised content. This will either be a
+ * raw file representation, or a concatenation or compilation of pre-processed
+ * file types (for example, returning the HTML source for a Markdown file).
+ * Headers' and footers' source will be attached accordingly if available.
+ *
+ * @param string $path The absolute path on disk to the requested source
+ * directory
+ * @param string $filename The requested base filename, with extension
+ *
+ * @return mixed The full, raw source after loading and any optional processing,
+ * including header and footer data
+ */
+public function loadSource($path, $filename) {
 	$source = "";
 	$headerSource = "";
 	$footerSource = "";
-	$pathFileBase = strtok($pathFile, ".");
+	$pathFileBase = strtok($filename, ".");
 
 	// Look for a header and footer view file up the tree.
 	$headerFooterPathTop = dirname(Path::get(Path::PAGE));
@@ -110,7 +132,7 @@ public function loadSource($path, $pathFile) {
 		$footerSource,
 	]);
 
-	throw new NotFoundException(implode("/", [$path, $pathFile]));
+	throw new NotFoundException(implode("/", [$path, $filename]));
 }
 
 /**

@@ -48,12 +48,14 @@ abstract public function getPath($uri, &$fixedUri);
  * From given file path, return the serialised content. This will either be a
  * raw file representation, or a concatenation or compilation of pre-processed
  * file types (for example, returning the HTML source for a Markdown file).
+ * Headers' and footers' source will be attached accordingly if available.
  *
  * @param string $path The absolute path on disk to the requested source
  * directory
- * @param string $filename The requested base filename
+ * @param string $filename The requested base filename, with extension
  *
- * @return mixed The full, raw source after loading and any optional processing
+ * @return mixed The full, raw source after loading and any optional processing,
+ * including header and footer data
  */
 abstract public function loadSource($path, $filename);
 
