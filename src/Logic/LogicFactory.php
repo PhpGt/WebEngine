@@ -94,12 +94,10 @@ public static function getLogicFileArray($filename, $path, $topPath) {
  * @param string $appNamespace Base namespace containing all application logic
  * @param array $logicPathArray Array of absolute file paths to all Logic
  * classes on disk
- * @param string $topPath The top-most path to use when looking for logic files
  *
  * @return array Array of instantiated Logic objects
  */
-public static function getLogicClassNameArray(
-$appNamespace, $logicPathArray, $topPath) {
+public static function getLogicClassNameArray($appNamespace, $logicPathArray) {
 	$classNameArray = [];
 	$srcPath = Path::get(Path::SRC);
 
