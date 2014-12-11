@@ -27,12 +27,9 @@ public static function toHtml($source, $type) {
 	switch($type) {
 	case self::TYPE_MARKDOWN:
 		return Markdown::defaultTransform($source);
-		break;
-
-	default:
-		throw new SourceNotValidException();
-		break;
 	}
+
+	throw new SourceNotValidException();
 }
 
 }#
