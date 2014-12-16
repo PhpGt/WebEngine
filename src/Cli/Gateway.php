@@ -22,6 +22,10 @@ class Gateway {
  * @return mixed An instance of the $phpgt class
  */
 public static function serve($uri, $phpgt = "\Gt\Core\Start") {
+	// Will be overridden by ResponseContent. text/plain used for
+	// early-finishing scripts.
+	header("Content-type: text/plain");
+
 	if(self::isStaticFileRequest($uri)) {
 		$filePath = self::getAbsoluteFilePath($uri);
 		self::serveStaticFile($filePath);

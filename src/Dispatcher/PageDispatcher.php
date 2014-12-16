@@ -172,5 +172,4 @@ public function createResponseContent($html, $config) {
 	return $domDocument;
 }
 
-
 }#

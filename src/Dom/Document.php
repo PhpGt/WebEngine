@@ -94,6 +94,7 @@ use \Gt\ClientSide\PageManifest;
 class Document extends ResponseContent {
 
 const DEFAULT_HTML = "<!doctype html>";
+public $contentType = "text/html";
 public $domDocument;
 public $node;
 public $nodeMap = [];

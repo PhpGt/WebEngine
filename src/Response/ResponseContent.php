@@ -14,6 +14,7 @@ use \Gt\ClientSide\Manifest;
 abstract class ResponseContent {
 
 public $config;	// Response config.
+public $contentType = "text/plain";
 
 /**
  * By default, a Manifest has no capabilities, but each type of ResponseContent
@@ -34,6 +35,7 @@ public function createManifest($request, $response) {
  * buffer, ready for flushing at the end of the response cycle.
  */
 public function flush() {
+	Headers::add("Content-type", $this->contentType);
 	echo $this->__toString();
 }
 
