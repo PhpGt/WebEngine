@@ -32,6 +32,7 @@ public static function parse($inputFile) {
 	case "scss":
 		$scss = new ScssParser();
 		$scss->addImportPath(Path::get(Path::STYLE));
+		$scss->addImportPath(dirname($inputFile));
 
 		try {
 			$content = $scss->compile($content);
