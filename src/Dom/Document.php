@@ -137,6 +137,23 @@ public function __construct($source = null, $config = null) {
 	$uuid = uniqid("nodeMap-", true);
 	$this->domDocument->uuid = $uuid;
 
+	// Find and reference the DOCTYPE element:
+	foreach ($this->childNodes as $rootChild) {
+		if($rootChild->nodeType === XML_DOCUMENT_TYPE_NODE) {
+			$rootChild->description = "DOCTYPE NODE";
+		}
+	}
+
+	$htmlNodeList = $this->getElementsByTagName("html");
+	if(count($htmlNodeList) === 0) {
+		$htmlNode = $this->document->createElement("html");
+		$this->document->appendChild($htmlNode);
+	}
+	else {
+		$htmlNode = $htmlNodeList[0];
+	}
+	$htmlNode = Node::wrapNative($htmlNode);
+
 	// Check the head and body tags exist in the document, no matter what.
 	$requiredRootTagArray = ["head", "body"];
 	foreach ($requiredRootTagArray as $tag) {
@@ -146,8 +163,8 @@ public function __construct($source = null, $config = null) {
 		}
 		else {
 			$this->$tag = $this->createElement($tag);
-			$this->insertBefore(
-				$this->$tag, $this->firstChild);
+			$htmlNode->insertBefore(
+				$this->$tag, $htmlNode->firstChild);
 		}
 	}
 

@@ -146,6 +146,10 @@ public function __set($name, $value) {
 		$this->setAttribute("class", $value);
 		break;
 
+	case "description":
+		$this->description = $value;
+		break;
+
 	case "textContent":
 	case "innerText":
 		$value = htmlentities($value, ENT_COMPAT | ENT_HTML5);
