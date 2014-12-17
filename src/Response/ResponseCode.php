@@ -9,13 +9,17 @@ namespace Gt\Response;
 
 class ResponseCode {
 
-private $code;
-
 const TYPE_INFORMATIONAL	= 1;
 const TYPE_SUCCESS			= 2;
 const TYPE_REDIRECTION		= 3;
 const TYPE_CLIENT_ERROR		= 4;
 const TYPE_SERVER_ERROR		= 5;
+
+const REDIRECT_PERMANENT	= 301;
+const REDIRECT_FOUND		= 302;
+const REDIRECT_TEMPORARY	= 302;
+const REDIRECT_SEE_OTHER	= 303;
+
 private $typeNameArray = [
 	1 => "Informational",
 	2 => "Success",
@@ -24,7 +28,7 @@ private $typeNameArray = [
 	5 => "Server Error",
 ];
 
-private $descriptionArray = [
+private static $descriptionArray = [
 	// TYPE_INFORMATIONAL
 	100 => "Continue",
 	101 => "Switching Protocols",
@@ -89,37 +93,33 @@ private $descriptionArray = [
 	510 => "Not Extended",
 	511 => "Network Authentication Required",
 ];
-public function __construct() {
-	$this->code = 200;
-}
 
 /**
- * @param int $code The new HTTP response code
+ * Gets the status code associated with the given name.
  *
- * @return int The new HTTP response code
+ * @param string $name Text description of status code
+ *
+ * @return int Status code for provided name
  */
-public function setCode($code) {
-	if(!is_int($code)) {
-		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
-			"Response Code muse be integer value");
+public static function getByName($name) {
+	$normalisedName = strtolower($name);
+	$normalisedName = str_replace(" ", "", $normalisedName);
+
+	foreach (self::$descriptionArray as $code => $description) {
+		$normalisedDescription = strtolower($description);
+		$normalisedDescription = str_replace(" ", "", $normalisedDescription);
+
+		if($normalisedName === $normalisedDescription) {
+			return (int)$code;
+		}
 	}
-
-	$this->code = $code;
-	return $this->code;
-}
-
-/**
- * @return int The current HTTP response code
- */
-public function getCode() {
-	return $this->code;
 }
 
 /**
  * @return string The text description for the current HTTP response code
  */
 public function getDescription() {
-	return $this->descriptionArray[$this->code];
+	return self::$descriptionArray[Headers::$code];
 }
 
 /**
@@ -127,7 +127,7 @@ public function getDescription() {
  * indexed array
  */
 public function getAllCodesAndDescriptions() {
-	return $this->descriptionArray;
+	return self::$descriptionArray;
 }
 
 /**
@@ -145,6 +145,13 @@ public function getType() {
 	// Grab the first digit of the code, negative check required for
 	// dash character.
 	return (int)substr($this->code, 0, $this->code < 0 ? 2 : 1);
+}
+
+/**
+ * Sends the current HTTP Status Code to the browser.
+ */
+public function send() {
+	http_response_code(Headers::code());
 }
 
 }#

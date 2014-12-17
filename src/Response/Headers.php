@@ -77,6 +77,8 @@ public static function getAll() {
  * @return string The raw HTTP representation of all headers sent
  */
 public static function send() {
+	ResponseCode::send();
+
 	$rawAll = "";
 	foreach (self::$headerArray as $field => $value) {
 		$raw = self::getRaw($field, $value);
@@ -102,6 +104,13 @@ public static function send() {
 public static function getRaw($field, $value) {
 	$field = ucfirst($field);
 	return "$field: $value";
+}
+
+public static function redirect($uri,
+$code = ResponseCode::REDIRECT_TEMPORARY) {
+	self::add("Location: $uri");
+	self::code($code);
+	self::send();
 }
 
 }#

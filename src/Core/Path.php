@@ -10,7 +10,7 @@ namespace Gt\Core;
 
 class Path {
 
-const DATABASE		= "database";
+const DATA			= "data";
 const PAGE			= "page";
 const PUBLICFILES	= "publicfiles";
 const ROOT			= "root";
@@ -36,8 +36,8 @@ const GTROOT		= "gtroot";
  */
 public static function get($name) {
 	switch($name) {
-	case self::DATABASE:
-		$p = self::get(self::SRC) . "/Database";
+	case self::DATA:
+		$p = self::get(self::ROOT) . "/data";
 		break;
 
 	case self::PAGE:
