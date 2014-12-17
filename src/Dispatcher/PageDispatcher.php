@@ -25,10 +25,11 @@ private static $pageExtensions = [
  *
  * @param string $uri The URI as requested by the browser
  * @param string $fixedUri The URI after it has been adjusted
+ * @param bool $throw Set to false to suppress throwing NotFoundExceptions
  *
  * @return string The absolute file path on disk of the source file
  */
-public function getPath($uri, &$fixedUri) {
+public function getPath($uri, &$fixedUri, $throw = true) {
 	$pagePath = Path::get(Path::PAGE);
 	$pageDir = Path::fixCase($pagePath . $uri);
 	$fixedUri = Path::fixCase($pagePath . $uri, $pagePath);
@@ -38,10 +39,18 @@ public function getPath($uri, &$fixedUri) {
 
 		if(is_dir($pageDir_container)) {
 			if(!file_exists($pagePath . $fixedUri)) {
+				if(!$throw) {
+					return $uri;
+				}
+
 				throw new NotFoundException($fixedUri);
 			}
 		}
 		else {
+			if(!$throw) {
+				return $uri;
+			}
+
 			throw new NotFoundException(
 				$fixedUri
 			);
@@ -133,6 +142,21 @@ public function loadSource($path, $filename) {
 	]);
 
 	throw new NotFoundException(implode("/", [$path, $filename]));
+}
+
+/**
+ * From given file path, return the serialised content of an error page for the
+ * provided response code.
+ *
+ * @param string $path The abolute path on disk to the requested source
+ * directory
+ * @param string $filename The requested base filename, with extension
+ *
+ * @return mixel The full, raw source of the error response
+ */
+public function loadError($path, $filename, $responseCode) {
+	// TODO: Handle error pages properly!
+	return "ERROR $responseCode";
 }
 
 /**

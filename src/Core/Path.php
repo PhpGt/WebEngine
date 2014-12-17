@@ -12,7 +12,6 @@ class Path {
 
 const DATA			= "data";
 const PAGE			= "page";
-const PUBLICFILES	= "publicfiles";
 const ROOT			= "root";
 const ASSET			= "asset";
 const SCRIPT		= "script";
@@ -42,10 +41,6 @@ public static function get($name) {
 
 	case self::PAGE:
 		$p = self::get(self::SRC) . "/Page";
-		break;
-
-	case self::PUBLICFILES:
-		$p = self::get(self::SRC) . "/PublicFiles";
 		break;
 
 	case self::ROOT:

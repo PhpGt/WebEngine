@@ -19,10 +19,11 @@ protected $template;
 
 /**
  * @param ApiFactory $apiFactory API Access Layer
- * @param DatabaseFactory $dbFactory Database Access Layer
  * @param Document $content Dom document representing the response's content
+ *
+ * @return void
  */
-public function __construct($apiFactory, $dbFactory, $content) {
+public function __construct($apiFactory, $content) {
 	parent::__construct($apiFactory, $dbFactory, $content);
 	$this->document = $content;
 	$this->dom = $this->document;

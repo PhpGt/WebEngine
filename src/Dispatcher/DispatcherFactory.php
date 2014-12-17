@@ -10,7 +10,6 @@ namespace Gt\Dispatcher;
 use Gt\Request\Request;
 use Gt\Response\Response;
 use Gt\Api\ApiFactory;
-use Gt\Database\DatabaseFactory;
 
 class DispatcherFactory {
 
@@ -19,13 +18,11 @@ class DispatcherFactory {
  * @param Request $request Representing the HTTP request
  * @param Response $response Representing the HTTP response
  * @param ApiFactory $apiFactory API Access Layer
- * @param DatabaseFactory $databaseFactory Database Access Layer
  *
  * @return ApiDispatcher|PageDispatcher The appropriate Dispatcher object
  */
 public static function createDispatcher($appNamespace,
-Request $request, Response $response,
-ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
+Request $request, Response $response, ApiFactory $apiFactory) {
 	$type = $request->getType();
 
 	switch($type) {
@@ -34,8 +31,7 @@ ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
 			$appNamespace,
 			$request,
 			$response,
-			$apiFactory,
-			$databaseFactory
+			$apiFactory
 		);
 
 	case Request::TYPE_PAGE:
@@ -43,8 +39,7 @@ ApiFactory $apiFactory, DatabaseFactory $databaseFactory) {
 			$appNamespace,
 			$request,
 			$response,
-			$apiFactory,
-			$databaseFactory
+			$apiFactory
 		);
 
 	default:

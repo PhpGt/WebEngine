@@ -10,8 +10,8 @@ namespace Gt\Dispatcher;
 use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Response\ResponseCode;
+use \Gt\Response\Headers;
 use \Gt\Api\ApiFactory;
-use \Gt\Database\DatabaseFactory;
 use \Gt\Response\NotFoundException;
 use \Gt\Core\Path;
 use \Gt\Logic\LogicFactory;
@@ -23,15 +23,12 @@ private $appNamespace;
 private $request;
 private $response;
 private $apiFactory;
-private $dbFactory;
 
-public function __construct($appNamespace, $request, $response,
-$apiFactory, $dbFactory) {
+public function __construct($appNamespace, $request, $response, $apiFactory) {
 	$this->appNamespace = $appNamespace;
 	$this->request = $request;
 	$this->response = $response;
 	$this->apiFactory = $apiFactory;
-	$this->dbFactory = $dbFactory;
 }
 
 /**
@@ -61,6 +58,18 @@ abstract public function getPath($uri, &$fixedUri);
 abstract public function loadSource($path, $filename);
 
 /**
+ * From given file path, return the serialised content of an error page for the
+ * provided response code.
+ *
+ * @param string $path The abolute path on disk to the requested source
+ * directory
+ * @param string $filename The requested base filename, with extension
+ *
+ * @return mixel The full, raw source of the error response
+ */
+abstract public function loadError($path, $filename, $responseCode);
+
+/**
  * Creates a suitable ResponseContent object for the type of dispatcher.
  * For a PageDispatcher, the ResponseContent will be a Gt\Response\Dom\Document.
  * @param mixed $content The serialized content to represent
@@ -78,7 +87,7 @@ public function process() {
 	// Get the directory path representing the request.
 	$source = "";
 	$fullUri = "";
-	$responseCode = $this->response->getCode();
+	$responseCode = $this->response->code;
 
 	try {
 		$path = $this->getPath($this->request->uri, $fixedUri);
@@ -111,8 +120,15 @@ public function process() {
 	}
 	catch(NotFoundException $e) {
 		// Handle 404 error here.
-		$responseCode = $this->response->setCode(404);
-		$source = $this->loadError($path, $filename, $responseCode);
+		$path = $this->getPath($this->request->uri, $fixedUri, false);
+		$filename = $this->getFilename(
+			$this->request->uri,
+			$this->request->indexFilename,
+			$fullUri
+		);
+
+		$responseCode->set(404);
+		$source = $this->loadError($path, $filename, $responseCode->get());
 	}
 
 	// Instantiate the response content object, for manipulation in Code.
@@ -127,10 +143,8 @@ public function process() {
 			$this->appNamespace,
 			$fullUri,
 			$this->apiFactory,
-			$this->dbFactory,
 			$content
 		);
-
 
 		// Call the correct methods on each Logic object:
 		foreach ($logicList as $logicObj) {

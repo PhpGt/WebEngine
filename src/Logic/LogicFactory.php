@@ -16,13 +16,11 @@ class LogicFactory {
  * @param string $appNamespace Base namespace containing all application logic
  * @param string $uri The current request URI
  * @param ApiFactory $apiFactory API Access Layer
- * @param DatabaseFactory $dbFactory Database Access Layer
  *
  * @return array An array containing all appropriate Logic objects,
  * depending on request type, in execution order
  */
-public static function create($appNamespace, $uri,
-$apiFactory, $dbFactory, $content) {
+public static function create($appNamespace, $uri, $apiFactory, $content) {
 	$objArray = [];
 	$topPath = Path::get(Path::PAGE);
 
@@ -40,7 +38,6 @@ $apiFactory, $dbFactory, $content) {
 
 		$objArray []= new $className(
 			$apiFactory,
-			$dbFactory,
 			$content
 		);
 	}

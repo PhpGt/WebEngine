@@ -116,10 +116,17 @@ public static function getByName($name) {
 }
 
 /**
+ * @param int $code Current response code to set using Headers object
+ */
+public function __construct($code = 200) {
+	Headers::code($code);
+}
+
+/**
  * @return string The text description for the current HTTP response code
  */
 public function getDescription() {
-	return self::$descriptionArray[Headers::$code];
+	return self::$descriptionArray[Headers::code()];
 }
 
 /**
@@ -144,7 +151,7 @@ public function getTypeName() {
 public function getType() {
 	// Grab the first digit of the code, negative check required for
 	// dash character.
-	return (int)substr($this->code, 0, $this->code < 0 ? 2 : 1);
+	return (int)substr(Headers::code(), 0, Headers::code() < 0 ? 2 : 1);
 }
 
 /**
@@ -152,6 +159,14 @@ public function getType() {
  */
 public function send() {
 	http_response_code(Headers::code());
+}
+
+public function set($code) {
+	return Headers::code($code);
+}
+
+public function get($code) {
+	return Headers::code();
 }
 
 }#
