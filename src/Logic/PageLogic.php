@@ -24,7 +24,7 @@ protected $template;
  * @return void
  */
 public function __construct($apiFactory, $content) {
-	parent::__construct($apiFactory, $dbFactory, $content);
+	parent::__construct($apiFactory, $content);
 	$this->document = $content;
 	$this->dom = $this->document;
 

@@ -13,9 +13,8 @@ protected $api;
 protected $db;
 protected $content;
 
-public function __construct($apiFactory, $dbFactory, $content) {
+public function __construct($apiFactory, $content) {
 	$this->api = $apiFactory;
-	$this->db = $dbFactory;
 	$this->content = $content;
 }
 
