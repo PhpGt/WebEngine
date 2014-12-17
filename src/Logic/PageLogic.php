@@ -20,11 +20,14 @@ protected $template;
 /**
  * @param ApiFactory $apiFactory API Access Layer
  * @param Document $content Dom document representing the response's content
+ * @param Session $session Session manager
  *
  * @return void
  */
-public function __construct($apiFactory, $content) {
-	parent::__construct($apiFactory, $content);
+public function __construct($apiFactory, $content, $session) {
+	parent::__construct($apiFactory, $content, $session);
+
+	// Synonyms
 	$this->document = $content;
 	$this->dom = $this->document;
 

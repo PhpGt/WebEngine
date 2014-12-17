@@ -23,12 +23,15 @@ private $appNamespace;
 private $request;
 private $response;
 private $apiFactory;
+private $session;
 
-public function __construct($appNamespace, $request, $response, $apiFactory) {
+public function __construct($appNamespace, $request, $response,
+$apiFactory, $session) {
 	$this->appNamespace = $appNamespace;
 	$this->request = $request;
 	$this->response = $response;
 	$this->apiFactory = $apiFactory;
+	$this->session = $session;
 }
 
 /**
@@ -143,7 +146,8 @@ public function process() {
 			$this->appNamespace,
 			$fullUri,
 			$this->apiFactory,
-			$content
+			$content,
+			$this->session
 		);
 
 		// Call the correct methods on each Logic object:

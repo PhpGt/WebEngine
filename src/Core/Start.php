@@ -18,6 +18,7 @@ use \Gt\Response\Response;
 use \Gt\Response\Redirect;
 use \Gt\Api\ApiFactory;
 use \Gt\Dispatcher\DispatcherFactory;
+use \Gt\Session\Session;
 
 final class Start {
 
@@ -47,12 +48,18 @@ public function __construct($uri) {
 	$response = new Response($config["response"], $production);
 	$apiFactory = new ApiFactory($config["api"]);
 
-	session_start();
+	$sessionNs = $config["app"]->namespace;
+	if($config["session"]->base_namespace != false) {
+		$sessionNs = $config["session"]->base_namespace;
+	}
+	$session = new Session($config["session"], $sessionNs);
+
 	$dispatcher = DispatcherFactory::createDispatcher(
 		$appNamespace,
 		$request,
 		$response,
-		$apiFactory
+		$apiFactory,
+		$session
 	);
 
 	// Dispatcher::process returns null on a successful call, only returning

@@ -10,6 +10,7 @@ namespace Gt\Dispatcher;
 use Gt\Request\Request;
 use Gt\Response\Response;
 use Gt\Api\ApiFactory;
+use Gt\Session\Session;
 
 class DispatcherFactory {
 
@@ -18,33 +19,35 @@ class DispatcherFactory {
  * @param Request $request Representing the HTTP request
  * @param Response $response Representing the HTTP response
  * @param ApiFactory $apiFactory API Access Layer
+ * @param Session $session Session manager
  *
  * @return ApiDispatcher|PageDispatcher The appropriate Dispatcher object
  */
-public static function createDispatcher($appNamespace,
-Request $request, Response $response, ApiFactory $apiFactory) {
+public static function createDispatcher($appNamespace, Request $request,
+Response $response, ApiFactory $apiFactory, Session $session) {
+	$className = "\\Gt\\Dispatcher\\";
 	$type = $request->getType();
 
 	switch($type) {
 	case Request::TYPE_API:
-		return new ApiDispatcher(
-			$appNamespace,
-			$request,
-			$response,
-			$apiFactory
-		);
+		$className .= "ApiDispatcher";
+		break;
 
 	case Request::TYPE_PAGE:
-		return new PageDispatcher(
-			$appNamespace,
-			$request,
-			$response,
-			$apiFactory
-		);
+		$className .= "PageDispatcher";
+		break;
 
 	default:
 		throw new \Gt\Core\Exception\InvalidAccessException();
 	}
+
+	return new $className(
+		$appNamespace,
+		$request,
+		$response,
+		$apiFactory,
+		$session
+	);
 }
 
 }#

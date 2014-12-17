@@ -12,10 +12,12 @@ abstract class Logic {
 protected $api;
 protected $db;
 protected $content;
+protected $session;
 
-public function __construct($apiFactory, $content) {
+public function __construct($apiFactory, $content, $session) {
 	$this->api = $apiFactory;
 	$this->content = $content;
+	$this->session = $session;
 }
 
 /**
