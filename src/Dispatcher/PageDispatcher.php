@@ -191,6 +191,7 @@ public function createResponseContent($html, $config) {
 		throw new \Gt\Core\Exception\InvalidArgumentTypeException(
 			gettype($html) . " is not a string");
 	}
+
 	$domDocument = new \Gt\Dom\Document($html, $config);
 
 	return $domDocument;

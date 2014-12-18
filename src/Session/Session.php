@@ -14,7 +14,9 @@ private $store;
 
 public function __construct($config) {
 	$this->config = $config;
-	session_start();
+
+	@session_start();
+
 	if(!isset($_SESSION[$this->config->base_namespace])) {
 		$_SESSION[$this->config->base_namespace] = new Store($this->config);
 	}

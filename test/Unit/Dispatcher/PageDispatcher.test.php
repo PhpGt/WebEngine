@@ -15,7 +15,6 @@ private $pageDir;
 private $request;
 private $response;
 private $apiFactory;
-private $dbFactory;
 private $appNamespace = "TestApp";
 
 public function setUp() {
@@ -53,23 +52,23 @@ public function setUp() {
 		->method("getCode")
 		->will($this->returnValue($responseCode));
 
+	$this->response->code = $responseCode;
+
 	$this->response->config = null;
 	$this->response->production = false;
 
 	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
 		$cfg
 	]);
-	$this->dbFactory	= $this->getMock("\Gt\Database\DatabaseFactory", null, [
-		$cfg
-	]);
+
+	$this->session = $this->getMock("\Gt\Session\Session", null, [$cfg]);
 
 	$this->dispatcher = new PageDispatcher(
-		"TestApp",
+		$this->appNamespace,
 		$this->request,
 		$this->response,
 		$this->apiFactory,
-		$this->dbFactory,
-		$this->appNamespace
+		$this->session
 	);
 }
 
@@ -322,12 +321,11 @@ public function testDispatcherProcessFixesUri($uri) {
 		$this->request->uri = $uriRand;
 
 		$this->dispatcher = new PageDispatcher(
-			"TestApp",
+			$this->appNamespace,
 			$this->request,
 			$this->response,
 			$this->apiFactory,
-			$this->dbFactory,
-			$this->appNamespace
+			$this->session
 		);
 
 		$fixedUri = $this->dispatcher->process();
@@ -376,7 +374,7 @@ public function testDispatcherProcessFlushes() {
 		$request,
 		$this->response,
 		$this->apiFactory,
-		$this->dbFactory
+		$this->session
 	);
 
 	$this->dispatcher->process();

@@ -26,6 +26,13 @@ public function loadSource($path, $pathFile) {
 /**
  *
  */
+public function loadError($path, $pathFile, $errorCode) {
+	// TODO...
+}
+
+/**
+ *
+ */
 public function createResponseContent($content, $config) {
 	$apiObj = new \Gt\Response\StructuredData\Container();
 

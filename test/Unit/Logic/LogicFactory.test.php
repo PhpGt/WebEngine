@@ -18,16 +18,12 @@ private $uriList = [
 	"/directory/subdirectory/nested-page",
 ];
 private $apiFactory;
-private $dbFactory;
 
 public function setUp() {
 	$_SERVER["DOCUMENT_ROOT"] = sys_get_temp_dir() . "/www";
 
 	$cfg = $this->getMock("\Gt\Core\ConfigObj");
 	$this->apiFactory = $this->getMock("\Gt\Api\ApiFactory", null, [$cfg]);
-	$this->dbFactory = $this->getMock("\Gt\Database\DatabaseFactory", null, [
-		$cfg
-	]);
 }
 
 public function tearDown() {

@@ -19,14 +19,14 @@ public function testDispatcherFactoryCreatesPageDispatcher() {
 	);
 	$response = $this->getMock("\Gt\Response\Response", null, [$cfg]);
 	$apiFactory = $this->getMock("\Gt\Api\ApiFactory", null, [$cfg]);
-	$dbFactory = $this->getMock("\Gt\Database\DatabaseFactory", null, [$cfg]);
+	$session = $this->getMock("\Gt\Session\Session", null, [$cfg]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		"TestApp",
 		$request,
 		$response,
 		$apiFactory,
-		$dbFactory
+		$session
 	);
 
 	$this->assertInstanceOf("\Gt\Dispatcher\PageDispatcher", $dispatcher);
@@ -43,14 +43,14 @@ public function testDispatcherFactoryCreatesApiDispatcher() {
 	);
 	$response = $this->getMock("\Gt\Response\Response", null, [$cfg]);
 	$apiFactory = $this->getMock("\Gt\Api\ApiFactory", null, [$cfg]);
-	$dbFactory = $this->getMock("\Gt\Database\DatabaseFactory", null, [$cfg]);
+	$session = $this->getMock("\Gt\Session\Session", null, [$cfg]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		"TestApp",
 		$request,
 		$response,
 		$apiFactory,
-		$dbFactory
+		$session
 	);
 
 	$this->assertInstanceOf("\Gt\Dispatcher\ApiDispatcher", $dispatcher);
