@@ -2,8 +2,7 @@
 /**
  * Represents a branch of a session namespace.
  * Session storage Shop.Basket.Intl.value has three stores (Shop that contains
- * Basket, that in turn contains Intl, that in turn contains the StoreValue
- * represented by value).
+ * Basket, that in turn contains Intl, that in turn contains the key "value").
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -13,23 +12,23 @@ namespace Gt\Session;
 
 class Store implements \ArrayAccess {
 
-private $tempStorage = [];
+private $storage = [];
 
 public function __construct($config) {
 	$this->caseSensitive = $config->case_sensitive;
 }
 
 public function offsetExists($key) {
-	return isset($this->tempStorage[$key]);
+	return array_key_exists($key, $this->storage);
 }
 public function offsetGet($key) {
-	return $this->tempStorage[$key];
+	return $this->storage[$key];
 }
 public function offsetSet($key, $value) {
-	$this->tempStorage[$key] = $value;
+	$this->storage[$key] = $value;
 }
 public function offsetUnset($key) {
-	unset($this->tempStorage[$key]);
+	unset($this->storage[$key]);
 }
 
 }#

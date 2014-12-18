@@ -12,6 +12,12 @@ class Session {
 private $config;
 private $store;
 
+const DATA_GET = "data_get";
+const DATA_SET = "data_set";
+
+const STATUS_ACTIVE = PHP_SESSION_ACTIVE;
+const STATUS_INACTIVE = PHP_SESSION_DISABLED;
+
 public function __construct($config) {
 	$this->config = $config;
 
@@ -24,32 +30,90 @@ public function __construct($config) {
 	$this->store = $_SESSION[$this->config->base_namespace];
 }
 
+public function getStatus() {
+	return session_status();
+}
 
-/**
- *
- */
-public function get($key) {
-	return $this->store[$key];
+public function setConfig($config) {
+	$this->config = $config;
 }
 
 /**
  *
  */
-public function exists($key) {
-	return isset($this->store[$key]);
+public function get($key) {
+	$nsArray = $this->getNamespaceArray($key);
+	$data = $this->data(self::DATA_GET, $this->store, $nsArray);
+
+	return $data;
 }
 
 /**
  *
  */
 public function set($key, $value) {
-	$this->store[$key] = $value;
+	$nsArray = $this->getNamespaceArray($key);
+	return $this->data(self::DATA_SET, $this->store, $nsArray, $value);
+}
+
+/**
+ * Recursive function to iterate through nested Store objects, returning the
+ * most nested (leaf) value. Set $value to SOMETHING to retrieve the value in
+ * the nested Store rather than setting it.
+ *
+ * @param Store $store The root Store to iterate upon
+ * @param array $nsArray Array of namespace key names
+ * @param mixed $value The value to set the leaf Store to
+ * @param mixed $return The value of the current iteration, used to exit from
+ * the recursive iteration
+ *
+ * @return mixed The value contained by the leaf Store
+ */
+private function data($direction, $store, $nsArray,
+$value = null, $return = null) {
+	if(empty($nsArray)) {
+		return $return;
+	}
+
+	$getKey = array_shift($nsArray);
+	if(!isset($store[$getKey])) {
+		if($direction === self::DATA_GET) {
+			throw new SessionStoreNotFoundException($getKey);
+		}
+		else if($direction === self::DATA_SET) {
+
+
+			if(empty($nsArray)) {
+				$store[$getKey] = $value;
+			}
+			else {
+				$store[$getKey] = new Store($this->config);
+			}
+		}
+	}
+
+	return $this->data(
+		$direction,
+		$store[$getKey],
+		$nsArray,
+		$value,
+		$store[$getKey]
+	);
+}
+
+/**
+ *
+ */
+public function exists($key) {
+	$key = $this->fixCase($key);
+	return isset($this->store[$key]);
 }
 
 /**
  *
  */
 public function delete($key) {
+	$key = $this->fixCase($key);
 	unset($this->store[$key]);
 }
 
@@ -57,7 +121,7 @@ public function delete($key) {
  *
  */
 private function fixCase($key) {
-	if(!$config->case_sensitive) {
+	if(!$this->config->case_sensitive) {
 		return strtoupper($key);
 	}
 
@@ -67,44 +131,9 @@ private function fixCase($key) {
 /**
  *
  */
-private function getNamespaceArray($string) {
-	$nsArray = array();
-
-	if(is_string($ns)) {
-		$nsArray = explode(".", $ns);
-	}
-	else if(is_array($ns)) {
-		$nsArray = $ns;
-	}
-	else {
-		// TODO: throw exception
-		die("getNsArray error!!!");
-	}
-
-	return $nsArray;
-}
-
-/**
- * Initialises a nested array and returns reference to the deepest (the leaf).
- *
- * @param array $arrayContainer description
- */
-private function initLeaf(&$arrayContainer, $nsToInit, &$leaf = null) {
-	if(empty($nsToInit)) {
-		return $leaf;
-	}
-
-	$initKey = array_shift($nsToInit);
-
-	if(!isset($arrayContainer[$initKey])) {
-		$arrayContainer[$initKey] = array();
-	}
-
-	return self::initLeaf(
-		$arrayContainer[$initKey],
-		$nsToInit,
-		$arrayContainer[$initKey]
-	);
+private function getNamespaceArray($key) {
+	$key = $this->fixCase($key);
+	return explode($this->config->separator, $key);
 }
 
 }#

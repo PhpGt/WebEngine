@@ -1,5 +1,6 @@
 <?php
 /**
+ * Thrown if a key is requested from the Session that does not exist.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
@@ -7,9 +8,4 @@
  */
 namespace Gt\Session;
 
-class StoreValue {
-
-public function __construct() {
-}
-
-}#
+class SessionStoreNotFoundException extends \Gt\Core\Exception\GtException {}#
