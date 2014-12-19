@@ -16,4 +16,16 @@ namespace Gt\Core;
  * @property string $index_filename
  * @property bool $index_force
  */
-class ConfigObj extends Obj {}#
+class ConfigObj extends Obj {
+
+private $name;
+
+public function setName($name) {
+	$this->name = strtolower($name);
+}
+
+public function getName() {
+	return $this->name;
+}
+
+}#

@@ -138,6 +138,7 @@ public function process() {
 	$content = $this->createResponseContent($source, $this->response->config);
 	$this->cleanBuffer();
 
+
 	// Only execute Logic if the response is a success.
 	if($responseCode->getType() === ResponseCode::TYPE_SUCCESS) {
 		// Construct and assign Logic object, which is a collection of

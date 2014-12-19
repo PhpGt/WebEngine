@@ -115,7 +115,7 @@ private function redirect($uri1, $uri2, $production) {
  * are required by path; only pass the required objects.
  */
 public function setPathConfig($config) {
-	Path::setConfig($config->api);
+	Path::setConfig($config["api"]);
 }
 
 /**

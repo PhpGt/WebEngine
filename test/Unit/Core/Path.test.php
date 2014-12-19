@@ -41,6 +41,10 @@ public function testGetSubPaths() {
 		$constName = strtoupper($constName);
 		$constValue = constant("Gt\Core\Path::$constName");
 		$this->assertNotEmpty($constValue);
+
+		$cfg = new \Gt\Core\ConfigObj(["api_directory" => "api"]);
+		$cfg->setName("api");
+		Path::setConfig($cfg);
 		$path = Path::get($constValue);
 
 		$this->assertNotEmpty($path);

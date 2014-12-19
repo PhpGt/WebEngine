@@ -8,6 +8,7 @@
 namespace Gt\Request;
 
 use \Gt\Core\ConfigObj;
+use \Gt\Core\Path;
 
 class Request {
 
@@ -53,7 +54,11 @@ public function __construct($uri, ConfigObj $config) {
  * @return string A Request type constant.
  */
 public function getType() {
-	$apiPrefix = "/" . $this->config->api_prefix;
+	$apiPrefix = substr(
+		Path::get(Path::API, true),
+		strlen(Path::get(Path::SRC, true))
+	);
+	$apiPrefix = strtolower($apiPrefix);
 
 	if(strpos($this->uri, $apiPrefix) === 0) {
 		return self::TYPE_API;

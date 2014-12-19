@@ -44,16 +44,19 @@ public function data_uriType() {
  */
 public function testGetType($uri) {
 	$objArray = [
-		new ConfigObj(["api_prefix" => "api"], true),
-		new ConfigObj(["api_prefix" => "myapi"], true),
-		new ConfigObj(["api_prefix" => "service"], true),
+		new ConfigObj(["api_directory" => "api"], true),
+		new ConfigObj(["api_directory" => "myapi"], true),
+		new ConfigObj(["api_directory" => "service"], true),
 	];
 
 	foreach ($objArray as $obj) {
-		$request = new Request($uri, $obj);
+		$obj->setName("api");
+		\Gt\Core\Path::setConfig($obj);
+
+		$request = new Request($uri, new ConfigObj());
 		$type = $request->getType();
 
-		if(strpos($uri, "/" . $obj->api_prefix) === 0) {
+		if(strpos($uri, "/" . $obj->api_directory) === 0) {
 			$this->assertEquals(Request::TYPE_API, $type);
 		}
 		else {

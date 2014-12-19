@@ -32,11 +32,11 @@ private function getPath() {
 	$path = "";
 
 	$reference = $this;
-	while(!is_null($reference->parent)) {
+	do {
 		$path = $reference->getName() . "/$path";
 
 		$reference = $reference->getParent();
-	}
+	} while(!is_null($reference->parent)) {
 
 	var_dump($path);die("!!!!!!!!!!!!!");
 }
