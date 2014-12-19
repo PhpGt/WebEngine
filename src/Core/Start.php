@@ -29,6 +29,9 @@ public function __construct($uri) {
 	}
 
 	$config = new Config();
+
+	$this->setPathConfig($config);
+
 	$appNamespace = $config["app"]->namespace;
 	if(empty($appNamespace)) {
 		throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
@@ -103,6 +106,16 @@ private function redirect($uri1, $uri2, $production) {
 
 		return new Redirect($uri2, $code);
 	}
+}
+
+/**
+ * Passes the Path class the required configuration objects.
+ *
+ * @param Config $config The Config object - not all ConfigObj objects contained
+ * are required by path; only pass the required objects.
+ */
+public function setPathConfig($config) {
+	Path::setConfig($config->api);
 }
 
 /**

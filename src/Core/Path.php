@@ -24,6 +24,22 @@ const SRC			= "src";
 const WWW			= "www";
 const GTROOT		= "gtroot";
 
+private static $configArray = [];
+
+/**
+ * Store a private reference to the provided configuration object for use when
+ * building paths later on.
+ *
+ * @param ConfigObj $config The config object to be stored in the internal
+ * private array
+ *
+ * @return void
+ */
+public static function setConfig($config) {
+	$configName = $config->getName();
+	self::$configArray[$configName] = $config;
+}
+
 /**
  * Returns the absolute path on disk to the requested path constant, while
  * fixing the path's case, so your application does not need to know if the
@@ -52,7 +68,8 @@ public static function get($name) {
 		break;
 
 	case self::API:
-		$p = self::get(self::SRC) . "/API";
+		$apiName = self::$configArray["api"]->api_directory;
+		$p = self::get(self::SRC) . "/$apiName";
 		break;
 
 	case self::APILOGIC:
