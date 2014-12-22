@@ -118,7 +118,7 @@ private function loadScript() {
 		// Check class exists within autoloader (no need to load it yet).
 		$namespace = Path::getNamespace($this->scriptPath);
 		if(!class_exists($namespace, true)) {
-			throw new ApiLogicNotFoundException($namespace);
+			throw new LogicNotFoundException($namespace);
 		}
 
 		$this->scriptNamespace = $namespace;
@@ -127,6 +127,11 @@ private function loadScript() {
 			$this->api->responseContent,
 			$this->api->session
 		);
+
+		if(!$this->script instanceof Logic) {
+			throw new InvalidLogicTypeException(gettype($this->script));
+		}
+
 		break;
 
 	case "sql":
@@ -150,17 +155,21 @@ private function loadScript() {
  * TODO: Execute _common ApiLogic files!
  */
 private function execute() {
+	$returnValue = null;
+
 	switch($this->scriptType) {
 	case self::SCRIPT_TYPE_LOGIC:
 		$method = $this->scriptMethod;
 		$this->script->setParams($this->params);
-		$this->script->$method();
+		$returnValue = $this->script->$method();
 		// TODO: Execute _common ApiLogic files!
 		break;
 
 	case self::SCRIPT_TYPE_SQL:
 		break;
 	}
+
+	return $returnValue;
 }
 
 }#

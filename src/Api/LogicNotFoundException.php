@@ -8,4 +8,4 @@
  */
 namespace Gt\Api;
 
-class ApiLogicNotFoundException extends \Gt\Core\Exception\GtException {}#
+class LogicNotFoundException extends \Gt\Core\Exception\GtException {}#
