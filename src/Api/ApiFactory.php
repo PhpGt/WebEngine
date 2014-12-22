@@ -28,7 +28,7 @@ public function __get($name) {
 		return $this->componentArray[$name];
 	}
 
-	$component = new Component($name, $this->config);
+	$component = new Component($name, $this->version);
 	$this->componentArray[$name] = $component;
 
 	return $this->componentArray[$name];

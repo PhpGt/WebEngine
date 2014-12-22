@@ -7,28 +7,38 @@
  */
 namespace Gt\Api;
 
+use \Gt\Core\Path;
+
 class Component {
 
 private $name;
-private $config;
 private $parent;
+private $version;
 
-public function __construct($name, $config, $parent = null) {
+public function __construct($name, $version, $parent = null) {
 	$this->name = $name;
-	$this->config = $config;
 	$this->parent = $parent;
+	$this->version = $version;
 }
 
 public function __get($name) {
-	return new Component($name, $this->config, $this);
+	return new Component($name, $this->version, $this);
 }
 
 public function __call($name, $args) {
 	$path = $this->getPath();
-	var_dump($name, $args);die();
+	$subPath = $this->getSubPath($name);
+
+	return new Endpoint($path, $subPath, $args);
 }
 
 private function getPath() {
+	$path = Path::get(Path::API);
+	$path .= "/$this->version";
+	return $path;
+}
+
+private function getSubPath($end = "") {
 	$path = "";
 
 	$reference = $this;
@@ -36,9 +46,9 @@ private function getPath() {
 		$path = $reference->getName() . "/$path";
 
 		$reference = $reference->getParent();
-	} while(!is_null($reference->parent)) {
+	} while(!is_null($reference));
 
-	var_dump($path);die("!!!!!!!!!!!!!");
+	return $path . $end;
 }
 
 public function getParent() {
