@@ -18,14 +18,14 @@ public function testDispatcherFactoryCreatesPageDispatcher() {
 		->will($this->returnValue(\Gt\Request\Request::TYPE_PAGE)
 	);
 	$response = $this->getMock("\Gt\Response\Response", null, [$cfg]);
-	$apiFactory = $this->getMock("\Gt\Api\ApiFactory", null, [$cfg]);
+	$api = $this->getMock("\Gt\Api\Api", null, [$cfg]);
 	$session = $this->getMock("\Gt\Session\Session", null, [$cfg]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		"TestApp",
 		$request,
 		$response,
-		$apiFactory,
+		$api,
 		$session
 	);
 
@@ -42,14 +42,14 @@ public function testDispatcherFactoryCreatesApiDispatcher() {
 		->will($this->returnValue(\Gt\Request\Request::TYPE_API)
 	);
 	$response = $this->getMock("\Gt\Response\Response", null, [$cfg]);
-	$apiFactory = $this->getMock("\Gt\Api\ApiFactory", null, [$cfg]);
+	$api = $this->getMock("\Gt\Api\Api", null, [$cfg]);
 	$session = $this->getMock("\Gt\Session\Session", null, [$cfg]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		"TestApp",
 		$request,
 		$response,
-		$apiFactory,
+		$api,
 		$session
 	);
 

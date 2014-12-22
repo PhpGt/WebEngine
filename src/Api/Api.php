@@ -9,7 +9,7 @@ namespace Gt\Api;
 
 use \Gt\Core\Path;
 
-class ApiFactory {
+class Api {
 
 private $config;
 private $version;

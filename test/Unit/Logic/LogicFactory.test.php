@@ -17,13 +17,13 @@ private $uriList = [
 	"/directory/inner-page",
 	"/directory/subdirectory/nested-page",
 ];
-private $apiFactory;
+private $api;
 
 public function setUp() {
 	$_SERVER["DOCUMENT_ROOT"] = sys_get_temp_dir() . "/www";
 
 	$cfg = $this->getMock("\Gt\Core\ConfigObj");
-	$this->apiFactory = $this->getMock("\Gt\Api\ApiFactory", null, [$cfg]);
+	$this->api = $this->getMock("\Gt\Api\Api", null, [$cfg]);
 }
 
 public function tearDown() {

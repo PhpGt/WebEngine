@@ -16,7 +16,7 @@ use \Gt\Request\Standardiser;
 use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Response\Redirect;
-use \Gt\Api\ApiFactory;
+use \Gt\Api\Api;
 use \Gt\Dispatcher\DispatcherFactory;
 use \Gt\Session\Session;
 
@@ -51,7 +51,7 @@ public function __construct($uri) {
 
 	$request  = new Request ($uri, $config["request"]);
 	$response = new Response($config["response"], $production);
-	$apiFactory = new ApiFactory($config["api"]);
+	$api = new Api($config["api"]);
 
 	$sessionNs = $config["app"]->namespace;
 	if($config["session"]->base_namespace != false) {
@@ -63,7 +63,7 @@ public function __construct($uri) {
 		$appNamespace,
 		$request,
 		$response,
-		$apiFactory,
+		$api,
 		$session
 	);
 

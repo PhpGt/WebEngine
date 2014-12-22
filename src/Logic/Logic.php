@@ -14,8 +14,8 @@ protected $db;
 protected $content;
 protected $session;
 
-public function __construct($apiFactory, $content, $session) {
-	$this->api = $apiFactory;
+public function __construct($api, $content, $session) {
+	$this->api = $api;
 	$this->content = $content;
 	$this->session = $session;
 }

@@ -14,7 +14,7 @@ private $pageDir;
 
 private $request;
 private $response;
-private $apiFactory;
+private $api;
 private $appNamespace = "TestApp";
 
 public function setUp() {
@@ -57,7 +57,7 @@ public function setUp() {
 	$this->response->config = null;
 	$this->response->production = false;
 
-	$this->apiFactory	= $this->getMock("\Gt\Api\ApiFactory", null, [
+	$this->api	= $this->getMock("\Gt\Api\Api", null, [
 		$cfg
 	]);
 
@@ -67,7 +67,7 @@ public function setUp() {
 		$this->appNamespace,
 		$this->request,
 		$this->response,
-		$this->apiFactory,
+		$this->api,
 		$this->session
 	);
 }
@@ -324,7 +324,7 @@ public function testDispatcherProcessFixesUri($uri) {
 			$this->appNamespace,
 			$this->request,
 			$this->response,
-			$this->apiFactory,
+			$this->api,
 			$this->session
 		);
 
@@ -373,7 +373,7 @@ public function testDispatcherProcessFlushes() {
 		$this->appNamespace,
 		$request,
 		$this->response,
-		$this->apiFactory,
+		$this->api,
 		$this->session
 	);
 

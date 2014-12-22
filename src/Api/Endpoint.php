@@ -96,27 +96,25 @@ private function getScriptPath() {
 
 private function loadScript($scriptPath) {
 	$pathInfo = pathinfo(strtok($scriptPath, ":"));
-	$method = strtok(":");
+	$this->scriptMethod = strtok(":");
+
 
 	switch ($pathInfo["extension"]) {
 	case "php":
 		// With no method passed in, the path must be to an API Logic class
 		// with a go() method.
-		$namespace = Path::getNamespace($scriptPath);
+		if(empty($this->scriptMethod)) {
+			$this->scriptMethod = "go";
+		}
 
 		// Check class exists within autoloader (no need to load it yet).
+		$namespace = Path::getNamespace($scriptPath);
 		if(!class_exists($namespace, true)) {
 			throw new ApiLogicNotFoundException($namespace);
 		}
 
-		if(empty($method)) {
-			$this->scriptNamespace = $namespace;
-		}
-		else {
-			// With a method passed in, the path must be to an API Logic class
-			// with a method of name $method.
-			$this->scriptNamespace = $namespace
-		}
+		$this->scriptNamespace = $namespace;
+		$this->script = new $namespace();
 		break;
 
 	case "sql":

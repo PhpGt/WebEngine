@@ -18,14 +18,14 @@ protected $db;
 protected $template;
 
 /**
- * @param ApiFactory $apiFactory API Access Layer
+ * @param Api $api API Access Layer
  * @param Document $content Dom document representing the response's content
  * @param Session $session Session manager
  *
  * @return void
  */
-public function __construct($apiFactory, $content, $session) {
-	parent::__construct($apiFactory, $content, $session);
+public function __construct($api, $content, $session) {
+	parent::__construct($api, $content, $session);
 
 	// Synonyms
 	$this->document = $content;

@@ -11,7 +11,7 @@ use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Response\ResponseCode;
 use \Gt\Response\Headers;
-use \Gt\Api\ApiFactory;
+use \Gt\Api\Api;
 use \Gt\Response\NotFoundException;
 use \Gt\Core\Path;
 use \Gt\Logic\LogicFactory;
@@ -22,15 +22,15 @@ abstract class Dispatcher {
 private $appNamespace;
 private $request;
 private $response;
-private $apiFactory;
+private $api;
 private $session;
 
 public function __construct($appNamespace, $request, $response,
-$apiFactory, $session) {
+$api, $session) {
 	$this->appNamespace = $appNamespace;
 	$this->request = $request;
 	$this->response = $response;
-	$this->apiFactory = $apiFactory;
+	$this->api = $api;
 	$this->session = $session;
 }
 
@@ -138,7 +138,6 @@ public function process() {
 	$content = $this->createResponseContent($source, $this->response->config);
 	$this->cleanBuffer();
 
-
 	// Only execute Logic if the response is a success.
 	if($responseCode->getType() === ResponseCode::TYPE_SUCCESS) {
 		// Construct and assign Logic object, which is a collection of
@@ -146,7 +145,7 @@ public function process() {
 		$logicList = LogicFactory::create(
 			$this->appNamespace,
 			$fullUri,
-			$this->apiFactory,
+			$this->api,
 			$content,
 			$this->session
 		);
