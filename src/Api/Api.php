@@ -21,7 +21,7 @@ private $componentArray = [];
 /**
  *
  */
-public function __construct($config, $responseContent, $session) {
+public function __construct($config, $responseContent = null, $session = null) {
 	$this->config = $config;
 	$this->responseContent = $responseContent;
 	$this->session = $session;

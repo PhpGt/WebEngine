@@ -155,6 +155,7 @@ private function execute() {
 		$method = $this->scriptMethod;
 		$this->script->setParams($this->params);
 		$this->script->$method();
+		// TODO: Execute _common ApiLogic files!
 		break;
 
 	case self::SCRIPT_TYPE_SQL:
