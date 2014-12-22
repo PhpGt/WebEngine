@@ -51,13 +51,13 @@ public function __construct($uri) {
 
 	$request  = new Request ($uri, $config["request"]);
 	$response = new Response($config["response"], $production);
-	$api = new Api($config["api"]);
 
 	$sessionNs = $config["app"]->namespace;
 	if($config["session"]->base_namespace != false) {
 		$sessionNs = $config["session"]->base_namespace;
 	}
 	$session = new Session($config["session"], $sessionNs);
+	$api = new Api($config["api"], $response->content, $session);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		$appNamespace,

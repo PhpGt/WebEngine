@@ -10,9 +10,9 @@ namespace Gt\Logic;
 abstract class Logic {
 
 protected $api;
-protected $db;
 protected $content;
 protected $session;
+protected $params = [];
 
 public function __construct($api, $content, $session) {
 	$this->api = $api;
@@ -26,5 +26,13 @@ public function __construct($api, $content, $session) {
  * @return void
  */
 abstract public function go();
+
+/**
+ *
+ */
+public function setParams($params) {
+	$this->params = array_merge($this->params, $params);
+	return $this->params;
+}
 
 }#

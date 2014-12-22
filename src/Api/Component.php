@@ -13,23 +13,31 @@ class Component {
 
 private $name;
 private $parent;
+private $api;
 private $version;
 
-public function __construct($name, $version, $parent = null) {
+public function __construct($name, $api, $parent = null) {
 	$this->name = $name;
+
+	$this->api = $api;
 	$this->parent = $parent;
-	$this->version = $version;
+	$this->version = $this->api->getVersion();
 }
 
 public function __get($name) {
-	return new Component($name, $this->version, $this);
+	return new Component($name, $this->api, $this);
 }
 
 public function __call($name, $args) {
 	$path = $this->getPath();
 	$subPath = $this->getSubPath($name);
 
-	return new Endpoint($path, $subPath, $args);
+	$params = [];
+	if(!empty($args)) {
+		$params = $args[0];
+	}
+
+	return new Endpoint($path, $subPath, $params, $this->api);
 }
 
 private function getPath() {

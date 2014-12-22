@@ -14,26 +14,33 @@ use \Gt\Core\Path;
 
 class Endpoint {
 
+const SCRIPT_TYPE_SQL = "script_type_sql";
+const SCRIPT_TYPE_LOGIC = "script_type_logic";
+
 private $path;
 private $subPath;
 private $params;
+private $api;
 
 private $scriptPath;
 private $scriptNamespace;
+private $scriptType;
 
 /**
  * @param string $path The absolute path to the API version directory on disk
  * @param string $subPath The enpoint's path to use
  * @param array $params Associative array of parameters to use on this endpoint
+ * @param Api $api The Api used to access the Endpoint
  */
-public function __construct($path, $subPath, $params) {
+public function __construct($path, $subPath, $params, $api) {
 	$this->path = $path;
 	$this->subPath = $subPath;
 	$this->params = $params;
+	$this->api = $api;
 
 	$this->scriptPath = $this->getScriptPath();
-
-	$this->loadScript($this->scriptPath);
+	$this->loadScript();
+	$this->execute();
 	var_dump($this);die();
 }
 
@@ -94,13 +101,14 @@ private function getScriptPath() {
 	return $return;
 }
 
-private function loadScript($scriptPath) {
-	$pathInfo = pathinfo(strtok($scriptPath, ":"));
+private function loadScript() {
+	$pathInfo = pathinfo(strtok($this->scriptPath, ":"));
 	$this->scriptMethod = strtok(":");
 
 
 	switch ($pathInfo["extension"]) {
 	case "php":
+		$this->scriptType = self::SCRIPT_TYPE_LOGIC;
 		// With no method passed in, the path must be to an API Logic class
 		// with a go() method.
 		if(empty($this->scriptMethod)) {
@@ -108,16 +116,21 @@ private function loadScript($scriptPath) {
 		}
 
 		// Check class exists within autoloader (no need to load it yet).
-		$namespace = Path::getNamespace($scriptPath);
+		$namespace = Path::getNamespace($this->scriptPath);
 		if(!class_exists($namespace, true)) {
 			throw new ApiLogicNotFoundException($namespace);
 		}
 
 		$this->scriptNamespace = $namespace;
-		$this->script = new $namespace();
+		$this->script = new $namespace(
+			$this->api,
+			$this->api->responseContent,
+			$this->api->session
+		);
 		break;
 
 	case "sql":
+		$this->scriptType = self::SCRIPT_TYPE_SQL;
 		throw new \Gt\Core\Exception\NotImplementedException();
 		break;
 
@@ -125,7 +138,28 @@ private function loadScript($scriptPath) {
 		throw new InvalidScriptTypeException($pathInfo["extension"]);
 		break;
 	}
-	var_dump($this->scriptPath);die("123");
+}
+
+/**
+ * Executes the script(s) associated with this Endpoint, similarly to how the
+ * ApiDispatcher works.
+ *
+ * If the script is an SQL file, it will create a new Database object as a DAL,
+ * otherwise the ApiLogic will be interfaced directly.
+ *
+ * TODO: Execute _common ApiLogic files!
+ */
+private function execute() {
+	switch($this->scriptType) {
+	case self::SCRIPT_TYPE_LOGIC:
+		$method = $this->scriptMethod;
+		$this->script->setParams($this->params);
+		$this->script->$method();
+		break;
+
+	case self::SCRIPT_TYPE_SQL:
+		break;
+	}
 }
 
 }#

@@ -13,14 +13,24 @@ class Api {
 
 private $config;
 private $version;
+private $responseContent;
+private $session;
 
 private $componentArray = [];
 
-public function __construct($config) {
+/**
+ *
+ */
+public function __construct($config, $responseContent, $session) {
 	$this->config = $config;
+	$this->responseContent = $responseContent;
+	$this->session = $session;
 	$this->version = $this->getVersionName($config->default_version);
 }
 
+/**
+ *
+ */
 public function __get($name) {
 	$name = strtolower($name);
 
@@ -28,7 +38,7 @@ public function __get($name) {
 		return $this->componentArray[$name];
 	}
 
-	$component = new Component($name, $this->version);
+	$component = new Component($name, $this);
 	$this->componentArray[$name] = $component;
 
 	return $this->componentArray[$name];
@@ -46,6 +56,14 @@ public function setVersion($version) {
 
 	return $this->version = $this->getVersionName($version);
 }
+
+/**
+ *
+ */
+public function getVersion() {
+	return $this->version;
+}
+
 
 /**
  * @param int $version The numerical version of the current API
