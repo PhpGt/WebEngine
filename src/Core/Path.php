@@ -170,4 +170,39 @@ $stripPrefix = false, $stripSuffix = false) {
 	return $result;
 }
 
+/**
+ * From a given PHP script, return the correct fully qualified namespace from
+ * its location on disc, according to PSR-4.
+ *
+ * @param string $path Absolute path to PHP script
+ *
+ * @return string|bool A string containing the fully qualified namespace, or
+ * false if file cannot be found
+ */
+public static function getNamespace($path) {
+	$path = self::fixCase($path);
+
+	if(!file_exists($path)) {
+		return false;
+	}
+
+	$src = self::get(self::SRC);
+	if(strpos($path, $src) !== 0) {
+		return false;
+	}
+
+	$subPath = substr($path, strlen($src));
+	$pathInfo = pathinfo($subPath);
+
+	if(!empty($pathInfo["dirname"])
+	&& !empty($pathInfo["filename"])) {
+		$path = $pathInfo["dirname"];
+		$path .= "/" . $pathInfo["filename"];
+
+		return "\\" . APP_NAMESPACE . str_replace("/", "\\", $path);
+	}
+
+	return false;
+}
+
 }#

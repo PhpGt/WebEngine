@@ -38,7 +38,9 @@ public function __construct($uri) {
 			"No App namespace defined. Are you sure you have a config.ini?");
 	}
 
-	$this->addAppAutoloader($appNamespace);
+	define("APP_NAMESPACE", $appNamespace);
+
+	$this->addAppAutoloader(APP_NAMESPACE);
 
 	$production = $config["app"]->production;
 	$this->setupEnvironment($config);

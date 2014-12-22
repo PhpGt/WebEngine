@@ -19,6 +19,7 @@ private $subPath;
 private $params;
 
 private $scriptPath;
+private $scriptNamespace;
 
 /**
  * @param string $path The absolute path to the API version directory on disk
@@ -31,6 +32,8 @@ public function __construct($path, $subPath, $params) {
 	$this->params = $params;
 
 	$this->scriptPath = $this->getScriptPath();
+
+	$this->loadScript($this->scriptPath);
 	var_dump($this);die();
 }
 
@@ -49,20 +52,16 @@ public function __construct($path, $subPath, $params) {
  * the method will be placed after two colons (i.e. /path/to/file.php::myMethod)
  */
 private function getScriptPath() {
+	$method = "";
+
 	$fullPath = $this->path . "/" . $this->subPath;
 	$fullPath = Path::fixCase($fullPath);
-var_dump($fullPath);
 
 	// $actionName is the name of the API action being done. This may be the
 	// name of a script, or the name of a method within a Logic class.
 	$actionName = basename($fullPath);
 	$ext = "";
-
-var_dump($actionName);
-
 	$containerPath = dirname($fullPath);
-
-var_dump($containerPath);
 
 	// $containerPath may be a directory containing the $actionName script, or
 	// a Logic class containing the $actionName as a method.
@@ -83,11 +82,52 @@ var_dump($containerPath);
 	}
 	else {
 		// TODO: Handle Logic class with $actionName method.
+		// $method = "somethingHere";
 	}
 
-var_dump($ext);
-die("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	$return = "$fullPath.$ext";
 
+	if(!empty($method)) {
+		$return .= "::$method";
+	}
+
+	return $return;
+}
+
+private function loadScript($scriptPath) {
+	$pathInfo = pathinfo(strtok($scriptPath, ":"));
+	$method = strtok(":");
+
+	switch ($pathInfo["extension"]) {
+	case "php":
+		// With no method passed in, the path must be to an API Logic class
+		// with a go() method.
+		$namespace = Path::getNamespace($scriptPath);
+
+		// Check class exists within autoloader (no need to load it yet).
+		if(!class_exists($namespace, true)) {
+			throw new ApiLogicNotFoundException($namespace);
+		}
+
+		if(empty($method)) {
+			$this->scriptNamespace = $namespace;
+		}
+		else {
+			// With a method passed in, the path must be to an API Logic class
+			// with a method of name $method.
+			$this->scriptNamespace = $namespace
+		}
+		break;
+
+	case "sql":
+		throw new \Gt\Core\Exception\NotImplementedException();
+		break;
+
+	default:
+		throw new InvalidScriptTypeException($pathInfo["extension"]);
+		break;
+	}
+	var_dump($this->scriptPath);die("123");
 }
 
 }#
