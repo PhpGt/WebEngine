@@ -18,6 +18,16 @@ private $templateNodeMap = [
 ];
 private $document;
 
+private static $singleton;
+
+public static function init($document) {
+	if(empty(self::$singleton)) {
+		self::$singleton = new TemplateFactory($document);
+	}
+
+	return self::$singleton;
+}
+
 /**
  * @param The dom document to scrape template elements from
  */
@@ -25,6 +35,8 @@ public function __construct($document) {
 	$this->document = $document;
 	$templateAttribute = $document->config->template_element_attribute;
 	$elementList = $document->xpath(".//*[@$templateAttribute]");
+
+	$this->testProp = "UNGABI-" . uniqid();
 
 	foreach ($elementList as $element) {
 		$name = $element->getAttribute($templateAttribute);
@@ -53,6 +65,10 @@ public function get($name) {
 	if(isset($this->elementArray[$name])) {
 		$node = $this->elementArray[$name]->cloneNode(true);
 		$node->templateParentNode = $this->templateNodeMap["parent"][$name];
+		$node->templatePreviousSibling =
+			$this->templateNodeMap["previousSibling"][$name];
+		$node->templateNextSibling =
+			$this->templateNodeMap["nextSibling"][$name];
 		return $node;
 	}
 

@@ -31,7 +31,7 @@ public function __construct($api, $content, $session) {
 	$this->document = $content;
 	$this->dom = $this->document;
 
-	$this->template = new TemplateFactory($content);
+	$this->template = TemplateFactory::init($content);
 }
 
 }#

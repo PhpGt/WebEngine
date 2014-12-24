@@ -40,8 +40,6 @@ public function __construct($path, $subPath, $params, $api) {
 
 	$this->scriptPath = $this->getScriptPath();
 	$this->loadScript();
-	$this->execute();
-	var_dump($this);die();
 }
 
 /**
@@ -154,7 +152,7 @@ private function loadScript() {
  *
  * TODO: Execute _common ApiLogic files!
  */
-private function execute() {
+public function execute() {
 	$returnValue = null;
 
 	switch($this->scriptType) {

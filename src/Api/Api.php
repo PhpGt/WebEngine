@@ -14,9 +14,9 @@ class Api {
 private $config;
 private $version;
 private $responseContent;
-private $session;
-
 private $componentArray = [];
+
+public $session;
 
 /**
  *

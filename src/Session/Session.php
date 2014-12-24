@@ -20,14 +20,18 @@ const STATUS_INACTIVE = PHP_SESSION_DISABLED;
 
 public function __construct($config) {
 	$this->config = $config;
+	$namespace = $this->config->base_namespace;
+	if(empty($namespace)) {
+		$namespace = APP_NAMESPACE;
+	}
 
 	@session_start();
 
-	if(!isset($_SESSION[$this->config->base_namespace])) {
-		$_SESSION[$this->config->base_namespace] = new Store($this->config);
+	if(!isset($_SESSION[$namespace])) {
+		$_SESSION[$namespace] = new Store($this->config);
 	}
 
-	$this->store = $_SESSION[$this->config->base_namespace];
+	$this->store = $_SESSION[$namespace];
 }
 
 public function getStatus() {
@@ -75,29 +79,39 @@ $value = null, $return = null) {
 		return $return;
 	}
 
-	$getKey = array_shift($nsArray);
-	if(!isset($store[$getKey])) {
+	$key = array_shift($nsArray);
+	if(!isset($store[$key])) {
 		if($direction === self::DATA_GET) {
-			throw new SessionStoreNotFoundException($getKey);
+			throw new SessionStoreNotFoundException($key);
 		}
 		else if($direction === self::DATA_SET) {
 
-
 			if(empty($nsArray)) {
-				$store[$getKey] = $value;
+				//If setting an associative array, convert it to a Store.
+				if($this->isAssociativeArray($value)) {
+
+					$store[$key] = new Store($this->config);
+					foreach ($value as $arrayKey => $arrayValue) {
+						$arrayKey = $this->fixCase($arrayKey);
+						$store[$key][$arrayKey] = $arrayValue;
+					}
+				}
+				else {
+					$store[$key] = $value;
+				}
 			}
 			else {
-				$store[$getKey] = new Store($this->config);
+				$store[$key] = new Store($this->config);
 			}
 		}
 	}
 
 	return $this->data(
 		$direction,
-		$store[$getKey],
+		$store[$key],
 		$nsArray,
 		$value,
-		$store[$getKey]
+		$store[$key]
 	);
 }
 
@@ -126,6 +140,30 @@ private function fixCase($key) {
 	}
 
 	return $key;
+}
+
+/**
+ * Detects an associative array using a simple decision of whether or not the
+ * array has no integer keys. If there are not any integer keys, the array is
+ * treated associative. If there are any integer keys, the array is treated as
+ * not associative. If the array is empty, it is also treated as not
+ * associative.
+ *
+ * @param array $array The array to test
+ *
+ * @return bool True if fully associative, false otherwise
+ */
+private function isAssociativeArray($array) {
+	if(!is_array($array)) {
+		return false;
+	}
+
+	if(empty($array)) {
+		return false;
+	}
+
+	$integerKeys = array_filter(array_keys($array), "is_int");
+	return (0 === count($integerKeys));
 }
 
 /**

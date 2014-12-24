@@ -77,15 +77,15 @@ public static function getAll() {
  * @return string The raw HTTP representation of all headers sent
  */
 public static function send() {
-	ResponseCode::send();
-
 	$rawAll = "";
 	foreach (self::$headerArray as $field => $value) {
 		$raw = self::getRaw($field, $value);
-		@header($raw);
+		@header($raw, true, self::code());
 
 		$rawAll .= $raw . PHP_EOL;
 	}
+
+	ResponseCode::send();
 
 	return $rawAll;
 }
@@ -108,7 +108,7 @@ public static function getRaw($field, $value) {
 
 public static function redirect($uri,
 $code = ResponseCode::REDIRECT_TEMPORARY) {
-	self::add("Location: $uri");
+	self::add("Location", $uri);
 	self::code($code);
 	self::send();
 }

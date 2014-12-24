@@ -37,7 +37,8 @@ public function __call($name, $args) {
 		$params = $args[0];
 	}
 
-	return new Endpoint($path, $subPath, $params, $this->api);
+	$endpoint = new Endpoint($path, $subPath, $params, $this->api);
+	return $endpoint->execute();
 }
 
 private function getPath() {
