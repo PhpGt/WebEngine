@@ -8,6 +8,12 @@ namespace Gt\Dispatcher;
 
 class DispatcherFactory_Test extends \PHPUnit_Framework_TestCase {
 
+public function setUp() {
+	if(!defined("APP_NAMESPACE")) {
+		define("APP_NAMESPACE", "TestApp");
+	}
+}
+
 public function testDispatcherFactoryCreatesPageDispatcher() {
 	$cfg = new \Gt\Core\ConfigObj();
 	$request = $this->getMock("\Gt\Request\Request", ["getType"], [

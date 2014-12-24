@@ -18,6 +18,9 @@ private $api;
 private $appNamespace = "TestApp";
 
 public function setUp() {
+	if(!defined("APP_NAMESPACE")) {
+		define("APP_NAMESPACE", "TestApp");
+	}
 	$this->tmp = \Gt\Test\Helper::createTmpDir();
 	$this->pageDir = \Gt\Test\Helper::createTmpDir("/src/Page");
 
