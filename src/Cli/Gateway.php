@@ -22,6 +22,8 @@ class Gateway {
  * @return mixed An instance of the $phpgt class
  */
 public static function serve($uri, $phpgt = "\Gt\Core\Start") {
+	$uri = strtok($uri, "?");
+
 	if(self::isStaticFileRequest($uri)) {
 		$filePath = self::getAbsoluteFilePath($uri);
 		self::serveStaticFile($filePath);
