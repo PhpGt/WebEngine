@@ -124,7 +124,7 @@ public function __get($name) {
 			$value = self::wrapNative($value);
 		}
 		else {
-			throw new InvalidNodePropertyException($name);
+			$value = $this->getAttribute($name);
 		}
 		break;
 	}
@@ -167,7 +167,7 @@ public function __set($name, $value) {
 		break;
 
 	default:
-		throw new InvalidNodePropertyException($name);
+		$this->setAttribute($name, $value);
 	}
 }
 
