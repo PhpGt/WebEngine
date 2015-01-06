@@ -10,10 +10,12 @@ namespace Gt\Data;
 
 use \Gt\Core\Path;
 use \League\Csv\Reader;
+use \League\Csv\Writer;
 
-class Csv { //implements \Iterator {
+class Csv {
 
 private $reader;
+private $file;
 private $headers;
 
 public function __construct($path) {
@@ -25,8 +27,8 @@ public function __construct($path) {
 		throw new DataSourceNotFoundException($path);
 	}
 
-	$file = new \SplFileObject($path);
-	$this->reader = Reader::createFromPath($file);
+	$this->file = new \SplFileObject($path, "r+");
+	$this->reader = Reader::createFromPath($this->file);
 	$this->headers = $this->reader->fetchOne();
 }
 
@@ -46,6 +48,27 @@ public function getAll() {
 	}
 
 	return $result;
+}
+
+/**
+ *
+ */
+public function getLast() {
+	$all = $this->reader->fetchAll();
+	$last = [];
+	$i = count($all) - 1;
+
+	while(empty($last) || empty($last[0]) ){
+		$last = $all[$i];
+		$i--;
+	}
+
+	foreach ($last as $key => $value) {
+		$last[$this->headers[$key]] = $value;
+		unset($last[$key]);
+	}
+
+	return $last;
 }
 
 /**
@@ -71,12 +94,17 @@ public function findBy($key, $value, $strict = false) {
 	});
 
 	$this->reader->addFilter(function($row, $index) use($columnCount) {
-		// Only return rows with valid columns.
-		for($i = 0; $i < $columnCount; $i++) {
-			if(!isset($row[$i])) {
-				return false;
-			}
+		// Only return rows with at least the forename column.
+		$forenameIndex = array_search("Forename", $this->headers);
+		if(!isset($row[$forenameIndex])) {
+			return false;
 		}
+		// // Only return rows with valid columns.
+		// for($i = 0; $i < $columnCount; $i++) {
+		// 	if(!isset($row[$i])) {
+		// 		return false;
+		// 	}
+		// }
 
 		return true;
 	});
@@ -102,6 +130,24 @@ public function findBy($key, $value, $strict = false) {
 	}
 
 	return $result;
+}
+
+/**
+ *
+ */
+public function add($data) {
+	// $writer = $this->reader->newWriter();
+	$this->file->fseek(0, SEEK_END);
+
+	// while($this->file->fread(1) !== "\n") {
+	// 	$this->file->fseek(-1);
+	// }
+
+	// $this->file->fwrite("\n");
+	$this->file->fputcsv($data);
+	// var_dump($this->file, $this->reader);die();
+	// $writer->insertOne($data);
+	// var_dump($writer, $data);die("writer");
 }
 
 }#
