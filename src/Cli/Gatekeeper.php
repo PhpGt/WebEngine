@@ -28,15 +28,16 @@ require($autoloader);
 
 // Only allow this script to be invoked from inbuilt webserver.
 $sapi = php_sapi_name();
+$uri = strtok($_SERVER["REQUEST_URI"], "?");
 
 switch($sapi) {
 case "cli-server":
-	return Gateway::serve($_SERVER["REQUEST_URI"]);
+	return Gateway::serve($uri);
 
 case "cli":
 	throw new InvalidContextException(php_sapi_name());
 
 default:
 	// When using third-party webserver:
-	return new \Gt\Core\Start($_SERVER["REQUEST_URI"]);
+	return new \Gt\Core\Start($uri);
 }
