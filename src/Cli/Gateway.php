@@ -10,6 +10,7 @@
 namespace Gt\Cli;
 
 use \Gt\Response\Headers;
+use \Gt\Response\ResponseCode;
 
 class Gateway {
 
@@ -72,7 +73,7 @@ public static function serveStaticFile($filePath) {
 	}
 
 	Headers::add("Content-type", $mime);
-	Headers::send();
+	Headers::send(new ResponseCode);
 	return readfile($filePath);
 }
 

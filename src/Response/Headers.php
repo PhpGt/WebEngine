@@ -74,9 +74,12 @@ public static function getAll() {
 /**
  * Sends all the headers currently waiting to be sent.
  *
+ * @param ResponseCode|null $responseCode The optional response code object to
+ * use when sending the HTTP response status code.
+ *
  * @return string The raw HTTP representation of all headers sent
  */
-public static function send() {
+public static function send($responseCode = null) {
 	$rawAll = "";
 	foreach (self::$headerArray as $field => $value) {
 		$raw = self::getRaw($field, $value);
@@ -85,7 +88,9 @@ public static function send() {
 		$rawAll .= $raw . PHP_EOL;
 	}
 
-	ResponseCode::send();
+	if(!is_null($responseCode)) {
+		$responseCode->send();
+	}
 
 	return $rawAll;
 }
