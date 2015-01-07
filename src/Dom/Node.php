@@ -124,7 +124,12 @@ public function __get($name) {
 			$value = self::wrapNative($value);
 		}
 		else {
-			$value = $this->getAttribute($name);
+			if($this->hasAttribute($name)) {
+				$value = $this->getAttribute($name);
+			}
+			else {
+				$value = null;
+			}
 		}
 		break;
 	}

@@ -87,22 +87,15 @@ public function testNodeConstructorSetsDomNodeValue() {
 	}
 }
 
-/**
- * @expectedException \Gt\Dom\InvalidNodePropertyException
- */
-public function testGetInvalidNodeProperty() {
+public function testShorthandPropertyGetsAndSetsAttributes() {
 	$node = $this->document->createElement("p");
-
 	$test = $node->aMadeUpProperty;
-}
 
-/**
- * @expectedException \Gt\Dom\InvalidNodePropertyException
- */
-public function testSetInvalidNodeProperty() {
-	$node = $this->document->createElement("p");
+	$this->assertNull($test, 'should not have aMadeUpProperty yet');
 
-	$node->anotherMadeUpProperty = "test";
+	$node->aMadeUpProperty = "testValue";
+
+	$this->assertEquals("testValue", $node->getAttribute("aMadeUpProperty"));
 }
 
 public function testCallNativeMethod() {
