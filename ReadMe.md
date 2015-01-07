@@ -8,7 +8,7 @@ PHP frameworks offer many features, and often come with steep learning curves. T
 
 ***
 
-[![Build Status](http://img.shields.io/circleci/project/BrightFlair/PHP.Gt.svg?style=flat-square)](https://travis-ci.org/BrightFlair/PHP.Gt)
+[![Build Status](http://img.shields.io/circleci/project/BrightFlair/PHP.Gt.svg?style=flat-square)](https://circleci.com/gh/BrightFlair/PHP.Gt)
 [![Coverage Status](http://img.shields.io/coveralls/BrightFlair/PHP.Gt.svg?style=flat-square)](https://coveralls.io/r/BrightFlair/PHP.Gt)
 [![Code Quality](http://img.shields.io/scrutinizer/g/BrightFlair/PHP.Gt.svg?style=flat-square)](https://scrutinizer-ci.com/g/BrightFlair/PHP.Gt/)
 [![Composer Version](http://img.shields.io/packagist/v/brightflair/php.gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
