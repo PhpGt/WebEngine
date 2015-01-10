@@ -63,6 +63,17 @@ public function __construct(Node $domHead, $request, $response) {
 public function generatePathDetails() {
 	$this->nodeList = $this->domHead->xpath(self::$xpathQuery);
 
+	// Do not add nodes that reference the asset directory.
+	foreach ($this->nodeList->nodeArray as $i => $node) {
+		$source = $node->getAttribute(
+			$this->sourceAttribute[$node->tagName]);
+		$source = strtolower($source);
+		if(strpos($source, "/asset") === 0) {
+			unset($this->nodeList->nodeArray[$i]);
+		}
+	}
+	$this->nodeList->nodeArray = array_values($this->nodeList->nodeArray);
+
 	$pathDetails = new PathDetails($this->nodeList);
 	return $pathDetails;
 }

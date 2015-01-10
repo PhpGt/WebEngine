@@ -127,7 +127,6 @@ public function purgeStaticWwwFiles() {
 	foreach(new \DirectoryIterator(Path::get(Path::WWW)) as $item) {
 		$filename = $item->getFilename();
 
-
 		if($filename === $assetDirName
 		|| strpos($filename, $scriptDirName . "-") === 0
 		|| strpos($filename, $styleDirName . "-") === 0) {
@@ -233,13 +232,6 @@ public function copyAsset() {
 	return $copyCount;
 }
 
-private function writeStaticFingerprint($fingerprint) {
-	if(!is_dir(dirname($this->staticFingerprintFile))) {
-		mkdir(dirname($this->staticFingerprintFile), 0775, true);
-	}
-	file_put_contents($this->staticFingerprintFile, $fingerprint);
-}
-
 /**
  *
  */
@@ -258,6 +250,13 @@ public function copyAssetCallback($file, $iterator, &$out) {
 	if(copy($source, $dest)) {
 		$out++;
 	}
+}
+
+private function writeStaticFingerprint($fingerprint) {
+	if(!is_dir(dirname($this->staticFingerprintFile))) {
+		mkdir(dirname($this->staticFingerprintFile), 0775, true);
+	}
+	file_put_contents($this->staticFingerprintFile, $fingerprint);
 }
 
 /**
