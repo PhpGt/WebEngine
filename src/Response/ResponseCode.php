@@ -165,7 +165,7 @@ public function set($code) {
 	return Headers::code($code);
 }
 
-public function get($code) {
+public function get() {
 	return Headers::code();
 }
 
