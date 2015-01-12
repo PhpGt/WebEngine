@@ -136,6 +136,7 @@ public function process() {
 
 	// Instantiate the response content object, for manipulation in Code.
 	$content = $this->createResponseContent($source, $this->response->config);
+	$this->setContentUri($this->request->uri, $content);
 	$this->cleanBuffer();
 
 	// Only execute Logic if the response is a success.
@@ -162,7 +163,6 @@ public function process() {
 			$logicObj->endGo();
 		}
 	}
-
 
 	$manifest = $content->createManifest($this->request, $this->response);
 	$fileOrganiser = new FileOrganiser($this->response, $manifest);

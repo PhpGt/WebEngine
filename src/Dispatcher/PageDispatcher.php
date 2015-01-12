@@ -11,6 +11,7 @@ namespace Gt\Dispatcher;
 use \Gt\Core\Path;
 use \Gt\Response\NotFoundException;
 use \Gt\Page\Transformer;
+use \Gt\Response\ResponseContent;
 
 class PageDispatcher extends Dispatcher {
 
@@ -195,6 +196,19 @@ public function createResponseContent($html, $config) {
 	$domDocument = new \Gt\Dom\Document($html, $config);
 
 	return $domDocument;
+}
+
+/**
+ * 
+ */
+public function setContentUri($uri, ResponseContent $content) {
+	if(strrpos($uri, "/") === strlen($uri) - 1) {
+		$uri .= "index";
+	}
+	$uri = trim($uri, "/");
+	$uri = str_replace("/", "_", $uri);
+	$idUri = $uri;
+	$content->querySelector("body")->id = $idUri;
 }
 
 }#
