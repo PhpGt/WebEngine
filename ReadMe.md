@@ -13,7 +13,7 @@ PHP frameworks offer many features, and often come with steep learning curves. T
 [![Code Quality](http://img.shields.io/scrutinizer/g/BrightFlair/PHP.Gt.svg?style=flat-square)](https://scrutinizer-ci.com/g/BrightFlair/PHP.Gt/)
 [![Composer Version](http://img.shields.io/packagist/v/brightflair/php.gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
 [![Download Stats](http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
-[![PHP.Gt Website](http://img.shields.io/badge/Web-www.php.gt-blue.svg?style=flat-square)](http://php.gt)
+[![PHP.Gt Website](http://img.shields.io/badge/Web-www.php.gt-26a5e3.svg?style=flat-square)](http://php.gt)
 
 PHP.Gt has been in commercial use for 2 years now. It is now time for a full code re-write to bring it up to speed with the industry and to apply what we've learnt over the years.
 
