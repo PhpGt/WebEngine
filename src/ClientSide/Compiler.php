@@ -30,9 +30,35 @@ public static function parse($inputFile) {
 
 	switch ($ext) {
 	case "scss":
+		$importPaths = [
+			Path::get(Path::STYLE),
+			dirname($inputFile),
+		];
 		$scss = new ScssParser();
-		$scss->addImportPath(Path::get(Path::STYLE));
-		$scss->addImportPath(dirname($inputFile));
+		$scss->setImportPaths($importPaths);
+		$scss->addImportPath(function($path, $scss) use($importPaths) {
+			// Get the path of the current file, attempt relative path import.
+			$parsedFiles = $scss->getParsedFiles();
+			$currentFileImporting = end($parsedFiles);
+			$currentFileImporting = rtrim($currentFileImporting, "/");
+			$currentPath = pathinfo($currentFileImporting, PATHINFO_DIRNAME);
+			$relativePath = "$currentPath/$path";
+
+			if(is_file($path)) {
+				return $path;
+			}
+			if(is_file($relativePath)) {
+				return $relativePath;
+			}
+
+			return null;
+		});
+
+		// Add magic variable $appRoot.
+		$content = "\$APPROOT: \"" . Path::get(Path::ROOT)
+			. "\";"
+			. "\n\n"
+			. $content;
 
 		try {
 			$content = $scss->compile($content);
