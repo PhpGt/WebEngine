@@ -31,7 +31,9 @@ abstract public function go();
  *
  */
 public function setParams($params) {
-	$this->params = array_merge($this->params, $params);
+	foreach ($params as $i => $value) {
+		$this->params[$i] = $value;
+	}
 	return $this->params;
 }
 
