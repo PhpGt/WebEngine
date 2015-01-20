@@ -1,0 +1,77 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Initiate tests within current project. Exits with status code 0 on successful
+ * test run, 1 for failed Unit test, 2 on failed Acceptance test, 3 on failed
+ * Unit and failed Acceptance test.
+ *
+ * Usage: test [-a|--approot[="..."]] [--type="unit|acceptance|all"]
+ *
+ * PHP.Gt (http://php.gt)
+ * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
+ * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ */
+use Gt\Cli\TestRunner;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\ArgvInput;
+
+$cwd = getcwd();
+$vendorAutoLoadFile = realpath(__DIR__ . "/../vendor/autoload.php");
+if(!file_exists($vendorAutoLoadFile)) {
+	// If this script exists within the vendor/brightflair/php.gt directory:
+	$vendorAutoLoadFile = realpath(__DIR__ . "/../../../autoload.php");
+	$cwd = realpath(__DIR__ . "/../../..");
+}
+require($vendorAutoLoadFile);
+
+$defaults = [
+	"approot" => $cwd,
+	"type" => "all",
+];
+
+$definition = new InputDefinition([
+	new InputArgument("approot", InputArgument::OPTIONAL),
+	new InputOption("approot", "a", InputOption::VALUE_OPTIONAL,
+		"Application root directory", $defaults["approot"]),
+
+	new InputArgument("type", InputArgument::OPTIONAL),
+	new InputOption("type", "t", InputOption::VALUE_OPTIONAL,
+		"Type of test to run", $defaults["type"]),
+]);
+
+try {
+	$input = new ArgvInput($argv, $definition);
+	$approot = $input->getOption("approot");
+	$type = $input->getOption("type");
+
+	// Change autoloaders so we are definitely using the current project's
+	// dependencies (rather than the global PHP.Gt dependencies).
+	$projectAutoloader = "$approot/vendor/autoload.php";
+	if(!file_exists($projectAutoloader)) {
+		// We must be running the bin/serve script manually...
+		$projectAutoloader = $vendorAutoLoadFile;
+	}
+
+	if(!file_exists($projectAutoloader)) {
+		echo "\nYour project must require PHP.Gt "
+			. "as a dependency using composer.\n\n"
+			. "See http://www.php.gt/docs/installation for more information.";
+		exit(1);
+	}
+	require($projectAutoloader);
+	new TestRunner($approot, $type);
+	exit(0);
+}
+catch(Exception $e) {
+	if($e instanceof \Gt\Cli\InvalidTestRunnerTypeException) {
+		echo "\nINVALID TYPE: " . $e->getMessage() . "\n";
+	}
+	echo "\nstest shell script usage:\n";
+	echo $definition->getSynopsis();
+	echo "\n\n";
+	echo strip_tags($definition->asText());
+	echo "\n";
+	exit(1);
+}
