@@ -60,7 +60,12 @@ public static function get($name) {
 		break;
 
 	case self::ROOT:
-		$p = dirname($_SERVER["DOCUMENT_ROOT"]);
+		if(empty($_SERVER["DOCUMENT_ROOT"])) {
+			$p = getcwd();
+		}
+		else {
+			$p = dirname($_SERVER["DOCUMENT_ROOT"]);
+		}
 		break;
 
 	case self::SCRIPT:
