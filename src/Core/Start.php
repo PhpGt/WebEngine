@@ -84,6 +84,15 @@ private function addAppAutoloader($appNamespace) {
 			. "/vendor/autoload.php");
 	}
 	$loader = require $autoloadPath;
+
+	$classDir = Path::fixCase(implode("/", [
+		Path::get(Path::SRC),
+		"Class",
+	]));
+	if(is_dir($classDir)) {
+		$loader->addPsr4($appNamespace . "\\", $classDir);
+	}
+
 	$loader->addPsr4($appNamespace . "\\", Path::get(Path::SRC));
 }
 
