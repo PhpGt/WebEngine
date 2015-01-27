@@ -26,6 +26,9 @@ public static $contentType = [
 	"css"	=> "text/css",
 	"js"	=> "application/javascript",
 	"txt"	=> "text/plain",
+	"woff"	=> "application/font-woff",
+	"woff2"	=> "application/font-woff2",
+	"webm"	=> "application/octet-stream",
 ];
 
 /**
