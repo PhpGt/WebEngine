@@ -89,9 +89,13 @@ private function addAppAutoloader($appNamespace) {
 		Path::get(Path::SRC),
 		"Class",
 	]));
+<<<<<<< HEAD
 
 	if(is_dir($classDir)) {
 		// By default load classes within the Class/ directory.
+=======
+	if(is_dir($classDir)) {
+>>>>>>> 90e3dcffd85a768b9891803da0ca793d88304391
 		$loader->addPsr4($appNamespace . "\\", $classDir);
 	}
 
