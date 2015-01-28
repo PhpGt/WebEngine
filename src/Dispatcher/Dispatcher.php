@@ -102,6 +102,7 @@ public function process() {
 	$fullUri = "";
 	$responseCode = $this->response->code;
 	$dynamicFilePath = $this->getDynamicFilePath($this->request->uri);
+	$isDynamic = false;
 
 	try {
 		$path = $this->getPath($this->request->uri, $fixedUri);
@@ -146,6 +147,7 @@ public function process() {
 			$source = $this->loadError($path, $filename, $responseCode->get());
 		}
 		else {
+			$isDynamic = true;
 			$dynamicPathInfo = new \SplFileInfo($dynamicFilePath);
 			$dynamicPath = $dynamicPathInfo->getPath();
 			$dynamicFilename = $dynamicPathInfo->getFilename();
@@ -173,6 +175,7 @@ public function process() {
 
 		// Call the correct methods on each Logic object:
 		foreach ($logicList as $logicObj) {
+			$logicObj->isDynamic = $isDynamic;
 			$logicObj->go();
 		}
 		foreach (array_reverse($logicList) as $logicObj) {

@@ -14,6 +14,8 @@ protected $content;
 protected $session;
 protected $params = [];
 
+public $isDynamic = false;
+
 public function __construct($api, $content, $session) {
 	$this->api = $api;
 	$this->content = $content;
