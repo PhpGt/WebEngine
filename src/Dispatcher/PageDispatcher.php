@@ -15,10 +15,20 @@ use \Gt\Response\ResponseContent;
 
 class PageDispatcher extends Dispatcher {
 
-private static $pageExtensions = [
+protected static $validExtensions = [
 	"html",
 	Transformer::TYPE_MARKDOWN,
 ];
+
+/**
+ * Returns the upper-most directory available to the type of dispatcher used,
+ * for instance src/Page or src/Api.
+ *
+ * @return string Absolute path of directory
+ */
+public function getBasePath() {
+	return Path::get(Path::PAGE);
+}
 
 /**
  * Gets the absolute file path of a source file according to the provided URI,
@@ -31,15 +41,15 @@ private static $pageExtensions = [
  * @return string The absolute file path on disk of the source file
  */
 public function getPath($uri, &$fixedUri, $throw = true) {
-	$pagePath = Path::get(Path::PAGE);
-	$pageDir = Path::fixCase($pagePath . $uri);
-	$fixedUri = Path::fixCase($pagePath . $uri, $pagePath);
+	$basePath = $this->getBasePath();
+	$pageDir = Path::fixCase($basePath . $uri);
+	$fixedUri = Path::fixCase($basePath . $uri, $basePath);
 
 	if(!is_dir($pageDir)) {
 		$pageDir_container = dirname($pageDir);
 
 		if(is_dir($pageDir_container)) {
-			if(!file_exists($pagePath . $fixedUri)) {
+			if(!file_exists($basePath . $fixedUri)) {
 				if(!$throw) {
 					return $uri;
 				}
@@ -124,9 +134,9 @@ public function loadSource($path, $filename) {
 		$fileName = $fileInfo->getFilename();
 		$fileBase = strtok($fileName, ".");
 		$extension = $fileInfo->getExtension();
-		if(!in_array(strtolower($extension), self::$pageExtensions)) {
+		if(!in_array(strtolower($extension), self::$validExtensions)) {
 			// Only include the current file's source if its extension is
-			// within the pageExtensions array.
+			// within the validExtensions array.
 			continue;
 		}
 
@@ -199,7 +209,7 @@ public function createResponseContent($html, $config) {
 }
 
 /**
- * 
+ *
  */
 public function setContentUri($uri, ResponseContent $content) {
 	if(strrpos($uri, "/") === strlen($uri) - 1) {

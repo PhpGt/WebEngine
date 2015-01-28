@@ -25,6 +25,8 @@ private $response;
 private $api;
 private $session;
 
+protected static $validExtensions = [];
+
 public function __construct($appNamespace, $request, $response,
 $api, $session) {
 	$this->appNamespace = $appNamespace;
@@ -33,6 +35,14 @@ $api, $session) {
 	$this->api = $api;
 	$this->session = $session;
 }
+
+/**
+ * Returns the upper-most directory available to the type of dispatcher used,
+ * for instance src/Page or src/Api.
+ *
+ * @return string Absolute path of directory
+ */
+abstract public function getBasePath();
 
 /**
  * From the provided URI, return the correct path where the source content is
@@ -93,6 +103,7 @@ public function process() {
 	$responseCode = $this->response->code;
 
 	try {
+		$dynamicPath = $this->getDynamicPath($this->request->uri);
 		$path = $this->getPath($this->request->uri, $fixedUri);
 		if($this->request->forceExtension) {
 			if(strrpos($fixedUri, ".html")
@@ -201,6 +212,61 @@ public function getFilename($uri, $indexFilename, &$fullUri = null) {
 	}
 
 	return $filename;
+}
+
+/**
+ * Looks up the tree for a _dynamic page with a valid file extension.
+ *
+ * @param string $requestDir Requested URI
+ *
+ * @return null|string Absolute path to the _dynamic file on disk, or null if
+ * none found
+ */
+public function getDynamicPath($uri) {
+	// Base path is the path to the first child directory of $requestDir
+	// within the src path (typically, Page or Api).
+	$src = Path::get(Path::SRC);
+	$basePath = $this->getBasePath();
+	$requestDir = Path::fixCase($basePath . $uri);
+	$basePath = substr(
+		$requestDir,
+		0,
+		strpos($requestDir, "/", strlen($src) + 1)
+	);
+
+	// Look up the tree until basepath is met.
+	$searchDirectory = $requestDir;
+	do {
+		if(is_dir($searchDirectory)) {
+			foreach(new \DirectoryIterator($searchDirectory) as $file) {
+				if($file->isDot()
+				|| $file->isDir()) {
+					continue;
+				}
+
+				$ext = $file->getExtension();
+				if(!in_array($ext, $this::$validExtensions)) {
+					continue;
+				}
+
+				$filename = $file->getFilename();
+				$info = $file->getPathInfo();
+				$filenameNoExt = pathinfo($filename, PATHINFO_FILENAME);
+				if($filenameNoExt === "_dynamic") {
+					return "$searchDirectory/$filename";
+				}
+			}
+		}
+
+		$searchDirectory = substr(
+			$searchDirectory,
+			0,
+			strrpos($searchDirectory, "/")
+		);
+
+	} while($searchDirectory !== $basePath);
+
+	return null;
 }
 
 public function cleanBuffer() {
