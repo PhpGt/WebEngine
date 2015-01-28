@@ -101,9 +101,9 @@ public function process() {
 	$source = "";
 	$fullUri = "";
 	$responseCode = $this->response->code;
+	$dynamicFilePath = $this->getDynamicFilePath($this->request->uri);
 
 	try {
-		$dynamicPath = $this->getDynamicPath($this->request->uri);
 		$path = $this->getPath($this->request->uri, $fixedUri);
 		if($this->request->forceExtension) {
 			if(strrpos($fixedUri, ".html")
@@ -141,8 +141,17 @@ public function process() {
 			$fullUri
 		);
 
-		$responseCode->set(404);
-		$source = $this->loadError($path, $filename, $responseCode->get());
+		if(is_null($dynamicFilePath)) {
+			$responseCode->set(404);
+			$source = $this->loadError($path, $filename, $responseCode->get());
+		}
+		else {
+			$dynamicPathInfo = new \SplFileInfo($dynamicFilePath);
+			$dynamicPath = $dynamicPathInfo->getPath();
+			$dynamicFilename = $dynamicPathInfo->getFilename();
+
+			$source = $this->loadSource($dynamicPath, $dynamicFilename);
+		}
 	}
 
 	// Instantiate the response content object, for manipulation in Code.
@@ -222,7 +231,7 @@ public function getFilename($uri, $indexFilename, &$fullUri = null) {
  * @return null|string Absolute path to the _dynamic file on disk, or null if
  * none found
  */
-public function getDynamicPath($uri) {
+public function getDynamicFilePath($uri) {
 	// Base path is the path to the first child directory of $requestDir
 	// within the src path (typically, Page or Api).
 	$src = Path::get(Path::SRC);

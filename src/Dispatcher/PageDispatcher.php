@@ -90,49 +90,59 @@ public function loadSource($path, $filename) {
 	$source = "";
 	$headerSource = "";
 	$footerSource = "";
-	$pathFileBase = strtok($filename, ".");
+	$pathFileBase = pathinfo($filename, PATHINFO_FILENAME);
 
 	// Look for a header and footer view file up the tree.
-	$headerFooterPathTop = dirname(Path::get(Path::PAGE));
-	$headerFooterPath = realpath($path);
+	$headerFooterPathTop = Path::get(Path::PAGE);
+	$headerFooterPath = $path;
+
 	do {
-		foreach (new \DirectoryIterator($headerFooterPath) as $fileInfo) {
-			if($fileInfo->isDot()) {
-				continue;
-			}
+		if(is_dir($headerFooterPath)) {
+			foreach (new \DirectoryIterator($headerFooterPath) as $fileInfo) {
+				if($fileInfo->isDot()) {
+					continue;
+				}
 
-			$fileName = $fileInfo->getFilename();
-			if($fileName[0] !== "_") {
-				continue;
-			}
+				$headerFooterFilename = $fileInfo->getFilename();
+				if($headerFooterFilename[0] !== "_") {
+					continue;
+				}
 
-			$fileBase = strtok($fileName, ".");
-			$specialName = substr(strtolower($fileBase), 1);
-			$fullPath = implode("/", [$headerFooterPath, $fileName]);
+				$fileBase = strtok($headerFooterFilename, ".");
+				$specialName = substr(strtolower($fileBase), 1);
+				$fullPath = implode("/", [
+					$headerFooterPath,
+					$headerFooterFilename
+				]);
 
-			switch($specialName) {
-			case "header":
-				$this->readSourceContent($fullPath, $headerSource, true);
-				break;
+				switch($specialName) {
+				case "header":
+					$this->readSourceContent($fullPath, $headerSource, true);
+					break;
 
-			case "footer":
-				$this->readSourceContent($fullPath, $footerSource, true);
-				break;
+				case "footer":
+					$this->readSourceContent($fullPath, $footerSource, true);
+					break;
+				}
 			}
 		}
 
 		// Go up a directory...
-		$headerFooterPath = realpath($headerFooterPath . "/..");
+		$headerFooterPath = substr(
+			$headerFooterPath,
+			0,
+			strrpos($headerFooterPath, "/")
+		);
 		// ... until we are above the Page View directory.
-	} while ($headerFooterPath !== $headerFooterPathTop);
+	} while (strstr($headerFooterPath, $headerFooterPathTop));
 
 	foreach (new \DirectoryIterator($path) as $fileInfo) {
 		if($fileInfo->isDot()) {
 			continue;
 		}
 
-		$fileName = $fileInfo->getFilename();
-		$fileBase = strtok($fileName, ".");
+		$pageFilename = $fileInfo->getFilename();
+		$fileBase = strtok($pageFilename, ".");
 		$extension = $fileInfo->getExtension();
 		if(!in_array(strtolower($extension), self::$validExtensions)) {
 			// Only include the current file's source if its extension is
@@ -141,7 +151,7 @@ public function loadSource($path, $filename) {
 		}
 
 		if(strcasecmp($fileBase, $pathFileBase) === 0) {
-			$fullPath = implode("/", [$path, $fileName]);
+			$fullPath = implode("/", [$path, $pageFilename]);
 			$this->readSourceContent($fullPath, $source);
 		}
 	}
