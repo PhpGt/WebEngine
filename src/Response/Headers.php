@@ -37,11 +37,18 @@ public static function code($code = null) {
  *
  * @return string The raw header, as it is sent over HTTP
  */
-public static function add($field, $value) {
+public static function set($field, $value) {
 	$field = ucfirst($field);
 	self::$headerArray[$field] = $value;
 
 	return self::getRaw($field, $value);
+}
+
+/**
+ * Synonym function for set.
+ */
+public static function add($field, $value) {
+	return self::set($field, $value);
 }
 
 /**
@@ -113,7 +120,7 @@ public static function getRaw($field, $value) {
 
 public static function redirect($uri,
 $code = ResponseCode::REDIRECT_TEMPORARY) {
-	self::add("Location", $uri);
+	self::set("Location", $uri);
 	self::code($code);
 	self::send();
 }
