@@ -73,7 +73,7 @@ public function __construct($uri) {
 }
 
 /**
- * Adds the application's path to Composer's autoloader.
+ * Adds the application's class path to Composer's autoloader.
  *
  * @param string $appNamespace Base namespace containing all application logic
  */
@@ -84,6 +84,17 @@ private function addAppAutoloader($appNamespace) {
 			. "/vendor/autoload.php");
 	}
 	$loader = require $autoloadPath;
+
+	$classDir = Path::fixCase(implode("/", [
+		Path::get(Path::SRC),
+		"Class",
+	]));
+
+	if(is_dir($classDir)) {
+		// By default load classes within the Class/ directory.
+		$loader->addPsr4($appNamespace . "\\", $classDir);
+	}
+
 	$loader->addPsr4($appNamespace . "\\", Path::get(Path::SRC));
 }
 
