@@ -5,6 +5,8 @@ use PHPUnit_Framework_Assert as PHPUnit;
 
 class FeatureContext extends MinkContext {
 
+private $fingerprint = "0000000000000000";
+
 /**
  * @Then /^the response headers should include:$/
  */
@@ -23,18 +25,21 @@ public function theResponseHeadersShouldInclude(TableNode $table) {
 }
 
 /**
- * @Given /^I remember (?:|the )head fingerprint$/
+ * @Given /^I remember the head fingerprint$/
  */
-// public function iRememberTheHeadFingerprint() {
-	// Store fingerprint from dom head (data-fingerprint).
-	// var_dump($this->getSession()->getPage()->find("head"));die();
-// }
+public function iRememberTheHeadFingerprint() {
+	$page = $this->getSession()->getPage();
+	$metaFingerprint = $page->find("css", "head>meta[name='fingerprint']");
+	$this->fingerprint = $metaFingerprint->getAttribute("content");
+}
 
 /**
- * @When /^I go to (?:|the )fingerprinted file "([^"]*)"$/
+ * @When /^I go to the fingerprinted file "([^"]*)"$/
  */
-// public function iGoToTheFingerprintedFile($sourceUri) {
-	// Inject stored fingerprint and continue to the fingerprinted uri.
-// }
+public function iGoToTheFingerprintedFile($filename) {
+	$filename = str_replace("{FINGERPRINT}", $this->fingerprint, $filename);
+	$this->visit($filename);
+}
+
 
 }#
