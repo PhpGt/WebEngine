@@ -9,6 +9,14 @@ namespace Gt\Dispatcher;
 
 class ApiDispatcher extends Dispatcher {
 
+
+/**
+ *
+ */
+public function getBasePath() {
+
+}
+
 /**
  *
  */
