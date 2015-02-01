@@ -54,8 +54,6 @@ public function getDetailForNode(Node $sourceNode) {
 			return $this->buildDetail($i);
 		}
 	}
-
-	return null;
 }
 
 /**
@@ -146,10 +144,6 @@ private function fixExtension($path) {
 		return $path;
 	}
 
-	if(empty($extension)) {
-		return $path;
-	}
-
 	$path = substr($path, 0, strrpos($path, ".") + 1);
 	$path .= $this->extensionMap[$extension];
 
@@ -176,7 +170,7 @@ private function getPublic($path) {
 
 // Iterator ////////////////////////////////////////////////////////////////////
 public function current() {
-	return $this->buildDetail($this->iteratorIndex);
+	return $this->buildDetail($this->key());
 }
 public function key() {
 	return $this->iteratorIndex;
