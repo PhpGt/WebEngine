@@ -52,6 +52,18 @@ public function testHash() {
 	$this->assertEquals($md5, $hash);
 }
 
+public function testPurge() {
+	$path = Path::get(Path::ROOT);
+	$this->createDirectoryStructure($path, 5, 5);
+
+	$this->assertFileExists($path, 'path exists');
+	$this->assertFileExists($path . "/dir", "inner directory exists");
+
+	DirectoryRecursor::purge($path);
+
+	$this->assertFileNotExists($path);
+}
+
 private function createDirectoryStructure($basePath, $depth, $leaves) {
 	for($d = 1; $d < $depth; $d++) {
 		$path = "$basePath/";
