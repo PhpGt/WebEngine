@@ -25,7 +25,6 @@ class Compiler {
  */
 public static function parse($inputFile) {
 	$ext = strtolower(pathinfo($inputFile, PATHINFO_EXTENSION));
-
 	$content = file_get_contents($inputFile);
 
 	switch ($ext) {
@@ -36,23 +35,6 @@ public static function parse($inputFile) {
 		];
 		$scss = new ScssParser();
 		$scss->setImportPaths($importPaths);
-		$scss->addImportPath(function($path, $scss) use($importPaths) {
-			// Get the path of the current file, attempt relative path import.
-			$parsedFiles = $scss->getParsedFiles();
-			$currentFileImporting = end($parsedFiles);
-			$currentFileImporting = rtrim($currentFileImporting, "/");
-			$currentPath = pathinfo($currentFileImporting, PATHINFO_DIRNAME);
-			$relativePath = "$currentPath/$path";
-
-			if(is_file($path)) {
-				return $path;
-			}
-			if(is_file($relativePath)) {
-				return $relativePath;
-			}
-
-			return null;
-		});
 
 		// Add magic variable $appRoot.
 		$content = "\$APPROOT: \"" . Path::get(Path::ROOT)
@@ -65,9 +47,7 @@ public static function parse($inputFile) {
 		}
 		catch(\Exception $e) {
 			$msg = $e->getMessage();
-			if(strpos($msg, "parse error") < 1) {
-				throw new CompilerParseException("SCSS $msg");
-			}
+			throw new CompilerParseException("SCSS $msg");
 		}
 		break;
 
