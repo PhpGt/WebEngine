@@ -418,4 +418,24 @@ public function testExpands() {
 	}
 }
 
+// public function testExtensionsFixed() {
+// 	$html = "<!doctype html><html><head>"
+// 		. "<link rel='stylesheet' href='/noExt' />"
+// 		. "</head><body></body></html>";
+
+// 	$noExtPath = Path::get(Path::SRC) . "/noExt";
+// 	if(!is_dir(dirname($noExtPath)) ) {
+// 		mkdir(dirname($noExtPath), 0775, true);
+// 	}
+// 	file_put_contents($noExtPath,
+// 		"This file has no extension");
+
+// 	$document = new Document($html);
+// 	$manifest = new PageManifest(
+// 		$document->head, $this->request, $this->response);
+
+// 	$this->assertInstanceOf("\Gt\Dom\Node",
+// 		$document->head->querySelector("link"));
+// }
+
 }#

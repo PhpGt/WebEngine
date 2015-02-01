@@ -46,14 +46,25 @@ public function setFingerprint($fingerprint) {
 }
 
 /**
+ * Get the Path Detail array for an individual node in the nodeList represented
+ * by this object.
  *
+ * @param Node $sourceNode Reference to a node within the current nodeList
+ *
+ * @return array The Path Detail array, or null if requested Node does not
+ * exist in the current NodeList
  */
 public function getDetailForNode(Node $sourceNode) {
+	$detail = null;
+
 	foreach ($this->nodeList as $i => $node) {
 		if($node === $sourceNode) {
-			return $this->buildDetail($i);
+			$detail = $this->buildDetail($i);
+			break;
 		}
 	}
+
+	return $detail;
 }
 
 /**
