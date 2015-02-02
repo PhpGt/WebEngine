@@ -68,4 +68,37 @@ public function testClassListAdds() {
 	}
 }
 
+public function testClassListRemoves() {
+	$h1 = $this->document->getElementsByTagName("h1")[0];
+
+	$h1->setAttribute("class", implode(" ", $this->classNameArray));
+
+	foreach ($this->classNameArray as $className) {
+		$this->assertTrue($h1->classList->contains($className));
+		$h1->classList->remove($className);
+		$this->assertFalse($h1->classList->contains($className));
+	}
+}
+
+public function testClassListToggle() {
+	$h1 = $this->document->getElementsByTagNAme("h1")[0];
+
+	$h1->setAttribute("class", implode(" ", $this->classNameArray));
+
+	for($i = 0; $i < 100; $i++) {
+		$classIndex = array_rand($this->classNameArray);
+		$className = $this->classNameArray[$classIndex];
+		$hasClass = $h1->classList->contains($className);
+		$toggled = $h1->classList->toggle($className);
+		$this->assertEquals(!$hasClass, $toggled);
+
+		if($hasClass) {
+			$this->assertFalse($h1->classList->contains($className));
+		}
+		else {
+			$this->assertTrue($h1->classList->contains($className));
+		}
+	}
+}
+
 }#
