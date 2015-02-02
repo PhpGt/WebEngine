@@ -34,7 +34,15 @@ public function item($index) {
 	return null;
 }
 
+/**
+ * Returns true if the underlying string contains token, otherwise false.
+ *
+ * @param string $token The token to search for
+ *
+ * @return bool true if the underlying string contains token, otherwise false
+ */
 public function contains($token) {
+	return in_array($token, $this->list);
 }
 
 public function add($token) {
