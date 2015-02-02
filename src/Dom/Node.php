@@ -85,6 +85,9 @@ array $attributeArray = array(), $nodeValue = null) {
 		// Fix case, according to W3 spec
 		// http://www.w3.org/TR/REC-DOM-Level-1/level-one-core.html#ID-745549614
 		$this->tagName = strtoupper($this->domNode->tagName);
+
+		// Add classList property (only for Elements)
+		$this->classList = new TokenList($this, "class");
 	}
 
 	if(!is_null($nodeValue)) {
@@ -99,8 +102,6 @@ array $attributeArray = array(), $nodeValue = null) {
 		$this->domNode->uuid = $uuid;
 		$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 	}
-
-	$this->classList = new TokenList($this, "class");
 }
 
 /**

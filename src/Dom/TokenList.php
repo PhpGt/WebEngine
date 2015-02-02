@@ -13,15 +13,14 @@ class TokenList {
 
 private $list;
 private $node;
-private $attribute;
-private $separator;
+private $attributeName;
 private $attributeValue;
+private $separator;
 
-public function __construct($node, $attribute = "class", $separator = " ") {
+public function __construct($node, $attributeName = "class", $separator = " ") {
 	$this->node = $node;
-	$this->attribute = $attribute;
+	$this->attributeName = $attributeName;
 	$this->separator = $separator;
-
 	$this->refreshAttribute();
 }
 
@@ -125,10 +124,10 @@ public function toggle($token) {
  */
 private function refreshAttribute() {
 	$attributeValue = "";
-	if(method_exists($this->node, "hasAttribute")
-	&& $this->node->hasAttribute($attribute)) {
-		$attributeValue = $this->node->getAttribute($attribute);
+	if($this->node->hasAttribute($this->attributeName)) {
+		$attributeValue = $this->node->getAttribute($this->attributeName);
 	}
+
 	$this->list = explode($this->separator, $attributeValue);
 	$this->attributeValue = $attributeValue;
 }
@@ -140,15 +139,15 @@ private function refreshAttribute() {
  * @return void
  */
 private function rebuildAttribute() {
-	$currentAttributeValue = $this->node->getAttribute($this->attribute);
+	$currentAttributeValue = $this->node->getAttribute($this->attributeName);
 	if($this->attributeValue !== $currentAttributeValue) {
 		$this->refreshAttribute();
 	}
 
-	$this->node->removeAttribute($this->attribute);
+	$this->node->removeAttribute($this->attributeName);
 	$attributeValue = implode($this->separator, $this->list);
 
-	$this->node->setAttribute($this->attribute, $attributeValue);
+	$this->node->setAttribute($this->attributeName, $attributeValue);
 }
 
 }#
