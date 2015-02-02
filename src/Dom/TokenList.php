@@ -12,9 +12,17 @@ namespace Gt\Dom;
 class TokenList {
 
 private $list;
+private $node;
+private $attribute;
+private $separator;
+private $attributeValue;
 
 public function __construct($node, $attribute = "class", $separator = " ") {
-	$this->list = explode($separator, $node->getAttribute($attribute));
+	$this->node = $node;
+	$this->attribute = $attribute;
+	$this->separator = $separator;
+
+	$this->refreshAttribute();
 }
 
 /**
@@ -27,6 +35,8 @@ public function __construct($node, $attribute = "class", $separator = " ") {
  * is no token at that index, returns null
  */
 public function item($index) {
+	$this->rebuildAttribute();
+
 	if(isset($list[$index])) {
 		return $list[$index];
 	}
@@ -42,6 +52,8 @@ public function item($index) {
  * @return bool true if the underlying string contains token, otherwise false
  */
 public function contains($token) {
+	$this->rebuildAttribute();
+
 	return in_array($token, $this->list);
 }
 
@@ -54,6 +66,8 @@ public function contains($token) {
  * @return string The added token
  */
 public function add($token) {
+	$this->rebuildAttribute();
+
 	if(!$this->contains($token)) {
 		$this->list []= $token;
 	}
@@ -71,6 +85,8 @@ public function add($token) {
  * @return string The removed token
  */
 public function remove($token) {
+	$this->rebuildAttribute();
+
 	if($this->contains($token)) {
 		$index = array_search($token, $this->list);
 		unset($this->list[$index]);
@@ -90,6 +106,8 @@ public function remove($token) {
  * @return book True if the token is added, false if the token is removed
  */
 public function toggle($token) {
+	$this->rebuildAttribute();
+
 	if($this->contains($token)) {
 		$this->remove($token);
 		return false;
@@ -98,6 +116,39 @@ public function toggle($token) {
 		$this->add($token);
 		return true;
 	}
+}
+
+/**
+ * From the node's actual attribute value, refresh the underlying properties.
+ *
+ * @return void
+ */
+private function refreshAttribute() {
+	$attributeValue = "";
+	if(method_exists($this->node, "hasAttribute")
+	&& $this->node->hasAttribute($attribute)) {
+		$attributeValue = $this->node->getAttribute($attribute);
+	}
+	$this->list = explode($this->separator, $attributeValue);
+	$this->attributeValue = $attributeValue;
+}
+
+/**
+ * From the underlying list in its given state, rebuild the attribute
+ * it represents by removing, then re-adding each token separately.
+ *
+ * @return void
+ */
+private function rebuildAttribute() {
+	$currentAttributeValue = $this->node->getAttribute($this->attribute);
+	if($this->attributeValue !== $currentAttributeValue) {
+		$this->refreshAttribute();
+	}
+
+	$this->node->removeAttribute($this->attribute);
+	$attributeValue = implode($this->separator, $this->list);
+
+	$this->node->setAttribute($this->attribute, $attributeValue);
 }
 
 }#
