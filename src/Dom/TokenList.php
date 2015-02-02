@@ -45,8 +45,21 @@ public function contains($token) {
 	return in_array($token, $this->list);
 }
 
+/**
+ * Adds token to the underlying string. If token is already part of the
+ * underlying string, ignore.
+ *
+ * @param string $token The token to add
+ *
+ * @return string The added token
+ */
 public function add($token) {
-	if()
+	if(!$this->contains($token)) {
+		$this->list []= $token;
+	}
+
+	$this->rebuildAttribute();
+	return $token;
 }
 
 public function remove($token) {
