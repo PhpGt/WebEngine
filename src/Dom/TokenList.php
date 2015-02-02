@@ -11,20 +11,34 @@ namespace Gt\Dom;
 
 class TokenList {
 
-public function __construct($node, $attribute = "class") {
-	// var_dump($node);die();
+private $list;
+
+public function __construct($node, $attribute = "class", $separator = " ") {
+	$this->list = explode($separator, $node->getAttribute($attribute));
 }
 
+/**
+ * Returns an item in the list by its index (or null if the number is
+ * greater than or equal to the length of the list)
+ *
+ * @param int $index Zero-based index of token in list
+ *
+ * @return string|null If set, the string token at the supplied index. If there
+ * is no token at that index, returns null
+ */
 public function item($index) {
+	if(isset($list[$index])) {
+		return $list[$index];
+	}
 
+	return null;
 }
 
 public function contains($token) {
-
 }
 
 public function add($token) {
-
+	if()
 }
 
 public function remove($token) {
