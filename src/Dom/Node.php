@@ -56,6 +56,7 @@ class Node {
 
 public $domNode;
 public $tagName;
+public $classList;
 
 /**
  *
@@ -98,6 +99,8 @@ array $attributeArray = array(), $nodeValue = null) {
 		$this->domNode->uuid = $uuid;
 		$this->domNode->ownerDocument->document->nodeMap[$uuid] = $this;
 	}
+
+	$this->classList = new TokenList($this, "class");
 }
 
 /**
