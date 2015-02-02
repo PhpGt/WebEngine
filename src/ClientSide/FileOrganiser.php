@@ -6,7 +6,7 @@
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
- * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\ClientSide;
 
