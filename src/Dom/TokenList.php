@@ -62,12 +62,42 @@ public function add($token) {
 	return $token;
 }
 
+/**
+ * Removes token from the underlying string. If token is not part of the
+ * underlying string, ignore.
+ *
+ * @param string $token The token to remove
+ *
+ * @return string The removed token
+ */
 public function remove($token) {
+	if($this->contains($token)) {
+		$index = array_search($token, $this->list);
+		unset($this->list[$index]);
+		$this->list = array_values($this->list);
+	}
 
+	$this->rebuildAttribute();
+	return $token;
 }
 
+/**
+ * Removes token from string and returns false. If token doesn't exist it's
+ * added and the function returns true.
+ *
+ * @param string $token The token to toggle
+ *
+ * @return book True if the token is added, false if the token is removed
+ */
 public function toggle($token) {
-
+	if($this->contains($token)) {
+		$this->remove($token);
+		return false;
+	}
+	else {
+		$this->add($token);
+		return true;
+	}
 }
 
 }#
