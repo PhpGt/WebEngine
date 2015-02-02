@@ -3,7 +3,7 @@
  * An Obj object represents an empty Object with no default properties.
  *
  * PHP.Gt (http://php.gt)
- * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
+ * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
  * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\Core;
