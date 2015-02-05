@@ -19,6 +19,7 @@ use \Gt\Response\Redirect;
 use \Gt\Api\Api;
 use \Gt\Dispatcher\DispatcherFactory;
 use \Gt\Session\Session;
+use \Gt\Data\DataFactory;
 
 final class Start {
 
@@ -58,13 +59,15 @@ public function __construct($uri) {
 	}
 	$session = new Session($config["session"], $sessionNs);
 	$api = new Api($config["api"], $response->content, $session);
+	$data = new DataFactory($config["data"]);
 
 	$dispatcher = DispatcherFactory::createDispatcher(
 		$appNamespace,
 		$request,
 		$response,
 		$api,
-		$session
+		$session,
+		$data
 	);
 
 	// Dispatcher::process returns null on a successful call, only returning

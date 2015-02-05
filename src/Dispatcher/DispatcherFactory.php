@@ -11,6 +11,7 @@ use Gt\Request\Request;
 use Gt\Response\Response;
 use Gt\Api\Api;
 use Gt\Session\Session;
+use Gt\Data\DataFactory;
 
 class DispatcherFactory {
 
@@ -20,11 +21,12 @@ class DispatcherFactory {
  * @param Response $response Representing the HTTP response
  * @param Api $api API Access Layer
  * @param Session $session Session manager
+ * @param DataFactory $data Data factory
  *
  * @return ApiDispatcher|PageDispatcher The appropriate Dispatcher object
  */
 public static function createDispatcher($appNamespace, Request $request,
-Response $response, Api $api, Session $session) {
+Response $response, Api $api, Session $session, DataFactory $data) {
 	$className = "\\Gt\\Dispatcher\\";
 	$type = $request->getType();
 
@@ -46,7 +48,8 @@ Response $response, Api $api, Session $session) {
 		$request,
 		$response,
 		$api,
-		$session
+		$session,
+		$data
 	);
 }
 

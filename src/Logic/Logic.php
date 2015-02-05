@@ -12,14 +12,16 @@ abstract class Logic {
 protected $api;
 protected $content;
 protected $session;
+protected $data;
 protected $params = [];
 
 public $isDynamic = false;
 
-public function __construct($api, $content, $session) {
+public function __construct($api, $content, $session, $data) {
 	$this->api = $api;
 	$this->content = $content;
 	$this->session = $session;
+	$this->data = $data;
 }
 
 /**
