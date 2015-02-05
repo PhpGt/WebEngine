@@ -22,7 +22,7 @@ protected $data;
  * @param Api $api API Access Layer
  * @param Document $content Dom document representing the response's content
  * @param Session $session Session manager
- * @param DataFactory $data Data factory
+ * @param Data $data Data factory
  *
  * @return void
  */
