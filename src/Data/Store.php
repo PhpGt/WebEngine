@@ -11,7 +11,12 @@ namespace Gt\Data;
 
 abstract class Store {
 
-private $idKey = "ID";
+protected $connection;
+protected $idKey = "ID";
+
+public function __construct($connection) {
+	$this->connection = $connection;
+}
 
 public function setIdKey($key) {
 	$this->idKey = $key;
@@ -21,8 +26,10 @@ public function getById($value) {
 	return $this->getBy($this->idKey, $value);
 }
 
-public function getBy($key, $value);
+abstract public function getBy($key, $value);
 
-public function getAllBy($key, $value);
+abstract public function getAllBy($key, $value);
+
+abstract public function getAll($fieldArray = []);
 
 }#
