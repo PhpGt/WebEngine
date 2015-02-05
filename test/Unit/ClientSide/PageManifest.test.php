@@ -418,4 +418,26 @@ public function testExpands() {
 	}
 }
 
+public function testAssetFilesNotInManifest() {
+	$faviconFilepath = implode("/", [
+		Path::get(Path::ASSET),
+		"icon.png",
+	]);
+
+	$html = $this->html;
+	$html = str_replace(
+		"<%SCRIPT_STYLE_LIST%>",
+		"<link rel='proprietary-icon' href='/asset/icon.png' />",
+		$html
+	);
+	$document = new Document($html);
+	$manifest = new PageManifest(
+		$document->head, $this->request, $this->response);
+
+	$pathDetails = $manifest->generatePathDetails();
+
+	$this->assertCount(0, $pathDetails,
+		'should not have any path details, as asset element should be removed');
+}
+
 }#
