@@ -9,6 +9,20 @@
  */
 namespace Gt\Data;
 
-abstract class Store extends Fetcher {
+abstract class Store {
+
+private $idKey = "ID";
+
+public function setIdKey($key) {
+	$this->idKey = $key;
+}
+
+public function getById($value) {
+	return $this->getBy($this->idKey, $value);
+}
+
+public function getBy($key, $value);
+
+public function getAllBy($key, $value);
 
 }#
