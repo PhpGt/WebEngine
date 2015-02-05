@@ -3,8 +3,8 @@
  * CSV parsing and simple search/filter functions done out-of-memory.
  *
  * PHP.Gt (http://php.gt)
- * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
- * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\Data;
 
@@ -42,7 +42,7 @@ public function getAll() {
 	// Replace indexes with header names.
 	foreach ($result as $index => $resultItem) {
 		foreach ($result[$index] as $key => $value) {
-			$result[$index][$this->headers[$key]] = $value;
+			@$result[$index][$this->headers[$key]] = $value;
 			unset($result[$index][$key]);
 		}
 	}
@@ -55,20 +55,26 @@ public function getAll() {
  */
 public function getLast() {
 	$all = $this->reader->fetchAll();
-	$last = [];
-	$i = count($all) - 1;
+	$highest = [];
 
-	while(empty($last) || empty($last[0]) ){
-		$last = $all[$i];
-		$i--;
+	foreach($all as $record) {
+		if(!isset($highest[0])) {
+			$highest = $record;
+			continue;
+		}
+
+		if($highest[0] < $record[0]) {
+			$highest = $record;
+		}
 	}
 
-	foreach ($last as $key => $value) {
-		$last[$this->headers[$key]] = $value;
-		unset($last[$key]);
+	// Convert indxed array to associative, with headers.
+	foreach ($record as $key => $value) {
+		$record[$this->headers[$key]] = $value;
+		unset($record[$key]);
 	}
 
-	return $last;
+	return $record;
 }
 
 /**
@@ -133,21 +139,31 @@ public function findBy($key, $value, $strict = false) {
 }
 
 /**
- *
+ * Adds data to end
  */
 public function add($data) {
-	// $writer = $this->reader->newWriter();
 	$this->file->fseek(0, SEEK_END);
-
-	// while($this->file->fread(1) !== "\n") {
-	// 	$this->file->fseek(-1);
-	// }
-
-	// $this->file->fwrite("\n");
 	$this->file->fputcsv($data);
-	// var_dump($this->file, $this->reader);die();
-	// $writer->insertOne($data);
-	// var_dump($writer, $data);die("writer");
+	// fclose($this->file);
+	$this->sort();
+}
+
+public function sort() {
+	$lines = file($this->file->getPathname());
+	uasort($lines, function($a, $b) {
+		$IDa = substr($a, strpos($a, ","));
+		$IDa = trim($IDa);
+		$IDa = (int)$IDa;
+
+		$IDb = substr($b, strpos($b, ","));
+		$IDb = trim($IDb);
+		$IDb = (int)$IDb;
+
+		return $IDa > $IDb;
+	});
+	ksort($lines);
+
+	file_put_contents($this->file->getPathname(), implode("", $lines));
 }
 
 }#

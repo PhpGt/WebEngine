@@ -5,8 +5,8 @@
  * Basket, that in turn contains Intl, that in turn contains the key "value").
  *
  * PHP.Gt (http://php.gt)
- * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
- * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\Session;
 
