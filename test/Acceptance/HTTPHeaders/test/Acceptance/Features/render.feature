@@ -22,9 +22,19 @@ Feature: Test that HTTP response headers are sent
 	Scenario: View stylesheet placed in style source directory
 		Given I go to the homepage
 		And I remember the head fingerprint
-		When I go to the fingerprinted file "/style/test.css"
+		When I go to the fingerprinted file "/Style-{FINGERPRINT}/my-style.css"
 		Then the response status code should be 200
 		And the response should contain "body {"
 		And the response headers should include:
 		| Header name		| Header value		|
 		| Content-type		| text/css			|
+
+	Scenario: View JavaScript placed in script source directory
+		Given I go to the homepage
+		And I remember the head fingerprint
+		When I go to the fingerprinted file "/Script-{FINGERPRINT}/my-script.js"
+		Then the response status code should be 200
+		And the response should contain "Hello from JavaScript!"
+		And the response headers should include:
+		| Header name		| Header value				|
+		| Content-type		| application/javascript	|

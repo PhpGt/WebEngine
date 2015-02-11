@@ -1,8 +1,8 @@
 <?php
 /**
  * PHP.Gt (http://php.gt)
- * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
- * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\ClientSide;
 
@@ -416,6 +416,28 @@ public function testExpands() {
 		$ext = pathinfo($script->getAttribute("src"), PATHINFO_EXTENSION);
 		$this->assertEquals($ext, "js");
 	}
+}
+
+public function testAssetFilesNotInManifest() {
+	$faviconFilepath = implode("/", [
+		Path::get(Path::ASSET),
+		"icon.png",
+	]);
+
+	$html = $this->html;
+	$html = str_replace(
+		"<%SCRIPT_STYLE_LIST%>",
+		"<link rel='proprietary-icon' href='/asset/icon.png' />",
+		$html
+	);
+	$document = new Document($html);
+	$manifest = new PageManifest(
+		$document->head, $this->request, $this->response);
+
+	$pathDetails = $manifest->generatePathDetails();
+
+	$this->assertCount(0, $pathDetails,
+		'should not have any path details, as asset element should be removed');
 }
 
 }#

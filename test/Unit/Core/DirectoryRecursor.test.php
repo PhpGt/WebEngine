@@ -1,8 +1,8 @@
 <?php
 /**
  * PHP.Gt (http://php.gt)
- * @copyright Copyright Ⓒ 2014 Bright Flair Ltd. (http://brightflair.com)
- * @license Apache Version 2.0, January 2004. http://www.apache.org/licenses
+ * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
+ * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\Core;
 
@@ -50,6 +50,18 @@ public function testHash() {
 
 	$hash = DirectoryRecursor::hash(Path::get(Path::ROOT));
 	$this->assertEquals($md5, $hash);
+}
+
+public function testPurge() {
+	$path = Path::get(Path::ROOT);
+	$this->createDirectoryStructure($path, 5, 5);
+
+	$this->assertFileExists($path, 'path exists');
+	$this->assertFileExists($path . "/dir", "inner directory exists");
+
+	DirectoryRecursor::purge($path);
+
+	$this->assertFileNotExists($path);
 }
 
 private function createDirectoryStructure($basePath, $depth, $leaves) {
