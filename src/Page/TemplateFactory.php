@@ -62,12 +62,13 @@ public function __construct($document) {
 public function get($name) {
 	if(isset($this->elementArray[$name])) {
 		$node = $this->elementArray[$name]->cloneNode(true);
+		$node->templateName = $name;
 		$node->templateParentNode = $this->templateNodeMap["parent"][$name];
 		$node->templatePreviousSibling =
 			$this->templateNodeMap["previousSibling"][$name];
 		$node->templateNextSibling =
 			$this->templateNodeMap["nextSibling"][$name];
-		$node->template = $name;
+
 		return $node;
 	}
 

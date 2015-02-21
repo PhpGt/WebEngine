@@ -169,6 +169,7 @@ public function __set($name, $value) {
 		$this->setValue($value);
 		break;
 
+	case "templateName":
 	case "templateParentNode":
 	case "templatePreviousSibling":
 	case "templateNextSibling":
@@ -204,10 +205,16 @@ public function __call($name, $args) {
 		return $value;
 	}
 
-	// TODO: attach template parent stuff...
+	if($name === "appendTemplate"
+	&& !empty($this->domNode->templateName)) {
+		$this->templateParentNode->insertBefore(
+			$this,
+			$this->templateNextSibling
+		);
+		return;
+	}
 
 	throw new NodeMethodNotDefinedException($name);
-	break;
 }
 
 /**
