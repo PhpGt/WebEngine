@@ -36,8 +36,6 @@ public function __construct($document) {
 	$templateAttribute = $document->config->template_element_attribute;
 	$elementList = $document->xpath(".//*[@$templateAttribute]");
 
-	$this->testProp = "UNGABI-" . uniqid();
-
 	foreach ($elementList as $element) {
 		$name = $element->getAttribute($templateAttribute);
 		$this->elementArray[$name] = $element;
