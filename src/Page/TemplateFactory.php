@@ -67,6 +67,7 @@ public function get($name) {
 			$this->templateNodeMap["previousSibling"][$name];
 		$node->templateNextSibling =
 			$this->templateNodeMap["nextSibling"][$name];
+		$node->template = $name;
 		return $node;
 	}
 
