@@ -1,5 +1,7 @@
 <?php
 /**
+ * Represents a data source for persistent storage in an app using simple CSV,
+ * SQL, or a remote source such as Google Sheets.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)

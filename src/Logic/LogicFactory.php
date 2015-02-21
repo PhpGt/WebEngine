@@ -22,7 +22,7 @@ class LogicFactory {
  * depending on request type, in execution order
  */
 public static function create($appNamespace, $uri, $api,
-$content, $session) {
+$content, $session, $data) {
 	$objArray = [];
 	$topPath = Path::get(Path::PAGE);
 
@@ -41,7 +41,8 @@ $content, $session) {
 		$objArray []= new $className(
 			$api,
 			$content,
-			$session
+			$session,
+			$data
 		);
 	}
 

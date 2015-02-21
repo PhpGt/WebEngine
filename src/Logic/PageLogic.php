@@ -16,16 +16,18 @@ protected $dom;
 protected $database;
 protected $db;
 protected $template;
+protected $data;
 
 /**
  * @param Api $api API Access Layer
  * @param Document $content Dom document representing the response's content
  * @param Session $session Session manager
+ * @param Data $data Data factory
  *
  * @return void
  */
-public function __construct($api, $content, $session) {
-	parent::__construct($api, $content, $session);
+public function __construct($api, $content, $session, $data) {
+	parent::__construct($api, $content, $session, $data);
 
 	// Synonyms
 	$this->document = $content;

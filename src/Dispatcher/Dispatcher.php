@@ -24,16 +24,18 @@ private $request;
 private $response;
 private $api;
 private $session;
+private $data;
 
 protected static $validExtensions = [];
 
 public function __construct($appNamespace, $request, $response,
-$api, $session) {
+$api, $session, $data) {
 	$this->appNamespace = $appNamespace;
 	$this->request = $request;
 	$this->response = $response;
 	$this->api = $api;
 	$this->session = $session;
+	$this->data = $data;
 }
 
 /**
@@ -170,7 +172,8 @@ public function process() {
 			$fullUri,
 			$this->api,
 			$content,
-			$this->session
+			$this->session,
+			$this->data
 		);
 
 		// Call the correct methods on each Logic object:
