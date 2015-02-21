@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/g105b/phpcsv.git",
-                "reference": "89681a42b3e7df275cc41bca6d74dd949e6508ba"
+                "reference": "d79f59f23b104372f112f2d2360ac2c08f298ecb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/89681a42b3e7df275cc41bca6d74dd949e6508ba",
-                "reference": "89681a42b3e7df275cc41bca6d74dd949e6508ba",
+                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/d79f59f23b104372f112f2d2360ac2c08f298ecb",
+                "reference": "d79f59f23b104372f112f2d2360ac2c08f298ecb",
                 "shasum": ""
             },
             "require-dev": {
@@ -33,8 +33,10 @@
             "license": [
                 "MIT"
             ],
+            "description": "Wraps SplFileObject's CSV capabilities with a more human approach",
             "keywords": [
                 "csv",
+                "database",
                 "export",
                 "filter",
                 "import",
@@ -42,7 +44,7 @@
                 "read",
                 "write"
             ],
-            "time": "2015-02-19 14:42:00"
+            "time": "2015-02-20 14:47:14"
         },
         {
             "name": "katzgrau/klogger",
