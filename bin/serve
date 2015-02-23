@@ -20,7 +20,7 @@ $vendorAutoLoadFile = realpath(__DIR__ . "/../vendor/autoload.php");
 if(!file_exists($vendorAutoLoadFile)) {
 	// If this script exists within the vendor/brightflair/php.gt directory:
 	$vendorAutoLoadFile = realpath(__DIR__ . "/../../../autoload.php");
-	$cwd = realpath(__DIR__ . "/../../..");
+	$cwd = realpath(__DIR__ . "/../../../..");
 }
 require($vendorAutoLoadFile);
 
