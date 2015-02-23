@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f70a0d220f189d6c934f2e7da2906098",
+    "hash": "3b838282977d5589d0d203e624b5db30",
     "packages": [
         {
             "name": "g105b/phpcsv",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/g105b/phpcsv.git",
-                "reference": "d79f59f23b104372f112f2d2360ac2c08f298ecb"
+                "reference": "de27f1a8b039d4d2e87cca3285deaecf3100c1c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/d79f59f23b104372f112f2d2360ac2c08f298ecb",
-                "reference": "d79f59f23b104372f112f2d2360ac2c08f298ecb",
+                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/de27f1a8b039d4d2e87cca3285deaecf3100c1c3",
+                "reference": "de27f1a8b039d4d2e87cca3285deaecf3100c1c3",
                 "shasum": ""
             },
             "require-dev": {
@@ -44,7 +44,7 @@
                 "read",
                 "write"
             ],
-            "time": "2015-02-20 14:47:14"
+            "time": "2015-02-21 12:02:40"
         },
         {
             "name": "katzgrau/klogger",
@@ -2276,7 +2276,7 @@
         "g105b/phpcsv": 20,
         "satooshi/php-coveralls": 20
     },
-    "prefer-stable": true,
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": []

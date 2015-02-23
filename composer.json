@@ -36,8 +36,6 @@
 		"fabpot/goutte": "1.*"
 	},
 
-	"prefer-stable": true,
-
 	"keywords": [
 		"php",
 		"phpgt",
