@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3b838282977d5589d0d203e624b5db30",
+    "hash": "0afde1fcdb43b4ae76a5a6f0aa631a65",
     "packages": [
         {
             "name": "g105b/phpcsv",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/g105b/phpcsv.git",
-                "reference": "de27f1a8b039d4d2e87cca3285deaecf3100c1c3"
+                "reference": "f28948d73e0f2540b1515194d939c7dff2e5a2ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/de27f1a8b039d4d2e87cca3285deaecf3100c1c3",
-                "reference": "de27f1a8b039d4d2e87cca3285deaecf3100c1c3",
+                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/f28948d73e0f2540b1515194d939c7dff2e5a2ab",
+                "reference": "f28948d73e0f2540b1515194d939c7dff2e5a2ab",
                 "shasum": ""
             },
             "require-dev": {
@@ -44,7 +44,7 @@
                 "read",
                 "write"
             ],
-            "time": "2015-02-21 12:02:40"
+            "time": "2015-02-23 10:33:21"
         },
         {
             "name": "katzgrau/klogger",

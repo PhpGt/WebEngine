@@ -15,6 +15,12 @@
 		}
 	},
 
+	"bin": [
+		"bin/serve",
+		"bin/test"
+	],
+	"bin-dir": "./",
+
 	"require": {
 		"symfony/css-selector": "*",
 		"symfony/console": "2.5.*",
