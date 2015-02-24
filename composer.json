@@ -19,7 +19,6 @@
 		"bin/serve",
 		"bin/test"
 	],
-	"bin-dir": "./",
 
 	"require": {
 		"symfony/css-selector": "*",

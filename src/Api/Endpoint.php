@@ -123,7 +123,8 @@ private function loadScript() {
 		$this->script = new $namespace(
 			$this->api,
 			$this->api->responseContent,
-			$this->api->session
+			$this->api->session,
+			$this->api->data
 		);
 
 		if(!$this->script instanceof Logic) {
