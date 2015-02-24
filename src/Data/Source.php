@@ -25,7 +25,7 @@ public function __construct($sourcePath) {
 		]);
 	}
 	if(!is_dir($absoluteSourcePath)) {
-		throw new DataSourceNotFoundException($sourcePath);
+		mkdir($absoluteSourcePath, 0775, true);
 	}
 	$this->sourcePath = $absoluteSourcePath;
 }
