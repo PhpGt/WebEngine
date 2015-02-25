@@ -279,7 +279,7 @@ public function getDynamicFilePath($uri) {
 			strrpos($searchDirectory, "/")
 		);
 
-	} while($searchDirectory !== $basePath);
+	} while($searchDirectory !== dirname($basePath));
 
 	return null;
 }

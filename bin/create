@@ -26,7 +26,7 @@ try {
 		. $projectName);
 	chdir($projectName);
 	exec("rm -rf .git");
-	exec("~/.gt/composer.phar update");
+	passthru("~/.gt/composer.phar update");
 	$pwd = getcwd();
 
 	// Create new project with PHP.Gt in composer.json
