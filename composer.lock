@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0afde1fcdb43b4ae76a5a6f0aa631a65",
+    "hash": "0022c0cbb95a28ee730e440f6c15303c",
     "packages": [
         {
             "name": "g105b/phpcsv",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/g105b/phpcsv.git",
-                "reference": "f28948d73e0f2540b1515194d939c7dff2e5a2ab"
+                "reference": "968e7041b39af45ac41368c2670c44d09a96ddfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/f28948d73e0f2540b1515194d939c7dff2e5a2ab",
-                "reference": "f28948d73e0f2540b1515194d939c7dff2e5a2ab",
+                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/968e7041b39af45ac41368c2670c44d09a96ddfc",
+                "reference": "968e7041b39af45ac41368c2670c44d09a96ddfc",
                 "shasum": ""
             },
             "require-dev": {
@@ -44,7 +44,7 @@
                 "read",
                 "write"
             ],
-            "time": "2015-02-23 10:33:21"
+            "time": "2015-03-05 18:15:05"
         },
         {
             "name": "katzgrau/klogger",
@@ -146,26 +146,31 @@
         },
         {
             "name": "matthiasmullie/minify",
-            "version": "1.3.18",
+            "version": "1.3.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/matthiasmullie/minify.git",
-                "reference": "5d1886a2ef0c48a9aa51695082fd2c0fbd32a4b5"
+                "reference": "0ada1eccaf2566b30f9021d613a2cae9e4e00f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/5d1886a2ef0c48a9aa51695082fd2c0fbd32a4b5",
-                "reference": "5d1886a2ef0c48a9aa51695082fd2c0fbd32a4b5",
+                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/0ada1eccaf2566b30f9021d613a2cae9e4e00f4d",
+                "reference": "0ada1eccaf2566b30f9021d613a2cae9e4e00f4d",
                 "shasum": ""
             },
             "require": {
                 "ext-pcre": "*",
+                "matthiasmullie/path-converter": "~1.0",
                 "php": ">=5.3.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.3.*",
                 "satooshi/php-coveralls": "dev-master"
             },
+            "bin": [
+                "bin/minifycss",
+                "bin/minifyjs"
+            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -186,7 +191,64 @@
             ],
             "description": "CSS & JS minifier",
             "homepage": "http://www.minifier.org",
-            "time": "2015-02-06 10:14:06"
+            "keywords": [
+                "JS",
+                "css",
+                "javascript",
+                "minifier",
+                "minify"
+            ],
+            "time": "2015-03-02 16:59:12"
+        },
+        {
+            "name": "matthiasmullie/path-converter",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matthiasmullie/path-converter.git",
+                "reference": "c9feee12fce2656bf437396e543ab03d192f497f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/c9feee12fce2656bf437396e543ab03d192f497f",
+                "reference": "c9feee12fce2656bf437396e543ab03d192f497f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MatthiasMullie\\PathConverter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthias Mullie",
+                    "email": "pathconverter@mullie.eu",
+                    "homepage": "http://www.mullie.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Relative path converter",
+            "homepage": "http://github.com/matthiasmullie/path-converter",
+            "keywords": [
+                "converter",
+                "path",
+                "paths",
+                "relative"
+            ],
+            "time": "2015-02-21 12:51:32"
         },
         {
             "name": "michelf/php-markdown",
