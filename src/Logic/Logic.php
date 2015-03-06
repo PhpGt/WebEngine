@@ -35,9 +35,15 @@ abstract public function go();
  *
  */
 public function setParams($params) {
-	foreach ($params as $i => $value) {
-		$this->params[$i] = $value;
+	if(is_array($params)) {
+		foreach ($params as $i => $value) {
+			$this->params[$i] = $value;
+		}
 	}
+	else {
+		$this->params []= $params;
+	}
+	
 	return $this->params;
 }
 
