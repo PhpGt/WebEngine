@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/g105b/phpcsv.git",
-                "reference": "e3e7ada8bdc207c9f644c0598f07519d6d3aaffb"
+                "reference": "1022ee9a48b647a756eca41ddfa1a72e45a745b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/e3e7ada8bdc207c9f644c0598f07519d6d3aaffb",
-                "reference": "e3e7ada8bdc207c9f644c0598f07519d6d3aaffb",
+                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/1022ee9a48b647a756eca41ddfa1a72e45a745b8",
+                "reference": "1022ee9a48b647a756eca41ddfa1a72e45a745b8",
                 "shasum": ""
             },
             "require-dev": {
@@ -44,7 +44,7 @@
                 "read",
                 "write"
             ],
-            "time": "2015-03-06 11:04:25"
+            "time": "2015-03-06 14:41:41"
         },
         {
             "name": "katzgrau/klogger",
