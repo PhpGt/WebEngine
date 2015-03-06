@@ -32,7 +32,13 @@ public function __construct($api, $content, $session, $data) {
 abstract public function go();
 
 /**
- *
+ * Sets the parameters on this Logic object, a protected array accessible
+ * internally by all Logic objects.
+ * 
+ * @param array|mixed $params An array of parameters, or a single value to 
+ * push onto the existing params
+ * 
+ * @return array Newly-set parameters array
  */
 public function setParams($params) {
 	if(is_array($params)) {
@@ -45,6 +51,7 @@ public function setParams($params) {
 	}
 	
 	return $this->params;
+}return $this->params;
 }
 
 }#
