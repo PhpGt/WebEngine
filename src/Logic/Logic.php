@@ -51,7 +51,6 @@ public function setParams($params) {
 	}
 	
 	return $this->params;
-}return $this->params;
 }
 
 }#
