@@ -134,7 +134,8 @@ private function testAcceptance() {
 	$server = proc_open($serverCommand, $this->descriptorSpec, $pipes);
 
 	chdir($testPath);
-	$test = system("$gtroot/vendor/bin/behat", $exitCode);
+	$behat = new \Behat\Behat\Console\BehatApplication(null);
+	$behat->run();
 
 	// Inbuilt server spawns child processes that need killing.
 	$status = proc_get_status($server);
