@@ -118,7 +118,7 @@ private function testAcceptance() {
 	$baseCwd = getcwd();
 	$gtroot = Path::get(Path::GTROOT);
 	$root = Path::get(Path::ROOT);
-	$testPath = Path::fixCase($this->approot . "/test/Acceptance");
+	$testPath = Path::fixCase($root . "/test/Acceptance");
 
 	if(!is_dir($testPath)) {
 		return 0;
@@ -128,7 +128,6 @@ private function testAcceptance() {
 	if(!is_dir($testWebroot)) {
 		mkdir($testWebroot, 0775, true);
 	}
-
 
 	$serverCommand = "$gtroot/bin/serve --approot=$root --port=8089";
 	$server = proc_open($serverCommand, $this->descriptorSpec, $pipes);
