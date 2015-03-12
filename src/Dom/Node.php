@@ -205,7 +205,7 @@ public function __call($name, $args) {
 		return $value;
 	}
 
-	if($name === "appendTemplate"
+	if($name === "insertTemplate"
 	&& !empty($this->domNode->templateName)) {
 		$this->templateParentNode->insertBefore(
 			$this,
