@@ -31,7 +31,6 @@ public static function toHtml($source, $type = null) {
 	}
 
 	$type = strtolower($type);
-	$source = self::fixCharacters($source);
 
 	switch($type) {
 	case self::TYPE_MARKDOWN:
@@ -43,6 +42,7 @@ public static function toHtml($source, $type = null) {
 		break;
 	}
 
+	$result = self::fixCharacters($result);
 
 	return $result;
 }
@@ -50,6 +50,7 @@ public static function toHtml($source, $type = null) {
 /**
  * Corrects special characters in input string, such as converting straight
  * quotes to opening/closing quotes, double hyphens to em dashes, etc.
+ * Parses the input as a DomDocument, as to only replace characters within text.
  *
  * @param string $input Source input
  * @param bool $htmlEntities Replace with html entities rather than unicode
@@ -73,14 +74,24 @@ public static function fixCharacters($input, $htmlEntities = false) {
 		"/[^\.](\.{3})[^\.]/" => "…",
 	];
 
-	$output = $input;
+	$document = new \Gt\Dom\Document($input);
 
-	foreach ($replaceWith as $pattern => $replacement) {
-		$output = preg_replace($pattern, $replacement, $output);
+	// Only modify text elements as to preserve HTML structure.
+	foreach($document->xPath("//text()") as $element) {
+		foreach ($replaceWith as $pattern => $replacement) {
+			$element->domNode->data = preg_replace(
+				$pattern, $replacement, $element->domNode->data);
+		}
+
+		if($htmlEntities) {
+			$element->domNode->data = htmlentities($element->domNode->data);
+		}
 	}
 
-	if($htmlEntities) {
-		return htmlentities($output);
+	$output = "";
+
+	foreach ($document->body->childNodes as $bodyChild) {
+		$output .= $document->saveHTML($bodyChild);
 	}
 
 	return $output;
