@@ -122,6 +122,22 @@ public function __get($name) {
 		$value = $this->getValue();
 		break;
 
+	case "innerHTML":
+	case "innerHtml":
+	case "html":
+	case "HTML":
+		$innerHTML = "";
+		$children = $this->node->childNodes;
+
+		foreach ($children as $child) {
+			$tempDoc = new Document();
+			$tempDoc->appendChild($tempDoc->importNode($child, true));
+			$innerHTML .= trim($tempDoc->saveHTML());
+		}
+
+		return html_entity_decode($innerHTML);
+		break;
+
 	default:
 		if(property_exists($this->domNode, $name)) {
 			$value = $this->domNode->$name;
@@ -161,8 +177,32 @@ public function __set($name, $value) {
 
 	case "textContent":
 	case "innerText":
+	case "text":
 		$value = htmlentities($value, ENT_COMPAT | ENT_HTML5);
 		$this->domNode->nodeValue = $value;
+		break;
+
+	case "innerHTML":
+	case "innerHtml":
+	case "html":
+	case "HTML":
+		$value = mb_convert_encoding($value, "html-entities", "utf-8");
+
+		// If plain text string is provided, skip generating new Document.
+		if($value === strip_tags($value)) {
+			$this->textContent = $value;
+			break;
+		}
+
+		// Remove all content from current node first.
+		$this->textContent = "";
+
+		$tempDoc = new Document($value);
+		foreach($tempDoc->body->childNodes as $child) {
+			$importedChild = $this->ownerDocument->importNode($child, true);
+			$this->appendChild($importedChild);
+		}
+
 		break;
 
 	case "value":
