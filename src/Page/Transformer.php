@@ -31,13 +31,55 @@ public static function toHtml($source, $type = null) {
 	}
 
 	$type = strtolower($type);
+	$source = self::fixCharacters($source);
 
 	switch($type) {
 	case self::TYPE_MARKDOWN:
-		return Markdown::defaultTransform($source);
+		$result = Markdown::defaultTransform($source);
+		break;
+
+	default:
+		throw new SourceNotValidException();
+		break;
 	}
 
-	throw new SourceNotValidException();
+
+	return $result;
+}
+
+/**
+ * Corrects special characters in input string, such as converting straight
+ * quotes to opening/closing quotes, double hyphens to em dashes, etc.
+ *
+ * @param string $input Source input
+ * @param bool $htmlEntities Replace with html entities rather than unicode
+ * characters
+ *
+ * @return string Fixed string
+ */
+public static function fixCharacters($input, $htmlEntities = false) {
+	$replaceWith = [
+		// Double or triple hyphen, with no surrounding hyphens.
+		"/[^-](-{2,3})[^-]/" => "—",
+		// Straight quotes followed by word character.
+		"/(\")(?=\w)/" => "“",
+		// Straight quotes followed by non-word character.
+		"/(\")(?=\W)/" => "”",
+		// Whitespace followed by straight apostrophe.
+		"/(?<=\s)(')/" => "‘",
+		// Non-whitespace followed by straight apostrophe.
+		"/(?<=\S)(')/" => "’",
+		// Exactly three periods, with no surrounding periods.
+		"/[^\.](\.{3})[^\.]/" => "…",
+	];
+
+	$output = $input;
+
+	foreach ($replaceWith as $pattern => $replacement) {
+		$output = preg_replace($pattern, $replacement, $output);
+	}
+
+	return $output;
 }
 
 }#
