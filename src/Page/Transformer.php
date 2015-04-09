@@ -79,6 +79,10 @@ public static function fixCharacters($input, $htmlEntities = false) {
 		$output = preg_replace($pattern, $replacement, $output);
 	}
 
+	if($htmlEntities) {
+		return htmlentities($output);
+	}
+
 	return $output;
 }
 
