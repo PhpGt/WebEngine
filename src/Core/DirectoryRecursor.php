@@ -33,9 +33,9 @@ $order = self::ORDER_SELF_FIRST) {
 
 	$output = [];
 
-	foreach ($iterator = new \RecursiveIteratorIterator(
-	new \RecursiveDirectoryIterator($directory,
-	\RecursiveDirectoryIterator::SKIP_DOTS), $order) as $item) {
+	foreach ($iterator = new RecursiveIteratorIterator(
+	new RecursiveDirectoryIterator($directory,
+	RecursiveDirectoryIterator::SKIP_DOTS), $order) as $item) {
 
 		$output []= call_user_func_array($callback, [
 			$item, $iterator, &$out
@@ -98,7 +98,7 @@ public static function purge($path) {
 	$count = 0;
 
 	self::walk($path, "self::purgeFile", $count,
-		\RecursiveIteratorIterator::CHILD_FIRST);
+		RecursiveIteratorIterator::CHILD_FIRST);
 	rmdir($path);
 
 	return $count;
