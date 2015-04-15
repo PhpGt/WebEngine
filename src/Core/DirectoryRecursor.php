@@ -42,6 +42,7 @@ $order = self::ORDER_SELF_FIRST) {
 		]);
 	}
 
+	$output = array_filter($output);
 	sort($output);
 	return $output;
 }
