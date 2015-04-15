@@ -8,8 +8,13 @@
  * @license http://www.opensource.org/licenses/mit-license.php MIT
  */
 namespace Gt\Core;
+use \RecursiveIteratorIterator;
+use \RecursiveDirectoryIterator;
 
 class DirectoryRecursor {
+
+const ORDER_SELF_FIRST  = RecursiveIteratorIterator::SELF_FIRST;
+const ORDER_CHILD_FIRST = RecursiveIteratorIterator::CHILD_FIRST;
 
 /**
  * @param string $directory Absolute path to directory
@@ -20,7 +25,7 @@ class DirectoryRecursor {
  * @return array Sorted array containing each callback's return value
  */
 public static function walk($directory, $callback, &$out = null,
-$order = \RecursiveIteratorIterator::SELF_FIRST) {
+$order = self::ORDER_SELF_FIRST) {
 	if(!is_dir($directory)) {
 		throw new \Gt\Core\Exception\RequiredAppResourceNotFoundException(
 			$directory);
