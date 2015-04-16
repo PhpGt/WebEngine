@@ -225,10 +225,21 @@ public function setContentUri($uri, ResponseContent $content) {
 	if(strrpos($uri, "/") === strlen($uri) - 1) {
 		$uri .= "index";
 	}
+	$body = $content->querySelector("body");
 	$uri = trim($uri, "/");
+	$uriPartTotal = "";
+	foreach (explode("/", $uri) as $uriPart) {
+		$body->classList->add($uriPart);
+		if($uriPartTotal) {
+			$body->classList->add($uriPartTotal);
+		}
+		$uriPartTotal .= $uriPartTotal ? "_$uriPart" : $uriPart;
+	}
+
 	$uri = str_replace("/", "_", $uri);
 	$idUri = $uri;
 	$content->querySelector("body")->id = $idUri;
+
 }
 
 }#
