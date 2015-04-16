@@ -127,12 +127,10 @@ public function __get($name) {
 	case "html":
 	case "HTML":
 		$innerHTML = "";
-		$children = $this->node->childNodes;
+		$children = $this->childNodes;
 
 		foreach ($children as $child) {
-			$tempDoc = new Document();
-			$tempDoc->appendChild($tempDoc->importNode($child, true));
-			$innerHTML .= trim($tempDoc->saveHTML());
+			$innerHTML .= $child->ownerDocument->saveHTML($child);
 		}
 
 		return html_entity_decode($innerHTML);
