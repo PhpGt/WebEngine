@@ -26,7 +26,9 @@ use Symfony\Component\CssSelector\CssSelector;
  * @property-read Node $firstChild
  * @property-read Node $lastChild
  * @property-read Node $previousSibling
+ * @property-read Node $previousElementSibling
  * @property-read Node $nextSibling
+ * @property-read Node $nextElementSibling
  * @property-read DOMNamedNodeMap $attributes
  * @property-read Document $ownerDocument
  * @property Document $document
@@ -134,6 +136,28 @@ public function __get($name) {
 		}
 
 		return html_entity_decode($innerHTML);
+		break;
+
+	case "previousElementSibling":
+		$sibling = $this;
+
+		while(!is_null($sibling)
+		&& !$sibling->domNode instanceof \DOMElement) {
+			$sibling = $sibling->previousSibling;
+		}
+
+		return $sibling;
+		break;
+
+	case "nextElementSibling":
+		$sibling = $this;
+
+		while(!is_null($sibling)
+			&& !$sibling->domNode instanceof \DOMElement) {
+			$sibling = $sibling->nextSibling;
+		}
+
+		return $sibling;
 		break;
 
 	default:
