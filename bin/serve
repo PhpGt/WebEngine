@@ -27,6 +27,7 @@ require($vendorAutoLoadFile);
 $defaults = [
 	"approot" => $cwd,
 	"port" => 8080,
+	"xdebug" => "none",
 ];
 
 $definition = new InputDefinition([
@@ -35,6 +36,8 @@ $definition = new InputDefinition([
 		"Application root directory", $defaults["approot"]),
 	new InputOption("port", "p", InputOption::VALUE_OPTIONAL,
 		"Port to bind webserver to", $defaults["port"]),
+	new InputOption("xdebug", "x", InputOption::VALUE_OPTIONAL,
+		"IDEKey to set XDebug to", $defaults["xdebug"]),
 ]);
 
 try {
@@ -58,6 +61,10 @@ try {
 			. "See http://www.php.gt/docs/installation for more information.";
 		exit(1);
 	}
+
+	$xdebug = $input->getOption("xdebug");
+	ini_set("xdebug.idekey", $xdebug);
+
 	require($projectAutoloader);
 	new Server($input);
 	exit(0);
