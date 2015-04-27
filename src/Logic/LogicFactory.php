@@ -63,6 +63,7 @@ $content, $session, $data) {
  */
 public static function getLogicFileArray($filename, $path, $topPath) {
 	// Get PageLogic path for current URI.
+	$filename = str_replace("-", "_", $filename);
 	$currentPageLogicPath = implode("/", [$path, $filename]) . ".php";
 	$commonPageLogicPathArray = [];
 
@@ -103,9 +104,10 @@ public static function getLogicClassNameArray($appNamespace, $logicPathArray) {
 	$srcPath = Path::get(Path::SRC);
 
 	foreach ($logicPathArray as $logicPath) {
-		// Begin creating a string contining the fully-qualified class name.
+		// Begin creating a string containing the fully-qualified class name.
 		$namespaceStr = substr($logicPath, strlen($srcPath) + 1);
 		$namespaceStr = strtok($namespaceStr, ".");
+		$namespaceStr = str_replace("-", "_", $namespaceStr);
 		// Explode the string into an array ..
 		$namespaceArray = explode("/", $namespaceStr);
 		// .. and add the App's namespace to the beginning of the array.
