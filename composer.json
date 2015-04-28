@@ -28,13 +28,14 @@
 		"matthiasmullie/minify": "1.3.*",
 		"michelf/php-markdown": "1.4.1",
 		"g105b/phpcsv": "dev-master",
-		"phpunit/phpunit": "4.1.*",
 		"satooshi/php-coveralls": "dev-master",
-		"behat/behat": "*",
-		"behat/mink": "*",
-		"behat/mink-extension": "*",
-		"behat/mink-goutte-driver": "*",
-		"sensiolabs/behat-page-object-extension": "*",
+
+		"phpunit/phpunit": "4.1.*",
+
+		"behat/behat": "3.*@stable",
+		"behat/mink": "1.6.*@stable",
+		"behat/mink-extension": "@stable",
+		"behat/mink-goutte-driver": "@stable",
 		"fabpot/goutte": "1.*"
 	},
 
