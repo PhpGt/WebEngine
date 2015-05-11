@@ -27,7 +27,7 @@
 		"katzgrau/klogger": "1.0.*",
 		"matthiasmullie/minify": "1.3.*",
 		"michelf/php-markdown": "1.4.1",
-		"g105b/phpcsv": "1.0.*",
+		"g105b/phpcsv": "1.*",
 		"satooshi/php-coveralls": "0.6.*",
 
 		"phpunit/phpunit": "4.1.*",
