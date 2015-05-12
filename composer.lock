@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ff9426e3152317b08ed7d725a707d353",
+    "hash": "19a58e224f4bd7f25dbc13fd90538aad",
     "packages": [
         {
             "name": "behat/behat",
@@ -411,12 +411,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/g105b/phpcsv.git",
-                "reference": "15068200d3275442cc34bc55c05946562815647c"
+                "reference": "790227e3f4d89f3bf8e84384a5a341922103eb68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/15068200d3275442cc34bc55c05946562815647c",
-                "reference": "15068200d3275442cc34bc55c05946562815647c",
+                "url": "https://api.github.com/repos/g105b/phpcsv/zipball/790227e3f4d89f3bf8e84384a5a341922103eb68",
+                "reference": "790227e3f4d89f3bf8e84384a5a341922103eb68",
                 "shasum": ""
             },
             "require-dev": {
@@ -443,7 +443,7 @@
                 "read",
                 "write"
             ],
-            "time": "2015-05-11 16:49:27"
+            "time": "2015-05-12 08:48:59"
         },
         {
             "name": "guzzle/guzzle",
