@@ -60,6 +60,10 @@ public $domNode;
 public $tagName;
 public $classList;
 
+public static $textReplacementArray = [
+	"&period;" => ".",
+];
+
 /**
  *
  */
@@ -138,6 +142,20 @@ public function __get($name) {
 		return html_entity_decode($innerHTML);
 		break;
 
+	case "textContent":
+		$textContent = $this->domNode->textContent;
+		$textContent = mb_convert_encoding(
+			$textContent,
+			"HTML-ENTITIES",
+			"UTF-8"
+		);
+//		foreach(self::$textReplacementArray as $search => $replace) {
+//			$textContent = str_replace($search, $replace, $textContent);
+//		}
+
+		return html_entity_decode($textContent, ENT_HTML5);
+		break;
+
 	case "previousElementSibling":
 		$sibling = $this;
 
@@ -200,7 +218,7 @@ public function __set($name, $value) {
 	case "textContent":
 	case "innerText":
 	case "text":
-		$value = htmlentities($value, ENT_COMPAT | ENT_HTML5);
+		$value = htmlentities($value, ENT_HTML5);
 		$this->domNode->nodeValue = $value;
 		break;
 
