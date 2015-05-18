@@ -250,7 +250,7 @@ public function load($content = null) {
 
 	libxml_use_internal_errors(true);
 
-	$string = mb_convert_encoding(trim($string), "HTML-ENTITIES", "utf-8");
+	$string = mb_convert_encoding(trim($string), "utf-8", "HTML-ENTITIES");
 	$this->domDocument->loadHTML($string);
 }
 
