@@ -93,4 +93,16 @@ public function testInvalidGet() {
 	$this->session->get("This.Namespace.Does.Not.Exist");
 }
 
+public function testSetsAgain() {
+	$key = "TestKey";
+	$val1 = "TestValue1";
+	$val2 = "TestValue2";
+	$val3 = "TestValue3";
+	$this->session->set($key, $val1);
+	$this->assertEquals($val1, $this->session->get($key));
+
+	$this->session->set($key, $val2);
+	$this->assertEquals($val2, $this->session->get($key));
+}
+
 }#
