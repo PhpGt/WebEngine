@@ -15,6 +15,8 @@ private $pageDir;
 private $request;
 private $response;
 private $api;
+private $session;
+private $data;
 private $appNamespace = "TestApp";
 
 public function setUp() {
@@ -65,13 +67,15 @@ public function setUp() {
 	]);
 
 	$this->session = $this->getMock("\Gt\Session\Session", null, [$cfg]);
+	$this->data = $this->getMock("\Gt\Data\Data");
 
 	$this->dispatcher = new PageDispatcher(
 		$this->appNamespace,
 		$this->request,
 		$this->response,
 		$this->api,
-		$this->session
+		$this->session,
+		$this->data
 	);
 }
 
@@ -328,7 +332,8 @@ public function testDispatcherProcessFixesUri($uri) {
 			$this->request,
 			$this->response,
 			$this->api,
-			$this->session
+			$this->session,
+			$this->data
 		);
 
 		$fixedUri = $this->dispatcher->process();
@@ -377,7 +382,8 @@ public function testDispatcherProcessFlushes() {
 		$request,
 		$this->response,
 		$this->api,
-		$this->session
+		$this->session,
+		$this->data
 	);
 
 	$this->dispatcher->process();
