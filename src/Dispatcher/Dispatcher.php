@@ -179,7 +179,21 @@ public function process() {
 		// Call the correct methods on each Logic object:
 		foreach ($logicList as $logicObj) {
 			$logicObj->isDynamic = $isDynamic;
+			if(method_exists($logicObj, "in")) {
+				$logicObj->in();
+			}
 			$logicObj->go();
+
+			if(!empty($_POST["do"]) && method_exists($logicObj, "do")) {
+				$data = $_POST;
+				$action = $data["do"];
+				unset($data["do"]);
+				$logicObj->do($action, $data);
+			}
+
+			if(method_exists($logicObj, "out")) {
+				$logicObj->out();
+			}
 		}
 		foreach (array_reverse($logicList) as $logicObj) {
 			if(!method_exists($logicObj, "endGo")) {
