@@ -192,10 +192,10 @@ public function process() {
 				$doMethodCamel = "do" . ucfirst($action);
 
 				if(method_exists($logicObj, $doMethodUnderscore)) {
-					$logicObj->$doMethodUnderscore($action, $data);
+					$logicObj->$doMethodUnderscore($data);
 				}
 				else if(method_exists($logicObj, $doMethodCamel)) {
-					$logicObj->$doMethodCamel($action, $data);
+					$logicObj->$doMethodCamel($data);
 				}
 			}
 
