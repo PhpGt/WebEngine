@@ -328,6 +328,9 @@ private function getValue() {
 	case "MENU":
 	case "OPTION":
 		$value = $this->getAttribute("value");
+		if(empty($value)) {
+			$value = $this->textContent;
+		}
 		break;
 
 	// Loop through a select's option elements and set the 'selected' attribute
