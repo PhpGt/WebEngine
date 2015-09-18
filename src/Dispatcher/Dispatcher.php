@@ -184,9 +184,9 @@ public function process() {
 			}
 			$logicObj->go();
 
-			if(!empty($_POST["do"])) {
-				$data = $_POST;
-				$action = $_POST["do"];
+			$data = array_merge($_GET, $_POST);
+			if(!empty($data["do"])) {
+				$action = $data["do"];
 				unset($data["do"]);
 				$doMethodUnderscore = "do_$action";
 				$doMethodCamel = "do" . ucfirst($action);
