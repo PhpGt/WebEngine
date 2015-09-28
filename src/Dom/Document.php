@@ -136,6 +136,7 @@ public function __construct($source = null, $config = null) {
 	$this->domDocument->document = $this;
 	$uuid = uniqid("nodeMap-", true);
 	$this->domDocument->uuid = $uuid;
+	$this->domDocument->encoding = "utf-8";
 
 	// Find and reference the DOCTYPE element:
 	foreach ($this->childNodes as $rootChild) {
