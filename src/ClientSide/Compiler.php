@@ -11,7 +11,7 @@ namespace Gt\ClientSide;
 
 use \Gt\Core\Path;
 use \Gt\Response\Response;
-use \scssc as ScssParser;
+use \Leafo\ScssPhp\Compiler as ScssParser;
 
 class Compiler {
 
