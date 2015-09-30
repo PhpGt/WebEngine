@@ -32,11 +32,11 @@
 
 		"phpunit/phpunit": "4.1.*",
 
-		"behat/behat": "3.*",
-		"behat/mink": "*",
-		"behat/mink-extension": "*",
-		"behat/mink-goutte-driver": "*",
-		"fabpot/goutte": "*"
+		"behat/behat": "2.*@stable",
+		"behat/mink": "@stable",
+		"behat/mink-extension": "@stable",
+		"behat/mink-goutte-driver": "@stable",
+		"fabpot/goutte": "@stable"
 	},
 
 	"keywords": [
