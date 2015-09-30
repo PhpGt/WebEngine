@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9819094d74c91afb4181aaeca6f74f31",
-    "content-hash": "d50abe1fb2170daecdbd93d594a760f6",
+    "hash": "35ab21a8da6eb8c704bfc9866cad08ba",
+    "content-hash": "b9129c8a163420f8a68ea49b5252b63f",
     "packages": [
         {
             "name": "behat/behat",
@@ -352,34 +352,41 @@
         },
         {
             "name": "fabpot/goutte",
-            "version": "v3.1.1",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/Goutte.git",
-                "reference": "751a3dc5c4d86ec3e97c9f27133ef9694d9243cc"
+                "reference": "794b196e76bdd37b5155cdecbad311f0a3b07625"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Goutte/zipball/751a3dc5c4d86ec3e97c9f27133ef9694d9243cc",
-                "reference": "751a3dc5c4d86ec3e97c9f27133ef9694d9243cc",
+                "url": "https://api.github.com/repos/FriendsOfPHP/Goutte/zipball/794b196e76bdd37b5155cdecbad311f0a3b07625",
+                "reference": "794b196e76bdd37b5155cdecbad311f0a3b07625",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^6.0",
-                "php": ">=5.5.0",
+                "ext-curl": "*",
+                "guzzle/http": "~3.1",
+                "php": ">=5.3.0",
                 "symfony/browser-kit": "~2.1",
                 "symfony/css-selector": "~2.1",
-                "symfony/dom-crawler": "~2.1"
+                "symfony/dom-crawler": "~2.1",
+                "symfony/finder": "~2.1",
+                "symfony/process": "~2.1"
+            },
+            "require-dev": {
+                "guzzle/plugin-history": "~3.1",
+                "guzzle/plugin-mock": "~3.1"
             },
             "type": "application",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "1.0-dev"
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Goutte\\": "Goutte"
+                "psr-0": {
+                    "Goutte": "."
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -393,11 +400,11 @@
                 }
             ],
             "description": "A simple PHP Web Scraper",
-            "homepage": "https://github.com/FriendsOfPHP/Goutte",
+            "homepage": "https://github.com/fabpot/Goutte",
             "keywords": [
                 "scraper"
             ],
-            "time": "2015-08-29 16:16:56"
+            "time": "2014-10-09 15:52:51"
         },
         {
             "name": "g105b/phpcsv",
@@ -533,177 +540,6 @@
                 "web service"
             ],
             "time": "2015-03-18 18:23:50"
-        },
-        {
-            "name": "guzzlehttp/guzzle",
-            "version": "6.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "66fd14b4d0b8f2389eaf37c5458608c7cb793a81"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/66fd14b4d0b8f2389eaf37c5458608c7cb793a81",
-                "reference": "66fd14b4d0b8f2389eaf37c5458608c7cb793a81",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/promises": "~1.0",
-                "guzzlehttp/psr7": "~1.1",
-                "php": ">=5.5.0"
-            },
-            "require-dev": {
-                "ext-curl": "*",
-                "phpunit/phpunit": "~4.0",
-                "psr/log": "~1.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "6.1-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/functions_include.php"
-                ],
-                "psr-4": {
-                    "GuzzleHttp\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                }
-            ],
-            "description": "Guzzle is a PHP HTTP client library",
-            "homepage": "http://guzzlephp.org/",
-            "keywords": [
-                "client",
-                "curl",
-                "framework",
-                "http",
-                "http client",
-                "rest",
-                "web service"
-            ],
-            "time": "2015-09-08 17:36:26"
-        },
-        {
-            "name": "guzzlehttp/promises",
-            "version": "1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/guzzle/promises.git",
-                "reference": "97fe7210def29451ec74923b27e552238defd75a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/97fe7210def29451ec74923b27e552238defd75a",
-                "reference": "97fe7210def29451ec74923b27e552238defd75a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Promise\\": "src/"
-                },
-                "files": [
-                    "src/functions_include.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                }
-            ],
-            "description": "Guzzle promises library",
-            "keywords": [
-                "promise"
-            ],
-            "time": "2015-08-15 19:37:21"
-        },
-        {
-            "name": "guzzlehttp/psr7",
-            "version": "1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/guzzle/psr7.git",
-                "reference": "4ef919b0cf3b1989523138b60163bbcb7ba1ff7e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/4ef919b0cf3b1989523138b60163bbcb7ba1ff7e",
-                "reference": "4ef919b0cf3b1989523138b60163bbcb7ba1ff7e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0",
-                "psr/http-message": "~1.0"
-            },
-            "provide": {
-                "psr/http-message-implementation": "1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Psr7\\": "src/"
-                },
-                "files": [
-                    "src/functions_include.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                }
-            ],
-            "description": "PSR-7 message implementation",
-            "keywords": [
-                "http",
-                "message",
-                "stream",
-                "uri"
-            ],
-            "time": "2015-08-15 19:32:36"
         },
         {
             "name": "katzgrau/klogger",
@@ -1339,55 +1175,6 @@
                 "xunit"
             ],
             "time": "2014-06-12 07:22:15"
-        },
-        {
-            "name": "psr/http-message",
-            "version": "1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/http-message.git",
-                "reference": "85d63699f0dbedb190bbd4b0d2b9dc707ea4c298"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/85d63699f0dbedb190bbd4b0d2b9dc707ea4c298",
-                "reference": "85d63699f0dbedb190bbd4b0d2b9dc707ea4c298",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Http\\Message\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for HTTP messages",
-            "keywords": [
-                "http",
-                "http-message",
-                "psr",
-                "psr-7",
-                "request",
-                "response"
-            ],
-            "time": "2015-05-04 20:22:00"
         },
         {
             "name": "psr/log",
@@ -2295,6 +2082,55 @@
                 }
             ],
             "description": "Symfony Finder Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-09-19 19:59:23"
+        },
+        {
+            "name": "symfony/process",
+            "version": "v2.7.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/process.git",
+                "reference": "b27c8e317922cd3cdd3600850273cf6b82b2e8e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/process/zipball/b27c8e317922cd3cdd3600850273cf6b82b2e8e9",
+                "reference": "b27c8e317922cd3cdd3600850273cf6b82b2e8e9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Process\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
             "time": "2015-09-19 19:59:23"
         },

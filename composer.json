@@ -36,7 +36,7 @@
 		"behat/mink": "@stable",
 		"behat/mink-extension": "@stable",
 		"behat/mink-goutte-driver": "@stable",
-		"fabpot/goutte": "@stable"
+		"fabpot/goutte": "1.*@stable"
 	},
 
 	"keywords": [
