@@ -24,8 +24,8 @@ private $countAcceptance = 0;
 
 private $descriptorSpec = [
 	0 => ["pipe", "r"],
-	1 => ["pipe", "w"],
-	2 => ["pipe", "w"],
+	1 => ["pipe", "r"],
+	2 => ["pipe", "r"],
 ];
 
 public function __construct($approot, $type) {
@@ -115,26 +115,20 @@ private function testUnit() {
  */
 private function testAcceptance() {
 	$result = 0;
-	$baseCwd = getcwd();
-	$gtroot = Path::get(Path::GTROOT);
-	$root = Path::get(Path::ROOT);
-	$testPath = Path::fixCase($root . "/test/Acceptance");
+	$rememberCwd = getcwd();
+
+	$testPath = Path::fixCase(getcwd() . "/test/Acceptance");
 
 	if(!is_dir($testPath)) {
 		return 0;
 	}
 
-	$testWebroot = "$testPath/www";
-	if(!is_dir($testWebroot)) {
-		mkdir($testWebroot, 0775, true);
-	}
-
-	$serverCommand = "$gtroot/bin/serve --approot=$root --port=8089";
+	$serverCommand = "./vendor/bin/serve";
 	$server = proc_open($serverCommand, $this->descriptorSpec, $pipes);
 
+	$testExec = realpath("./vendor/bin/behat");
 	chdir($testPath);
-	$behat = new \Behat\Behat\Console\BehatApplication(null);
-	$behat->run();
+	passthru($testExec, $result);
 
 	// Inbuilt server spawns child processes that need killing.
 	$status = proc_get_status($server);
@@ -152,7 +146,7 @@ private function testAcceptance() {
 		posix_kill($p, SIGKILL);
 	}
 
-	if($exitCode == 0) {
+	if($result === 0) {
 		$this->countAcceptance++;
 	}
 	else {
@@ -160,7 +154,7 @@ private function testAcceptance() {
 	}
 
 	// Reset the cwd.
-	chdir($baseCwd);
+	chdir($rememberCwd);
 	return $result;
 }
 
