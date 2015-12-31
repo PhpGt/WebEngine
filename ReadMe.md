@@ -15,6 +15,8 @@ PHP frameworks offer many features, and often come with steep learning curves. T
 [![Download Stats](http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
 [![PHP.Gt Website](http://img.shields.io/badge/Web-www.php.gt-26a5e3.svg?style=flat-square)](http://php.gt)
 
-PHP.Gt has been in commercial use for 2 years now. It is now time for a full code re-write to bring it up to speed with the industry and to apply what we've learnt over the years.
+Current project status (early 2016):
 
-**Version 2 (this working branch) is backwards breaking and unfinished. Do not use this on real projects!**
++ Extracting all modules of functionality into their own Composer packages.
++ Gaining full PHP7 support.
++ Full code coverage.
