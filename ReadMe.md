@@ -1,6 +1,6 @@
 <img align="right" src="https://raw.githubusercontent.com/BrightFlair/PHP.Gt/master/Logo.png" alt="PHP.Gt logo" />
 
-Welcome to PHP.Gt — a lightweight application development toolkit aimed at streamlining development and respecting web technologies.
+Welcome to PHP.Gt — a lightweight **PHP7** application development toolkit aimed at streamlining development and respecting web technologies.
 
 PHP frameworks offer many features, and often come with steep learning curves. The motivation behind PHP.Gt is the belief that what a framework can offer can be achieved by **eliminating code rather than adding more**.
 
