@@ -13,7 +13,8 @@ PHP frameworks offer many features, but often come with steep learning curves or
 [![Code Quality](http://img.shields.io/scrutinizer/g/BrightFlair/PHP.Gt.svg?style=flat-square)](https://scrutinizer-ci.com/g/BrightFlair/PHP.Gt/)
 [![Composer Version](http://img.shields.io/packagist/v/brightflair/php.gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
 [![Download Stats](http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
-[![PHP.Gt Website](http://img.shields.io/badge/Web-www.php.gt-26a5e3.svg?style=flat-square)](http://php.gt)
+[![PHP.Gt Website](http://img.shields.io/badge/web-www.php.gt-26a5e3.svg?style=flat-square)](http://php.gt)
+[![PHP.Gt Roadmap](http://img.shields.io/badge/roadmap-public+trello-26a5e3.svg?style=flat-square)](https://trello.com/b/zbfqGWbH/php-gt-public-roadmap)
 
 Current project status (early 2016):
 
