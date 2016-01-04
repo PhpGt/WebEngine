@@ -114,7 +114,7 @@ public static function purge($path) {
  *
  * @return int Number of successful operations
  */
-public static function purgeFile($file, $file) {
+public static function purgeFile($file) {
 	$pathname = $file->getPathname();
 
 	if($file->isDir()) {
