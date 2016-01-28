@@ -49,3 +49,8 @@ Develop locally or virtually
 ----------------------------
 
 Preconfigured scripts are available to automatically set up local servers or virtualisation environments to get you going as quickly as possible, without having to change existing computer configuration.
+
+Community of blueprints
+-----------------------
+
+To get projects going with full momentum, blueprint projects are available to base your projects off. Blueprints come with just enough level of design and functionality to get a prototype out the door as quickly as possible, without prescribing anything.
