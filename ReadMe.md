@@ -30,6 +30,16 @@ The most important changes are:
 Features at a glance
 --------------------
 
++ Pages made dynamic via server-side DOM Document access.
++ HTML templating.
++ Use preprocessor languages (SCSS, HAML, etc.) with zero configuration.
++ Web security as standard.
++ Strong separation of concerns over PHP, HTML, SQL, JavaScript, CSS.
++ Preconfigured PHPUnit and Behat test environment.
++ Workflow tools to quickly create, integrate and deploy projects.
+
+Essential concepts
+
 ### Static first
 
 To lower the barrier of entry to web development, the technique of developing a static prototype first is promoted, dropping in logic when and where necessary to turn prototypes into fully functional production code with as few steps as possible.
