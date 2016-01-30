@@ -8,13 +8,27 @@ PHP frameworks offer many features, but often come with steep learning curves or
 
 ***
 
-[![Build Status](http://img.shields.io/circleci/project/BrightFlair/PHP.Gt.svg?style=flat-square)](https://circleci.com/gh/BrightFlair/PHP.Gt)
-[![Coverage Status](http://img.shields.io/coveralls/BrightFlair/PHP.Gt.svg?style=flat-square)](https://coveralls.io/r/BrightFlair/PHP.Gt)
-[![Code Quality](http://img.shields.io/scrutinizer/g/BrightFlair/PHP.Gt.svg?style=flat-square)](https://scrutinizer-ci.com/g/BrightFlair/PHP.Gt/)
-[![Composer Version](http://img.shields.io/packagist/v/brightflair/php.gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
-[![Download Stats](http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat-square)](https://packagist.org/packages/brightflair/php.gt)
-[![PHP.Gt Website](http://img.shields.io/badge/web-www.php.gt-26a5e3.svg?style=flat-square)](http://www.php.gt)
-[![PHP.Gt Roadmap](http://img.shields.io/badge/roadmap-public%20trello-26a5e3.svg?style=flat-square)](https://trello.com/b/zbfqGWbH/php-gt-public-roadmap)
+<a href="https://circleci.com/gh/BrightFlair/PHP.Gt" target="_blank">
+    <img src="http://img.shields.io/circleci/project/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt build status" />
+</a>
+<a href="https://coveralls.io/r/BrightFlair/PHP.Gt" target="_blank">
+    <img src="http://img.shields.io/coveralls/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt code coverage" />
+</a>
+<a href="https://scrutinizer-ci.com/g/BrightFlair/PHP.Gt" target="_blank">
+    <img src="http://img.shields.io/scrutinizer/g/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt code quality" />
+</a>
+<a href="https://packagist.org/packages/brightflair/php.gt" target="_blank">
+    <img src="http://img.shields.io/packagist/v/brightflair/php.gt.svg?style=flat-square" alt="PHP.Gt Composer version" />
+</a>
+<a href="https://packagist.org/packages/brightflair/php.gt" target="_blank">
+    <img src="http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt download stats" />
+</a>
+<a href="http://www.php.gt" target="_blank">
+    <img src="http://img.shields.io/badge/web-www.php.gt-26a5e3.svg?style=flat-square" alt="PHP.Gt Website" />
+</a>
+<a href="https://trello.com/b/zbfqGWbH/php-gt-public-roadmap" target="_blank">
+    <img src="http://img.shields.io/badge/roadmap-public%20trello-26a5e3.svg?style=flat-square" alt="PHP.Gt Roadmap" />
+</a>
 
 Current project status
 ======================
