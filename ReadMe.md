@@ -30,6 +30,8 @@ PHP frameworks offer many features, but often come with steep learning curves or
     <img src="http://img.shields.io/badge/roadmap-public%20trello-26a5e3.svg?style=flat-square" alt="PHP.Gt Roadmap" />
 </a>
 
+***
+
 Current project status
 ======================
 
