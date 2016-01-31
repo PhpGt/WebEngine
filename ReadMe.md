@@ -1,8 +1,8 @@
 <img align="right" src="https://raw.githubusercontent.com/BrightFlair/PHP.Gt/master/Logo.png" alt="PHP.Gt logo" />
 
-Welcome to PHP.Gt — a lightweight **PHP7** application development toolkit aimed at streamlining development and respecting web technologies.
+Welcome to the PHP.Gt webengine — a lightweight **PHP7** application development toolkit aimed at streamlining development and respecting web technologies.
 
-PHP frameworks offer many features, but often come with steep learning curves or imposing rules. The motivation behind PHP.Gt is the belief that what a framework can offer can be achieved by **eliminating code rather than adding more**.
+PHP frameworks offer many features, but often come with steep learning curves or imposing rules. The motivation behind PHP.Gt webengine is the belief that what a framework can offer can be achieved by **eliminating code rather than adding more**.
 
 [Head over to the Github Wiki for documentation](https://github.com/g105b/PHP.Gt/wiki)
 
