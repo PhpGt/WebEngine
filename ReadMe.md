@@ -53,6 +53,7 @@ Features at a glance
 + Workflow tools to quickly create, integrate and deploy projects.
 
 Essential concepts
+------------------
 
 ### Static first
 
