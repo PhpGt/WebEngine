@@ -70,10 +70,10 @@ try {
 	if(!is_null($overrideApproot)) {
 		$approot = "$approot/$overrideApproot";
 	}
-	
+
 	$xdebug = $input->getOption("xdebug");
 	ini_set("xdebug.idekey", $xdebug);
-	
+
 	new Server($input);
 	exit(0);
 }
