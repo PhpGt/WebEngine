@@ -38,7 +38,7 @@ View the detailed [project roadmap on Trello](https://trello.com/b/zbfqGWbH/php-
 The most important changes are:
 
 + Extracting all modules of functionality into their own Composer packages.
-+ Gaining full PHP7 support.
++ Gaining full PHP 7 support.
 + Full code coverage.
 
 Features at a glance
@@ -46,6 +46,8 @@ Features at a glance
 
 + Pages made dynamic via server-side DOM Document access.
 + HTML templating.
++ Database abstraction.
++ Create web pages or web services (APIs) with the same code.
 + Use preprocessor languages (SCSS, HAML, etc.) with zero configuration.
 + Web security as standard.
 + Strong separation of concerns over PHP, HTML, SQL, JavaScript, CSS.
