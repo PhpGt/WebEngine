@@ -1,4 +1,4 @@
-<img align="right" src="https://raw.githubusercontent.com/BrightFlair/PHP.Gt/master/Logo.png" alt="PHP.Gt logo" />
+<img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/Logo.png" alt="PHP.Gt logo" />
 
 Welcome to the PHP.Gt webengine — a lightweight **PHP 7** application development toolkit aimed at streamlining development and respecting web technologies.
 
@@ -8,20 +8,20 @@ PHP frameworks offer many features, but often come with steep learning curves or
 
 ***
 
-<a href="https://circleci.com/gh/BrightFlair/PHP.Gt" target="_blank">
-    <img src="http://img.shields.io/circleci/project/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt build status" />
+<a href="https://circleci.com/gh/phpgt/webengine" target="_blank">
+    <img src="http://img.shields.io/circleci/project/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt build status" />
 </a>
-<a href="https://coveralls.io/r/BrightFlair/PHP.Gt" target="_blank">
-    <img src="http://img.shields.io/coveralls/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt code coverage" />
+<a href="https://coveralls.io/r/phpgt/webengine" target="_blank">
+    <img src="http://img.shields.io/coveralls/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt code coverage" />
 </a>
-<a href="https://scrutinizer-ci.com/g/BrightFlair/PHP.Gt" target="_blank">
-    <img src="http://img.shields.io/scrutinizer/g/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt code quality" />
+<a href="https://scrutinizer-ci.com/g/phpgt/webengine" target="_blank">
+    <img src="http://img.shields.io/scrutinizer/g/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt code quality" />
 </a>
-<a href="https://packagist.org/packages/brightflair/php.gt" target="_blank">
-    <img src="http://img.shields.io/packagist/v/brightflair/php.gt.svg?style=flat-square" alt="PHP.Gt Composer version" />
+<a href="https://packagist.org/packages/phpgt/webengine" target="_blank">
+    <img src="http://img.shields.io/packagist/v/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt Composer version" />
 </a>
-<a href="https://packagist.org/packages/brightflair/php.gt" target="_blank">
-    <img src="http://img.shields.io/packagist/dm/BrightFlair/PHP.Gt.svg?style=flat-square" alt="PHP.Gt download stats" />
+<a href="https://packagist.org/packages/phpgt/webengine" target="_blank">
+    <img src="http://img.shields.io/packagist/dm/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt download stats" />
 </a>
 <a href="http://www.php.gt" target="_blank">
     <img src="http://img.shields.io/badge/web-www.php.gt-26a5e3.svg?style=flat-square" alt="PHP.Gt Website" />
@@ -67,7 +67,7 @@ The main idea is to provide a platform where you can get as much done, using sta
 
 ### Drop in tools without any fuss
 
-There are a lot of useful tools included as standard, such as [SCSS parsing](https://github.com/BrightFlair/PHP.Gt/wiki/Client-side-files), [HTML templating](https://github.com/BrightFlair/PHP.Gt/wiki/Templating) and [CSRF handling](https://github.com/BrightFlair/PHP.Gt/wiki/CSRF), but the highly modularised architecture keeps compatibility high. Packages from [Packagist](https://packagist.org) can be installed and loaded with zero configuration.
+There are a lot of useful tools included as standard, such as [SCSS parsing](https://github.com/phpgt/webengine/wiki/Client-side-files), [HTML templating](https://github.com/phpgt/webengine/wiki/Templating) and [CSRF handling](https://github.com/phpgt/webengine/wiki/CSRF), but the highly modularised architecture keeps compatibility high. Packages from [Packagist](https://packagist.org) can be installed and loaded with zero configuration.
 
 ### Develop locally or virtually
 
