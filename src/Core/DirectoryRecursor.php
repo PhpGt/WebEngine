@@ -109,12 +109,11 @@ public static function purge($path) {
  * Removes the provided file or directory, returning the number of successful
  * operations (for use in other functions to count total operations).
  *
- * @param \SplFileInfo $path Iterator's current item
- * @param \Iterator $iterator Iterator used by walk method
+ * @param \SplFileInfo $file Iterator's current item
  *
  * @return int Number of successful operations
  */
-public static function purgeFile($file, $file) {
+public static function purgeFile($file) {
 	$pathname = $file->getPathname();
 
 	if($file->isDir()) {
