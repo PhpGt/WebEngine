@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Uses composer to install all dependencies required to run or test the
+ * project. Downloads composer if it doesn't already exist. Globally aliases
+ * all bin scripts.
+ */

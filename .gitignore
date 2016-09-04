@@ -1,7 +1,3 @@
-*.sublime-project
-*.sublime-workspace
-composer.phar
-vendor/*
-test/Unit/_Report/*
-test/Unit/phpunit.output*
-/.project
+/*.sublime-*
+/composer.phar
+/vendor

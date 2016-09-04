@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Shell script interface for launching the built-in webserver.
+ *
+ * Usage: server [-a|--approot[="..."]] [-p|--port[="..."]]
+ */

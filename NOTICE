@@ -3,16 +3,12 @@ PHP.Gt is created and maintained by Bright Flair Ltd (https://brightflair.com).
 The software is covered by the [MIT license](http://choosealicense.com/licenses/mit/),
 which in summary means:
 
-+ Software containing PHP.Gt may be used commercially.
++ Software containing PHP.Gt software may be used commercially.
 + PHP.Gt may be redistributed (with proper attribution).
 + PHP.Gt can be used for any purpose whatsoever.
 + Modification of original source is allowed (with proper attribution).
 + PHP.Gt may be used privately.
 + Original license and copyright notice must be clearly visible in derived projects.
 + Any use of PHP.Gt requires proper attribution and comes without warranty.
-
-Applications that are built on top of PHP.Gt, are not permitted to use the PHP.Gt name. To
-indicate that they are using PHP.Gt, they are permitted but not required to use the .Gt
-suffix after the application's own name.
 
 For more information about the PHP.Gt project, visit the website: https://www.php.gt
