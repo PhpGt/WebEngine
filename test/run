@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * Wrapper script that runs all unit and itegration tests in the project
+ * Wrapper script that runs all unit and itegration tests in the project.
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
