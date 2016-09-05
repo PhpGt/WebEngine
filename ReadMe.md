@@ -6,6 +6,8 @@ PHP frameworks offer many features, and often come with steep learning curves. T
 
 [Head over to the Github Wiki for documentation](https://github.com/g105b/PHP.Gt/wiki)
 
+> Version 3 is in development which rewrites a lot of core functionality. This branch is here for backwards compatibility.
+
 ***
 
 [![Build Status](http://img.shields.io/circleci/project/BrightFlair/PHP.Gt.svg?style=flat-square)](https://circleci.com/gh/BrightFlair/PHP.Gt)
