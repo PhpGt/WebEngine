@@ -1,7 +1,259 @@
 #!/usr/bin/env php
 <?php
 /**
- * Uses composer to install all dependencies required to run or test the
- * project. Downloads composer if it doesn't already exist. Globally aliases
- * all bin scripts.
+ * Welcome to the PHP.Gt webengine!
+ *
+ * This installation script is intended to help you configure your Linux,
+ * Mac or Windows computer to get started developing your projects as
+ * quickly as possible, and with as little human input as possible.
+ *
+ * The following steps are taken in the execution of this installation script:
+ *
+ * 1. Ensures PHP 7 is installed.
+ * 2. Ensures Composer is installed.
+ * 3. Composes the PHP.Gt webengine to your computer.
+ * 4. Loads the gt-* commands so that they are available from anywhere.
+ *
+ * Please note: every time this script needs to make a change to your computer,
+ * it will let you know its intentions and ask for your permission.
+ *
+ * Stay productive and have fun!
  */
+
+// Step 0: Find out what operating system you are using.
+// Different OSes have slightly different configurations.
+const OS_UNKNOWN = -1;
+const OSD_UNKNOWN = -1;
+
+const OS_LINUX = "Linux";
+const OS_MACINTOSH = "Macintosh";
+const OS_WINDOWS = "Windows";
+$operatingSystem = OS_UNKNOWN;
+
+echo PHP_EOL;
+echo "Your operating system:" . PHP_EOL;
+sleep(1);
+
+if(stristr(PHP_OS, "LIN")) {
+	define("OPERATING_SYSTEM", OS_LINUX);
+}
+else if(stristr(PHP_OS, "DAR")) {
+	define("OPERATING_SYSTEM", OS_MACINTOSH);
+}
+else if(stristr(PHP_OS, "WIN")) {
+	define("OPERATING_SYSTEM", OS_WINDOWS);
+}
+else {
+	echo " ✗ " . PHP_OS . PHP_EOL;
+	echo "Supported operating systems: Linux, Macintosh, Windows." . PHP_EOL;
+	echo "Unfortunately the automatic installer has to stop here. ";
+	echo "Please see https://php.gt/docs/installation ";
+	echo "for help on manually installing." . PHP_EOL;
+	exit(1);
+}
+
+echo " ✓ " . OPERATING_SYSTEM . PHP_EOL;
+echo PHP_EOL;
+sleep(1);
+
+// Step 1: Check that version of PHP you have.
+// If the version doesn't match the requirements, display a link to
+// an installation guide.
+echo "Your PHP version:" . PHP_EOL;
+sleep(1);
+
+if(PHP_VERSION_ID < 70008) {
+	echo " ✗ " . PHP_VERSION . PHP_EOL;
+	echo "Supported PHP versions: 7.0.8 or higher." . PHP_EOL;
+	echo PHP_EOL;
+	echo "You need to install a higher version of PHP to use PHP.Gt." . PHP_EOL;
+	echo "For a guide on how to install the latest PHP version, please see ";
+	echo "https://php.gt/docs/installing-php" . PHP_EOL;
+	exit(1);
+}
+
+echo " ✓ " . PHP_VERSION . PHP_EOL;
+echo PHP_EOL;
+sleep(1);
+
+// Step 2: Check that you have Composer installed.
+// If not, display a link to an installation guide.
+
+echo "Is Composer installed?:" . PHP_EOL;
+$composerInstalled = false;
+sleep(1);
+
+switch(OPERATING_SYSTEM) {
+case OS_LINUX:
+	$composerBin = exec("command -v composer");
+	$composerInstalled = !empty($composerBin);
+	break;
+
+case OS_MACINTOSH:
+	echo "Macintosh Composer checking is not yet implemented." . PHP_EOL;
+	echo "Skipping..." . PHP_EOL;
+	$composerInstalled = true;
+	break;
+
+case OS_WINDOWS:
+	echo "Windows Composer checking is not yet implemented." . PHP_EOL;
+	echo "Skipping..." . PHP_EOL;
+	$composerInstalled = true;
+	break;
+}
+
+if(!$composerInstalled) {
+	echo " ✗ " . "No composer found." . PHP_EOL;
+	echo "Composer is a requirement of PHP.Gt." . PHP_EOL;
+	echo PHP_EOL;
+	echo "For a guide on how to install Composer, please see ";
+	echo "https://php.gt/docs/installing-composer" . PHP_EOL;
+	exit(1);
+}
+
+echo " ✓ " . "Composer is installed." . PHP_EOL;
+echo PHP_EOL;
+sleep(1);
+
+// Step 3: Install the project files via Composer.
+
+$defaultPath = "";
+switch(OPERATING_SYSTEM) {
+case OS_LINUX:
+case OS_MACINTOSH:
+	$defaultPath = $_SERVER["HOME"] . "/.phpgt/webengine";
+	break;
+
+case OS_WINDOWS:
+	$defaultPath = "C:/phpgt/webengine";
+	break;
+}
+
+echo "PHP.Gt Webengine will now install onto your computer. " . PHP_EOL;
+echo "The default installation path is: $defaultPath" . PHP_EOL;
+sleep(1);
+
+if(is_dir($defaultPath)) {
+	echo PHP_EOL;
+	echo " ! " . "Default path already exists." . PHP_EOL . PHP_EOL;
+}
+
+echo "Enter the installation path, or leave blank for default:" . PHP_EOL;
+$path = readline(" > ");
+
+if(empty(trim($path)) ) {
+	echo "Using default path." . PHP_EOL;
+	$path = $defaultPath;
+}
+
+echo "Installing to: $path" .PHP_EOL;
+
+if(is_dir($path)) {
+	$dirToRemove = $path;
+	if($path === $defaultPath) {
+		$dirToRemove = dirname($path);
+	}
+
+	echo PHP_EOL . PHP_EOL;
+	echo " ✗ " . "Path already exists." . PHP_EOL . PHP_EOL;
+	echo "There's something already installed at $path ." . PHP_EOL;
+	echo "Please remove the directory at $dirToRemove and run this again. ";
+	echo "Your system has not been changed at this time." . PHP_EOL;
+	exit(1);
+}
+
+// Rather than showing the Composer output directly, we would rather just see
+// a percentage. As Composer doesn't have a feature to display a percentage,
+// we'll count the number of "installs" in Composer's output, and match it
+// against the number of required packages in the composer.lock file.
+// We use proc_open and a pipe for output for compatibility with all OSes.
+$tmpOutput = "/tmp/phpgt-install-output";
+$descriptorSpec = array(
+	["pipe", "r"],
+	["file", $tmpOutput, "w"],
+	["file", $tmpOutput, "w"],
+);
+
+$command = "composer create-project phpgt/webengine $path 2>&1";
+
+switch(OPERATING_SYSTEM) {
+case OS_LINUX:
+case OS_MACINTOSH:
+case OS_WINDOWS:
+	$process = proc_open($command, $descriptorSpec, $pipes, $path);
+
+	echo PHP_EOL;
+
+	$procRunning = true;
+
+	$json = file_get_contents(
+		"https://raw.githubusercontent.com/phpgt/webengine/v2/composer.lock");
+	$lockObj = json_decode($json, true);
+	$packageTotal = count($lockObj["packages"])
+		+ count($lockObj["packages-dev"]);
+
+	while($procRunning) {
+		$outputContents = file_get_contents($tmpOutput);
+
+// output the percentage, overwriting the same line in the terminal
+		echo "\033[40D";
+		$packageComplete = substr_count($outputContents, "- Installing ") - 1;
+		$percentage = max(round(100 * ($packageComplete / $packageTotal)), 0);
+
+		echo "Installing ... $percentage % ";
+		usleep(100000);
+
+		$procStatus = proc_get_status($process);
+		$procRunning = $procStatus["running"];
+	}
+
+	$exitStatus = $procStatus["exitcode"];
+
+	echo PHP_EOL;
+	sleep(1);
+
+	if($exitStatus == 2) {
+		echo PHP_EOL;
+		echo " ✗ " . "Composer had trouble solving the dependencies." . PHP_EOL;
+		echo "This is our fault. The developer who wrote this code is having ";
+		echo "their beer tokens taken away this week." . PHP_EOL;
+	}
+	if($exitStatus == 1) {
+		echo PHP_EOL;
+		echo " ✗ " . "Composer has run into a problem installing." . PHP_EOL;
+		echo "Our best bet is to reinstall Composer and check the internet is ";
+		echo "working." . PHP_EOL;
+	}
+
+	if($exitStatus > 0) {
+		echo "The only thing that has been changed on your system is the ";
+		echo "contents of the directory: $path" . PHP_EOL;
+
+		echo "For information on how to install manually, please read ";
+		echo "https://php.gt/docs/installation" . PHP_EOL . PHP_EOL;
+	}
+	break;
+}
+
+switch(OPERATING_SYSTEM) {
+case OS_LINUX:
+case OS_MACINTOSH:
+// Step 4: Load the gt-* commands into the environment path variable.
+// TODO!
+	break;
+
+case OS_WINDOWS:
+	echo PHP_EOL;
+	echo " - " , "Manual step required for Windows." . PHP_EOL;
+	echo "To access the gt-* commands, please add this directory to your PATH ";
+	echo "environment variable: $path/bin" . PHP_EOL . PHP_EOL;
+	break;
+}
+
+echo PHP_EOL;
+echo " ✓ " , "You're all installed and ready to rock!" . PHP_EOL . PHP_EOL;
+echo "Quick start guide: https://php.gt/docs/quick-start" . PHP_EOL;
+echo PHP_EOL;
+
+// Thanks for taking the time to look at the installer source, it's been a
+// pleasure having you!
