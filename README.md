@@ -1,4 +1,4 @@
-<img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/Logo.png" alt="PHP.Gt logo" />
+<img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/logo.png" alt="PHP.Gt logo" />
 
 Welcome to the PHP.Gt webengine — a lightweight **PHP 7** application development toolkit aimed at streamlining development and respecting web technologies.
 
