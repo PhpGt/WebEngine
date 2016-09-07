@@ -4,7 +4,7 @@ Welcome to the PHP.Gt webengine — a lightweight **PHP 7** application developm
 
 PHP frameworks offer many features, but often come with steep learning curves or imposing rules. The motivation behind this project is the belief that what a framework can offer can be achieved by **eliminating code rather than adding more**.
 
-[Head over to the Github Wiki for documentation](https://github.com/phpgt/webengine/wiki)
+[Head over to the Github Wiki for documentation](https://github.com/phpgt/webengine/wiki).
 
 ***
 
