@@ -394,6 +394,9 @@ private function setValue($value) {
 			if($optionList[$i]->value == $value) {
 				$optionList[$i]->setAttribute("selected", "");
 			}
+			else {
+				$optionList[$i]->removeAttribute("selected");
+			}
 		}
 		break;
 
