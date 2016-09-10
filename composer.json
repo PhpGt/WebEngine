@@ -31,9 +31,7 @@
 		"phpgt",
 		"php.gt",
 		"gt",
-		"application",
 		"framework",
-		"webservice",
-		"service",
+		"webservice"
 	]
 }
