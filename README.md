@@ -33,7 +33,7 @@ PHP frameworks offer many features, but often come with steep learning curves or
 Current project status.
 =======================
 
-> **WARNING!** This repository is undergoing a major rewrite to version 3. Most of the code is being extracted into its own repositories under the phpgt organisation.
+> **WARNING!** This repository is undergoing a major rewrite to version 3. Most of the code is being extracted into its own repositories under the phpgt organisation. **Things are being intentionally broken - please do not use for production code**.
 
 View the detailed [project roadmap on Trello](https://php.gt/trello) to see what's coming up, and what's made its way into recent releases.
 
