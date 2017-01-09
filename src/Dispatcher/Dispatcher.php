@@ -182,7 +182,11 @@ public function process() {
 			if(method_exists($logicObj, "before")) {
 				$logicObj->before();
 			}
-			$logicObj->go();
+		}
+		foreach ($logicList as $logicObj) {
+			if(method_exists($logicObj, "go")) {
+				$logicObj->go();
+			}
 
 			$data = array_merge($_GET, $_POST);
 			if(!empty($data["do"])) {
@@ -198,11 +202,14 @@ public function process() {
 					$logicObj->$doMethodCamel($data);
 				}
 			}
+		}
 
+		foreach ($logicList as $logicObj) {
 			if(method_exists($logicObj, "after")) {
 				$logicObj->after();
 			}
 		}
+
 		foreach (array_reverse($logicList) as $logicObj) {
 			if(!method_exists($logicObj, "endGo")) {
 				continue;
