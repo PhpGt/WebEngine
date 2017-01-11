@@ -30,6 +30,9 @@ public function __construct($uri) {
 	}
 
 	$config = new Config();
+	if(!empty($config["app"]->timezone)) {
+		date_default_timezone_set($config["app"]->timezone);
+	}
 
 	$this->setPathConfig($config);
 
