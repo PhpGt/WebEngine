@@ -66,6 +66,11 @@ public static function get($name) {
 		else {
 			$p = dirname($_SERVER["DOCUMENT_ROOT"]);
 		}
+		$p = realpath($p);
+		while(!in_array("src", scandir($p))
+		&& $p !== "/") {
+			$p = realpath("$p/..");
+		}
 		break;
 
 	case self::SCRIPT:
