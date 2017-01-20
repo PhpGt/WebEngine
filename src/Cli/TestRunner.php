@@ -11,16 +11,16 @@ class TestRunner {
 
 const TYPE_ALL = "type_all";
 const TYPE_UNIT = "type_unit";
-const TYPE_ACCEPTANCE = "type_acceptance";
+const TYPE_INTEGRATION = "type_integration";
 
 const ERRORLEVEL_UNIT = 1;
-const ERRORLEVEL_ACCEPTANCE = 2;
+const ERRORLEVEL_INTEGRATION = 2;
 
 private $approot;
 private $type;
 
 private $countUnit = 0;
-private $countAcceptance = 0;
+private $countIntegration = 0;
 
 private $descriptorSpec = [
 	0 => ["pipe", "r"],
@@ -35,20 +35,20 @@ public function __construct($approot, $type) {
 	$this->type = $type;
 
 	$unitResult = 0;
-	$acceptanceResult = 0;
+	$integrationResult = 0;
 
 	switch ($type) {
 	case self::TYPE_ALL:
 		$unitResult = $this->testUnit();
-		$acceptanceResult = $this->testAcceptance();
+		$integrationResult = $this->testIntegration();
 		break;
 
 	case self::TYPE_UNIT:
 		$unitResult = $this->testUnit();
 		break;
 
-	case self::TYPE_ACCEPTANCE:
-		$acceptanceResult = $this->testAcceptance();
+	case self::TYPE_INTEGRATION:
+		$integrationResult = $this->testIntegration();
 		break;
 
 	default:
@@ -56,11 +56,11 @@ public function __construct($approot, $type) {
 		break;
 	}
 
-	if($this->countAcceptance > 0) {
-		echo "\nAcceptance tests completed.";
+	if($this->countIntegration > 0) {
+		echo "\nIntegration tests completed.";
 	}
 	else {
-		echo "\nNo acceptance tests have been run.";
+		echo "\nNo integration tests have been run.";
 	}
 	if($this->countUnit > 0) {
 		echo "\nUnit tests completed.";
@@ -71,10 +71,10 @@ public function __construct($approot, $type) {
 
 	echo "\n";
 
-	$errorLevel = $unitResult | $acceptanceResult;
+	$errorLevel = $unitResult | $integrationResult;
 
 	if($errorLevel == 0) {
-		if($this->countUnit + $this->countAcceptance === 0) {
+		if($this->countUnit + $this->countIntegration === 0) {
 			echo "\n - NO TESTS : No tests have been detected.";
 		}
 		else {
@@ -85,15 +85,15 @@ public function __construct($approot, $type) {
 		echo "\n ✗ FAILURE : ";
 
 		if($errorLevel & self::ERRORLEVEL_UNIT
-		&& $errorLevel & self::ERRORLEVEL_ACCEPTANCE) {
-			echo "Both unit and acceptance";
+		&& $errorLevel & self::ERRORLEVEL_INTEGRATION) {
+			echo "Both unit and integration";
 
 		}
 		else if($errorLevel & self::ERRORLEVEL_UNIT) {
-			echo "Acceptance tests passed, but unit";
+			echo "Integration tests passed, but unit";
 		}
-		else if($errorLevel & self::ERRORLEVEL_ACCEPTANCE) {
-			echo "Unit tests passed, but acceptance";
+		else if($errorLevel & self::ERRORLEVEL_INTEGRATION) {
+			echo "Unit tests passed, but integration";
 		}
 
 		echo " tests failed.";
@@ -113,11 +113,11 @@ private function testUnit() {
 /**
  *
  */
-private function testAcceptance() {
+private function testIntegration() {
 	$result = 0;
 	$rememberCwd = getcwd();
 
-	$testPath = Path::fixCase(getcwd() . "/test/Acceptance");
+	$testPath = Path::fixCase(getcwd() . "/test/Integration");
 
 	if(!is_dir($testPath)) {
 		return 0;
@@ -147,10 +147,10 @@ private function testAcceptance() {
 	}
 
 	if($result === 0) {
-		$this->countAcceptance++;
+		$this->countIntegration++;
 	}
 	else {
-		$result = self::ERRORLEVEL_ACCEPTANCE;
+		$result = self::ERRORLEVEL_INTEGRATION;
 	}
 
 	// Reset the cwd.

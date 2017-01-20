@@ -2,10 +2,10 @@
 <?php
 /**
  * Initiate tests within current project. Exits with status code 0 on successful
- * test run, 1 for failed Unit test, 2 on failed Acceptance test, 3 on failed
- * Unit and failed Acceptance test.
+ * test run, 1 for failed Unit test, 2 on failed Integration test, 3 on failed
+ * Unit and failed Integration test.
  *
- * Usage: test [-a|--approot[="..."]] [--type="unit|acceptance|all"]
+ * Usage: test [-a|--approot[="..."]] [--type="unit|integration|all"]
  *
  * PHP.Gt (http://php.gt)
  * @copyright Copyright Ⓒ 2015 Bright Flair Ltd. (http://brightflair.com)
