@@ -391,7 +391,13 @@ private function setValue($value) {
 	case "SELECT":
 		$optionList = $this->querySelectorAll("option");
 		for($i = 0, $len = count($optionList); $i < $len; $i++) {
-			if($optionList[$i]->value == $value) {
+			$optionValue = trim($optionList[$i]->textContent);
+
+			if($optionList[$i]->hasAttribute("value")) {
+				$optionValue = $optionList[$i]->value;
+			}
+
+			if($optionValue == $value) {
 				$optionList[$i]->setAttribute("selected", "");
 			}
 			else {
