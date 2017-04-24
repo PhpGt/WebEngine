@@ -78,7 +78,12 @@ public function __construct($approot, $type) {
 			echo "\n - NO TESTS : No tests have been detected.";
 		}
 		else {
-			echo "\n ✓ SUCCESS : All tests passing.";
+			if($this->countUnit > 0) {
+				echo "\n - SUCCESS : Unit testst passing!";
+			}
+			if($this->countIntegration > 0) {
+				echo "\n ✓ SUCCESS : Integration tests passing!";
+			}			
 		}
 	}
 	else {
@@ -107,7 +112,29 @@ public function __construct($approot, $type) {
  *
  */
 private function testUnit() {
+	$result = 0;
+	$rememberCwd = getcwd();
 
+	$testPath = Path::fixCase(getcwd() . "/test/unit");
+
+	if(!is_dir($testPath)) {
+		return 0;
+	}
+
+	$testExec = realpath("./vendor/bin/phpunit");
+	chdir($testPath);
+	passthru($testExec, $result);
+ 
+	if($result === 0) {
+		$this->countUnit++;
+	}
+	else {
+		$result = self::ERRORLEVEL_UNIT;
+	}
+
+	// Reset the cwd.
+	chdir($rememberCwd);
+	return $result;
 }
 
 /**
@@ -117,7 +144,7 @@ private function testIntegration() {
 	$result = 0;
 	$rememberCwd = getcwd();
 
-	$testPath = Path::fixCase(getcwd() . "/test/Integration");
+	$testPath = Path::fixCase(getcwd() . "/test/integration");
 
 	if(!is_dir($testPath)) {
 		return 0;
