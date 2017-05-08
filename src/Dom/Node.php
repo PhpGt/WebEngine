@@ -470,6 +470,14 @@ public function querySelector($query) {
 public function querySelectorAll($query) {
 	return $this->css($query, $this);
 }
+	
+public function qs($query) {
+	return $this->querySelector($query);
+}
+	
+public function qsa($query) {
+	return $this->querySelectorAll($query);
+}
 
 /**
  *
