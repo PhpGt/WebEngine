@@ -2,12 +2,12 @@ Current project status.
 =======================
 
 > **WARNING!** This repository is undergoing a major rewrite to version 3. Most of the code is being extracted into its own repositories under the phpgt organisation. **Things are being intentionally broken - please do not use for production code**.
-
-The most important changes are:
-
-+ Extracting all modules of functionality into their own Composer packages.
-+ Gaining full PHP 7 support.
-+ Full code coverage.
+>
+> The most important changes are:
+>
+> + Extracting all modules of functionality into their own Composer packages.
+> + Gaining full PHP 7 support.
+> + Full code coverage.
 
 ***
 
