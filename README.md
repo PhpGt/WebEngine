@@ -1,3 +1,16 @@
+Current project status.
+=======================
+
+> **WARNING!** This repository is undergoing a major rewrite to version 3. Most of the code is being extracted into its own repositories under the phpgt organisation. **Things are being intentionally broken - please do not use for production code**.
+
+The most important changes are:
+
++ Extracting all modules of functionality into their own Composer packages.
++ Gaining full PHP 7 support.
++ Full code coverage.
+
+***
+
 <img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/logo.png" alt="PHP.Gt logo" />
 
 Welcome to the PHP.Gt webengine — a lightweight PHP 7 application development toolkit aimed at streamlining development and respecting web technologies.
@@ -29,19 +42,6 @@ PHP frameworks offer many features, but often come with steep learning curves or
 <a href="https://php.gt/trello" target="_blank">
     <img src="http://img.shields.io/badge/roadmap-public%20trello-26a5e3.svg?style=flat-square" alt="PHP.Gt Roadmap" />
 </a>
-
-Current project status.
-=======================
-
-> **WARNING!** This repository is undergoing a major rewrite to version 3. Most of the code is being extracted into its own repositories under the phpgt organisation. **Things are being intentionally broken - please do not use for production code**.
-
-View the detailed [project roadmap on Trello](https://php.gt/trello) to see what's coming up, and what's made its way into recent releases.
-
-The most important changes are:
-
-+ Extracting all modules of functionality into their own Composer packages.
-+ Gaining full PHP 7 support.
-+ Full code coverage.
 
 Features at a glance.
 ---------------------
