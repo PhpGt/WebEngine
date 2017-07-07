@@ -16,6 +16,7 @@
  */
 namespace Gt\Dom;
 
+use Gt\Core\Path;
 use \Gt\Request\Request;
 use \Gt\Response\Response;
 use \Gt\Response\ResponseContent;
@@ -170,6 +171,7 @@ public function __construct($source = null, $config = null) {
 	}
 
 	$this->tidy();
+	$this->loadComponents();
 }
 
 public function createElement($node,
@@ -299,6 +301,43 @@ public function tidy() {
 
 			$this->head->insertBefore($element, $insertBeforeNode);
 		}
+	}
+}
+
+/**
+ * Load custom components and replaces with matching HTML. Custom components
+ * must have a hyphen in their tag name as per the spec. This allows for
+ * backwards and forwards compatibility as other HTML elements are
+ * introduced.
+ */
+public function loadComponents() {
+	$componentDirectory = Path::get(Path::COMPONENT);
+	$xpath = new \DOMXPath($this->domDocument);
+	$customNodeList = $xpath->query("//*[contains(name(), '-')]");
+	for($i = 0; $i < $customNodeList->length; $i++) {
+		$node = $customNodeList->item($i);
+		$componentHtmlFile = implode("/", [
+			$componentDirectory,
+			$node->tagName . ".html",
+		]);
+		if(!is_file($componentHtmlFile)) {
+			continue;
+		}
+
+		$html = file_get_contents($componentHtmlFile);
+		$newDoc = new self($html);
+
+		while($node->hasChildNodes()) {
+			$node->removeChild($node->firstChild);
+		}
+
+		$fragment = $this->domDocument->createDocumentFragment();
+		foreach($newDoc->body->childNodes as $newNode) {
+			$imported = $this->domDocument->importNode($newNode->domNode, true);
+			$fragment->appendChild($imported);
+		}
+
+		$node->parentNode->replaceChild($fragment, $node);
 	}
 }
 
