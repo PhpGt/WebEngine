@@ -311,13 +311,13 @@ public function tidy() {
  * introduced.
  */
 public function loadComponents() {
-	$componentDirectory = Path::get(Path::COMPONENT);
+	$templateDirectory = Path::get(Path::TEMPLATE);
 	$xpath = new \DOMXPath($this->domDocument);
 	$customNodeList = $xpath->query("//*[contains(name(), '-')]");
 	for($i = 0; $i < $customNodeList->length; $i++) {
 		$node = $customNodeList->item($i);
 		$componentHtmlFile = implode("/", [
-			$componentDirectory,
+			$templateDirectory,
 			$node->tagName . ".html",
 		]);
 		if(!is_file($componentHtmlFile)) {
