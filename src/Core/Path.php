@@ -14,6 +14,7 @@ const DATA			= "data";
 const PAGE			= "page";
 const ROOT			= "root";
 const ASSET			= "asset";
+const TEMPLATE		= "template";
 const SCRIPT		= "script";
 const STYLE			= "style";
 const API			= "api";
@@ -57,6 +58,10 @@ public static function get($name) {
 
 	case self::PAGE:
 		$p = self::get(self::SRC) . "/Page";
+		break;
+
+	case self::TEMPLATE:
+		$p = self::get(self::SRC) . "/Template";
 		break;
 
 	case self::ROOT:
