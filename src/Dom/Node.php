@@ -484,6 +484,27 @@ public function qsa($query) {
  */
 public function css($query, $context = null) {
 	$context = $this->checkContext($context);
+	
+	$xpathCacheFilename = "$query.dat";
+	$xpathCacheFile = implode("/", [
+		Path::get(Path::DATA),
+		"xpath",
+		$xpathCacheFilename,
+	]);
+	
+	if(file_exists($xpathCacheFile)) {
+		$xpath = file_get_contents($xpathCacheFile);
+	}
+	else {
+		// Second parameter of toXPath is optional query prefix.
+		$xpath = CssSelector::toXPath($query, ".//");
+		if(!is_dir(dirname($xpathCacheFile))) {
+			mkdir(dirname($xpathCacheFile), 0775, true);
+		}
+		
+		file_put_contents($xpathCacheFile, $xpath);
+	}
+	
 	// Second parameter of toXPath is optional query prefix.
 	$xpath = CssSelector::toXPath($query, ".//");
 	$domNodeList = $this->xpath($xpath, $context);
