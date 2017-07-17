@@ -12,6 +12,7 @@ namespace Gt\ClientSide;
 
 use \Gt\Response\Response;
 use \Gt\Core\Path;
+use \Gt\Core\Config;
 use \Gt\Core\DirectoryRecursor;
 
 class FileOrganiser {
@@ -177,6 +178,12 @@ public function copyCompile($pathDetails, $callback = null) {
  * false if they are not (or if they do not exist)
  */
 public function checkStaticValid() {
+	$config = new Config();
+	$appConfig = $config["app"];
+	if($appConfig->production) {
+		return true;
+	}
+	
 	$assetSrcDir  = Path::get(Path::ASSET);
 	$scriptSrcDir = Path::get(Path::SCRIPT);
 	$styleSrcDir  = Path::get(Path::STYLE);
