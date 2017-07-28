@@ -16,6 +16,7 @@
 namespace Gt\Dom;
 
 use Symfony\Component\CssSelector\CssSelector;
+use Gt\Core\Path;
 
 /**
  * @property string $nodeValue
