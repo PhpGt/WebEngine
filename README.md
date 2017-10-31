@@ -1,15 +1,4 @@
-Current project status.
-=======================
-
-> **WARNING!** This repository is undergoing a major rewrite to version 3. Most of the code is being extracted into its own repositories under the phpgt organisation. **Things are being intentionally broken - please do not use for production code**.
->
-> The most important changes are:
->
-> + Extracting all modules of functionality into their own Composer packages.
-> + Gaining full PHP 7 support.
-> + Full code coverage.
-
-***
+# Rapid development engine for PHP 7 applications.
 
 <img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/logo.png" alt="PHP.Gt logo" />
 
@@ -39,42 +28,40 @@ PHP frameworks offer many features, but often come with steep learning curves or
 <a href="http://www.php.gt" target="_blank">
     <img src="http://img.shields.io/badge/web-www.php.gt-26a5e3.svg?style=flat-square" alt="PHP.Gt Website" />
 </a>
-<a href="https://php.gt/trello" target="_blank">
-    <img src="http://img.shields.io/badge/roadmap-public%20trello-26a5e3.svg?style=flat-square" alt="PHP.Gt Roadmap" />
-</a>
 
-Features at a glance.
----------------------
+Features at a glance
+--------------------
 
-+ Pages made dynamic via server-side DOM Document access.
-+ HTML templating.
-+ Database abstraction.
-+ Create web pages or web services (APIs) with the same code.
-+ Use preprocessor languages (SCSS, HAML, etc.) with zero configuration.
-+ Web security as standard.
-+ Strong separation of concerns over PHP, HTML, SQL, JavaScript, CSS.
-+ Preconfigured PHPUnit and Behat test environment.
-+ Workflow tools to quickly create, integrate and deploy projects.
++ Simple routing: A page's view in `page.html` has optional logic separated within `page.php`  
++ Pages made dynamic via server-side DOM Document access
++ HTML templates
++ Database organisation
++ Create web pages or web services (APIs) with the same code
++ Inbuilt understanding of client-side preprocessor languages (SCSS, HAML, etc.)
++ Web security as standard
++ Strong separation of concerns over PHP, HTML, SQL, JavaScript, CSS
++ Preconfigured PHPUnit and Behat test environment
++ Workflow tools to quickly create, integrate and deploy projects
 
-Essential concepts.
--------------------
+Essential concepts
+------------------
 
-### Static first.
+### Static first
 
-To lower the barrier of entry to web development, the technique of developing a static prototype first is promoted, dropping in logic when and where necessary to turn prototypes into fully functional production code with as few steps as possible.
+To increase development speed and lower the barrier to getting an idea prototyped, the technique of developing a static prototype first is promoted, dropping in logic when and where necessary to turn prototypes into fully functional production code with as few steps as possible.  
 
-### Build using tech you already know.
+### Build using tech you already know
 
 The main idea is to provide a platform where you can get as much done, using standard tech you've already learnt. Technologies that make up the [world wide web](https://en.wikipedia.org/wiki/World_Wide_Web), such as HTML and HTTP, are respected and enhanced by bringing useful tools and techniques to you, the developer.
 
-### Drop in tools without any fuss.
+### Drop in tools without any fuss
 
 There are a lot of useful tools included as standard, such as [SCSS parsing](https://github.com/phpgt/webengine/wiki/Client-side-files), [HTML templating](https://github.com/phpgt/webengine/wiki/Templating) and [CSRF handling](https://github.com/phpgt/webengine/wiki/CSRF), but the highly modularised architecture keeps compatibility high. Packages from [Packagist](https://packagist.org) can be installed and loaded with zero configuration.
 
-### Develop locally or virtually.
+### Develop locally or virtually
 
 Preconfigured scripts are available to automatically set up local servers or virtualisation environments to get you going as quickly as possible, without having to change existing computer configuration.
 
-### Community of blueprints.
+### Community of blueprints
 
 To get projects going with full momentum, blueprint projects are available to base your projects off. Blueprints come with just enough level of design and functionality to get a prototype out the door as quickly as possible, without prescribing anything.
