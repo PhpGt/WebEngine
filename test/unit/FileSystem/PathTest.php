@@ -33,6 +33,17 @@ class PathTest extends TestCase {
 	/**
 	 * @dataProvider dataProviderRootDirectoryExists
 	 */
+	public function testGetSrcDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src",
+			Path::getSrcDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
 	public function testFixPathCase(string $documentRoot) {
 		$childPath = Helper::createNestedChildrenDirectories(
 			$documentRoot,

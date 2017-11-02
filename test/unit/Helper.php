@@ -3,6 +3,21 @@ namespace Gt\Test;
 
 class Helper {
 	const TMP_PREFIX = "phpgt-webengine";
+	const ROOT_DIRECTORIES = [
+		"data",
+		"src",
+		"vendor",
+		"www",
+	];
+	const SRC_DIRECTORIES = [
+		"api",
+		"asset",
+		"class",
+		"page",
+		"query",
+		"script",
+		"style",
+	];
 
 	/**
 	 * Provides the absolute path to a directory that is unique to the test case.
@@ -41,5 +56,15 @@ class Helper {
 		}
 
 		return $string;
+	}
+
+	public static function createSkeletonProject($documentRoot):void {
+		foreach(self::ROOT_DIRECTORIES as $directory) {
+			mkdir("$documentRoot/$directory", 0775, true);
+		}
+
+		foreach(self::SRC_DIRECTORIES as $directory) {
+			mkdir("$documentRoot/src/$directory", 0775, true);
+		}
 	}
 }

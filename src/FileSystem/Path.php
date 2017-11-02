@@ -4,18 +4,12 @@ namespace Gt\FileSystem;
 use DirectoryIterator;
 
 class Path {
-	public static function getApplicationRootDirectory(string $documentRoot = null):string {
-		if(is_null($documentRoot)) {
-			$documentRoot = $_SERVER["DOCUMENT_ROOT"];
+	public static function getApplicationRootDirectory(string $innerDirectory = null):string {
+		if(is_null($innerDirectory)) {
+			$innerDirectory = $_SERVER["DOCUMENT_ROOT"];
 		}
 
-		$path = getcwd();
-
-		if(!empty($documentRoot)) {
-			$path = dirname($documentRoot);
-		}
-
-		$directoryWalker = new DirectoryWalker($path);
+		$directoryWalker = new DirectoryWalker($innerDirectory);
 
 		return self::fixPathCase(
 			$directoryWalker->findParentContaining("src")
@@ -29,23 +23,25 @@ class Path {
 		);
 	}
 
-	public static function getSrcDirectory():string {
-		// TODO.
+	public static function getSrcDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src",
+		]);
 	}
 
 	public static function getWwwDirectory():string {
 		// TODO.
 	}
 
+	public static function getDataDirectory():string {
+		// TODO.
+	}
+
 	public static function getPageDirectory():string {
 		// TODO.
 	}
-
 	public static function getApiDirectory():string {
-		// TODO.
-	}
-
-	public static function getDataDirectory():string {
 		// TODO.
 	}
 
@@ -58,6 +54,10 @@ class Path {
 	}
 
 	public static function getStyleDirectory():string {
+		// TODO.
+	}
+
+	public static function getClassDirectory():string {
 		// TODO.
 	}
 
