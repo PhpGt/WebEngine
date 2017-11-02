@@ -10,21 +10,36 @@ class PathTest extends TestCase {
 	/**
 	 * @dataProvider dataProviderRootDirectoryExists
 	 */
-	public function testGetApplicationRootDirectory($documentRoot) {
-		$childPath = Helper::createChildDirectories(
+	public function testGetApplicationRootDirectory(string $documentRoot) {
+		$childPath = Helper::createNestedChildrenDirectories(
 			$documentRoot,
 			rand(2, 20)
 		);
-		$srcDirectory = implode(DIRECTORY_SEPARATOR, [
-			$documentRoot,
-			"src",
-		]);
-		mkdir($srcDirectory);
+		$srcDirectory = Helper::createChildDirectory($documentRoot, "src");
 
 		$actualRoot = Path::getApplicationRootDirectory($childPath);
 
 		self::assertEquals($documentRoot, $actualRoot);
 		self::assertDirectoryExists($actualRoot);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testFixPathCase(string $documentRoot) {
+		$childPath = Helper::createNestedChildrenDirectories(
+			$documentRoot,
+			rand(3, 15)
+		);
+		$childPathRandomised = Helper::randomiseCase($childPath);
+
+		self::assertNotEquals($childPath, $childPathRandomised);
+		self::assertEquals(strtolower($childPath), strtolower($childPathRandomised));
+		self::assertDirectoryNotExists($childPathRandomised);
+
+		$fixed = Path::fixPathCase($childPathRandomised);
+		self::assertEquals($childPath, $fixed);
+		self::assertDirectoryExists($fixed);
 	}
 
 	public function dataProviderRootDirectoryExists():array {
