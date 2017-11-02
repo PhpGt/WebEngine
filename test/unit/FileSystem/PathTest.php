@@ -44,6 +44,94 @@ class PathTest extends TestCase {
 	/**
 	 * @dataProvider dataProviderRootDirectoryExists
 	 */
+	public function testGetWwwDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/www",
+			Path::getWwwDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetDataDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/data",
+			Path::getDataDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetPageDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src/page",
+			Path::getPageDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetApiDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src/api",
+			Path::getApiDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetAssetDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src/asset",
+			Path::getAssetDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetScriptDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src/script",
+			Path::getScriptDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetStyleDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src/style",
+			Path::getStyleDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
+	public function testGetClassDirectory(string $documentRoot) {
+		Helper::createSkeletonProject($documentRoot);
+		self::assertEquals(
+			"$documentRoot/src/class",
+			Path::getClassDirectory($documentRoot)
+		);
+	}
+
+	/**
+	 * @dataProvider dataProviderRootDirectoryExists
+	 */
 	public function testFixPathCase(string $documentRoot) {
 		$childPath = Helper::createNestedChildrenDirectories(
 			$documentRoot,

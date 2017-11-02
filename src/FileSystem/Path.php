@@ -30,35 +30,59 @@ class Path {
 		]);
 	}
 
-	public static function getWwwDirectory():string {
-		// TODO.
+	public static function getWwwDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"www",
+		]);
 	}
 
-	public static function getDataDirectory():string {
-		// TODO.
+	public static function getDataDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"data",
+		]);
 	}
 
-	public static function getPageDirectory():string {
-		// TODO.
+	public static function getPageDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src/page",
+		]);
 	}
-	public static function getApiDirectory():string {
-		// TODO.
-	}
-
-	public static function getAssetDirectory():string {
-		// TODO.
-	}
-
-	public static function getScriptDirectory():string {
-		// TODO.
+	public static function getApiDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src/api",
+		]);
 	}
 
-	public static function getStyleDirectory():string {
-		// TODO.
+	public static function getAssetDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src/asset",
+		]);
 	}
 
-	public static function getClassDirectory():string {
-		// TODO.
+	public static function getScriptDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src/script",
+		]);
+	}
+
+	public static function getStyleDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src/style",
+		]);
+	}
+
+	public static function getClassDirectory(string $documentRoot = null):string {
+		return implode("/", [
+			self::getApplicationRootDirectory($documentRoot),
+			"src/class",
+		]);
 	}
 
 	public static function getChildOfSrcDirectory(string $name):string {
