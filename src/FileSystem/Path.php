@@ -2,18 +2,29 @@
 namespace Gt\FileSystem;
 
 class Path {
-	public static function getApplicationRoot(string $document_root = null):string {
-		if(is_null($document_root)) {
-			$document_root = $_SERVER["DOCUMENT_ROOT"];
+	const ROOT			= "root";
+	const GTROOT			= "gtroot";
+	const SRC			= "src";
+	const WWW			= "www";
+	const PAGE			= "page";
+	const API			= "api";
+	const DATA			= "data";
+	const ASSET			= "asset";
+	const SCRIPT			= "script";
+	const STYLE			= "style";
+
+	public static function getApplicationRoot(string $documentRoot = null):string {
+		if(is_null($documentRoot)) {
+			$documentRoot = $_SERVER["DOCUMENT_ROOT"];
 		}
 
 		$path = getcwd();
 
-		if(!empty($document_root)) {
-			$path = dirname($document_root);
+		if(!empty($documentRoot)) {
+			$path = dirname($documentRoot);
 		}
 
-		$directory_walker = new DirectoryWalker($path);
-		return $directory_walker->findParentContaining("src");
+		$directoryWalker = new DirectoryWalker($path);
+		return $directoryWalker->findParentContaining("src");
 	}
 }

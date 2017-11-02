@@ -11,19 +11,19 @@ class DirectoryWalkerTest extends TestCase {
 	 */
 	public function testFindParentThatExists(string $directory) {
 // Get a $parent_path further up the tree than the provided $directory:
-		$parent_directories = explode("/", $directory);
-		$parent_depth = rand(2, count($parent_directories) - 1);
-		array_splice($parent_directories, $parent_depth);
-		$parent_path = implode("/", $parent_directories);
+		$parentDirectories = explode("/", $directory);
+		$parent_depth = rand(2, count($parentDirectories) - 1);
+		array_splice($parentDirectories, $parent_depth);
+		$parentPath = implode("/", $parentDirectories);
 
 // Create a directory in the $parent_path to look for:
-		$directory_name = $this->getRandomName();
-		mkdir("$parent_path/$directory_name", 0775, true);
-		$directory_walker = new DirectoryWalker($directory);
+		$directoryName = $this->getRandomName();
+		mkdir("$parentPath/$directoryName", 0775, true);
+		$directoryWalker = new DirectoryWalker($directory);
 
 		self::assertEquals(
-			$parent_path,
-			$directory_walker->findParentContaining($directory_name)
+			$parentPath,
+			$directoryWalker->findParentContaining($directoryName)
 		);
 	}
 
@@ -41,8 +41,8 @@ class DirectoryWalkerTest extends TestCase {
 
 		for($i = 0; $i < $num; $i++) {
 			$directory = $tmp;
-			$number_of_children = rand(5, 25);
-			for($child_num = 0; $child_num < $number_of_children; $child_num++) {
+			$numberOfChildren = rand(5, 25);
+			for($childNum = 0; $childNum < $numberOfChildren; $childNum++) {
 				$directory .= "/" . $this->getRandomName();
 			}
 
@@ -60,11 +60,11 @@ class DirectoryWalkerTest extends TestCase {
 		return $data;
 	}
 
-	protected function getRandomName(int $max_length = 10):string {
-		$length_of_directory_name = rand(2, $max_length);
+	protected function getRandomName(int $maxLength = 10):string {
+		$lengthOfDirectoryName = rand(2, $maxLength);
 		return bin2hex(
 			random_bytes(
-				floor($length_of_directory_name / 2)
+				floor($lengthOfDirectoryName / 2)
 			)
 		);
 	}
