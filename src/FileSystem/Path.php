@@ -23,7 +23,10 @@ class Path {
 	}
 
 	public static function getGtRootDirectory():string {
-		// TODO.
+		$directoryWalker = new DirectoryWalker(__DIR__);
+		return self::fixPathCase(
+			$directoryWalker->findParentContaining("src")
+		);
 	}
 
 	public static function getSrcDirectory():string {

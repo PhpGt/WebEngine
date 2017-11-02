@@ -23,6 +23,13 @@ class PathTest extends TestCase {
 		self::assertDirectoryExists($actualRoot);
 	}
 
+	public function testGetGtRootDirectory() {
+		$expectedGtRootDirectory = realpath(__DIR__ . "/../../..");
+		$actualRootDirectory = Path::getGtRootDirectory();
+
+		self::assertEquals($expectedGtRootDirectory, $actualRootDirectory);
+	}
+
 	/**
 	 * @dataProvider dataProviderRootDirectoryExists
 	 */
