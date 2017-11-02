@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class DirectoryWalkerTest extends TestCase {
 	/**
-	 * @dataProvider parentExistsProvider
+	 * @dataProvider dataProviderParentExists
 	 */
 	public function testFindParentThatExists(string $directory) {
 // Get a $parent_path further up the tree than the provided $directory:
@@ -27,15 +27,15 @@ class DirectoryWalkerTest extends TestCase {
 		);
 	}
 
-	public function parentExistsProvider():array {
-		return $this->parentProvider(true);
+	public function dataProviderParentExists():array {
+		return $this->dataProviderParent(true);
 	}
 
-	public function parentNotExistsProvider():array {
-		return $this->parentProvider(false);
+	public function dataProviderParentNotExists():array {
+		return $this->dataProviderParent(false);
 	}
 
-	protected function parentProvider(bool $exists, int $num = 10):array {
+	protected function dataProviderParent(bool $exists, int $num = 10):array {
 		$tmp = Helper::getTempDirectory();
 		$data = [];
 

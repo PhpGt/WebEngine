@@ -64,6 +64,6 @@ class Path {
 	}
 
 	public static function fixPathCase(string $path):string {
-		// TODO.
+		return $path;
 	}
 }

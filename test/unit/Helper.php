@@ -10,6 +10,17 @@ class Helper {
 	public static function getTempDirectory():string {
 		$tmp = sys_get_temp_dir();
 		$unique = uniqid(self::TMP_PREFIX, true);
-		return "$tmp/$unique";
+		$path = "$tmp/$unique";
+		return $path;
+	}
+
+	public static function createChildDirectories(string $path, int $depth = 10):string {
+		for($i = 0; $i < $depth; $i++) {
+			$path .= DIRECTORY_SEPARATOR;
+			$path .= uniqid("child-dir", true);
+		}
+
+		mkdir($path, 0775, true);
+		return $path;
 	}
 }
