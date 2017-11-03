@@ -113,9 +113,6 @@ class Path {
 				continue;
 			}
 
-			if(!file_exists($output)) {
-				$test = "test";
-			}
 			$iterator = new DirectoryIterator($output);
 			$foundMatch = false;
 			foreach($iterator as $fileInfo) {

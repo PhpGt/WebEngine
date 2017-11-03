@@ -15,7 +15,7 @@ class PathTest extends TestCase {
 			$documentRoot,
 			rand(2, 20)
 		);
-		$srcDirectory = Helper::createChildDirectory($documentRoot, "src");
+		Helper::createChildDirectory($documentRoot, "src");
 
 		$actualRoot = Path::getApplicationRootDirectory($childPath);
 
