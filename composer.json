@@ -25,6 +25,8 @@
 	],
 
 	"require": {
+		"willdurand/negotiation": "^2.3",
+		"fig/http-message-util": "^1.1"
 	},
 
 	"require-dev": {
