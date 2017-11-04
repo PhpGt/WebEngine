@@ -1,6 +1,6 @@
 <?php
 namespace Gt\WebEngine\FileSystem;
 
-use Gt\WebEngineException;
+use Gt\WebEngine\Exception;
 
-class PathNotFound extends WebEngineException {}
+class PathNotFound extends Exception {}
