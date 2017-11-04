@@ -24,21 +24,8 @@ if(is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
 require(__DIR__ . "/vendor/autoload.php");
 
 /**
- * The PHP superglobals are used to represent the HTTP request. $_COOKIE, $_FILES and $_SESSION are
- * used later.
- *
- * - $_SERVER includes information about the request and the HTTP headers
- * - $_GET is a parsed array of query string parameters from the request URL
- * - $_POST is a parsed array of query string parameters from the request body
- *
- * @see http://php.net/manual/en/language.variables.superglobals.php
- */
-$request = Gt\Http\RequestFactory::create($_SERVER, $_GET, $_POST);
-
-/**
- * Now the request is ready we can begin to dispatch it to the relevant areas of code. Buckle up
- * and enjoy the ride! Read more about the request-response lifecycle here:
+ * That's all we need to start the request-response lifecycle. Buckle up and enjoy the ride!
  *
  * @see https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
-// TODO.
+Gt\WebEngine\Lifecycle::Start();
