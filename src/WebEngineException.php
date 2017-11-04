@@ -1,5 +1,5 @@
 <?php
-namespace Gt;
+namespace Gt\WebEngine;
 
 use Exception;
 

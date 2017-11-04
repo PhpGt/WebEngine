@@ -1,5 +1,5 @@
 <?php
-namespace Gt\FileSystem;
+namespace Gt\WebEngine\FileSystem;
 
 use DirectoryIterator;
 
