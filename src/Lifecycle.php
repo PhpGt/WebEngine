@@ -8,6 +8,7 @@ class Lifecycle {
 	public static function start() {
 		$request = RequestFactory::create($_SERVER);
 		$dispatcher = DispatcherFactory::create($request);
+		// TODO: Input should be an object representing any user input (GET, POST, PUT, FILES, etc).
 		$dispatcher->go($request, $input);
 	}
 
