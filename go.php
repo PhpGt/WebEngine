@@ -11,7 +11,10 @@
  * PHP inbuilt server, this will output the static file. Other webservers should not get to this
  * point, but it's safe to prevent unnecessary execution.
  */
-// TODO.
+$uri = urldecode(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
+if(is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
+	return false;
+}
 
 /**
  * Require the Composer autoloader, so the rest of the script can locate classes by their namespace,
@@ -30,7 +33,7 @@ require(__DIR__ . "/vendor/autoload.php");
  *
  * @see http://php.net/manual/en/language.variables.superglobals.php
  */
-// TODO.
+$request = Gt\Http\RequestFactory::create($_SERVER, $_GET, $_POST);
 
 /**
  * Now the request is ready we can begin to dispatch it to the relevant areas of code. Buckle up
