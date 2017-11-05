@@ -8,6 +8,7 @@ use Gt\Cookie\Cookie;
 use Gt\Session\Session;
 use Gt\Http\RequestFactory;
 use Gt\Http\ResponseFactory;
+use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
 
 class Lifecycle {
@@ -58,7 +59,10 @@ class Lifecycle {
 	 * only created, executing their logic when dispatched later.
 	 */
 	public static function createRequestResponse() {
-		self::$request = RequestFactory::create(self::$serverInfo);
+		self::$request = RequestFactory::create(
+			self::$serverInfo,
+			self::$input->getStream()
+		);
 		self::$response = ResponseFactory::create(self::$request);
 	}
 
