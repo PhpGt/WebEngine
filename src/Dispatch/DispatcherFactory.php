@@ -1,10 +1,11 @@
 <?php
 namespace Gt\WebEngine\Dispatch;
 
-use Gt\Http\Request;
+use Gt\WebEngine\Route\Router;
 
 class DispatcherFactory {
-	public static function create(Request $request):Dispatcher {
+	public static function create(Router $router):Dispatcher {
 		$dispatcher = new Dispatcher();
+		return $dispatcher;
 	}
 }
