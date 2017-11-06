@@ -67,7 +67,7 @@ class Lifecycle {
 	}
 
 	/**
-	 * The router object is used to link the incoming request to the correct page/api files
+	 * The router object is used to link the incoming request to the correct view/logic files
 	 * within the application's directory. At this stage of the lifecycle the object is only
 	 * created, executing its logic when dispatched later.
 	 */
