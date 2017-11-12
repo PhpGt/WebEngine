@@ -2,25 +2,38 @@
 namespace Gt\WebEngine;
 
 use Gt\Config\Config;
+use Gt\Http\Request;
+use Gt\Http\Response;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Cookie\Cookie;
 use Gt\Session\Session;
 use Gt\Http\RequestFactory;
 use Gt\Http\ResponseFactory;
+use Gt\WebEngine\Dispatch\Dispatcher;
+use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
 
 class Lifecycle {
+	/** @var Config */
 	protected static $config;
+	/** @var ServerInfo */
 	protected static $serverInfo;
+	/** @var Input */
 	protected static $input;
+	/** @var Cookie */
 	protected static $cookie;
+	/** @var Session */
 	protected static $session;
 
+	/** @var Request */
 	protected static $request;
+	/** @var Response */
 	protected static $response;
+	/** @var Router */
 	protected static $router;
+	/** @var Dispatcher */
 	protected static $dispatcher;
 
 	/**
