@@ -18,7 +18,7 @@ class RouterFactory {
 		RequestInterface $request,
 		ResponseInterface $response
 	):Router {
-		$router = new static::$routerClassLookup[get_class($response)]();
+		$router = new static::$routerClassLookup[get_class($response)]($request);
 		return $router;
 	}
 }
