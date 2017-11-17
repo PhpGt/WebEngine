@@ -13,6 +13,8 @@ use Gt\Http\ResponseFactory;
 use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
+use Gt\WebEngine\Route\ApiRouter;
+use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
@@ -46,7 +48,6 @@ class Lifecycle {
 		self::createCoreObjects();
 		self::createRequestResponse();
 		self::createRouter();
-		self::checkRequestRoute();
 		self::dispatch();
 		self::finish();
 	}
@@ -70,8 +71,8 @@ class Lifecycle {
 	/**
 	 * The two most important parts of the application's lifecycle: the request and the response
 	 * from and to the client. There are different types of request and response, depending on
-	 * how the application is being used, so the factory methods are used to create the correct
-	 * type of request according to the server info. At this stage in the lifecycle objects are
+	 * how the application is being used, so factory methods are used to create the correct
+	 * type of request according to the server info. At this stage in the lifecycle, objects are
 	 * only created, executing their logic when dispatched later.
 	 */
 	public static function createRequestResponse():void {
@@ -97,22 +98,19 @@ class Lifecycle {
 	 * created, executing its logic when dispatched later.
 	 */
 	public static function createRouter():void {
-		self::$router = RouterFactory::create(self::$request);
-	}
+		RouterFactory::registerRouterClassForResponse(
+			PageRouter::class,
+			PageResponse::class
+		);
+		RouterFactory::registerRouterClassForResponse(
+			ApiRouter::class,
+			ApiResponse::class
+		);
 
-	/**
-	 * There must only be one route from request to response (case sensitivity, for example).
-	 * Checking the request against the route will halt execution and redirect the request
-	 * if necessary.
-	 */
-	public static function checkRequestRoute():void {
-		$requestedUri = self::$request->getUri();
-		$uri = self::$router->getCorrectedUri($requestedUri);
-
-		/** @noinspection PhpNonStrictObjectEqualityInspection */
-		if($uri == $requestedUri) {
-			// TODO: Redirect properly.
-		}
+		self::$router = RouterFactory::create(
+			self::$request,
+			self::$response
+		);
 	}
 
 	/**
