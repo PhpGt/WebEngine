@@ -5,7 +5,7 @@ use Gt\WebEngine\Route\Router;
 
 class DispatcherFactory {
 	public static function create(Router $router):Dispatcher {
-		$dispatcher = new Dispatcher();
+		$dispatcher = new Dispatcher($router);
 		return $dispatcher;
 	}
 }
