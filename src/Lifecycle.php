@@ -42,10 +42,11 @@ class Lifecycle {
 	 * The start of the application's lifecycle. This function simply breaks the lifecycle down
 	 * into different functions, in order.
 	 */
-	public static function start() {
+	public static function start():void {
 		self::createCoreObjects();
 		self::createRequestResponse();
 		self::createRouter();
+		self::checkRequestRoute();
 		self::dispatch();
 		self::finish();
 	}
@@ -58,7 +59,7 @@ class Lifecycle {
 	 * - Cookie is used to get and set cookies
 	 * - Session is used to get and set persistent state data
 	 */
-	public static function createCoreObjects() {
+	public static function createCoreObjects():void {
 		self::$config = new Config();
 		self::$serverInfo = new ServerInfo();
 		self::$input = new Input();
@@ -73,7 +74,7 @@ class Lifecycle {
 	 * type of request according to the server info. At this stage in the lifecycle objects are
 	 * only created, executing their logic when dispatched later.
 	 */
-	public static function createRequestResponse() {
+	public static function createRequestResponse():void {
 		self::$request = RequestFactory::create(
 			self::$serverInfo,
 			self::$input->getStream()
@@ -95,8 +96,23 @@ class Lifecycle {
 	 * within the application's directory. At this stage of the lifecycle the object is only
 	 * created, executing its logic when dispatched later.
 	 */
-	public static function createRouter() {
+	public static function createRouter():void {
 		self::$router = RouterFactory::create(self::$request);
+	}
+
+	/**
+	 * There must only be one route from request to response (case sensitivity, for example).
+	 * Checking the request against the route will halt execution and redirect the request
+	 * if necessary.
+	 */
+	public static function checkRequestRoute():void {
+		$requestedUri = self::$request->getUri();
+		$uri = self::$router->getCorrectedUri($requestedUri);
+
+		/** @noinspection PhpNonStrictObjectEqualityInspection */
+		if($uri == $requestedUri) {
+			// TODO: Redirect properly.
+		}
 	}
 
 	/**
@@ -104,16 +120,16 @@ class Lifecycle {
 	 * handle the request, build up the response and dispatch the relevant objects where they
 	 * need to go.
 	 */
-	public static function dispatch() {
+	public static function dispatch():void {
 		self::$dispatcher = DispatcherFactory::create(self::$router);
-		self::$dispatcher->handle(self::$request);
+		self::$dispatcher->handle(self::$request, self::$response);
 	}
 
 	/**
 	 * The final part of the lifecycle is the finish function. This is where the response is
 	 * finally output to the client, followed by any tidy-up code required.
 	 */
-	public static function finish() {
+	public static function finish():void {
 		echo self::$response;
 	}
 }
