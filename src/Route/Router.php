@@ -1,10 +1,12 @@
 <?php
 namespace Gt\WebEngine\Route;
 
-use Gt\Http\Uri;
+use DirectoryIterator;
 use Psr\Http\Message\RequestInterface;
 
 abstract class Router {
+	const DEFAULT_BASENAME = "index";
+
 	/** @var RequestInterface */
 	protected $request;
 
@@ -18,11 +20,51 @@ abstract class Router {
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
+	public function getViewFile(string $uriPath):string {
+		$baseViewLogicPath = $this->getBaseViewLogicPath();
+		$viewFileSubPath = $this->getViewLogicSubPath($uriPath);
+		$viewFileBaseName = self::DEFAULT_BASENAME;
+
+		if(!is_dir($baseViewLogicPath . $viewFileSubPath)) {
+			$lastSlashPosition = strrpos($viewFileSubPath, "/");
+			$viewFileBaseName = substr(
+				$viewFileSubPath,
+				$lastSlashPosition + 1
+			);
+			$viewFileSubPath = substr(
+				$viewFileSubPath,
+				0,
+				$lastSlashPosition
+			);
+		}
+
+		foreach(new DirectoryIterator($baseViewLogicPath . $viewFileSubPath) as $fileInfo) {
+			if($fileInfo->isDir()) {
+				continue;
+			}
+
+			$extension = $fileInfo->getExtension();
+			$baseName = $fileInfo->getBasename("." . $extension);
+
+			if($baseName !== $viewFileBaseName) {
+				continue;
+			}
+
+			return $fileInfo->getRealPath();
+		}
+
+		die("four oh four...");
+	}
+
 	/**
 	 * The view-logic sub-path is the path on disk to the directory containing the requested
 	 * View and Logic files, relative to the base view-logic path.
 	 */
-	public function getViewLogicSubPath(string $path):string {
-		var_dump($path);die("ITS THE PATH");
+	protected function getViewLogicSubPath(string $uriPath):string {
+		$baseViewLogicPath = $this->getBaseViewLogicPath();
+		$absolutePath = $baseViewLogicPath . $uriPath;
+
+		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
+		return $relativePath;
 	}
 }
