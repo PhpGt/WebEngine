@@ -11,6 +11,8 @@ use Gt\Session\Session;
 use Gt\Http\RequestFactory;
 use Gt\Http\ResponseFactory;
 use Gt\WebEngine\Dispatch\Dispatcher;
+use Gt\WebEngine\Response\ApiResponse;
+use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
@@ -76,6 +78,15 @@ class Lifecycle {
 			self::$serverInfo,
 			self::$input->getStream()
 		);
+		ResponseFactory::registerResponseClass(
+			PageResponse::class,
+			"text/html"
+		);
+		ResponseFactory::registerResponseClass(
+			ApiResponse::class,
+			"application/json",
+			"application/xml"
+		);
 		self::$response = ResponseFactory::create(self::$request);
 	}
 
@@ -94,10 +105,7 @@ class Lifecycle {
 	 * need to go.
 	 */
 	public static function dispatch() {
-		self::$dispatcher = DispatcherFactory::create(
-			self::$router//,
-//			self::$input
-		);
+		self::$dispatcher = DispatcherFactory::create(self::$router);
 		self::$dispatcher->handle(self::$request);
 	}
 
