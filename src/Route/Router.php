@@ -20,7 +20,7 @@ abstract class Router {
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
-	public function getViewFile(string $uriPath):string {
+	public function getViewFile(string $uriPath):?string {
 		$baseViewLogicPath = $this->getBaseViewLogicPath();
 		$viewFileSubPath = $this->getViewLogicSubPath($uriPath);
 		$viewFileBaseName = self::DEFAULT_BASENAME;
@@ -53,7 +53,7 @@ abstract class Router {
 			return $fileInfo->getRealPath();
 		}
 
-		die("four oh four...");
+		return null;
 	}
 
 	/**
@@ -65,6 +65,9 @@ abstract class Router {
 		$absolutePath = $baseViewLogicPath . $uriPath;
 
 		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
+		if(strlen($relativePath) > 1) {
+			$relativePath = rtrim($relativePath, "/");
+		}
 		return $relativePath;
 	}
 }

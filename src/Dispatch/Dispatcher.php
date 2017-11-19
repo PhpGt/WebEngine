@@ -16,6 +16,8 @@ class Dispatcher {
 		$path = $request->getUri()->getPath();
 		$viewFile = $this->router->getViewFile($path);
 
-		var_dump($viewFile);die();
+		$body = $response->getBody();
+		$bodyContent = file_get_contents($viewFile);
+		$body->write($bodyContent);
 	}
 }
