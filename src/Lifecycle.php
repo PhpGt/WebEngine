@@ -11,6 +11,7 @@ use Gt\Session\Session;
 use Gt\Http\RequestFactory;
 use Gt\Http\ResponseFactory;
 use Gt\WebEngine\Dispatch\Dispatcher;
+use Gt\WebEngine\Privacy\Protection;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\Route\ApiRouter;
@@ -45,7 +46,9 @@ class Lifecycle {
 	 * into different functions, in order.
 	 */
 	public static function start():void {
+		session_start();
 		self::createCoreObjects();
+		self::protectGlobals();
 		self::createRequestResponse();
 		self::createRouter();
 		self::dispatch();
@@ -61,11 +64,25 @@ class Lifecycle {
 	 * - Session is used to get and set persistent state data
 	 */
 	public static function createCoreObjects():void {
-		self::$config = new Config();
-		self::$serverInfo = new ServerInfo();
-		self::$input = new Input();
-		self::$cookie = new Cookie();
-		self::$session = new Session();
+		self::$config = new Config($_ENV);
+		self::$serverInfo = new ServerInfo($_SERVER);
+		self::$input = new Input($_GET, $_POST, $_FILES);
+		self::$cookie = new Cookie($_COOKIE);
+		self::$session = new Session($_SESSION);
+	}
+
+	/**
+	 * By default, PHP passes all sensitive user information around in global variables,
+	 * available for reading and modification in any code, including third party libraries.
+	 *
+	 * All global variables are replaced with objects that alert the developer of their
+	 * protection and encapsulation through other objects.
+	 *
+	 * @see https://php.gt/globals
+	 */
+	public static function protectGlobals() {
+		Protection::deregisterGlobals();
+		Protection::overrideGlobals();
 	}
 
 	/**
@@ -109,7 +126,8 @@ class Lifecycle {
 
 		self::$router = RouterFactory::create(
 			self::$request,
-			self::$response
+			self::$response,
+			self::$serverInfo->getDocumentRoot()
 		);
 	}
 
