@@ -4,11 +4,7 @@ namespace Gt\WebEngine\FileSystem;
 use DirectoryIterator;
 
 class Path {
-	public static function getApplicationRootDirectory(string $innerDirectory = null):string {
-		if(is_null($innerDirectory)) {
-			$innerDirectory = $_SERVER["DOCUMENT_ROOT"];
-		}
-
+	public static function getApplicationRootDirectory(string $innerDirectory):string {
 		$directoryWalker = new DirectoryWalker($innerDirectory);
 
 		return self::fixPathCase(
@@ -23,62 +19,62 @@ class Path {
 		);
 	}
 
-	public static function getSrcDirectory(string $documentRoot = null):string {
+	public static function getSrcDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src",
 		]);
 	}
 
-	public static function getWwwDirectory(string $documentRoot = null):string {
+	public static function getWwwDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"www",
 		]);
 	}
 
-	public static function getDataDirectory(string $documentRoot = null):string {
+	public static function getDataDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"data",
 		]);
 	}
 
-	public static function getPageDirectory(string $documentRoot = null):string {
+	public static function getPageDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src/page",
 		]);
 	}
-	public static function getApiDirectory(string $documentRoot = null):string {
+	public static function getApiDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src/api",
 		]);
 	}
 
-	public static function getAssetDirectory(string $documentRoot = null):string {
+	public static function getAssetDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src/asset",
 		]);
 	}
 
-	public static function getScriptDirectory(string $documentRoot = null):string {
+	public static function getScriptDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src/script",
 		]);
 	}
 
-	public static function getStyleDirectory(string $documentRoot = null):string {
+	public static function getStyleDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src/style",
 		]);
 	}
 
-	public static function getClassDirectory(string $documentRoot = null):string {
+	public static function getClassDirectory(string $documentRoot):string {
 		return implode("/", [
 			self::getApplicationRootDirectory($documentRoot),
 			"src/class",
@@ -87,7 +83,7 @@ class Path {
 
 	public static function getChildOfSrcDirectory(string $name):string {
 		return self::fixPathCase(implode("/", [
-			self::getSrcDirectory(),
+			self::getSrcDirectory($name),
 			$name,
 		]));
 	}
