@@ -9,9 +9,12 @@ abstract class Router {
 
 	/** @var RequestInterface */
 	protected $request;
+	/** @var string */
+	protected $documentRoot;
 
-	public function __construct(RequestInterface $request) {
+	public function __construct(RequestInterface $request, string $documentRoot) {
 		$this->request = $request;
+		$this->documentRoot = $documentRoot;
 	}
 
 	/**

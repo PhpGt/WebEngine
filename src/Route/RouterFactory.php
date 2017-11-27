@@ -16,9 +16,13 @@ class RouterFactory {
 
 	public static function create(
 		RequestInterface $request,
-		ResponseInterface $response
+		ResponseInterface $response,
+		string $documentRoot
 	):Router {
-		$router = new static::$routerClassLookup[get_class($response)]($request);
+		$router = new static::$routerClassLookup[get_class($response)](
+			$request,
+			$documentRoot
+		);
 		return $router;
 	}
 }
