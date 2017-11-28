@@ -42,8 +42,8 @@ class Lifecycle {
 	protected static $dispatcher;
 
 	/**
-	 * The start of the application's lifecycle. This function simply breaks the lifecycle down
-	 * into different functions, in order.
+	 * The start of the application's lifecycle. This function breaks the lifecycle down
+	 * into its different functions, in order.
 	 */
 	public static function start():void {
 		session_start();
