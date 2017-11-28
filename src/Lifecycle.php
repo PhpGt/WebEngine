@@ -76,7 +76,7 @@ class Lifecycle {
 	 * available for reading and modification in any code, including third party libraries.
 	 *
 	 * All global variables are replaced with objects that alert the developer of their
-	 * protection and encapsulation through other objects.
+	 * protection and encapsulation through GlobalStub objects.
 	 *
 	 * @see https://php.gt/globals
 	 */
