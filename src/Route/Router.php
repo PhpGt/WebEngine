@@ -23,7 +23,7 @@ abstract class Router {
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
-	public function getViewFile(string $uriPath):?string {
+	public function getViewFile(string $uriPath):string {
 		$baseViewLogicPath = $this->getBaseViewLogicPath();
 		$viewFileSubPath = $this->getViewLogicSubPath($uriPath);
 		$viewFileBaseName = self::DEFAULT_BASENAME;
@@ -56,7 +56,7 @@ abstract class Router {
 			return $fileInfo->getRealPath();
 		}
 
-		return null;
+		throw new ViewFileNotFoundException($uriPath);
 	}
 
 	/**

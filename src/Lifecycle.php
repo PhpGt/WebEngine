@@ -81,6 +81,7 @@ class Lifecycle {
 	 * @see https://php.gt/globals
 	 */
 	public static function protectGlobals() {
+		// TODO: Extract into the individual global-wrapping classes.
 		Protection::deregisterGlobals();
 		Protection::overrideGlobals();
 	}
