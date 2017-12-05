@@ -19,6 +19,7 @@ use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
+use Gt\WebEngine\Route\ViewFileNotFoundException;
 
 class Lifecycle {
 	/** @var Config */
@@ -138,8 +139,19 @@ class Lifecycle {
 	 * need to go.
 	 */
 	public static function dispatch():void {
-		self::$dispatcher = DispatcherFactory::create(self::$router);
-		self::$dispatcher->handle(self::$request, self::$response);
+		try {
+			self::$dispatcher = DispatcherFactory::create(
+				self::$router
+			);
+			self::$dispatcher->handle(
+				self::$request,
+				self::$response
+			);
+		}
+		catch(HttpError\NotFoundException $exception) {
+			http_response_code(404);
+			// TODO: Load provided 404 page - might also have code in it!
+		}
 	}
 
 	/**
