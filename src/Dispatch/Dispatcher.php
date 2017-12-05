@@ -12,7 +12,7 @@ class Dispatcher {
 	public function __construct(Router $router) {
 		$this->router = $router;
 	}
-	public function handle(RequestInterface $request, ResponseInterface $response) {
+	public function handle(RequestInterface $request, ResponseInterface $response):void {
 		$path = $request->getUri()->getPath();
 		$viewFile = $this->router->getViewFile($path);
 

@@ -23,7 +23,7 @@ class GlobalStub implements ArrayAccess {
 	}
 
 	protected function throwException() {
-		throw new GlobalAccessException(self::ERROR_MESSAGE);
+		throw new GlobalAccessWebEngineException(self::ERROR_MESSAGE);
 	}
 
 	public function __debugInfo():array {
