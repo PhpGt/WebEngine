@@ -18,11 +18,10 @@ class Dispatcher {
 	public function handle(RequestInterface $request, ResponseInterface $response):void {
 		$path = $request->getUri()->getPath();
 
+		$logicAssembly = $this->router->getLogicAssembly($path);
+
 		try {
-			$this->streamResponse(
-				$this->router->getViewFile($path),
-				$response->getBody()
-			);
+			$viewAssembly = $this->router->getViewAssembly($path);
 		}
 		catch(ViewFileNotFoundException $exception) {
 			// TODO: There may be a _dynamic.php file to take over.
