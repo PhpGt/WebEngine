@@ -4,4 +4,6 @@
  * Packages and deploys the current codebase in accordance with
  * project configuration.
  */
-Gt\Build\BuildRunner::run(...$argv);
+require(__DIR__ . "/../vendor/autoload.php");
+array_shift($argv);
+call_user_func_array([Gt\Build\BuildRunner::class, "run"],$argv);
