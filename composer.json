@@ -11,8 +11,15 @@
 
 	"autoload": {
 		"psr-4": {
-			"Gt\\": "./src/",
-			"Gt\\Test\\": "./test/unit"
+			"Gt\\WebEngine\\": "./src/",
+			"Gt\\Test\\WebEngine\\": "./test/unit/",
+
+			"Gt\\Http\\": "./dev-dependencies/phpgt/http/src/",
+			"Gt\\Cookie\\": "./dev-dependencies/phpgt/cookie/src/",
+			"Gt\\Input\\": "./dev-dependencies/phpgt/input/src/",
+			"Gt\\Session\\": "./dev-dependencies/phpgt/session/src/",
+			"Gt\\Config\\": "./dev-dependencies/phpgt/config/src/",
+			"Gt\\Build\\": "./dev-dependencies/phpgt/build/src/"
 		}
 	},
 
@@ -25,9 +32,8 @@
 	],
 
 	"require": {
-		"willdurand/negotiation": "^2.3",
-		"fig/http-message-util": "^1.1",
-		"psr/log": "^1.0"
+		"psr/http-message": "^1.0",
+		"willdurand/negotiation": "^2.3"
 	},
 
 	"require-dev": {

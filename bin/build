@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Packages and deploys the current codebase in accordance with
+ * project configuration.
+ */
+Gt\Build\BuildRunner::run(...$argv);
