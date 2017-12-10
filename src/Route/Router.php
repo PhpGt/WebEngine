@@ -2,10 +2,17 @@
 namespace Gt\WebEngine\Route;
 
 use DirectoryIterator;
+use Gt\WebEngine\FileSystem\Assembly;
 use Psr\Http\Message\RequestInterface;
 
 abstract class Router {
 	const DEFAULT_BASENAME = "index";
+	const LOGIC_EXTENSIONS = ["php"];
+	const VIEW_EXTENSIONS = [];
+	const LOGIC_BEFORE = ["_before", "_common"];
+	const LOGIC_AFTER = ["_after"];
+	const VIEW_BEFORE = ["_header"];
+	const VIEW_AFTER = ["_footer"];
 
 	/** @var RequestInterface */
 	protected $request;
@@ -23,40 +30,53 @@ abstract class Router {
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
-	public function getViewFile(string $uriPath):string {
-		$baseViewLogicPath = $this->getBaseViewLogicPath();
-		$viewFileSubPath = $this->getViewLogicSubPath($uriPath);
-		$viewFileBaseName = self::DEFAULT_BASENAME;
+	public function getLogicAssembly(string $uri):Assembly {
+		$directory = $this->getDirectoryForUri($uri);
+		$basename = $this->getBasenameForUri($uri);
+		$logicOrder = array_merge(
+			static::LOGIC_BEFORE,
+			[$basename],
+			static::LOGIC_AFTER
+		);
+		$assembly = new Assembly(
+			$this->getBaseViewLogicPath(),
+			$directory,
+			self::LOGIC_EXTENSIONS,
+			$logicOrder
+		);
+		var_dump($assembly);die();
+	}
 
-		if(!is_dir($baseViewLogicPath . $viewFileSubPath)) {
-			$lastSlashPosition = strrpos($viewFileSubPath, "/");
-			$viewFileBaseName = substr(
-				$viewFileSubPath,
-				$lastSlashPosition + 1
-			);
-			$viewFileSubPath = substr(
-				$viewFileSubPath,
+	protected function getDirectoryForUri(string $uri):string {
+		$basePath = $this->getBaseViewLogicPath();
+		$subPath = $this->getViewLogicSubPath($uri);
+
+		if(!is_dir($basePath . $subPath)) {
+			$lastSlashPosition = strrpos($subPath, "/");
+			$subPath = substr(
+				$subPath,
 				0,
 				$lastSlashPosition
 			);
 		}
 
-		foreach(new DirectoryIterator($baseViewLogicPath . $viewFileSubPath) as $fileInfo) {
-			if($fileInfo->isDir()) {
-				continue;
-			}
+		return $subPath;
+	}
 
-			$extension = $fileInfo->getExtension();
-			$baseName = $fileInfo->getBasename("." . $extension);
+	protected function getBasenameForUri(string $uri):string {
+		$basePath = $this->getBaseViewLogicPath();
+		$subPath = $this->getViewLogicSubPath($uri);
+		$baseName = static::DEFAULT_BASENAME;
 
-			if($baseName !== $viewFileBaseName) {
-				continue;
-			}
-
-			return $fileInfo->getRealPath();
+		if(!is_dir($basePath . $subPath)) {
+			$lastSlashPosition = strrpos($subPath, "/");
+			$baseName = substr(
+				$subPath,
+				$lastSlashPosition + 1
+			);
 		}
 
-		throw new ViewFileNotFoundException($uriPath);
+		return $baseName;
 	}
 
 	/**
