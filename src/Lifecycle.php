@@ -19,7 +19,6 @@ use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
-use Gt\WebEngine\Route\ViewFileNotFoundException;
 
 class Lifecycle {
 	/** @var Config */
@@ -83,6 +82,7 @@ class Lifecycle {
 	 */
 	public static function protectGlobals() {
 		// TODO: Extract into the individual global-wrapping classes.
+		// self::$config->protectGlobals(); etc...
 		Protection::deregisterGlobals();
 		Protection::overrideGlobals();
 	}
@@ -141,7 +141,8 @@ class Lifecycle {
 	public static function dispatch():void {
 		try {
 			self::$dispatcher = DispatcherFactory::create(
-				self::$router
+				self::$router,
+				"App"	// TODO: Load this from Config.
 			);
 			self::$dispatcher->handle(
 				self::$request,
