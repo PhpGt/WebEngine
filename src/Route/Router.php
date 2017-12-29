@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 abstract class Router {
 	const DEFAULT_BASENAME = "index";
 	const LOGIC_EXTENSIONS = ["php"];
-	const VIEW_EXTENSIONS = [];
+	const VIEW_EXTENSIONS = ["html"];
 	const LOGIC_BEFORE = ["_before", "_common"];
 	const LOGIC_AFTER = ["_after"];
 	const VIEW_BEFORE = ["_header"];
@@ -38,13 +38,37 @@ abstract class Router {
 			[$basename],
 			static::LOGIC_AFTER
 		);
+
 		$assembly = new Assembly(
 			$this->getBaseViewLogicPath(),
 			$directory,
-			self::LOGIC_EXTENSIONS,
-			$logicOrder
+			$basename,
+			static::LOGIC_EXTENSIONS,
+			static::LOGIC_BEFORE,
+			static::LOGIC_AFTER
 		);
-		var_dump($assembly);die();
+		return $assembly;
+	}
+
+	public function getViewAssembly(string $uri):Assembly {
+		$directory = $this->getDirectoryForUri($uri);
+		$basename = $this->getBasenameForUri($uri);
+		$viewOrder = array_merge(
+			static::VIEW_BEFORE,
+			[$basename],
+			static::VIEW_AFTER
+		);
+
+		$assembly = new Assembly(
+			$this->getBaseViewLogicPath(),
+			$directory,
+			$basename,
+			static::VIEW_EXTENSIONS,
+			static::VIEW_BEFORE,
+			static::VIEW_AFTER,
+			true
+		);
+		return $assembly;
 	}
 
 	protected function getDirectoryForUri(string $uri):string {
