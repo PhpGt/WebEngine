@@ -1,5 +1,5 @@
 <?php
 namespace Gt\WebEngine\View;
 
-class Api extends AbstractView {
+class ApiView extends View {
 }

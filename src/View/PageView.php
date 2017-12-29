@@ -1,5 +1,5 @@
 <?php
 namespace Gt\WebEngine\View;
 
-abstract class AbstractView {
+class PageView extends View {
 }
