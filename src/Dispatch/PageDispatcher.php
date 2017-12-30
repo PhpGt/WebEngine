@@ -21,25 +21,7 @@ class PageDispatcher extends Dispatcher {
 		return $view;
 	}
 
-	protected function getLogicClassFromFilePath(string $logicPath):string {
-		$basePageNamespace = implode("\\", [
-			$this->appNamespace,
-			"Page",
-		]);
-
-		$docRoot = Path::getApplicationRootDirectory(dirname($logicPath));
-		$pageDirectory = Path::getPageDirectory($docRoot);
-
-		$logicPathRelative = substr($logicPath, strlen($pageDirectory));
-// The relative logic path will be the filename with page directory stripped from the left.
-// /app/src/page/index.php => index.php
-// /app/src/page/child/directory/thing.php => child/directory/thing.php
-		$className = ClassName::transformUriCharacters(
-			$logicPathRelative,
-			$basePageNamespace,
-			"Page"
-		);
-
-		return $className;
+	protected function getBaseLogicDirectory(string $docRoot):string {
+		return Path::getPageDirectory($docRoot);
 	}
 }

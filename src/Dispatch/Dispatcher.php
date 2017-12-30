@@ -3,6 +3,7 @@ namespace Gt\WebEngine\Dispatch;
 
 use Gt\Http\Stream;
 use Gt\WebEngine\FileSystem\Path;
+use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\FileSystem\BasenameNotFoundException;
@@ -22,6 +23,7 @@ abstract class Dispatcher {
 
 	public function handle(RequestInterface $request, ResponseInterface $response):void {
 		$path = $request->getUri()->getPath();
+		$docRoot = Path::getApplicationRootDirectory(dirname($path));
 
 		try {
 			$viewAssembly = $this->router->getViewAssembly($path);
@@ -31,11 +33,17 @@ abstract class Dispatcher {
 			die("The requested view is not found!!!");
 		}
 
+		$baseLogicDirectory = $this->getBaseLogicDirectory($docRoot);
+
 		$logicAssembly = $this->router->getLogicAssembly($path);
+		$logicObjects = [];
 
 		foreach($logicAssembly as $logicPath) {
-			$class = $this->getLogicClassFromFilePath($logicPath);
-
+			$logicObjects []= LogicFactory::createPageLogicFromPath(
+				$logicPath,
+				"App", //TODO: Load from config.
+				$baseLogicDirectory
+			);
 		}
 		die("EOF");
 
@@ -57,7 +65,7 @@ abstract class Dispatcher {
 	}
 
 	protected abstract function getViewModel(string $body):View;
-	protected abstract function getLogicClassFromFilePath(string $logicPath):string;
+	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
 		$bodyContent = file_get_contents($viewFile);
