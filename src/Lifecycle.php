@@ -168,6 +168,10 @@ class Lifecycle {
 			http_response_code(404);
 			// TODO: Load provided 404 page - might also have code in it!
 		}
+		catch(HttpError\InternalServerErrorException $exception) {
+			http_response_code(500);
+			// TODO: Load provided error page.
+		}
 	}
 
 	/**
