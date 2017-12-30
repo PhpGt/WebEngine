@@ -1,18 +1,21 @@
 <?php
 namespace Gt\WebEngine\Logic;
 
+use Gt\WebEngine\FileSystem\Path;
+
 class LogicFactory {
 	public static function createPageLogicFromPath(
 		string $path,
 		string $appNamespace,
 		string $baseDirectory
 	):Page {
-		self::getLogicClassFromPath(
+		$className = self::getLogicClassFromPath(
 			$path,
 			$appNamespace,
 			"Page",
 			$baseDirectory
 		);
+		return new $className();
 	}
 
 	protected static function getLogicClassFromPath(
@@ -26,17 +29,14 @@ class LogicFactory {
 			$logicTypeNamespace,
 		]);
 
-		$docRoot = Path::getApplicationRootDirectory(dirname($path));
-		$pageDirectory = Path::getPageDirectory($docRoot);
-
-		$logicPathRelative = substr($path, strlen($pageDirectory));
+		$logicPathRelative = substr($path, strlen($baseDirectory));
 // The relative logic path will be the filename with page directory stripped from the left.
 // /app/src/page/index.php => index.php
-// /app/src/page/child/directory/thing.php => child/directory/thing.php
+// /app/src/api/child/directory/thing.php => child/directory/thing.php
 		$className = ClassName::transformUriCharacters(
 			$logicPathRelative,
 			$basePageNamespace,
-			"Page"
+			$logicTypeNamespace
 		);
 
 		return $className;

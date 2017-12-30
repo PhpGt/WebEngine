@@ -1,8 +1,6 @@
 <?php
 namespace Gt\WebEngine\Dispatch;
 
-use Gt\Http\Stream;
-use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
@@ -10,6 +8,7 @@ use Gt\WebEngine\FileSystem\BasenameNotFoundException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use TypeError;
 
 abstract class Dispatcher {
 	/** @var Router */
@@ -23,45 +22,36 @@ abstract class Dispatcher {
 
 	public function handle(RequestInterface $request, ResponseInterface $response):void {
 		$path = $request->getUri()->getPath();
-		$docRoot = Path::getApplicationRootDirectory(dirname($path));
 
 		try {
 			$viewAssembly = $this->router->getViewAssembly($path);
 			$viewModel = $this->getViewModel((string)$viewAssembly);
 		}
 		catch(BasenameNotFoundException $exception) {
+// TODO: Handle view not found.
 			die("The requested view is not found!!!");
 		}
 
-		$baseLogicDirectory = $this->getBaseLogicDirectory($docRoot);
+		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 
 		$logicAssembly = $this->router->getLogicAssembly($path);
 		$logicObjects = [];
 
+// TODO: Pass the LogicFactory default values to use when creating logics, e.g. viewmodel, database, etc.
 		foreach($logicAssembly as $logicPath) {
-			$logicObjects []= LogicFactory::createPageLogicFromPath(
-				$logicPath,
-				"App", //TODO: Load from config.
-				$baseLogicDirectory
-			);
+			try {
+				$logicObjects []= LogicFactory::createPageLogicFromPath(
+					$logicPath,
+					$this->appNamespace,
+					$baseLogicDirectory
+				);
+			}
+			catch(TypeError $exception) {
+				throw new IncorrectLogicObjectType($logicPath);
+			}
 		}
-		die("EOF");
 
-		$stream = new Stream("php://memory");
-		$response = $response->withBody($stream);
-
-//		$this->streamResponse()
-
-//		try {
-//			$existingViews = $viewAssembly->getExistingItems();
-//		}
-//		catch(EmptyAssemblyException $exception) {
-//			// TODO: There may be a _dynamic.php file to take over.
-//			$foundDynamicPhp = false;
-//			if(!$foundDynamicPhp) {
-//				throw new NotFoundException();
-//			}
-//		}
+// TODO: Execute the logic objects!
 	}
 
 	protected abstract function getViewModel(string $body):View;

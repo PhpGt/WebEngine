@@ -11,6 +11,8 @@ use Gt\Session\Session;
 use Gt\Http\RequestFactory;
 use Gt\Http\ResponseFactory;
 use Gt\WebEngine\Dispatch\Dispatcher;
+use Gt\WebEngine\Logic\Autoloader;
+use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Privacy\Protection;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
@@ -51,6 +53,7 @@ class Lifecycle {
 		self::protectGlobals();
 		self::createRequestResponse();
 		self::createRouter();
+		self::attachAutoloaders();
 		self::dispatch();
 		self::finish();
 	}
@@ -130,6 +133,18 @@ class Lifecycle {
 			self::$request,
 			self::$response,
 			self::$serverInfo->getDocumentRoot()
+		);
+	}
+
+	public static function attachAutoloaders() {
+		$logicAutoloader = new Autoloader(
+			"App", // TODO: Load this from Config.
+			self::$serverInfo->getDocumentRoot()
+		);
+
+		spl_autoload_register(
+			[$logicAutoloader, "autoload"],
+			true
 		);
 	}
 
