@@ -1,9 +1,48 @@
 <?php
 namespace Gt\WebEngine\Logic;
 
-use Gt\WebEngine\FileSystem\Path;
+use Gt\Config\Config;
+use Gt\Cookie\Cookie;
+use Gt\Http\ServerInfo;
+use Gt\Input\Input;
+use Gt\Session\Session;
+use Gt\WebEngine\View\View;
+use TypeError;
 
 class LogicFactory {
+	protected static $config;
+	protected static $serverInfo;
+	protected static $input;
+	protected static $cookie;
+	protected static $session;
+
+	/** @var View */
+	protected static $view;
+
+	public static function setConfig(Config $config):void {
+		self::$config = $config;
+	}
+
+	public static function setServerInfo(ServerInfo $serverInfo):void {
+		self::$serverInfo = $serverInfo;
+	}
+
+	public static function setInput(Input $input):void {
+		self::$input = $input;
+	}
+
+	public static function setCookie(Cookie $cookie):void {
+		self::$cookie = $cookie;
+	}
+
+	public static function setSession(Session $session):void {
+		self::$session = $session;
+	}
+
+	public static function setView(View $view):void {
+		self::$view = $view;
+	}
+
 	public static function createPageLogicFromPath(
 		string $path,
 		string $appNamespace,
@@ -15,7 +54,23 @@ class LogicFactory {
 			"Page",
 			$baseDirectory
 		);
-		return new $className();
+
+		try {
+			$test = new $className(
+				self::$view->getViewModel(),
+				self::$config,
+				self::$serverInfo,
+				self::$input,
+				self::$cookie,
+				self::$session
+			);
+		}
+		catch(TypeError $exception) {
+			throw new InvalidLogicConstructorParameters($exception->getMessage());
+		}
+
+		return $test;
+
 	}
 
 	protected static function getLogicClassFromPath(
