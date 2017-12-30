@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 class PageDispatcher extends Dispatcher {
-	protected function getViewModel(string $body):View {
+	protected function getView(string $body):View {
 		if(strlen($body) === 0) {
 
 		}

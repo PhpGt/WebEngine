@@ -5,7 +5,7 @@ use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\View\View;
 
 class ApiDispatcher extends Dispatcher {
-	protected function getViewModel(string $body):View {
+	protected function getView(string $body):View {
 		// TODO: Implement getViewModel() method.
 		// Use Object builder to represent JSON.
 	}

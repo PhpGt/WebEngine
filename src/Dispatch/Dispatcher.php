@@ -1,6 +1,11 @@
 <?php
 namespace Gt\WebEngine\Dispatch;
 
+use Gt\Config\Config;
+use Gt\Cookie\Cookie;
+use Gt\Http\ServerInfo;
+use Gt\Input\Input;
+use Gt\Session\Session;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
@@ -20,18 +25,33 @@ abstract class Dispatcher {
 		$this->appNamespace = $appNamespace;
 	}
 
+	public function storeInternalObjects(
+		Config $config,
+		ServerInfo $serverInfo,
+		Input $input,
+		Cookie $cookie,
+		Session $session
+	):void {
+		LogicFactory::setConfig($config);
+		LogicFactory::setServerInfo($serverInfo);
+		LogicFactory::setInput($input);
+		LogicFactory::setCookie($cookie);
+		LogicFactory::setSession($session);
+	}
+
 	public function handle(RequestInterface $request, ResponseInterface $response):void {
 		$path = $request->getUri()->getPath();
 
 		try {
 			$viewAssembly = $this->router->getViewAssembly($path);
-			$viewModel = $this->getViewModel((string)$viewAssembly);
+			$view = $this->getView((string)$viewAssembly);
 		}
 		catch(BasenameNotFoundException $exception) {
 // TODO: Handle view not found.
 			die("The requested view is not found!!!");
 		}
 
+		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 
 		$logicAssembly = $this->router->getLogicAssembly($path);
@@ -54,7 +74,7 @@ abstract class Dispatcher {
 // TODO: Execute the logic objects!
 	}
 
-	protected abstract function getViewModel(string $body):View;
+	protected abstract function getView(string $body):View;
 	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
