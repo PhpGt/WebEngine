@@ -35,7 +35,7 @@ abstract class Dispatcher {
 
 		foreach($logicAssembly as $logicPath) {
 			$class = $this->getLogicClassFromFilePath($logicPath);
-			var_dump($class);die("This is the logic class");
+
 		}
 		die("EOF");
 
