@@ -36,4 +36,6 @@ abstract class AbstractLogic {
 		$this->cookie = $cookie;
 		$this->session = $session;
 	}
+
+	abstract public function go();
 }

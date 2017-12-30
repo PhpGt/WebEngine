@@ -3,7 +3,7 @@ namespace Gt\WebEngine\Logic;
 
 use Gt\DomTemplate\HTMLDocument;
 
-class Page extends AbstractLogic {
+abstract class Page extends AbstractLogic {
 	/** @var HTMLDocument */
 	protected $document;
 
