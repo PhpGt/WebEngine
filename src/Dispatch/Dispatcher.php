@@ -6,6 +6,7 @@ use Gt\Cookie\Cookie;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
+use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
@@ -44,7 +45,10 @@ abstract class Dispatcher {
 
 		try {
 			$viewAssembly = $this->router->getViewAssembly($path);
-			$view = $this->getView((string)$viewAssembly);
+			$view = $this->getView(
+				$response->getBody(),
+				(string)$viewAssembly
+			);
 		}
 		catch(BasenameNotFoundException $exception) {
 // TODO: Handle view not found.
@@ -55,9 +59,29 @@ abstract class Dispatcher {
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 
 		$logicAssembly = $this->router->getLogicAssembly($path);
+		$logicObjects = $this->createLogicObjects(
+			$logicAssembly,
+			$baseLogicDirectory
+		);
+
+		$this->dispatchLogicObjects($logicObjects);
+		$view->stream();
+	}
+
+	protected abstract function getView(StreamInterface $outputStream, string $body):View;
+	protected abstract function getBaseLogicDirectory(string $docRoot):string;
+
+	protected function streamResponse(string $viewFile, StreamInterface $body) {
+		$bodyContent = file_get_contents($viewFile);
+		$body->write($bodyContent);
+	}
+
+	protected function createLogicObjects(
+		Assembly $logicAssembly,
+		string $baseLogicDirectory
+	):array {
 		$logicObjects = [];
 
-// TODO: Pass the LogicFactory default values to use when creating logics, e.g. viewmodel, database, etc.
 		foreach($logicAssembly as $logicPath) {
 			try {
 				$logicObjects []= LogicFactory::createPageLogicFromPath(
@@ -71,14 +95,12 @@ abstract class Dispatcher {
 			}
 		}
 
-// TODO: Execute the logic objects!
+		return $logicObjects;
 	}
 
-	protected abstract function getView(string $body):View;
-	protected abstract function getBaseLogicDirectory(string $docRoot):string;
-
-	protected function streamResponse(string $viewFile, StreamInterface $body) {
-		$bodyContent = file_get_contents($viewFile);
-		$body->write($bodyContent);
+	protected function dispatchLogicObjects(array $logicObjects):void {
+		foreach($logicObjects as $logic) {
+			$logic->go();
+		}
 	}
 }

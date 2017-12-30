@@ -72,12 +72,6 @@ class Lifecycle {
 		self::$input = new Input($_GET, $_POST, $_FILES);
 		self::$cookie = new Cookie($_COOKIE);
 		self::$session = new Session($_SESSION);
-
-		LogicFactory::setConfig(self::$config);
-		LogicFactory::setServerInfo(self::$serverInfo);
-		LogicFactory::setInput(self::$input);
-		LogicFactory::setCookie(self::$cookie);
-		LogicFactory::setSession(self::$session);
 	}
 
 	/**
@@ -163,7 +157,11 @@ class Lifecycle {
 		try {
 			self::$dispatcher = DispatcherFactory::create(
 				self::$router,
-				"App"	// TODO: Load this from Config.
+				self::$config,
+				self::$serverInfo,
+				self::$input,
+				self::$cookie,
+				self::$session
 			);
 			self::$dispatcher->handle(
 				self::$request,
