@@ -7,4 +7,6 @@ abstract class View {
 	public function __construct($viewModel) {
 		$this->viewModel = $viewModel;
 	}
+
+	abstract public function getViewModel();
 }
