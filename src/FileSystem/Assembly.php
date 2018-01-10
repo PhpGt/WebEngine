@@ -82,7 +82,10 @@ class Assembly implements Iterator {
 				"}",
 			]);
 
-			$glob = "$path/$basename.$extensionGlob";
+			$glob = implode(DIRECTORY_SEPARATOR, [
+				$path,
+				"$basename.$extensionGlob",
+			]);
 			$matches = glob($glob, GLOB_BRACE );
 
 			if(!empty($matches)) {

@@ -20,69 +20,75 @@ class Path {
 	}
 
 	public static function getSrcDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
 			"src",
 		]);
 	}
 
 	public static function getWwwDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
 			"www",
 		]);
 	}
 
 	public static function getDataDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
 			"data",
 		]);
 	}
 
 	public static function getPageDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
-			"src/page",
+			"src",
+			"page",
 		]);
 	}
 	public static function getApiDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
-			"src/api",
+			"src",
+			"api",
 		]);
 	}
 
 	public static function getAssetDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
-			"src/asset",
+			"src",
+			"asset",
 		]);
 	}
 
 	public static function getScriptDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
-			"src/script",
+			"src",
+			"script",
 		]);
 	}
 
 	public static function getStyleDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
-			"src/style",
+			"src",
+			"style",
 		]);
 	}
 
 	public static function getClassDirectory(string $documentRoot):string {
-		return implode("/", [
+		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($documentRoot),
-			"src/class",
+			"src",
+			"class",
 		]);
 	}
 
 	public static function getChildOfSrcDirectory(string $name):string {
-		return self::fixPathCase(implode("/", [
+		return self::fixPathCase(implode(DIRECTORY_SEPARATOR, [
 			self::getSrcDirectory($name),
 			$name,
 		]));
@@ -92,8 +98,12 @@ class Path {
 // TODO: This breaks within a "jailed" Linux user. See https://github.com/PhpGt/WebEngine/issues/260
 // Use a base directory of "getApplicationRootDirectory", and have this check for a constant
 // defined in go.php?
-		$output = "/";
-		$pathParts = explode("/", $path);
+		$output = "";
+		if(DIRECTORY_SEPARATOR === "/") {
+			$output .= DIRECTORY_SEPARATOR;
+		}
+		$path = str_replace(["/", "\\"], DIRECTORY_SEPARATOR, $path);
+		$pathParts = explode(DIRECTORY_SEPARATOR, $path);
 
 		foreach($pathParts as $directory) {
 			$currentSearchPath = $output;
@@ -104,7 +114,7 @@ class Path {
 				$output = "$currentSearchPath";
 
 				if(strlen($output) > 1) {
-					$output .= "/";
+					$output .= DIRECTORY_SEPARATOR;
 				}
 				continue;
 			}
@@ -114,7 +124,7 @@ class Path {
 			foreach($iterator as $fileInfo) {
 				$fileName = $fileInfo->getFilename();
 				if(strtolower($fileName) === strtolower($directory)) {
-					$output .= "$fileName/";
+					$output .= "$fileName" . DIRECTORY_SEPARATOR;
 
 					$foundMatch = true;
 					break;
@@ -126,7 +136,7 @@ class Path {
 			}
 		}
 
-		$output = rtrim($output, "/");
+		$output = rtrim($output, DIRECTORY_SEPARATOR);
 		return $output;
 	}
 }

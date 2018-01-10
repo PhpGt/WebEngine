@@ -76,7 +76,7 @@ abstract class Router {
 		$subPath = $this->getViewLogicSubPath($uri);
 
 		if(!is_dir($basePath . $subPath)) {
-			$lastSlashPosition = strrpos($subPath, "/");
+			$lastSlashPosition = strrpos($subPath, DIRECTORY_SEPARATOR);
 			$subPath = substr(
 				$subPath,
 				0,
@@ -93,7 +93,7 @@ abstract class Router {
 		$baseName = static::DEFAULT_BASENAME;
 
 		if(!is_dir($basePath . $subPath)) {
-			$lastSlashPosition = strrpos($subPath, "/");
+			$lastSlashPosition = strrpos($subPath, DIRECTORY_SEPARATOR);
 			$baseName = substr(
 				$subPath,
 				$lastSlashPosition + 1
@@ -113,7 +113,7 @@ abstract class Router {
 
 		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
 		if(strlen($relativePath) > 1) {
-			$relativePath = rtrim($relativePath, "/");
+			$relativePath = rtrim($relativePath, DIRECTORY_SEPARATOR);
 		}
 		return $relativePath;
 	}
