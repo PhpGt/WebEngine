@@ -44,10 +44,15 @@ abstract class Dispatcher {
 		$path = $request->getUri()->getPath();
 
 		try {
+			$templateDirectory = implode(DIRECTORY_SEPARATOR, [
+				$this->router->getBaseViewLogicPath(),
+				"_template",
+			]);
 			$viewAssembly = $this->router->getViewAssembly($path);
 			$view = $this->getView(
 				$response->getBody(),
-				(string)$viewAssembly
+				(string)$viewAssembly,
+				$templateDirectory
 			);
 		}
 		catch(BasenameNotFoundException $exception) {
@@ -68,7 +73,11 @@ abstract class Dispatcher {
 		$view->stream();
 	}
 
-	protected abstract function getView(StreamInterface $outputStream, string $body):View;
+	protected abstract function getView(
+		StreamInterface $outputStream,
+		string $body,
+		string $templateDirectory
+	):View;
 	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
