@@ -7,13 +7,13 @@ use Gt\Http\Response;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Cookie\Cookie;
+use Gt\ProtectedGlobal\Protection;
 use Gt\Session\Session;
 use Gt\Http\RequestFactory;
 use Gt\Http\ResponseFactory;
 use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Logic\LogicFactory;
-use Gt\WebEngine\Privacy\Protection;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\Route\ApiRouter;
@@ -84,10 +84,26 @@ class Lifecycle {
 	 * @see https://php.gt/globals
 	 */
 	public static function protectGlobals() {
-		// TODO: Extract into the individual global-wrapping classes.
-		// self::$config->protectGlobals(); etc...
-		Protection::deregisterGlobals();
-		Protection::overrideGlobals();
+		// TODO: Merge whitelist from config
+		$whitelist = [
+			"_COOKIE" => ["XDEBUG_SESSION", "CustomerRef"],
+		];
+		$globalsAfterRemoval = Protection::removeGlobals(
+			$GLOBALS,
+			$whitelist
+		);
+		Protection::overrideInternals(
+			$globalsAfterRemoval,
+			$_ENV,
+			$_SERVER,
+			$_GET,
+			$_POST,
+			$_FILES,
+			$_COOKIE,
+			$_SESSION
+		);
+
+		var_dump($GLOBALS["_COOKIE"]);die();
 	}
 
 	/**
