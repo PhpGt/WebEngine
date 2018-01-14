@@ -86,7 +86,7 @@ class Lifecycle {
 	public static function protectGlobals() {
 		// TODO: Merge whitelist from config
 		$whitelist = [
-			"_COOKIE" => ["XDEBUG_SESSION", "CustomerRef"],
+			"_COOKIE" => ["XDEBUG_SESSION"],
 		];
 		$globalsAfterRemoval = Protection::removeGlobals(
 			$GLOBALS,
@@ -102,8 +102,6 @@ class Lifecycle {
 			$_COOKIE,
 			$_SESSION
 		);
-
-		var_dump($GLOBALS["_COOKIE"]);die();
 	}
 
 	/**
