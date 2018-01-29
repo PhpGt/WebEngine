@@ -3,6 +3,7 @@ namespace Gt\WebEngine\Dispatch;
 
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
+use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -15,7 +16,7 @@ class DispatcherFactory {
 		Config $config,
 		ServerInfo $serverInfo,
 		Input $input,
-		Cookie $cookie,
+		CookieHandler $cookie,
 		Session $session,
 		Router $router
 	):Dispatcher {

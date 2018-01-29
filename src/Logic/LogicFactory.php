@@ -3,6 +3,7 @@ namespace Gt\WebEngine\Logic;
 
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
+use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -31,7 +32,7 @@ class LogicFactory {
 		self::$input = $input;
 	}
 
-	public static function setCookie(Cookie $cookie):void {
+	public static function setCookieHandler(CookieHandler $cookie):void {
 		self::$cookie = $cookie;
 	}
 

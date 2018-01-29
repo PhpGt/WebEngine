@@ -3,6 +3,7 @@ namespace Gt\WebEngine\Dispatch;
 
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
+use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -33,13 +34,13 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Config $config,
 		ServerInfo $serverInfo,
 		Input $input,
-		Cookie $cookie,
+		CookieHandler $cookie,
 		Session $session
 	):void {
 		LogicFactory::setConfig($config);
 		LogicFactory::setServerInfo($serverInfo);
 		LogicFactory::setInput($input);
-		LogicFactory::setCookie($cookie);
+		LogicFactory::setCookieHandler($cookie);
 		LogicFactory::setSession($session);
 	}
 
@@ -48,7 +49,6 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	 */
 	public function handle(ServerRequestInterface $request):ResponseInterface {
 		$path = $request->getUri()->getPath();
-
 		$response = new PageResponse();
 
 		try {
@@ -67,9 +67,6 @@ abstract class Dispatcher implements RequestHandlerInterface {
 // TODO: Handle view not found.
 			die("The requested view is not found!!!");
 		}
-	}
-
-	public function handle2(RequestInterface $request, ResponseInterface $response):void {
 
 		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
@@ -82,6 +79,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		$this->dispatchLogicObjects($logicObjects);
 		$view->stream();
+
+		return $response;
 	}
 
 	protected abstract function getView(

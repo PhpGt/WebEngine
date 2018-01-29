@@ -1,25 +1,17 @@
 <?php
 namespace Gt\WebEngine;
 
-use Grpc\Server;
 use Gt\Config\Config;
-use Gt\Http\Request;
-use Gt\Http\Response;
+
+use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
-use Gt\Http\Stream;
 use Gt\Input\Input;
 use Gt\Cookie\Cookie;
 use Gt\ProtectedGlobal\Protection;
 use Gt\Session\Session;
 use Gt\Http\RequestFactory;
-use Gt\Http\ResponseFactory;
 use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\Logic\Autoloader;
-use Gt\WebEngine\Logic\LogicFactory;
-use Gt\WebEngine\Response\ApiResponse;
-use Gt\WebEngine\Response\PageResponse;
-use Gt\WebEngine\Route\ApiRouter;
-use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
@@ -47,24 +39,33 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public function start():void {
 		$config = new Config($_ENV);
-		$serverInfo = new ServerInfo($_SERVER);
+		$server = new ServerInfo($_SERVER);
 		$input = new Input($_GET, $_POST, $_FILES);
-		$cookie = new Cookie($_COOKIE);
-		$session = new Session($_SESSION);
+		$cookie = new CookieHandler($_COOKIE);
 
 		session_start();
+		$session = new Session($_SESSION);
+
 		$this->protectGlobals();
-		$this->attachAutoloaders($serverInfo->getDocumentRoot());
+		$this->attachAutoloaders($server->getDocumentRoot());
 
 		$request = $this->createServerRequest(
-			$serverInfo,
-			$input->getStream()
+			$server,
+			$input,
+			$cookie
 		);
 		$router = $this->createRouter(
 			$request,
-			$serverInfo->getDocumentRoot()
+			$server->getDocumentRoot()
 		);
-		$dispatcher = $this->createDispatcher();
+		$dispatcher = $this->createDispatcher(
+			$config,
+			$server,
+			$input,
+			$cookie,
+			$session,
+			$router
+		);
 
 		$response = $this->process($request, $dispatcher);
 		$this->finish($response);
@@ -114,11 +115,13 @@ class Lifecycle implements MiddlewareInterface {
 
 	public function createServerRequest(
 		ServerInfo $serverInfo,
-		StreamInterface $body
+		Input $input,
+		CookieHandler $cookieHandler
 	):ServerRequestInterface {
 		return RequestFactory::createServerRequest(
 			$serverInfo,
-			$body
+			$input,
+			$cookieHandler
 		);
 	}
 
@@ -129,38 +132,22 @@ class Lifecycle implements MiddlewareInterface {
 		);
 	}
 
-	/**
-	 * Now all of the essential objects of the application are created, the dispatcher will
-	 * handle the request, build up the response and dispatch the relevant objects where they
-	 * need to go.
-	 */
-	public static function dispatch():void {
-		try {
-			self::$dispatcher = DispatcherFactory::create(
-				self::$router,
-				self::$config,
-				self::$serverInfo,
-				self::$input,
-				self::$cookie,
-				self::$session
-			);
-			self::$dispatcher->handle(
-				self::$request,
-				self::$response
-			);
-		}
-		catch(HttpError\NotFoundException $exception) {
-			http_response_code(404);
-			// TODO: Load provided 404 page - might also have code in it!
-		}
-		catch(HttpError\InternalServerErrorException $exception) {
-			http_response_code(500);
-			// TODO: Load provided error page.
-		}
-	}
-
-	public function createDispatcher():Dispatcher {
-		$dispatcher = DispatcherFactory::create();
+	public function createDispatcher(
+		Config $config,
+		ServerInfo $serverInfo,
+		Input $input,
+		CookieHandler $cookie,
+		Session $session,
+		Router $router
+	):Dispatcher {
+		$dispatcher = DispatcherFactory::create(
+			$config,
+			$serverInfo,
+			$input,
+			$cookie,
+			$session,
+			$router
+		);
 		return $dispatcher;
 	}
 
@@ -172,7 +159,7 @@ class Lifecycle implements MiddlewareInterface {
 		ServerRequestInterface $request,
 		RequestHandlerInterface $handler
 	):ResponseInterface {
-
+		return $handler->handle($request);
 	}
 
 	/**
@@ -180,6 +167,7 @@ class Lifecycle implements MiddlewareInterface {
 	 * finally output to the client, followed by any tidy-up code required.
 	 */
 	public static function finish(ResponseInterface $response):void {
-		echo $response;
+		$body = $response->getBody();
+		echo $body;
 	}
 }

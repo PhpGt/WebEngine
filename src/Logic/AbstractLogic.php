@@ -3,6 +3,7 @@ namespace Gt\WebEngine\Logic;
 
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
+use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -15,8 +16,8 @@ abstract class AbstractLogic {
 	protected $serverInfo;
 	/** @var Input */
 	protected $input;
-	/** @var Cookie */
-	protected $cookie;
+	/** @var CookieHandler */
+	protected $cookieHandler;
 	/** @var Session */
 	protected $session;
 
@@ -25,7 +26,7 @@ abstract class AbstractLogic {
 		Config $config,
 		ServerInfo $serverInfo,
 		Input $input,
-		Cookie $cookie,
+		CookieHandler $cookieHandler,
 		Session $session
 	) {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
@@ -33,7 +34,7 @@ abstract class AbstractLogic {
 		$this->config = $config;
 		$this->serverInfo = $serverInfo;
 		$this->input = $input;
-		$this->cookie = $cookie;
+		$this->cookieHandler = $cookieHandler;
 		$this->session = $session;
 	}
 
