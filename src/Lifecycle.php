@@ -6,7 +6,6 @@ use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
-use Gt\Cookie\Cookie;
 use Gt\ProtectedGlobal\Protection;
 use Gt\Session\Session;
 use Gt\Http\RequestFactory;
@@ -18,7 +17,6 @@ use Gt\WebEngine\Dispatch\DispatcherFactory;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -167,7 +165,6 @@ class Lifecycle implements MiddlewareInterface {
 	 * finally output to the client, followed by any tidy-up code required.
 	 */
 	public static function finish(ResponseInterface $response):void {
-		$body = $response->getBody();
-		echo $body;
+		echo $response->getBody();
 	}
 }
