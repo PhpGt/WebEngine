@@ -5,6 +5,8 @@ use Gt\DomTemplate\HTMLDocument;
 use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
 class PageDispatcher extends Dispatcher {

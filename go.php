@@ -27,4 +27,5 @@ require(__DIR__ . "/vendor/autoload.php");
  * That's all we need to start the request-response lifecycle. Buckle up and enjoy the ride!
  * @see https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
-Gt\WebEngine\Lifecycle::start();
+$lifecycle = new Gt\WebEngine\Lifecycle();
+$lifecycle->start();

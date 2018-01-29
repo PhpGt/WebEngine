@@ -8,15 +8,18 @@ use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\LogicFactory;
+use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\FileSystem\BasenameNotFoundException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use TypeError;
 
-abstract class Dispatcher {
+abstract class Dispatcher implements RequestHandlerInterface {
 	/** @var Router */
 	protected $router;
 	protected $appNamespace;
@@ -40,8 +43,13 @@ abstract class Dispatcher {
 		LogicFactory::setSession($session);
 	}
 
-	public function handle(RequestInterface $request, ResponseInterface $response):void {
+	/**
+	 * Handle the request and return a response.
+	 */
+	public function handle(ServerRequestInterface $request):ResponseInterface {
 		$path = $request->getUri()->getPath();
+
+		$response = new PageResponse();
 
 		try {
 			$templateDirectory = implode(DIRECTORY_SEPARATOR, [
@@ -59,6 +67,9 @@ abstract class Dispatcher {
 // TODO: Handle view not found.
 			die("The requested view is not found!!!");
 		}
+	}
+
+	public function handle2(RequestInterface $request, ResponseInterface $response):void {
 
 		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();

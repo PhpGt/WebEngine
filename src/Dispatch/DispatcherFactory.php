@@ -12,12 +12,12 @@ use Gt\WebEngine\Route\Router;
 
 class DispatcherFactory {
 	public static function create(
-		Router $router,
 		Config $config,
 		ServerInfo $serverInfo,
 		Input $input,
 		Cookie $cookie,
-		Session $session
+		Session $session,
+		Router $router
 	):Dispatcher {
 // TODO: Get App Namespace from config when implemented.
 		$appNamespace = "App";

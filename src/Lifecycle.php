@@ -1,10 +1,12 @@
 <?php
 namespace Gt\WebEngine;
 
+use Grpc\Server;
 use Gt\Config\Config;
 use Gt\Http\Request;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
+use Gt\Http\Stream;
 use Gt\Input\Input;
 use Gt\Cookie\Cookie;
 use Gt\ProtectedGlobal\Protection;
@@ -21,57 +23,51 @@ use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Lifecycle {
-	/** @var Config */
-	protected static $config;
-	/** @var ServerInfo */
-	protected static $serverInfo;
-	/** @var Input */
-	protected static $input;
-	/** @var Cookie */
-	protected static $cookie;
-	/** @var Session */
-	protected static $session;
-
-	/** @var Request */
-	protected static $request;
-	/** @var Response */
-	protected static $response;
-	/** @var Router */
-	protected static $router;
-	/** @var Dispatcher */
-	protected static $dispatcher;
-
+/**
+ * The fundamental purpose of any PHP framework is to provide a mechanism for generating an
+ * HTTP response for an incoming HTTP request. Because this is such a common requirement, the
+ * PHP Framework Interop Group have specified a "PHP standards recommendation" (PSR) to help
+ * define the expected contract between the components of a web framework. The PSR that defines
+ * the common interfaces for HTTP server request handlers is PSR-15.
+ *
+ * @see https://github.com/PhpGt/WebEngine/wiki/HTTP-Middleware
+ * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md
+ */
+class Lifecycle implements MiddlewareInterface {
 	/**
 	 * The start of the application's lifecycle. This function breaks the lifecycle down
 	 * into its different functions, in order.
 	 */
-	public static function start():void {
-		session_start();
-		self::createCoreObjects();
-		self::protectGlobals();
-		self::createRequestResponse();
-		self::createRouter();
-		self::attachAutoloaders();
-		self::dispatch();
-		self::finish();
-	}
+	public function start():void {
+		$config = new Config($_ENV);
+		$serverInfo = new ServerInfo($_SERVER);
+		$input = new Input($_GET, $_POST, $_FILES);
+		$cookie = new Cookie($_COOKIE);
+		$session = new Session($_SESSION);
 
-	/**
-	 * The "Core" objects within the WebEngine are encapsulated abstractions to core PHP
-	 * functionality:
-	 * - Config is used to retrieve configuration via config.ini and environment variables
-	 * - Input is used to take user input through the querystring and posted form fields
-	 * - Cookie is used to get and set cookies
-	 * - Session is used to get and set persistent state data
-	 */
-	public static function createCoreObjects():void {
-		self::$config = new Config($_ENV);
-		self::$serverInfo = new ServerInfo($_SERVER);
-		self::$input = new Input($_GET, $_POST, $_FILES);
-		self::$cookie = new Cookie($_COOKIE);
-		self::$session = new Session($_SESSION);
+		session_start();
+		$this->protectGlobals();
+		$this->attachAutoloaders($serverInfo->getDocumentRoot());
+
+		$request = $this->createServerRequest(
+			$serverInfo,
+			$input->getStream()
+		);
+		$router = $this->createRouter(
+			$request,
+			$serverInfo->getDocumentRoot()
+		);
+		$dispatcher = $this->createDispatcher();
+
+		$response = $this->process($request, $dispatcher);
+		$this->finish($response);
 	}
 
 	/**
@@ -83,7 +79,7 @@ class Lifecycle {
 	 *
 	 * @see https://php.gt/globals
 	 */
-	public static function protectGlobals() {
+	public function protectGlobals() {
 		// TODO: Merge whitelist from config
 		$whitelist = [
 			"_COOKIE" => ["XDEBUG_SESSION"],
@@ -104,61 +100,32 @@ class Lifecycle {
 		);
 	}
 
-	/**
-	 * The two most important parts of the application's lifecycle: the request and the response
-	 * from and to the client. There are different types of request and response, depending on
-	 * how the application is being used, so factory methods are used to create the correct
-	 * type of request according to the server info. At this stage in the lifecycle, objects are
-	 * only created, executing their logic when dispatched later.
-	 */
-	public static function createRequestResponse():void {
-		self::$request = RequestFactory::create(
-			self::$serverInfo,
-			self::$input->getStream()
-		);
-		ResponseFactory::registerResponseClass(
-			PageResponse::class,
-			"text/html"
-		);
-		ResponseFactory::registerResponseClass(
-			ApiResponse::class,
-			"application/json",
-			"application/xml"
-		);
-		self::$response = ResponseFactory::create(self::$request);
-	}
-
-	/**
-	 * The router object is used to link the incoming request to the correct view/logic files
-	 * within the application's directory. At this stage of the lifecycle the object is only
-	 * created, executing its logic when dispatched later.
-	 */
-	public static function createRouter():void {
-		RouterFactory::registerRouterClassForResponse(
-			PageRouter::class,
-			PageResponse::class
-		);
-		RouterFactory::registerRouterClassForResponse(
-			ApiRouter::class,
-			ApiResponse::class
-		);
-
-		self::$router = RouterFactory::create(
-			self::$request,
-			self::$response,
-			self::$serverInfo->getDocumentRoot()
-		);
-	}
-
-	public static function attachAutoloaders() {
+	public function attachAutoloaders(string $documentRoot) {
 		$logicAutoloader = new Autoloader(
 			"App", // TODO: Load this from Config.
-			self::$serverInfo->getDocumentRoot()
+			$documentRoot
 		);
 
 		spl_autoload_register(
 			[$logicAutoloader, "autoload"],
 			true
+		);
+	}
+
+	public function createServerRequest(
+		ServerInfo $serverInfo,
+		StreamInterface $body
+	):ServerRequestInterface {
+		return RequestFactory::createServerRequest(
+			$serverInfo,
+			$body
+		);
+	}
+
+	public function createRouter(RequestInterface $request, string $documentRoot):Router {
+		return RouterFactory::create(
+			$request,
+			$documentRoot
 		);
 	}
 
@@ -192,11 +159,27 @@ class Lifecycle {
 		}
 	}
 
+	public function createDispatcher():Dispatcher {
+		$dispatcher = DispatcherFactory::create();
+		return $dispatcher;
+	}
+
+	/**
+	 * Process an incoming server request and return a response, optionally delegating
+	 * response creation to a handler.
+	 */
+	public function process(
+		ServerRequestInterface $request,
+		RequestHandlerInterface $handler
+	):ResponseInterface {
+
+	}
+
 	/**
 	 * The final part of the lifecycle is the finish function. This is where the response is
 	 * finally output to the client, followed by any tidy-up code required.
 	 */
-	public static function finish():void {
-		echo self::$response;
+	public static function finish(ResponseInterface $response):void {
+		echo $response;
 	}
 }
