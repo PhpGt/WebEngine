@@ -9,6 +9,7 @@ use Gt\Input\Input;
 use Gt\ProtectedGlobal\Protection;
 use Gt\Session\Session;
 use Gt\Http\RequestFactory;
+use Gt\Session\SessionSetup;
 use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Route\Router;
@@ -36,13 +37,22 @@ class Lifecycle implements MiddlewareInterface {
 	 * into its different functions, in order.
 	 */
 	public function start():void {
-		$config = new Config($_ENV);
 		$server = new ServerInfo($_SERVER);
+		$config = new Config(dirname($server->getDocumentRoot()));
+		$config->setDefault(dirname(__DIR__));
 		$input = new Input($_GET, $_POST, $_FILES);
 		$cookie = new CookieHandler($_COOKIE);
 
-		session_start();
-		$session = new Session($_SESSION);
+		$handler = SessionSetup::attachHandler(
+			$config->get("session.handler")
+		);
+		$sessionConfig = $config->getSection("session");
+		$sessionId = $cookie[$sessionConfig["name"]];
+		$session = new Session(
+			$handler,
+			$sessionId,
+			$sessionConfig
+		);
 
 		$this->protectGlobals();
 		$this->attachAutoloaders($server->getDocumentRoot());
