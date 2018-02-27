@@ -153,6 +153,7 @@ class Path {
 
 	protected static function defaultApplicationRoot(string $default = null) {
 		if(!is_null($default)) {
+			self::$appRoot = $default;
 			return $default;
 		}
 
