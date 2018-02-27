@@ -4,6 +4,8 @@ namespace Gt\WebEngine\FileSystem;
 use DirectoryIterator;
 
 class Path {
+	protected static $appRoot;
+
 	public static function getApplicationRootDirectory(string $innerDirectory):string {
 		$directoryWalker = new DirectoryWalker($innerDirectory);
 
@@ -19,75 +21,84 @@ class Path {
 		);
 	}
 
-	public static function getSrcDirectory(string $documentRoot):string {
+	public static function getSrcDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 		]);
 	}
 
-	public static function getWwwDirectory(string $documentRoot):string {
+	public static function getWwwDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"www",
 		]);
 	}
 
-	public static function getDataDirectory(string $documentRoot):string {
+	public static function getDataDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"data",
 		]);
 	}
 
-	public static function getPageDirectory(string $documentRoot):string {
+	public static function getPageDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 			"page",
 		]);
 	}
-	public static function getApiDirectory(string $documentRoot):string {
+	public static function getApiDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 			"api",
 		]);
 	}
 
-	public static function getAssetDirectory(string $documentRoot):string {
+	public static function getAssetDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 			"asset",
 		]);
 	}
 
-	public static function getScriptDirectory(string $documentRoot):string {
+	public static function getScriptDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 			"script",
 		]);
 	}
 
-	public static function getStyleDirectory(string $documentRoot):string {
+	public static function getStyleDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 			"style",
 		]);
 	}
 
-	public static function getClassDirectory(string $documentRoot):string {
+	public static function getClassDirectory(string $appRoot = null):string {
+		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($documentRoot),
+			self::getApplicationRootDirectory($appRoot),
 			"src",
 			"class",
 		]);
 	}
 
-	public static function getChildOfSrcDirectory(string $name):string {
+	public static function getChildOfSrcDirectory(string $name = null):string {
 		return self::fixPathCase(implode(DIRECTORY_SEPARATOR, [
 			self::getSrcDirectory($name),
 			$name,
@@ -138,5 +149,17 @@ class Path {
 
 		$output = rtrim($output, DIRECTORY_SEPARATOR);
 		return $output;
+	}
+
+	protected static function defaultApplicationRoot(string $default = null) {
+		if(!is_null($default)) {
+			return $default;
+		}
+
+		if(empty(self::$appRoot)) {
+			throw new ApplicationRootDirectoryNotSetException();
+		}
+
+		return self::$appRoot;
 	}
 }
