@@ -25,6 +25,18 @@
 	],
 
 	"require": {
+		"phpgt/build": "dev-master",
+		"phpgt/config": "dev-master",
+		"phpgt/cookie": "dev-master",
+		"phpgt/csrf": "dev-master",
+		"phpgt/database": "dev-master",
+		"phpgt/dom": "dev-master",
+		"phpgt/domtemplate": "dev-master",
+		"phpgt/http": "dev-master",
+		"phpgt/input": "dev-master",
+		"phpgt/protectedglobal": "dev-master",
+		"phpgt/session": "dev-master",
+
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^2.3",
 		"symfony/css-selector": "3.2.*"
