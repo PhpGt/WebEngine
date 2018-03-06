@@ -12,14 +12,7 @@
 	"autoload": {
 		"psr-4": {
 			"Gt\\WebEngine\\": "./src/",
-			"Gt\\Test\\WebEngine\\": "./test/unit/",
-
-			"Gt\\Http\\": "./dev-dependencies/phpgt/http/src/",
-			"Gt\\Cookie\\": "./dev-dependencies/phpgt/cookie/src/",
-			"Gt\\Input\\": "./dev-dependencies/phpgt/input/src/",
-			"Gt\\Session\\": "./dev-dependencies/phpgt/session/src/",
-			"Gt\\Config\\": "./dev-dependencies/phpgt/config/src/",
-			"Gt\\Build\\": "./dev-dependencies/phpgt/build/src/"
+			"Gt\\Test\\WebEngine\\": "./test/unit/"
 		}
 	},
 
@@ -32,8 +25,9 @@
 	],
 
 	"require": {
-		"psr/http-message": "^1.0",
-		"willdurand/negotiation": "^2.3"
+		"psr/http-server-middleware": "^1.0",
+		"willdurand/negotiation": "^2.3",
+		"symfony/css-selector": "3.2.*"
 	},
 
 	"require-dev": {
