@@ -210,12 +210,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Config.git",
-                "reference": "6bda60e5f2918e88e9f7e33756ed18240fea4c8b"
+                "reference": "bf449fa4207b595018fdd2731a0c63916ecb70c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Config/zipball/6bda60e5f2918e88e9f7e33756ed18240fea4c8b",
-                "reference": "6bda60e5f2918e88e9f7e33756ed18240fea4c8b",
+                "url": "https://api.github.com/repos/PhpGt/Config/zipball/bf449fa4207b595018fdd2731a0c63916ecb70c6",
+                "reference": "bf449fa4207b595018fdd2731a0c63916ecb70c6",
                 "shasum": ""
             },
             "require": {
@@ -241,7 +241,7 @@
                 }
             ],
             "description": "Load configuration from ini files or environment variables.",
-            "time": "2018-01-29T23:14:44+00:00"
+            "time": "2018-03-06T22:57:06+00:00"
         },
         {
             "name": "phpgt/cookie",
