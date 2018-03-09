@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?php
+$commandList = [
+	"gt-serve",
+	"gt-build",
+];
+$processList = [];
+$pipes = [];
+
+$descriptor = [
+	0 => ["pipe", "r"], // Child STDIN
+	1 => ["pipe", "w"], // Child STDOUT
+	2 => ["pipe", "w"], // Child STDERR
+];
+
+foreach($commandList as $command) {
+	$fullCommand = "php " . __DIR__ . "/$command";
+
+	$pipes[$command] = [];
+	$processList[$command] = proc_open($fullCommand,
+		$descriptor,
+		$pipes[$command]
+	);
+}
+
+while(true) {
+	foreach($processList as $name => $process) {
+		$output = [
+			"out" => stream_get_contents($pipes[$name][1]),
+			"err" => stream_get_contents($pipes[$name][2]),
+		];
+
+		foreach($output as $pipe => $content) {
+			if(strlen($content) <= 0) {
+				continue;
+			}
+
+			echo "$name\t$pipe:\t$content";
+		}
+
+		$status = proc_get_status($process);
+		if(!$status["is_running"]) {
+			echo "PROCESS ENDED: $name";
+			exit(1);
+		}
+
+		usleep(100000);
+	}
+}

@@ -1,7 +1,29 @@
 #!/usr/bin/env php
 <?php
-/**
- * Shell script interface for launching the built-in webserver.
- *
- * Usage: server [-a|--approot[="..."]] [-p|--port[="..."]]
- */
+$ip = "0.0.0.0";
+$port = 8080;
+$appRoot = getcwd();
+$srcRoot = realpath($appRoot . DIRECTORY_SEPARATOR . "src");
+$docRoot = $appRoot . DIRECTORY_SEPARATOR . "www";
+
+if(!is_dir($srcRoot)) {
+	fwrite(STDERR, "ERROR: No project directory found at $appRoot" . PHP_EOL);
+	exit(1);
+}
+$router = realpath(__DIR__ . "/../go.php");
+
+$command = "php -S $ip:$port -t $docRoot $router";
+fwrite(STDOUT, "Starting server: $command" . PHP_EOL);
+
+$pipes = [];
+$descriptor = [
+	0 => ["pipe", "r"], // Child STDIN
+	1 => ["pipe", "w"], // Child STDOUT
+	2 => ["pipe", "w"], // Child STDERR
+];
+$process = proc_open($command, $descriptor, $pipes);
+
+while(is_resource($process)) {
+	fwrite(STDOUT, fread($process, 1024));
+	usleep(100000);
+}

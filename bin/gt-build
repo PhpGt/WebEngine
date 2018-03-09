@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+while(true) {
+	echo "build" . PHP_EOL;
+	sleep(2);
+}
+
+$processA = popen("php a.php 1>&0", "r");
+$processB = popen("php b.php 1>&0", "r");
+
+while(true) {
+	usleep(100000);
+}
