@@ -1,13 +1,79 @@
 #!/usr/bin/env php
 <?php
-while(true) {
-	echo "build" . PHP_EOL;
-	sleep(2);
+$id = uniqid("gt-build-");
+$tmpDir = implode(DIRECTORY_SEPARATOR, [
+	sys_get_temp_dir(),
+	"phpgt",
+	"webengine",
+	"proc",
+	$id,
+]);
+if(!is_dir($tmpDir)) {
+	mkdir($tmpDir, 0775, true);
 }
 
-$processA = popen("php a.php 1>&0", "r");
-$processB = popen("php b.php 1>&0", "r");
+define("CHILD_PIPES", ["STDOUT", "STDERR"]);
 
-while(true) {
+$filePipes = [];
+foreach(CHILD_PIPES as $pipe) {
+	$filePipes[$pipe] = implode(DIRECTORY_SEPARATOR, [
+		$tmpDir,
+		$pipe,
+	]);
+	touch($filePipes[$pipe]);
+}
+
+$buildScript = realpath(implode(DIRECTORY_SEPARATOR, [
+	__DIR__,
+	"..",
+	"vendor",
+	"bin",
+	"build",
+]));
+$appRoot = $argv[$argc - 1];
+$command = "$buildScript $appRoot";
+if(!is_file($buildScript)) {
+	fwrite(STDERR, "Error: Build script not found!" . PHP_EOL);
+}
+
+fwrite(STDOUT, "Starting build runner: $command" . PHP_EOL);
+
+$pipes = [];
+$descriptor = [
+	0 => ["pipe", "r"],
+	1 => ["file", $filePipes["STDOUT"], "w"],
+	2 => ["file", $filePipes["STDERR"], "w"],
+];
+$process = proc_open($command, $descriptor, $pipes);
+
+if(is_resource($process)) {
+	fwrite(
+		STDOUT,
+		"Build tasks running."
+		. PHP_EOL
+		. PHP_EOL
+	);
+}
+else {
+	fwrite(
+		STDERR,
+		"Error starting build tasks!" . PHP_EOL
+	);
+	exit(1);
+}
+
+$handles = [];
+$outPipes = [];
+foreach(CHILD_PIPES as $pipe) {
+	$handles[$pipe] = fopen($filePipes[$pipe], "r");
+	$outPipes[$pipe] = constant($pipe);
+}
+
+while(is_resource($process)) {
+	foreach($handles as $pipe => $fh) {
+		fwrite($outPipes[$pipe], fread($fh, 1024));
+	}
 	usleep(100000);
 }
+
+fwrite(STDERR, "Build process terminated!" . PHP_EOL);
