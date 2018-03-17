@@ -17,11 +17,9 @@
 	},
 
 	"bin": [
-		"bin/gt-create",
+		"bin/gt-build",
 		"bin/gt-serve",
-		"bin/gt-test",
-		"bin/gt-deploy",
-		"bin/gt-release"
+		"bin/gt-run"
 	],
 
 	"require": {
