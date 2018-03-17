@@ -1,16 +1,42 @@
 #!/usr/bin/env php
 <?php
+$id = uniqid("gt-run-");
+$tmpDir = implode(DIRECTORY_SEPARATOR, [
+	sys_get_temp_dir(),
+	"phpgt",
+	"webengine",
+	"proc",
+	$id,
+]);
+if(!is_dir($tmpDir)) {
+	mkdir($tmpDir, 0775, true);
+}
+
+define("CHILD_PIPES", ["STDOUT", "STDERR"]);
+
+$filePipes = [];
+foreach(CHILD_PIPES as $pipe) {
+	$filePipes[$pipe] = implode(DIRECTORY_SEPARATOR, [
+		$tmpDir,
+		$pipe,
+	]);
+	touch($filePipes[$pipe]);
+}
+
+$baseDir = getcwd();
+$gtDir = dirname(__DIR__);
+
 $commandList = [
-	"gt-serve",
-	"gt-build",
+	"gt-serve $baseDir",
+	"gt-build --watch $baseDir $gtDir/build.default.json",
 ];
 $processList = [];
 $pipes = [];
 
 $descriptor = [
-	0 => ["pipe", "r"], // Child STDIN
-	1 => ["pipe", "w"], // Child STDOUT
-	2 => ["pipe", "w"], // Child STDERR
+	0 => ["pipe", "r"],
+	1 => ["file", $filePipes["STDOUT"], "w"],
+	2 => ["file", $filePipes["STDERR"], "w"],
 ];
 
 foreach($commandList as $command) {
@@ -23,27 +49,32 @@ foreach($commandList as $command) {
 	);
 }
 
-while(true) {
-	foreach($processList as $name => $process) {
-		$output = [
-			"out" => stream_get_contents($pipes[$name][1]),
-			"err" => stream_get_contents($pipes[$name][2]),
-		];
-
-		foreach($output as $pipe => $content) {
-			if(strlen($content) <= 0) {
-				continue;
-			}
-
-			echo "$name\t$pipe:\t$content";
-		}
-
-		$status = proc_get_status($process);
-		if(!$status["is_running"]) {
-			echo "PROCESS ENDED: $name";
-			exit(1);
-		}
-
-		usleep(100000);
-	}
+$handles = [];
+$outPipes = [];
+foreach(CHILD_PIPES as $pipe) {
+	$handles[$pipe] = fopen($filePipes[$pipe], "r");
+	$outPipes[$pipe] = constant($pipe);
 }
+
+do {
+	$numRunningProcesses = 0;
+
+	foreach($processList as $name => $process) {
+		usleep(100000);
+
+		foreach($handles as $pipe => $fh) {
+			fwrite(
+				$outPipes[$pipe],
+				fread($fh, 1024)
+			);
+
+			$status = proc_get_status($process);
+			if($status["running"]) {
+				$numRunningProcesses ++;
+			}
+		}
+	}
+} while($numRunningProcesses > 0);
+
+// This run script should never end. Getting here means something has broken.
+fwrite(STDOUT, "Something has gone wrong!");
