@@ -69,11 +69,20 @@ foreach(CHILD_PIPES as $pipe) {
 	$outPipes[$pipe] = constant($pipe);
 }
 
-while(is_resource($process)) {
+do {
 	foreach($handles as $pipe => $fh) {
 		fwrite($outPipes[$pipe], fread($fh, 1024));
 	}
 	usleep(100000);
-}
 
-fwrite(STDERR, "Build process terminated!" . PHP_EOL);
+	$status = proc_get_status($process);
+} while($status["running"]);
+
+if($status["exitcode"] === 0) {
+	fwrite(STDOUT, "Build process completed successfully." . PHP_EOL);
+}
+else {
+	fwrite(STDERR, "Build process terminated with exit code "
+		. $status["exitcode"]
+		. PHP_EOL);
+}
