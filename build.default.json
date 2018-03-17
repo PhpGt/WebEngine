@@ -1,6 +1,6 @@
 {
 	"src/style/**/*.scss": {
-		"requires": {
+		"require": {
 			"sass": "*"
 		},
 		"execute": {
@@ -9,7 +9,7 @@
 		}
 	},
 	"src/style/**/*.js": {
-		"requires": {
+		"require": {
 			"node": "*",
 			"babel": "*"
 		},
