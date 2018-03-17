@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+/**
+ * This is a proxy script to the PhpGt/Build runner (vendor/phpgt/build/bin/build)
+ */
 $id = uniqid("gt-build-");
 $tmpDir = implode(DIRECTORY_SEPARATOR, [
 	sys_get_temp_dir(),
@@ -30,8 +33,17 @@ $buildScript = realpath(implode(DIRECTORY_SEPARATOR, [
 	"bin",
 	"build",
 ]));
-$appRoot = $argv[$argc - 1];
-$command = "$buildScript $appRoot";
+$command = $buildScript;
+
+foreach($argv as $i => $arg) {
+	if($i === 0) {
+		continue;
+	}
+
+	$command .= " ";
+	$command .= $arg;
+}
+
 if(!is_file($buildScript)) {
 	fwrite(STDERR, "Error: Build script not found!" . PHP_EOL);
 }
@@ -70,10 +82,11 @@ foreach(CHILD_PIPES as $pipe) {
 }
 
 do {
+	usleep(100000);
+
 	foreach($handles as $pipe => $fh) {
 		fwrite($outPipes[$pipe], fread($fh, 1024));
 	}
-	usleep(100000);
 
 	$status = proc_get_status($process);
 } while($status["running"]);
