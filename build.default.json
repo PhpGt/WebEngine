@@ -1,0 +1,21 @@
+{
+	"src/style/**/*.scss": {
+		"requires": {
+			"sass": "*"
+		},
+		"execute": {
+			"command": "sass",
+			"arguments": "src/style/main.scss www/style.css"
+		}
+	},
+	"src/style/**/*.js": {
+		"requires": {
+			"node": "*",
+			"babel": "*"
+		},
+		"execute": {
+			"command": "babel",
+			"arguments": "src/style/main.js www/script.js"
+		}
+	}
+}
