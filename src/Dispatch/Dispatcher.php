@@ -49,6 +49,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	 */
 	public function handle(ServerRequestInterface $request):ResponseInterface {
 		$path = $request->getUri()->getPath();
+// TODO: Abstract response type needed.
 		$response = new PageResponse();
 
 		try {
