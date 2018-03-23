@@ -37,7 +37,7 @@ Features at a glance
 + HTML templates
 + Database organisation
 + Create web pages or web services (APIs) with the same code
-+ Inbuilt understanding of client-side preprocessor languages (SCSS, HAML, etc.)
++ Inbuilt client side script building (SCSS, ES6, etc.)
 + Web security as standard
 + Strong separation of concerns over PHP, HTML, SQL, JavaScript, CSS
 + Preconfigured PHPUnit and Behat test environment
