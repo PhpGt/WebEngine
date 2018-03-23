@@ -21,7 +21,12 @@ if(is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
  * rather than having to know where on disk the files exist.
  * @see https://getcomposer.org/doc/00-intro.md
  */
-require($_SERVER["DOCUMENT_ROOT"] . "/../vendor/autoload.php");
+$composerAutoloaderPath = implode(DIRECTORY_SEPARATOR, [
+	dirname($_SERVER["DOCUMENT_ROOT"]),
+	"vendor",
+	"autoload.php",
+]);
+require($composerAutoloaderPath);
 
 /**
  * That's all we need to start the request-response lifecycle. Buckle up and enjoy the ride!
