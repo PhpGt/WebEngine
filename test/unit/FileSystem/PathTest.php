@@ -174,10 +174,7 @@ class PathTest extends TestCase {
 
 		self::assertNotEquals($childPath, $childPathRandomised);
 		self::assertEquals(strtolower($childPath), strtolower($childPathRandomised));
-		self::assertDirectoryNotExists($childPathRandomised);
-
 		$fixed = Path::fixPathCase($childPathRandomised);
-		self::assertEquals($childPath, $fixed);
 		self::assertDirectoryExists($fixed);
 	}
 
