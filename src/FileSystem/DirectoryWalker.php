@@ -12,9 +12,10 @@ class DirectoryWalker {
 	public function findParentContaining(string $match):?string {
 		$path = $this->directory;
 
-		while($path !== "/"
-		&& !in_array($match, scandir($path))) {
-			$path = realpath("$path/..");
+		while(!$this->pathIsRoot($path)
+		&& !$this->directoryContains($path, $match)) {
+			$lastSlashPos = strrpos($path, DIRECTORY_SEPARATOR);
+			$path = substr($path, 0, $lastSlashPos);
 		}
 
 		if($path === "/") {
@@ -28,5 +29,25 @@ class DirectoryWalker {
 		}
 
 		return $path;
+	}
+
+	private function pathIsRoot(string $path):bool {
+// Unix root path is a simple slash.
+		if(DIRECTORY_SEPARATOR === "/") {
+			return $path === "/";
+		}
+
+// Windows root path is X:\
+		return (
+			substr_count($path, DIRECTORY_SEPARATOR) === 1
+			&& $path[1] === ":"
+		);
+	}
+
+	private function directoryContains(string $directory, string $match):bool {
+		return file_exists(implode(DIRECTORY_SEPARATOR, [
+			$directory,
+			$match,
+		]));
 	}
 }
