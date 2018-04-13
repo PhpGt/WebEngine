@@ -1,9 +1,9 @@
 <?php
 
-namespace Gt\Test\FileSystem;
+namespace Gt\WebEngine\Test\FileSystem;
 
-use Gt\FileSystem\Path;
-use Gt\Test\Helper;
+use Gt\WebEngine\FileSystem\Path;
+use Gt\WebEngine\Test\Helper\Helper;
 use PHPUnit\Framework\TestCase;
 
 class PathTest extends TestCase {
@@ -36,7 +36,10 @@ class PathTest extends TestCase {
 	public function testGetSrcDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+			]),
 			Path::getSrcDirectory($documentRoot)
 		);
 	}
@@ -47,7 +50,10 @@ class PathTest extends TestCase {
 	public function testGetWwwDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/www",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"www",
+			]),
 			Path::getWwwDirectory($documentRoot)
 		);
 	}
@@ -58,7 +64,10 @@ class PathTest extends TestCase {
 	public function testGetDataDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/data",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"data",
+			]),
 			Path::getDataDirectory($documentRoot)
 		);
 	}
@@ -69,7 +78,11 @@ class PathTest extends TestCase {
 	public function testGetPageDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src/page",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+				"page",
+			]),
 			Path::getPageDirectory($documentRoot)
 		);
 	}
@@ -80,7 +93,11 @@ class PathTest extends TestCase {
 	public function testGetApiDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src/api",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+				"api",
+			]),
 			Path::getApiDirectory($documentRoot)
 		);
 	}
@@ -91,7 +108,11 @@ class PathTest extends TestCase {
 	public function testGetAssetDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src/asset",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+				"asset",
+			]),
 			Path::getAssetDirectory($documentRoot)
 		);
 	}
@@ -102,7 +123,11 @@ class PathTest extends TestCase {
 	public function testGetScriptDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src/script",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+				"script",
+			]),
 			Path::getScriptDirectory($documentRoot)
 		);
 	}
@@ -113,7 +138,11 @@ class PathTest extends TestCase {
 	public function testGetStyleDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src/style",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+				"style",
+			]),
 			Path::getStyleDirectory($documentRoot)
 		);
 	}
@@ -124,7 +153,11 @@ class PathTest extends TestCase {
 	public function testGetClassDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(
-			"$documentRoot/src/class",
+			implode(DIRECTORY_SEPARATOR, [
+				$documentRoot,
+				"src",
+				"class",
+			]),
 			Path::getClassDirectory($documentRoot)
 		);
 	}
@@ -151,7 +184,7 @@ class PathTest extends TestCase {
 	public function dataProviderRootDirectoryExists():array {
 		$data = [];
 		for($i = 0; $i < 25; $i++) {
-			$path = Helper::getTempDirectory();
+			$path = Helper::getTmpDir();
 			mkdir($path, 0775, true);
 			$data []= [$path];
 		}

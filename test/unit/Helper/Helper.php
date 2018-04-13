@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Test;
+namespace Gt\WebEngine\Test\Helper;
 
 class Helper {
 	const TMP_PREFIX = "phpgt-webengine";
@@ -22,11 +22,18 @@ class Helper {
 	/**
 	 * Provides the absolute path to a directory that is unique to the test case.
 	 */
-	public static function getTempDirectory():string {
-		$tmp = sys_get_temp_dir();
-		$unique = uniqid(self::TMP_PREFIX, true);
-		$path = "$tmp/$unique";
-		return $path;
+	public static function getTmpDir():string {
+		return implode(DIRECTORY_SEPARATOR, [
+			sys_get_temp_dir(),
+			"phpgt",
+			"webengine",
+			uniqid()
+		]);
+
+	}
+
+	public static function deleteDir(string $dir) {
+		exec("rm -rf $dir");
 	}
 
 	public static function createNestedChildrenDirectories(string $path, int $depth = 10):string {

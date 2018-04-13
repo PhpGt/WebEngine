@@ -1,8 +1,8 @@
 <?php
-namespace Gt\Test\FileSystem;
+namespace Gt\WebEngine\Test\FileSystem;
 
-use Gt\Test\Helper;
-use Gt\FileSystem\DirectoryWalker;
+use Gt\WebEngine\Test\Helper\Helper;
+use Gt\WebEngine\FileSystem\DirectoryWalker;
 use PHPUnit\Framework\TestCase;
 
 class DirectoryWalkerTest extends TestCase {
@@ -11,18 +11,33 @@ class DirectoryWalkerTest extends TestCase {
 	 */
 	public function testFindParentThatExists(string $directory) {
 // Get a $parent_path further up the tree than the provided $directory:
-		$parentDirectories = explode("/", $directory);
-		$parent_depth = rand(2, count($parentDirectories) - 1);
-		array_splice($parentDirectories, $parent_depth);
-		$parentPath = implode("/", $parentDirectories);
+		$directoryList = explode(DIRECTORY_SEPARATOR, $directory);
+		$numDirectories = count($directoryList);
+		foreach($directoryList as $webenginePosition => $value) {
+			if($value === "webengine") {
+				break;
+			}
+		}
+		$randomDirectoryCount = mt_rand($webenginePosition, $numDirectories);
+		$directoryListUpToParent = array_splice($directoryList, 0, $randomDirectoryCount);
+		$parentDirectory = implode(DIRECTORY_SEPARATOR, $directoryListUpToParent);
+		if(DIRECTORY_SEPARATOR === "/") {
+			$parentDirectory = "/$parentDirectory";
+		}
 
 // Create a directory in the $parent_path to look for:
 		$directoryName = $this->getRandomName();
-		mkdir("$parentPath/$directoryName", 0775, true);
+		mkdir(implode(DIRECTORY_SEPARATOR, [
+				$parentDirectory,
+				$directoryName,
+			]),
+			0775,
+			true
+		);
 		$directoryWalker = new DirectoryWalker($directory);
 
 		self::assertEquals(
-			$parentPath,
+			$parentDirectory,
 			$directoryWalker->findParentContaining($directoryName)
 		);
 	}
@@ -36,14 +51,14 @@ class DirectoryWalkerTest extends TestCase {
 	}
 
 	protected function dataProviderParent(bool $exists, int $num = 10):array {
-		$tmp = Helper::getTempDirectory();
+		$tmp = Helper::getTmpDir();
 		$data = [];
 
 		for($i = 0; $i < $num; $i++) {
 			$directory = $tmp;
 			$numberOfChildren = rand(5, 25);
 			for($childNum = 0; $childNum < $numberOfChildren; $childNum++) {
-				$directory .= "/" . $this->getRandomName();
+				$directory .= DIRECTORY_SEPARATOR . $this->getRandomName();
 			}
 
 			$data []= [$directory];

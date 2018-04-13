@@ -15,6 +15,11 @@
 			"Gt\\Test\\WebEngine\\": "./test/unit/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Gt\\WebEngine\\Test\\": "./test/unit"
+		}
+	},
 
 	"bin": [
 		"bin/gt-build",
