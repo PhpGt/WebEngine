@@ -52,6 +52,7 @@ class Autoloader {
 			$path,
 			$relativeClassName
 		);
+
 		$fileName = $this->findFileName(
 			$directoryPath,
 			$relativeClassName,
@@ -61,11 +62,11 @@ class Autoloader {
 			return;
 		}
 
-		$autoloadPath = implode("/", [
+		$autoloadPath = implode(DIRECTORY_SEPARATOR, [
 			$directoryPath,
 			$fileName,
 		]);
-		$autoloadPath = Path::fixPathCase($autoloadPath, true);
+		$autoloadPath = Path::fixPathCase($autoloadPath);
 
 		$this->requireAndCheck($autoloadPath, $absoluteClassName);
 	}
@@ -136,8 +137,17 @@ class Autoloader {
 		$parts = explode("\\", $relativeClassName);
 		array_pop($parts);
 
+		$pageDir = Path::getPageDirectory();
+
 		foreach($parts as $part) {
-			$path .= "/$part";
+			$path .= DIRECTORY_SEPARATOR . $part;
+			if(!is_dir($path)) {
+				$path = str_replace(
+					DIRECTORY_SEPARATOR . "_",
+					DIRECTORY_SEPARATOR . "@",
+					$path
+				);
+			}
 		}
 
 		return $path;
@@ -159,13 +169,25 @@ class Autoloader {
 		$searchFileName = substr($className,0, $suffixPosition);
 		$searchFileName = "$searchFileName.php";
 
+		$directoryPath = str_replace(
+			DIRECTORY_SEPARATOR . "_",
+			DIRECTORY_SEPARATOR . "@",
+			$directoryPath
+		);
+
+		$searchFileNameLowerCase = strtolower($searchFileName);
+		$searchList = [
+			$searchFileNameLowerCase,
+			str_replace("_", "@", $searchFileNameLowerCase),
+		];
 		foreach(new DirectoryIterator($directoryPath) as $fileInfo) {
 			if(!$fileInfo->isFile()) {
 				continue;
 			}
 
 			$fileName = $fileInfo->getFilename();
-			if(strtolower($searchFileName) !== strtolower($fileName)) {
+			$fileNameLowerCase = strtolower($fileName);
+			if(!in_array($fileNameLowerCase, $searchList)) {
 				continue;
 			}
 

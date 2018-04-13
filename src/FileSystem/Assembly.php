@@ -25,7 +25,7 @@ class Assembly implements Iterator {
 		array $lookupAfter,
 		bool $basenameMustExist = false
 	) {
-		$this->path = realpath($basePath . $directory);
+		$this->path = $this->getPath($basePath, $directory);
 		$this->extensions = $extensions;
 		$this->basename = $basename;
 		$this->lookupBefore = $lookupBefore;
@@ -69,7 +69,6 @@ class Assembly implements Iterator {
 
 	protected function findInDirectory(string $basename, bool $bubbleUp = false):?string {
 		$foundPath = null;
-
 		$appRoot = Path::getApplicationRootDirectory($this->path);
 		$highestPath = Path::getSrcDirectory($appRoot);
 
@@ -82,20 +81,76 @@ class Assembly implements Iterator {
 				"}",
 			]);
 
-			$glob = implode(DIRECTORY_SEPARATOR, [
-				$path,
-				"$basename.$extensionGlob",
-			]);
-			$matches = glob($glob, GLOB_BRACE );
+			$baseNamesToMatch = [
+				$basename,
+				"@*",
+			];
 
-			if(!empty($matches)) {
-				$foundPath = $matches[0];
+			foreach($baseNamesToMatch as $baseNameToMatch) {
+				$glob = implode(DIRECTORY_SEPARATOR, [
+					$path,
+					"$baseNameToMatch.$extensionGlob",
+				]);
+				$matches = glob($glob, GLOB_BRACE);
+
+				if(!empty($matches)) {
+					$foundPath = $matches[0];
+					break;
+				}
 			}
 
 			$path = dirname($path);
 		} while($bubbleUp && $path !== $highestPath);
 
 		return $foundPath;
+	}
+
+	private function getPath(string $baseName, string $directory):?string {
+		$path = realpath($baseName . $directory);
+
+// If the path exists, simply return it.
+		if($path !== false) {
+			return $path;
+		}
+
+// Replace the path with any magic directories that exist.
+		$pathToScan = $baseName;
+		$subDirectoryParts = explode(
+			DIRECTORY_SEPARATOR,
+			$directory
+		);
+		$subDirectoryParts = array_filter($subDirectoryParts);
+
+		do {
+			$fileList = scandir($pathToScan);
+			$nextDirName = array_shift($subDirectoryParts);
+			if(in_array($nextDirName, $fileList)) {
+				$pathToScan .= DIRECTORY_SEPARATOR . $nextDirName;
+			}
+			else {
+				$magicDirectory = null;
+
+				foreach($fileList as $file) {
+					if($file[0] !== "@") {
+						continue;
+					}
+
+					$magicDirectory = $file;
+				}
+
+				if(is_null($magicDirectory)) {
+					break;
+				}
+
+				$pathToScan .= DIRECTORY_SEPARATOR . $magicDirectory;
+			}
+		} while(!empty($subDirectoryParts));
+
+		if(is_dir($pathToScan)) {
+			return $pathToScan;
+		}
+
+		return null;
 	}
 
 	public function current():string {

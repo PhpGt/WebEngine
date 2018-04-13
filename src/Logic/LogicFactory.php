@@ -95,6 +95,7 @@ class LogicFactory {
 			$logicTypeNamespace
 		);
 
+		$className = str_replace("@", "_", $className);
 		return $className;
 	}
 }
