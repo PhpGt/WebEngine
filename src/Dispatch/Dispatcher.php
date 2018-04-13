@@ -17,6 +17,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TypeError;
 
@@ -75,7 +76,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$logicAssembly = $this->router->getLogicAssembly($path);
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
-			$baseLogicDirectory
+			$baseLogicDirectory,
+			$request->getUri()
 		);
 
 		$this->dispatchLogicObjects($logicObjects);
@@ -98,7 +100,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 	protected function createLogicObjects(
 		Assembly $logicAssembly,
-		string $baseLogicDirectory
+		string $baseLogicDirectory,
+		UriInterface $uri
 	):array {
 		$logicObjects = [];
 
@@ -107,7 +110,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$logicObjects []= LogicFactory::createPageLogicFromPath(
 					$logicPath,
 					$this->appNamespace,
-					$baseLogicDirectory
+					$baseLogicDirectory,
+					$uri
 				);
 			}
 			catch(TypeError $exception) {

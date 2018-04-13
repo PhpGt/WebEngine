@@ -8,6 +8,7 @@ use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\View\View;
+use Psr\Http\Message\UriInterface;
 use TypeError;
 
 class LogicFactory {
@@ -47,7 +48,8 @@ class LogicFactory {
 	public static function createPageLogicFromPath(
 		string $path,
 		string $appNamespace,
-		string $baseDirectory
+		string $baseDirectory,
+		UriInterface $uri
 	):Page {
 		$className = self::getLogicClassFromPath(
 			$path,
@@ -56,21 +58,30 @@ class LogicFactory {
 			$baseDirectory
 		);
 
+		$dynamicPathParameters = self::getDynamicPathParameters(
+			$path,
+			$baseDirectory,
+			$uri
+		);
+
 		try {
-			$test = new $className(
+			/** @var Page $class */
+			$class = new $className(
 				self::$view->getViewModel(),
 				self::$config,
 				self::$serverInfo,
 				self::$input,
 				self::$cookie,
-				self::$session
+				self::$session,
+				$dynamicPathParameters
 			);
+
 		}
 		catch(TypeError $exception) {
 			throw new InvalidLogicConstructorParameters($exception->getMessage());
 		}
 
-		return $test;
+		return $class;
 
 	}
 
@@ -97,5 +108,42 @@ class LogicFactory {
 
 		$className = str_replace("@", "_", $className);
 		return $className;
+	}
+
+	public static function getDynamicPathParameters(
+		string $path,
+		string $baseDirectory,
+		UriInterface $uri
+	):DynamicPath {
+		$uriPath = $uri->getPath();
+		$relativeDirPath = str_replace(
+			$baseDirectory,
+			"",
+			$path
+		);
+		$relativeDirPath = str_replace(
+			DIRECTORY_SEPARATOR,
+			"/",
+			$relativeDirPath
+		);
+		$relativeDirParts = explode("/", $relativeDirPath);
+		$relativeDirParts = array_filter($relativeDirParts);
+
+		$uriParts = explode("/", $uriPath);
+		$uriParts = array_filter($uriParts);
+
+		$keyValuePairs = [];
+
+		foreach($relativeDirParts as $i => $part) {
+			$part = strtok($part, ".");
+			if($part[0] !== "@") {
+				continue;
+			}
+
+			$partName = substr($part, 1);
+			$keyValuePairs[$partName] = $uriParts[$i];
+		}
+
+		return new DynamicPath($keyValuePairs);
 	}
 }

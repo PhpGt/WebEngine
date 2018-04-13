@@ -20,6 +20,8 @@ abstract class AbstractLogic {
 	protected $cookieHandler;
 	/** @var Session */
 	protected $session;
+	/** @var DynamicPath */
+	protected $dynamicPath;
 
 	public function __construct(
 		$viewModel,
@@ -27,7 +29,8 @@ abstract class AbstractLogic {
 		ServerInfo $serverInfo,
 		Input $input,
 		CookieHandler $cookieHandler,
-		Session $session
+		Session $session,
+		DynamicPath $dynamicPath
 	) {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
 // will have its own type and implementation.
@@ -36,7 +39,12 @@ abstract class AbstractLogic {
 		$this->input = $input;
 		$this->cookieHandler = $cookieHandler;
 		$this->session = $session;
+		$this->dynamicPath = $dynamicPath;
 	}
 
 	abstract public function go();
+
+	protected function getDynamicPathParameter(string $parameter):?string {
+		return $this->dynamicPath->get($parameter);
+	}
 }
