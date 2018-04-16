@@ -291,12 +291,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "d9451c32646b66ee2fa24451144766e48625f93f"
+                "reference": "6b89e543b314a3c0a1de6216f71fa185b186f512"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/d9451c32646b66ee2fa24451144766e48625f93f",
-                "reference": "d9451c32646b66ee2fa24451144766e48625f93f",
+                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/6b89e543b314a3c0a1de6216f71fa185b186f512",
+                "reference": "6b89e543b314a3c0a1de6216f71fa185b186f512",
                 "shasum": ""
             },
             "require": {
@@ -330,7 +330,7 @@
                 }
             ],
             "description": "Automatic protection from Cross-Site Request Forgery.",
-            "time": "2018-03-23T17:52:54+00:00"
+            "time": "2018-04-13T23:23:13+00:00"
         },
         {
             "name": "phpgt/database",
@@ -422,12 +422,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "c4f1386b4a335aeb4bab35a155e62fa09dba6310"
+                "reference": "3727a7a99035ded5b374d7ce0d76ebbb75171667"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/c4f1386b4a335aeb4bab35a155e62fa09dba6310",
-                "reference": "c4f1386b4a335aeb4bab35a155e62fa09dba6310",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/3727a7a99035ded5b374d7ce0d76ebbb75171667",
+                "reference": "3727a7a99035ded5b374d7ce0d76ebbb75171667",
                 "shasum": ""
             },
             "require": {
@@ -447,7 +447,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2018-03-23T22:47:41+00:00"
+            "time": "2018-04-15T18:51:09+00:00"
         },
         {
             "name": "phpgt/http",
