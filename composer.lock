@@ -382,12 +382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "4f0c0a62390b2df3e8b82cccd8e96bf25a5486ae"
+                "reference": "343babc51b1d9caeef6372aafea4006c28d28617"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/4f0c0a62390b2df3e8b82cccd8e96bf25a5486ae",
-                "reference": "4f0c0a62390b2df3e8b82cccd8e96bf25a5486ae",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/343babc51b1d9caeef6372aafea4006c28d28617",
+                "reference": "343babc51b1d9caeef6372aafea4006c28d28617",
                 "shasum": ""
             },
             "require": {
@@ -414,7 +414,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2017-12-27T17:34:04+00:00"
+            "time": "2018-04-17T12:53:55+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -492,12 +492,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "595e86b85a593e12ce9432f58da0acd90e21c4c4"
+                "reference": "2e580971fb9f4f6a022e9ec0f0304990ad7652b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/595e86b85a593e12ce9432f58da0acd90e21c4c4",
-                "reference": "595e86b85a593e12ce9432f58da0acd90e21c4c4",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/2e580971fb9f4f6a022e9ec0f0304990ad7652b8",
+                "reference": "2e580971fb9f4f6a022e9ec0f0304990ad7652b8",
                 "shasum": ""
             },
             "require": {
@@ -517,7 +517,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2018-03-23T17:52:56+00:00"
+            "time": "2018-04-17T16:09:40+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
@@ -555,12 +555,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "9ff25298281ff693d08a5aca99bba6ef7f46145c"
+                "reference": "01b6bead69da01f85a171f69f8a28b44fdb80249"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/9ff25298281ff693d08a5aca99bba6ef7f46145c",
-                "reference": "9ff25298281ff693d08a5aca99bba6ef7f46145c",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/01b6bead69da01f85a171f69f8a28b44fdb80249",
+                "reference": "01b6bead69da01f85a171f69f8a28b44fdb80249",
                 "shasum": ""
             },
             "require": {
@@ -580,7 +580,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2018-03-23T17:52:56+00:00"
+            "time": "2018-04-17T21:05:05+00:00"
         },
         {
             "name": "psr/http-message",
