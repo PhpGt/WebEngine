@@ -21,9 +21,9 @@ if($argc - 1 > $readArgNum) {
 }
 
 $docRoot = $appRoot . DIRECTORY_SEPARATOR . "www";
-$srcRoot = realpath($appRoot . DIRECTORY_SEPARATOR . "src");
+$composerPath = realpath($appRoot . DIRECTORY_SEPARATOR . "composer.json");
 
-if(!is_dir($srcRoot)) {
+if(!is_file($composerPath)) {
 	fwrite(STDERR, "ERROR: No project directory found at $appRoot" . PHP_EOL);
 	exit(1);
 }
