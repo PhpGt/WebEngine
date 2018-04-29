@@ -382,12 +382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "020a6dc7830dd697d4d46516667fd2ae568824fe"
+                "reference": "f383c04f271f67f1e73479b0023be1f22c6ce1cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/020a6dc7830dd697d4d46516667fd2ae568824fe",
-                "reference": "020a6dc7830dd697d4d46516667fd2ae568824fe",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/f383c04f271f67f1e73479b0023be1f22c6ce1cd",
+                "reference": "f383c04f271f67f1e73479b0023be1f22c6ce1cd",
                 "shasum": ""
             },
             "require": {
@@ -451,7 +451,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2018-04-22T23:19:29+00:00"
+            "time": "2018-04-29T18:22:31+00:00"
         },
         {
             "name": "phpgt/domtemplate",
