@@ -33,20 +33,6 @@ class PathTest extends TestCase {
 	/**
 	 * @dataProvider dataProviderRootDirectoryExists
 	 */
-	public function testGetSrcDirectory(string $documentRoot) {
-		Helper::createSkeletonProject($documentRoot);
-		self::assertEquals(
-			implode(DIRECTORY_SEPARATOR, [
-				$documentRoot,
-				"src",
-			]),
-			Path::getSrcDirectory($documentRoot)
-		);
-	}
-
-	/**
-	 * @dataProvider dataProviderRootDirectoryExists
-	 */
 	public function testGetWwwDirectory(string $documentRoot) {
 		Helper::createSkeletonProject($documentRoot);
 		self::assertEquals(

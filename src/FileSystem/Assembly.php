@@ -70,7 +70,6 @@ class Assembly implements Iterator {
 	protected function findInDirectory(string $basename, bool $bubbleUp = false):?string {
 		$foundPath = null;
 		$appRoot = Path::getApplicationRootDirectory($this->path);
-		$highestPath = Path::getSrcDirectory($appRoot);
 
 		$path = $this->path;
 		do {
@@ -100,7 +99,7 @@ class Assembly implements Iterator {
 			}
 
 			$path = dirname($path);
-		} while($bubbleUp && $path !== $highestPath);
+		} while($bubbleUp && $path !== $appRoot);
 
 		return $foundPath;
 	}

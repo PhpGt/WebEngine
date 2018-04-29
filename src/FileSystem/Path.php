@@ -10,7 +10,7 @@ class Path {
 		$directoryWalker = new DirectoryWalker($innerDirectory);
 
 		return self::fixPathCase(
-			$directoryWalker->findParentContaining("src")
+			$directoryWalker->findParentContaining("composer.json")
 		);
 	}
 
@@ -19,14 +19,6 @@ class Path {
 		return self::fixPathCase(
 			$directoryWalker->findParentContaining("src")
 		);
-	}
-
-	public static function getSrcDirectory(string $appRoot = null):string {
-		$appRoot = self::defaultApplicationRoot($appRoot);
-		return implode(DIRECTORY_SEPARATOR, [
-			self::getApplicationRootDirectory($appRoot),
-			"src",
-		]);
 	}
 
 	public static function getWwwDirectory(string $appRoot = null):string {
@@ -49,7 +41,6 @@ class Path {
 		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($appRoot),
-			"src",
 			"page",
 		]);
 	}
@@ -57,7 +48,6 @@ class Path {
 		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($appRoot),
-			"src",
 			"api",
 		]);
 	}
@@ -66,7 +56,6 @@ class Path {
 		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($appRoot),
-			"src",
 			"asset",
 		]);
 	}
@@ -75,7 +64,6 @@ class Path {
 		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($appRoot),
-			"src",
 			"script",
 		]);
 	}
@@ -84,7 +72,6 @@ class Path {
 		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($appRoot),
-			"src",
 			"style",
 		]);
 	}
@@ -93,16 +80,8 @@ class Path {
 		$appRoot = self::defaultApplicationRoot($appRoot);
 		return implode(DIRECTORY_SEPARATOR, [
 			self::getApplicationRootDirectory($appRoot),
-			"src",
 			"class",
 		]);
-	}
-
-	public static function getChildOfSrcDirectory(string $name = null):string {
-		return self::fixPathCase(implode(DIRECTORY_SEPARATOR, [
-			self::getSrcDirectory($name),
-			$name,
-		]));
 	}
 
 	public static function fixPathCase(string $path):string {
