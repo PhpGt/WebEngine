@@ -382,12 +382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "343babc51b1d9caeef6372aafea4006c28d28617"
+                "reference": "020a6dc7830dd697d4d46516667fd2ae568824fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/343babc51b1d9caeef6372aafea4006c28d28617",
-                "reference": "343babc51b1d9caeef6372aafea4006c28d28617",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/020a6dc7830dd697d4d46516667fd2ae568824fe",
+                "reference": "020a6dc7830dd697d4d46516667fd2ae568824fe",
                 "shasum": ""
             },
             "require": {
@@ -410,11 +410,48 @@
             "authors": [
                 {
                     "name": "Greg Bowler",
-                    "email": "greg.bowler@g105b.com"
+                    "email": "greg.bowler@g105b.com",
+                    "homepage": "https://www.g105b.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Alvaro Guimaraes",
+                    "homepage": "https://github.com/aguimaraes",
+                    "role": "Developer"
+                },
+                {
+                    "name": "James Fellows",
+                    "homepage": "https://github.com/j4m3s",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Emile Ward",
+                    "homepage": "https://github.com/emileward",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Jelmer Wijnja",
+                    "homepage": "https://github.com/Jelmergu",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Ognjen Petrovic",
+                    "homepage": "https://github.com/ognjen-petrovic",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Jacob Bearden",
+                    "homepage": "https://github.com/jacobbearden",
+                    "role": "Documentation contributor"
+                },
+                {
+                    "name": "Jaroslav Týc",
+                    "homepage": "https://www.jaroslavtyc.com/",
+                    "role": "Developer"
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2018-04-17T12:53:55+00:00"
+            "time": "2018-04-22T23:19:29+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -555,12 +592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "01b6bead69da01f85a171f69f8a28b44fdb80249"
+                "reference": "7bf737a5c5492c4f3ef42dc90df887cb8283b808"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/01b6bead69da01f85a171f69f8a28b44fdb80249",
-                "reference": "01b6bead69da01f85a171f69f8a28b44fdb80249",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/7bf737a5c5492c4f3ef42dc90df887cb8283b808",
+                "reference": "7bf737a5c5492c4f3ef42dc90df887cb8283b808",
                 "shasum": ""
             },
             "require": {
@@ -580,7 +617,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2018-04-17T21:05:05+00:00"
+            "time": "2018-04-20T15:25:55+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1343,23 +1380,23 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.7.5",
+            "version": "1.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401"
+                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/dfd6be44111a7c41c2e884a336cc4f461b3b2401",
-                "reference": "dfd6be44111a7c41c2e884a336cc4f461b3b2401",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
+                "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
                 "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0",
-                "sebastian/comparator": "^1.1|^2.0",
+                "sebastian/comparator": "^1.1|^2.0|^3.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
             "require-dev": {
@@ -1402,7 +1439,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2018-02-19T10:16:54+00:00"
+            "time": "2018-04-18T13:57:24+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
