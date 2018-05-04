@@ -64,6 +64,8 @@ class Assembly implements Iterator {
 			$parts []= $this->findInDirectory($lookup, true);
 		}
 
+		$parts = array_filter($parts);
+		$parts = array_unique($parts);
 		return array_values(array_filter($parts));
 	}
 
