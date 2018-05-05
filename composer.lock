@@ -459,12 +459,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "3727a7a99035ded5b374d7ce0d76ebbb75171667"
+                "reference": "307cebe0664f14988648de8be3ddcdc444b0d59f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/3727a7a99035ded5b374d7ce0d76ebbb75171667",
-                "reference": "3727a7a99035ded5b374d7ce0d76ebbb75171667",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/307cebe0664f14988648de8be3ddcdc444b0d59f",
+                "reference": "307cebe0664f14988648de8be3ddcdc444b0d59f",
                 "shasum": ""
             },
             "require": {
@@ -484,7 +484,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2018-04-15T18:51:09+00:00"
+            "time": "2018-05-01T15:19:55+00:00"
         },
         {
             "name": "phpgt/http",
@@ -562,12 +562,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ProtectedGlobal.git",
-                "reference": "6482caa253b34863c90a31b911203b3b40a31486"
+                "reference": "37566e8cc80c6e2f8a2372d19a13f8601aa550bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/6482caa253b34863c90a31b911203b3b40a31486",
-                "reference": "6482caa253b34863c90a31b911203b3b40a31486",
+                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/37566e8cc80c6e2f8a2372d19a13f8601aa550bf",
+                "reference": "37566e8cc80c6e2f8a2372d19a13f8601aa550bf",
                 "shasum": ""
             },
             "require-dev": {
@@ -584,7 +584,7 @@
                 "MIT"
             ],
             "description": "Protect against accidental use of superglobals.",
-            "time": "2018-03-23T17:52:54+00:00"
+            "time": "2018-05-02T13:02:00+00:00"
         },
         {
             "name": "phpgt/session",
@@ -592,12 +592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "7bf737a5c5492c4f3ef42dc90df887cb8283b808"
+                "reference": "b042d0192f922aa76eba30669f6f6b31f02c8736"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/7bf737a5c5492c4f3ef42dc90df887cb8283b808",
-                "reference": "7bf737a5c5492c4f3ef42dc90df887cb8283b808",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/b042d0192f922aa76eba30669f6f6b31f02c8736",
+                "reference": "b042d0192f922aa76eba30669f6f6b31f02c8736",
                 "shasum": ""
             },
             "require": {
@@ -617,7 +617,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2018-04-20T15:25:55+00:00"
+            "time": "2018-05-05T22:16:05+00:00"
         },
         {
             "name": "psr/http-message",
