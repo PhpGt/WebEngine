@@ -592,12 +592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "b042d0192f922aa76eba30669f6f6b31f02c8736"
+                "reference": "7822af4a6b0cf4712eec7329a1b0bcdc099eb951"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/b042d0192f922aa76eba30669f6f6b31f02c8736",
-                "reference": "b042d0192f922aa76eba30669f6f6b31f02c8736",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/7822af4a6b0cf4712eec7329a1b0bcdc099eb951",
+                "reference": "7822af4a6b0cf4712eec7329a1b0bcdc099eb951",
                 "shasum": ""
             },
             "require": {
@@ -617,7 +617,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2018-05-05T22:16:05+00:00"
+            "time": "2018-05-05T22:24:14+00:00"
         },
         {
             "name": "psr/http-message",
