@@ -13,11 +13,11 @@ abstract class AbstractLogic {
 	/** @var Config */
 	protected $config;
 	/** @var ServerInfo */
-	protected $serverInfo;
+	protected $server;
 	/** @var Input */
 	protected $input;
 	/** @var CookieHandler */
-	protected $cookieHandler;
+	protected $cookie;
 	/** @var Session */
 	protected $session;
 	/** @var DynamicPath */
@@ -35,9 +35,9 @@ abstract class AbstractLogic {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
 // will have its own type and implementation.
 		$this->config = $config;
-		$this->serverInfo = $serverInfo;
+		$this->server = $serverInfo;
 		$this->input = $input;
-		$this->cookieHandler = $cookieHandler;
+		$this->cookie = $cookieHandler;
 		$this->session = $session;
 		$this->dynamicPath = $dynamicPath;
 	}
