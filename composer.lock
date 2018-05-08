@@ -459,12 +459,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "307cebe0664f14988648de8be3ddcdc444b0d59f"
+                "reference": "2224d64374e39c819e41a569e451706cd28cc0c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/307cebe0664f14988648de8be3ddcdc444b0d59f",
-                "reference": "307cebe0664f14988648de8be3ddcdc444b0d59f",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/2224d64374e39c819e41a569e451706cd28cc0c9",
+                "reference": "2224d64374e39c819e41a569e451706cd28cc0c9",
                 "shasum": ""
             },
             "require": {
@@ -484,7 +484,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2018-05-01T15:19:55+00:00"
+            "time": "2018-05-07T19:10:45+00:00"
         },
         {
             "name": "phpgt/http",
