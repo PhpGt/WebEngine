@@ -50,8 +50,8 @@ class Lifecycle implements MiddlewareInterface {
 		$sessionId = $cookie[$sessionConfig["name"]];
 		$session = new Session(
 			$handler,
-			$sessionId,
-			$sessionConfig
+			$sessionConfig,
+			$sessionId
 		);
 
 		$this->protectGlobals();
