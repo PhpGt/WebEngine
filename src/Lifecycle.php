@@ -3,6 +3,7 @@ namespace Gt\WebEngine;
 
 use Gt\Config\Config;
 
+use Gt\Config\ConfigSection;
 use Gt\Cookie\CookieHandler;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
@@ -55,7 +56,10 @@ class Lifecycle implements MiddlewareInterface {
 		);
 
 		$this->protectGlobals();
-		$this->attachAutoloaders($server->getDocumentRoot());
+		$this->attachAutoloaders(
+			$server->getDocumentRoot(),
+			$config->getSection("app")
+		);
 
 		$request = $this->createServerRequest(
 			$server,
@@ -109,9 +113,9 @@ class Lifecycle implements MiddlewareInterface {
 		);
 	}
 
-	public function attachAutoloaders(string $documentRoot) {
+	public function attachAutoloaders(string $documentRoot, ConfigSection $config) {
 		$logicAutoloader = new Autoloader(
-			"App", // TODO: Load this from Config.
+			$config["namespace"],
 			$documentRoot
 		);
 
