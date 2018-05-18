@@ -20,8 +20,7 @@ class DispatcherFactory {
 		Session $session,
 		Router $router
 	):Dispatcher {
-// TODO: Get App Namespace from config when implemented.
-		$appNamespace = "App";
+		$appNamespace = $config->get("app.namespace");
 
 		if($router instanceof PageRouter) {
 			$dispatcher = new PageDispatcher($router, $appNamespace);
