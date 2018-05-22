@@ -56,7 +56,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		try {
 			$templateDirectory = implode(DIRECTORY_SEPARATOR, [
 				$this->router->getBaseViewLogicPath(),
-				"_template",
+				"_component",
 			]);
 			$viewAssembly = $this->router->getViewAssembly($path);
 			$view = $this->getView(
