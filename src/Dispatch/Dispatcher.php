@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Dispatch;
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -36,13 +37,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		ServerInfo $serverInfo,
 		Input $input,
 		CookieHandler $cookie,
-		Session $session
+		Session $session,
+		Database $database
 	):void {
 		LogicFactory::setConfig($config);
 		LogicFactory::setServerInfo($serverInfo);
 		LogicFactory::setInput($input);
 		LogicFactory::setCookieHandler($cookie);
 		LogicFactory::setSession($session);
+		LogicFactory::setDatabase($database);
 	}
 
 	/**

@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -17,6 +18,7 @@ class LogicFactory {
 	protected static $input;
 	protected static $cookie;
 	protected static $session;
+	protected static $database;
 
 	/** @var View */
 	protected static $view;
@@ -39,6 +41,10 @@ class LogicFactory {
 
 	public static function setSession(Session $session):void {
 		self::$session = $session;
+	}
+
+	public static function setDatabase(Database $database):void {
+		self::$database = $database;
 	}
 
 	public static function setView(View $view):void {
@@ -73,6 +79,7 @@ class LogicFactory {
 				self::$input,
 				self::$cookie,
 				self::$session,
+				self::$database,
 				$dynamicPathParameters
 			);
 

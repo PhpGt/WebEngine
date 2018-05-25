@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Dispatch;
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -18,6 +19,7 @@ class DispatcherFactory {
 		Input $input,
 		CookieHandler $cookie,
 		Session $session,
+		Database $database,
 		Router $router
 	):Dispatcher {
 		$appNamespace = $config->get("app.namespace");
@@ -34,7 +36,8 @@ class DispatcherFactory {
 			$serverInfo,
 			$input,
 			$cookie,
-			$session
+			$session,
+			$database
 		);
 
 		return $dispatcher;

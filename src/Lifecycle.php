@@ -5,6 +5,8 @@ use Gt\Config\Config;
 
 use Gt\Config\ConfigSection;
 use Gt\Cookie\CookieHandler;
+use Gt\Database\Connection\Settings;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\ProtectedGlobal\Protection;
@@ -55,6 +57,17 @@ class Lifecycle implements MiddlewareInterface {
 			$sessionId
 		);
 
+		$databaseSettings = new Settings(
+			$config->get("database.query_directory"),
+			$config->get("database.dsn"),
+			$config->get("database.schema"),
+			$config->get("database.host"),
+			$config->get("database.port"),
+			$config->get("database.username"),
+			$config->get("database.password")
+		);
+		$database = new Database($databaseSettings);
+
 		$this->protectGlobals();
 		$this->attachAutoloaders(
 			$server->getDocumentRoot(),
@@ -76,6 +89,7 @@ class Lifecycle implements MiddlewareInterface {
 			$input,
 			$cookie,
 			$session,
+			$database,
 			$router
 		);
 
@@ -150,6 +164,7 @@ class Lifecycle implements MiddlewareInterface {
 		Input $input,
 		CookieHandler $cookie,
 		Session $session,
+		Database $database,
 		Router $router
 	):Dispatcher {
 		$dispatcher = DispatcherFactory::create(
@@ -158,6 +173,7 @@ class Lifecycle implements MiddlewareInterface {
 			$input,
 			$cookie,
 			$session,
+			$database,
 			$router
 		);
 		return $dispatcher;
