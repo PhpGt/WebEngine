@@ -11,22 +11,22 @@ PHP frameworks offer many features, but often come with steep learning curves or
 ***
 
 <a href="https://circleci.com/gh/phpgt/webengine" target="_blank">
-    <img src="http://img.shields.io/circleci/project/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt build status" />
+    <img src="https://badge.status.php.gt/webengine-build.svg" alt="PHP.Gt build status" />
 </a>
 <a href="https://coveralls.io/r/phpgt/webengine" target="_blank">
-    <img src="http://img.shields.io/coveralls/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt code coverage" />
+    <img src="https://badge.status.php.gt/webengine-coverage.svg" alt="PHP.Gt code coverage" />
 </a>
 <a href="https://scrutinizer-ci.com/g/phpgt/webengine" target="_blank">
-    <img src="http://img.shields.io/scrutinizer/g/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt code quality" />
+    <img src="https://badge.status.php.gt/webengine-quality.svg" alt="PHP.Gt code quality" />
 </a>
 <a href="https://packagist.org/packages/phpgt/webengine" target="_blank">
-    <img src="http://img.shields.io/packagist/v/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt Composer version" />
+    <img src="https://badge.status.php.gt/webengine-version.svg" alt="PHP.Gt Composer version" />
 </a>
 <a href="https://packagist.org/packages/phpgt/webengine" target="_blank">
     <img src="http://img.shields.io/packagist/dm/phpgt/webengine.svg?style=flat-square" alt="PHP.Gt download stats" />
 </a>
 <a href="http://www.php.gt" target="_blank">
-    <img src="http://img.shields.io/badge/web-www.php.gt-26a5e3.svg?style=flat-square" alt="PHP.Gt Website" />
+    <img src="https://badge.status.php.gt/webengine-docs.svg" alt="PHP.Gt Website" />
 </a>
 
 Features at a glance
