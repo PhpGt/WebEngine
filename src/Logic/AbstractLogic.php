@@ -49,7 +49,7 @@ abstract class AbstractLogic {
 	abstract public function go();
 
 	protected function reload():void {
-		$this->redirect($this->server->getRequestUri()->getPath());
+		$this->redirect($this->server->getRequestUri());
 	}
 
 	protected function redirect(string $uri, int $code = 303):void {
