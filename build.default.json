@@ -17,5 +17,14 @@
 			"command": "babel",
 			"arguments": "style/main.js www/script.js"
 		}
+	},
+	"asset/**/*": {
+		"require": {
+			"rsync": ">=3.0.0"
+		},
+		"execute": {
+			"command": "rsync",
+			"arguments": "-a asset/ www/asset --delete"
+		}
 	}
 }
