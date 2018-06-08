@@ -7,6 +7,6 @@ class ApiRouter extends Router {
 	const VIEW_EXTENSIONS = ["json", "xml"];
 
 	public function getBaseViewLogicPath():string {
-		return Path::getApiDirectory();
+		return Path::getApiDirectory($this->documentRoot);
 	}
 }

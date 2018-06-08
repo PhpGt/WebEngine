@@ -66,7 +66,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$response->getBody(),
 				(string)$viewAssembly,
 				$templateDirectory,
-				$path
+				$path,
+				$request->getHeaderLine("accept")
 			);
 		}
 		catch(BasenameNotFoundException $exception) {
@@ -94,7 +95,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		StreamInterface $outputStream,
 		string $body,
 		string $templateDirectory,
-		string $path = null
+		string $path = null,
+		string $type = null
 	):View;
 	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 

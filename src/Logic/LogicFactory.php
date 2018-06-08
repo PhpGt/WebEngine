@@ -8,6 +8,8 @@ use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
+use Gt\WebEngine\View\ApiView;
+use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
 use Psr\Http\Message\UriInterface;
 use TypeError;
@@ -56,11 +58,10 @@ class LogicFactory {
 		string $appNamespace,
 		string $baseDirectory,
 		UriInterface $uri
-	):Page {
+	):AbstractLogic {
 		$className = self::getLogicClassFromPath(
 			$path,
 			$appNamespace,
-			"Page",
 			$baseDirectory
 		);
 
@@ -71,7 +72,7 @@ class LogicFactory {
 		);
 
 		try {
-			/** @var Page $class */
+			/** @var AbstractLogic $class */
 			$class = new $className(
 				self::$view->getViewModel(),
 				self::$config,
@@ -95,9 +96,14 @@ class LogicFactory {
 	protected static function getLogicClassFromPath(
 		string $path,
 		string $appNamespace,
-		string $logicTypeNamespace,
 		string $baseDirectory
 	):string {
+		if(self::$view instanceof ApiView) {
+			$logicTypeNamespace = "Api";
+		}
+		if(self::$view instanceof PageView) {
+			$logicTypeNamespace = "Page";
+		}
 		$basePageNamespace = implode("\\", [
 			$appNamespace,
 			$logicTypeNamespace,
