@@ -3,6 +3,7 @@ namespace Gt\WebEngine;
 
 use Gt\Config\Config;
 
+use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Connection\Settings;
@@ -41,18 +42,24 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public function start():void {
 		$server = new ServerInfo($_SERVER);
-		$config = new Config(dirname($server->getDocumentRoot()));
-		$config->setDefault(dirname(__DIR__));
+		$config = ConfigFactory::createForProject(
+			dirname($server->getDocumentRoot()),
+			implode(DIRECTORY_SEPARATOR, [
+				dirname(__DIR__),
+				"config.default.ini",
+			])
+		);
+
 		$input = new Input($_GET, $_POST, $_FILES);
 		$cookie = new CookieHandler($_COOKIE);
 
-		$handler = SessionSetup::attachHandler(
+		$sessionHandler = SessionSetup::attachHandler(
 			$config->get("session.handler")
 		);
 		$sessionConfig = $config->getSection("session");
 		$sessionId = $cookie[$sessionConfig["name"]];
-		$session = new Session(
-			$handler,
+		$sessionHandler = new Session(
+			$sessionHandler,
 			$sessionConfig,
 			$sessionId
 		);
@@ -79,6 +86,7 @@ class Lifecycle implements MiddlewareInterface {
 			$input,
 			$cookie
 		);
+
 		$router = $this->createRouter(
 			$request,
 			$server->getDocumentRoot()
@@ -88,7 +96,7 @@ class Lifecycle implements MiddlewareInterface {
 			$server,
 			$input,
 			$cookie,
-			$session,
+			$sessionHandler,
 			$database,
 			$router
 		);
