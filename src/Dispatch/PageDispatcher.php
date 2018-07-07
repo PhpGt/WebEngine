@@ -14,7 +14,8 @@ class PageDispatcher extends Dispatcher {
 		StreamInterface $outputStream,
 		string $body,
 		string $templateDirectory,
-		string $path = null
+		string $path = null,
+		string $type = null
 	):View {
 		$document = new HTMLDocument(
 			$body,

@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Dispatch;
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -36,13 +37,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		ServerInfo $serverInfo,
 		Input $input,
 		CookieHandler $cookie,
-		Session $session
+		Session $session,
+		Database $database
 	):void {
 		LogicFactory::setConfig($config);
 		LogicFactory::setServerInfo($serverInfo);
 		LogicFactory::setInput($input);
 		LogicFactory::setCookieHandler($cookie);
 		LogicFactory::setSession($session);
+		LogicFactory::setDatabase($database);
 	}
 
 	/**
@@ -63,7 +66,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$response->getBody(),
 				(string)$viewAssembly,
 				$templateDirectory,
-				$path
+				$path,
+				$request->getHeaderLine("accept")
 			);
 		}
 		catch(BasenameNotFoundException $exception) {
@@ -91,7 +95,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		StreamInterface $outputStream,
 		string $body,
 		string $templateDirectory,
-		string $path = null
+		string $path = null,
+		string $type = null
 	):View;
 	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 

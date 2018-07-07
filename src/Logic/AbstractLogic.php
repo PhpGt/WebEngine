@@ -2,8 +2,8 @@
 namespace Gt\WebEngine\Logic;
 
 use Gt\Config\Config;
-use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -20,6 +20,8 @@ abstract class AbstractLogic {
 	protected $cookie;
 	/** @var Session */
 	protected $session;
+	/** @var Database */
+	protected $database;
 	/** @var DynamicPath */
 	protected $dynamicPath;
 
@@ -30,6 +32,7 @@ abstract class AbstractLogic {
 		Input $input,
 		CookieHandler $cookieHandler,
 		Session $session,
+		Database $database,
 		DynamicPath $dynamicPath
 	) {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
@@ -39,10 +42,24 @@ abstract class AbstractLogic {
 		$this->input = $input;
 		$this->cookie = $cookieHandler;
 		$this->session = $session;
+		$this->database = $database;
 		$this->dynamicPath = $dynamicPath;
 	}
 
 	abstract public function go();
+
+	protected function reload():void {
+		$this->redirect($this->server->getRequestUri());
+	}
+
+	protected function redirect(string $uri, int $code = 303):void {
+		header(
+			"Location: $uri",
+			true,
+			$code
+		);
+		exit;
+	}
 
 	protected function getDynamicPathParameter(string $parameter):?string {
 		return $this->dynamicPath->get($parameter);

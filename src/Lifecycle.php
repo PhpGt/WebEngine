@@ -2,24 +2,28 @@
 namespace Gt\WebEngine;
 
 use Gt\Config\Config;
+
+use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Cookie\CookieHandler;
-use Gt\Input\Input;
+use Gt\Database\Connection\Settings;
+use Gt\Database\Database;
 use Gt\Http\ServerInfo;
-use Gt\Http\RequestFactory;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Gt\Input\Input;
 use Gt\ProtectedGlobal\Protection;
 use Gt\Session\Session;
+use Gt\Http\RequestFactory;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * The fundamental purpose of any PHP framework is to provide a mechanism for generating an
@@ -38,21 +42,38 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public function start():void {
 		$server = new ServerInfo($_SERVER);
-		$config = new Config(dirname($server->getDocumentRoot()));
-		$config->setDefault(dirname(__DIR__));
+		$config = ConfigFactory::createForProject(
+			dirname($server->getDocumentRoot()),
+			implode(DIRECTORY_SEPARATOR, [
+				dirname(__DIR__),
+				"config.default.ini",
+			])
+		);
+
 		$input = new Input($_GET, $_POST, $_FILES);
 		$cookie = new CookieHandler($_COOKIE);
 
-		$handler = SessionSetup::attachHandler(
+		$sessionHandler = SessionSetup::attachHandler(
 			$config->get("session.handler")
 		);
 		$sessionConfig = $config->getSection("session");
 		$sessionId = $cookie[$sessionConfig["name"]];
-		$session = new Session(
-			$handler,
+		$sessionHandler = new Session(
+			$sessionHandler,
 			$sessionConfig,
 			$sessionId
 		);
+
+		$databaseSettings = new Settings(
+			$config->get("database.query_directory"),
+			$config->get("database.dsn"),
+			$config->get("database.schema"),
+			$config->get("database.host"),
+			$config->get("database.port"),
+			$config->get("database.username"),
+			$config->get("database.password")
+		);
+		$database = new Database($databaseSettings);
 
 		$this->protectGlobals();
 		$this->attachAutoloaders(
@@ -65,6 +86,7 @@ class Lifecycle implements MiddlewareInterface {
 			$input,
 			$cookie
 		);
+
 		$router = $this->createRouter(
 			$request,
 			$server->getDocumentRoot()
@@ -74,7 +96,8 @@ class Lifecycle implements MiddlewareInterface {
 			$server,
 			$input,
 			$cookie,
-			$session,
+			$sessionHandler,
+			$database,
 			$router
 		);
 
@@ -149,6 +172,7 @@ class Lifecycle implements MiddlewareInterface {
 		Input $input,
 		CookieHandler $cookie,
 		Session $session,
+		Database $database,
 		Router $router
 	):Dispatcher {
 		$dispatcher = DispatcherFactory::create(
@@ -157,6 +181,7 @@ class Lifecycle implements MiddlewareInterface {
 			$input,
 			$cookie,
 			$session,
+			$database,
 			$router
 		);
 		return $dispatcher;

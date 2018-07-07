@@ -2,12 +2,24 @@
 namespace Gt\WebEngine\Dispatch;
 
 use Gt\WebEngine\FileSystem\Path;
+use Gt\WebEngine\Refactor\ObjectDocument;
+use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\View;
+use Psr\Http\Message\StreamInterface;
+use stdClass;
 
 class ApiDispatcher extends Dispatcher {
-	protected function getView(string $body):View {
-		// TODO: Implement getViewModel() method.
-		// Use Object builder to represent JSON.
+	protected function getView(
+		StreamInterface $outputStream,
+		string $body,
+		string $templateDirectory,
+		string $path = null,
+		string $type = null
+	):View {
+		$object = new ObjectDocument($body, $type);
+
+		$view = new ApiView($outputStream, $object);
+		return $view;
 	}
 
 	protected function getBaseLogicDirectory(string $docRoot):string {
