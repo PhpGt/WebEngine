@@ -48,6 +48,21 @@ abstract class AbstractLogic {
 
 	abstract public function go();
 
+	public function handleDo():void {
+		foreach($this->input as $key => $value) {
+			if($key !== "do") {
+				continue;
+			}
+
+			$methodName = "do";
+			$methodName .= ucfirst($value);
+
+			if(method_exists($this, $methodName)) {
+				$this->input->do($value)->call([$this, $methodName]);
+			}
+		}
+	}
+
 	protected function reload():void {
 		$this->redirect($this->server->getRequestUri());
 	}
