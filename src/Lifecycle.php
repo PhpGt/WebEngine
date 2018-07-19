@@ -66,7 +66,7 @@ class Lifecycle implements MiddlewareInterface {
 
 		$databaseSettings = new Settings(
 			$config->get("database.query_directory"),
-			$config->get("database.dsn"),
+			$config->get("database.driver"),
 			$config->get("database.schema"),
 			$config->get("database.host"),
 			$config->get("database.port"),
