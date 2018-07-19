@@ -389,12 +389,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Database.git",
-                "reference": "a88149e4c7b249433e1722982f9a6e1e91dc79ce"
+                "reference": "52f5a808487a29d30fe03b768202d2fc921ad120"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Database/zipball/a88149e4c7b249433e1722982f9a6e1e91dc79ce",
-                "reference": "a88149e4c7b249433e1722982f9a6e1e91dc79ce",
+                "url": "https://api.github.com/repos/PhpGt/Database/zipball/52f5a808487a29d30fe03b768202d2fc921ad120",
+                "reference": "52f5a808487a29d30fe03b768202d2fc921ad120",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +426,7 @@
                 }
             ],
             "description": "Database API organisation.",
-            "time": "2018-06-13T11:24:42+00:00"
+            "time": "2018-06-27T14:34:47+00:00"
         },
         {
             "name": "phpgt/dom",
@@ -511,12 +511,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "f410da43c174007f54c96ce592ecbc22a698f9aa"
+                "reference": "2cd1059858710ef223d9bfb26b95ea5d65cbe76c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/f410da43c174007f54c96ce592ecbc22a698f9aa",
-                "reference": "f410da43c174007f54c96ce592ecbc22a698f9aa",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/2cd1059858710ef223d9bfb26b95ea5d65cbe76c",
+                "reference": "2cd1059858710ef223d9bfb26b95ea5d65cbe76c",
                 "shasum": ""
             },
             "require": {
@@ -536,7 +536,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2018-06-16T16:12:54+00:00"
+            "time": "2018-07-03T17:49:39+00:00"
         },
         {
             "name": "phpgt/http",
@@ -581,12 +581,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "d030789a7a6f91ed7b3a5b0152776dad4e8b7a29"
+                "reference": "97091d1beaaa00e28d3eefba109e2d6620199f77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/d030789a7a6f91ed7b3a5b0152776dad4e8b7a29",
-                "reference": "d030789a7a6f91ed7b3a5b0152776dad4e8b7a29",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/97091d1beaaa00e28d3eefba109e2d6620199f77",
+                "reference": "97091d1beaaa00e28d3eefba109e2d6620199f77",
                 "shasum": ""
             },
             "require": {
@@ -606,7 +606,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2018-06-15T21:41:27+00:00"
+            "time": "2018-06-26T15:58:15+00:00"
         },
         {
             "name": "phpgt/protectedglobal",

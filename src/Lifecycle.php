@@ -2,28 +2,27 @@
 namespace Gt\WebEngine;
 
 use Gt\Config\Config;
-
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
+use Gt\Http\RequestFactory;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Gt\Input\Input;
 use Gt\ProtectedGlobal\Protection;
 use Gt\Session\Session;
-use Gt\Http\RequestFactory;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * The fundamental purpose of any PHP framework is to provide a mechanism for generating an
