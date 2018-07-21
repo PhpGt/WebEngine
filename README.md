@@ -1,4 +1,4 @@
-# Rapid development engine for PHP 7 applications.
+# Rapid development engine.
 
 <img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/logo.png" alt="PHP.Gt logo" />
 
