@@ -5,7 +5,7 @@
 		},
 		"execute": {
 			"command": "sass",
-			"arguments": "style/main.scss www/style.css"
+			"arguments": "--cache-location style/.sass-cache style/main.scss www/style.css"
 		}
 	},
 	"style/**/*.js": {
