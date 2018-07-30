@@ -1,7 +1,7 @@
 {
 	"name": "phpgt/webengine",
 
-	"description": "Rapid development engine for PHP 7 applications.",
+	"description": "Rapid development engine.",
 
 	"license": [
 		"MIT"
