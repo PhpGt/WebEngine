@@ -4,11 +4,13 @@ namespace Gt\WebEngine\Dispatch;
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
+use Gt\WebEngine\Logic\AbstractLogic;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\View\View;
@@ -46,6 +48,10 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		LogicFactory::setCookieHandler($cookie);
 		LogicFactory::setSession($session);
 		LogicFactory::setDatabase($database);
+	}
+
+	public function setCsrfProtection(TokenStore $csrfProtection):void {
+		$this->csrfProtection = $csrfProtection;
 	}
 
 	/**
@@ -105,6 +111,9 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$body->write($bodyContent);
 	}
 
+	/**
+	 * @return AbstractLogic[]
+	 */
 	protected function createLogicObjects(
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
@@ -129,6 +138,9 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		return $logicObjects;
 	}
 
+	/**
+	 * @param AbstractLogic[] $logicObjects
+	 */
 	protected function dispatchLogicObjects(array $logicObjects):void {
 		foreach($logicObjects as $logic) {
 			$logic->handleDo();
