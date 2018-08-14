@@ -2,8 +2,8 @@
 namespace Gt\WebEngine\Dispatch;
 
 use Gt\Config\Config;
-use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
@@ -13,10 +13,10 @@ use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\AbstractLogic;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Response\PageResponse;
+use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\FileSystem\BasenameNotFoundException;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -28,6 +28,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	/** @var Router */
 	protected $router;
 	protected $appNamespace;
+	/** @var TokenStore */
+	protected $csrfProtection;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
@@ -92,6 +94,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		);
 
 		$this->dispatchLogicObjects($logicObjects);
+		$this->injectCsrf($view);
 		$view->stream();
 
 		return $response;
@@ -147,6 +150,16 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		}
 		foreach($logicObjects as $logic) {
 			$logic->go();
+		}
+	}
+
+	protected function injectCsrf(View $view):void {
+		if($view instanceof PageView) {
+			$protector = new HTMLDocumentProtector(
+				$view->getViewModel(),
+				$this->csrfProtection
+			);
+			$protector->protectAndInject();
 		}
 	}
 }

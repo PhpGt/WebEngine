@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\Dispatch;
 
+use Gt\Csrf\HTMLDocumentProtector;
 use Gt\DomTemplate\HTMLDocument;
 use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\View\PageView;

@@ -93,7 +93,15 @@ class Lifecycle implements MiddlewareInterface {
 			$server->getDocumentRoot()
 		);
 
-		$csrfProtection = new SessionTokenStore();
+		$csrfProtection = new SessionTokenStore(
+			$sessionHandler->getStore(
+				"gt.csrf",
+			true
+			)
+		);
+		$csrfProtection->processAndVerify(
+			$input->getAll(Input::DATA_BODY)
+		);
 
 		$dispatcher = $this->createDispatcher(
 			$config,
