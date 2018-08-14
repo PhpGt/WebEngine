@@ -1,7 +1,7 @@
 {
 	"name": "phpgt/webengine",
 
-	"description": "Rapid development engine for PHP 7 applications.",
+	"description": "Rapid development engine.",
 
 	"license": [
 		"MIT"
@@ -42,11 +42,11 @@
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^2.3",
-		"symfony/css-selector": "3.2.*"
+		"symfony/css-selector": "*"
 	},
 
 	"require-dev": {
-		"phpunit/phpunit": "6.4.*"
+		"phpunit/phpunit": "*"
 	},
 
 	"keywords": [

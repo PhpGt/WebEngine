@@ -55,7 +55,11 @@ abstract class AbstractLogic {
 			}
 
 			$methodName = "do";
-			$methodName .= ucfirst($value);
+
+			preg_match_all("([^-_ ]+)", $value, $matches);
+			foreach($matches[0] as $methodNamePart) {
+				$methodName .= ucfirst($methodNamePart);
+			}
 
 			if(method_exists($this, $methodName)) {
 				$this->input->do($value)->call([$this, $methodName]);
