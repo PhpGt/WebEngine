@@ -58,6 +58,7 @@ class Autoloader {
 			$relativeClassName,
 			$classSuffix
 		);
+
 		if(is_null($fileName)) {
 			return;
 		}
@@ -141,6 +142,7 @@ class Autoloader {
 
 		foreach($parts as $part) {
 			$path .= DIRECTORY_SEPARATOR . $part;
+
 			if(!is_dir($path)) {
 				$path = str_replace(
 					DIRECTORY_SEPARATOR . "_",
@@ -148,6 +150,11 @@ class Autoloader {
 					$path
 				);
 			}
+		}
+
+		if(!is_dir($path)) {
+// TODO: Testing required on Unix systems.
+			$path = Path::fixPathCase($path);
 		}
 
 		return $path;
@@ -180,6 +187,7 @@ class Autoloader {
 			$searchFileNameLowerCase,
 			str_replace("_", "@", $searchFileNameLowerCase),
 		];
+
 		foreach(new DirectoryIterator($directoryPath) as $fileInfo) {
 			if(!$fileInfo->isFile()) {
 				continue;
