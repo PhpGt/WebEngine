@@ -2,7 +2,7 @@
 
 <img align="right" src="https://raw.githubusercontent.com/phpgt/webengine/master/logo.png" alt="PHP.Gt logo" />
 
-Welcome to the PHP.Gt webengine — a lightweight PHP 7 application development toolkit aimed at streamlining development and respecting web technologies.
+Welcome to PHP.Gt webengine — a lightweight PHP 7 application development toolkit aimed at streamlining development and respecting web technologies.
 
 PHP frameworks offer many features, but often come with steep learning curves or imposing rules. The motivation behind this project is the belief that what a framework can offer can be achieved by **eliminating code rather than adding more**.
 
