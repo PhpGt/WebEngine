@@ -65,3 +65,31 @@ Preconfigured scripts are available to automatically set up local servers or vir
 ### Community of blueprints
 
 To get projects going with full momentum, blueprint projects are available to base your projects off. Blueprints come with just enough level of design and functionality to get a prototype out the door as quickly as possible, without prescribing anything.
+
+Getting started
+---------------
+
+### Getting started developing WebEngine applications
+
+If you are new to WebEngine development, check out the [Quick Start][quick-start] guide in the documentation, or jump straight into [the tutorials][tutorials].
+
+### Getting started contributing to WebEngine
+
+If you are looking to contribute to WebEngine itself, please read the [Contribution guidelines document][contributing].
+
+How to get help
+---------------
+
+### Submit an issue
+
+The [Github issue tracker][issues] is used to submit bug reports, feature requests or certain types of technical support requests. If you think something is not working correctly, or the documentation doesn't cover your issue, feel free to open a new issue, describing what you have tried, what you expect, and what went wrong.
+
+### Ask on Stack Overflow
+
+If you have more of a "How do I do _X_ in WebEngine?" question, it is preferred to ask this publically on Stack Overflow. If you [tag your question with `phpgt-webengine`][stack-overflow], or the area of PHP.Gt that the question referrs to, a WebEngine contributor will answer your question as soon as possible.
+
+[quick-start]: https://github.com/PhpGt/WebEngine/wiki/Quick-start
+[tutorials]: https://github.com/PhpGt/WebEngine/wiki/hello-world-tutorial
+[contributing]: https://github.com/PhpGt/WebEngine/blob/master/CONTRIBUTING.md
+[issues]: https://github.com/PhpGt/WebEngine/issues
+[stack-overflow]: https://stackoverflow.com/questions/tagged/phpgt-webengine
