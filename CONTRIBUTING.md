@@ -115,7 +115,7 @@ TDD is a programming methodology where the developer writes the tests for their 
 
 All repositories within PHP.Gt aim to maintain tests that cover 100% of the codebase. Again, this should not be seen as a method of writing perfect code, but it too is useful practice.
 
-When contributing to PHP.Gt, please be conscious of the tests coverage you are affecting, and aim to write tests that cover any functionality you contribute to. Feel free to ask for help writing tests in the issue tracker and a contributor will do their best in assisting you.
+When contributing to PHP.Gt, please be conscious of the test coverage you are affecting, and aim to write tests that cover any functionality you contribute to. Feel free to ask for help writing tests in the issue tracker and a contributor will do their best in assisting you.
 
 [good-first-issues]: https://github.com/search?l=&q=org%3Aphpgt+type%3Aissue+is%3Aopen+label%3A%22good+first+issue%22&ref=advsearch&type=Issues&utf8=%E2%9C%93
 [help-wanted-issues]: https://github.com/search?l=&q=org%3Aphpgt+type%3Aissue+is%3Aopen+label%3A%22help-wanted%22&ref=advsearch&type=Issues&utf8=%E2%9C%93
