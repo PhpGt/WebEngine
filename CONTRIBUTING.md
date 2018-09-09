@@ -10,7 +10,7 @@ What do you need to know before you get started?
 
 Code within the PHP.Gt organisation is split over different repositories. The first thing to know is how the respositories are broken up and where your issue/idea/bug/feature/question is for.
 
-[WebEngine](https://php.gt/webengine) is the main project that is used to build web applications, and depends on all other PHP.Gt repositories. Core responsibilities of this project include the `gt` commands, web routing, the request/response lifecycle, Page Logic classes and the "go" functions.
+[WebEngine](https://php.gt/webengine) is the main project that is used to build web applications, and depends on all other PHP.Gt repositories. Core responsibilities of this project include web routing, the request/response lifecycle, Page Logic classes and the "go" functions.
 
 You may want to contribute on the components that make up the WebEngine. The main components include:
 
