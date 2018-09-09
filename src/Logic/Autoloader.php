@@ -176,10 +176,16 @@ class Autoloader {
 		);
 
 		$searchFileNameLowerCase = strtolower($searchFileName);
+		$searchFileNameHyphenatedLowerCase = strtolower(
+			$this->hyphenate($searchFileName)
+		);
 		$searchList = [
 			$searchFileNameLowerCase,
+			$searchFileNameHyphenatedLowerCase,
 			str_replace("_", "@", $searchFileNameLowerCase),
+			str_replace("_", "@", $searchFileNameHyphenatedLowerCase),
 		];
+
 		foreach(new DirectoryIterator($directoryPath) as $fileInfo) {
 			if(!$fileInfo->isFile()) {
 				continue;
@@ -195,5 +201,31 @@ class Autoloader {
 		}
 
 		return $matchingFileName;
+	}
+
+	protected function hyphenate(string $fileName):string {
+		$file = pathinfo(
+			$fileName,
+			PATHINFO_FILENAME
+		);
+		$extension = pathinfo(
+			$fileName,
+			PATHINFO_EXTENSION
+		);
+
+		for($i = strlen($file) - 1; $i > 0; $i--) {
+			if(!ctype_upper($file[$i])) {
+				continue;
+			}
+
+			$fileName = substr_replace(
+				$fileName,
+				"-",
+				$i,
+				0
+			);
+		}
+
+		return $fileName;
 	}
 }
