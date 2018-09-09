@@ -8,14 +8,15 @@
 			"arguments": "--cache-location style/.sass-cache style/main.scss www/style.css"
 		}
 	},
-	"style/**/*.js": {
+	"script/**/*.es6": {
 		"require": {
 			"node": "*",
-			"babel": "*"
+			"babel": "*",
+			"webpack": "*"
 		},
 		"execute": {
-			"command": "babel",
-			"arguments": "style/main.js www/script.js"
+			"command": "webpack",
+			"arguments": "script/main.es6 -o www/script.js --devtool source-map --module-bind js=babel-loader"
 		}
 	},
 	"asset/**/*": {

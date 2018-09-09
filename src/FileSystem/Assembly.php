@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\FileSystem;
 
 use Iterator;
+use SplFileObject;
 
 class Assembly implements Iterator {
 	protected $path;
@@ -30,15 +31,44 @@ class Assembly implements Iterator {
 		$this->basename = $basename;
 		$this->lookupBefore = $lookupBefore;
 		$this->lookupAfter = $lookupAfter;
+		$before = true;
+		$after = true;
 
 		if($basenameMustExist) {
 			$basenamePath = $this->findInDirectory($basename);
+
 			if(is_null($basenamePath)) {
 				throw new BasenameNotFoundException($basename);
 			}
+
+			$basenameFile = new SplFileObject(
+				$basenamePath,
+				"r"
+			);
+			$line = $basenameFile->getCurrentLine();
+			$basenameFile = null;
+
+			if(strstr($line, "no-")) {
+				if(strstr($line, "no-header")) {
+					$before = false;
+				}
+				if(strstr($line, "no-footer")) {
+					$after = false;
+				}
+				if(strstr(
+					$line,
+					"no-header-footer")
+				) {
+					$before = false;
+					$after = false;
+				}
+			}
 		}
 
-		$this->assemblyParts = $this->getAssemblyParts();
+		$this->assemblyParts = $this->getAssemblyParts(
+			$before,
+			$after
+		);
 	}
 
 	public function __toString():string {
@@ -51,17 +81,33 @@ class Assembly implements Iterator {
 		return $string;
 	}
 
-	protected function getAssemblyParts():array {
+	protected function getAssemblyParts(
+		bool $before = true,
+		bool $after = true
+	):array {
 		$parts = [];
 
-		foreach($this->lookupBefore as $lookup) {
-			$parts []= $this->findInDirectory($lookup, true);
+		if($before) {
+			foreach($this->lookupBefore as $lookup) {
+				$parts []= $this->findInDirectory(
+					$lookup,
+					true
+				);
+			}
 		}
 
-		$parts []=  $this->findInDirectory($this->basename, false);
+		$parts []= $this->findInDirectory(
+				$this->basename,
+				false
+			);
 
-		foreach($this->lookupAfter as $lookup) {
-			$parts []= $this->findInDirectory($lookup, true);
+		if($after) {
+			foreach($this->lookupAfter as $lookup) {
+				$parts []= $this->findInDirectory(
+					$lookup,
+					true
+				);
+			}
 		}
 
 		$parts = array_filter($parts);
