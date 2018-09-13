@@ -5,6 +5,8 @@ use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Cookie\CookieHandler;
+use Gt\Csrf\SessionTokenStore;
+use Gt\Csrf\TokenStore;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
@@ -90,6 +92,17 @@ class Lifecycle implements MiddlewareInterface {
 			$request,
 			$server->getDocumentRoot()
 		);
+
+		$csrfProtection = new SessionTokenStore(
+			$sessionHandler->getStore(
+				"gt.csrf",
+			true
+			)
+		);
+		$csrfProtection->processAndVerify(
+			$input->getAll(Input::DATA_BODY)
+		);
+
 		$dispatcher = $this->createDispatcher(
 			$config,
 			$server,
@@ -97,7 +110,8 @@ class Lifecycle implements MiddlewareInterface {
 			$cookie,
 			$sessionHandler,
 			$database,
-			$router
+			$router,
+			$csrfProtection
 		);
 
 		$response = $this->process($request, $dispatcher);
@@ -172,7 +186,8 @@ class Lifecycle implements MiddlewareInterface {
 		CookieHandler $cookie,
 		Session $session,
 		Database $database,
-		Router $router
+		Router $router,
+		TokenStore $csrfProtection
 	):Dispatcher {
 		$dispatcher = DispatcherFactory::create(
 			$config,
@@ -181,7 +196,8 @@ class Lifecycle implements MiddlewareInterface {
 			$cookie,
 			$session,
 			$database,
-			$router
+			$router,
+			$csrfProtection
 		);
 		return $dispatcher;
 	}

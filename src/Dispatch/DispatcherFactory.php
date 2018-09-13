@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Dispatch;
 use Gt\Config\Config;
 use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
+use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
@@ -20,7 +21,8 @@ class DispatcherFactory {
 		CookieHandler $cookie,
 		Session $session,
 		Database $database,
-		Router $router
+		Router $router,
+		TokenStore $csrfProtection
 	):Dispatcher {
 		$appNamespace = $config->get("app.namespace");
 
@@ -39,6 +41,8 @@ class DispatcherFactory {
 			$session,
 			$database
 		);
+
+		$dispatcher->setCsrfProtection($csrfProtection);
 
 		return $dispatcher;
 	}

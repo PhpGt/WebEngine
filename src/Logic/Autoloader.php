@@ -58,7 +58,6 @@ class Autoloader {
 			$relativeClassName,
 			$classSuffix
 		);
-
 		if(is_null($fileName)) {
 			return;
 		}
@@ -183,11 +182,14 @@ class Autoloader {
 		);
 
 		$searchFileNameLowerCase = strtolower($searchFileName);
-		$searchFileNameHyphenated = $this->hyphenateFileName($searchFileName);
+		$searchFileNameHyphenatedLowerCase = strtolower(
+			$this->hyphenate($searchFileName)
+		);
 		$searchList = [
 			$searchFileNameLowerCase,
-			$searchFileNameHyphenated,
+			$searchFileNameHyphenatedLowerCase,
 			str_replace("_", "@", $searchFileNameLowerCase),
+			str_replace("_", "@", $searchFileNameHyphenatedLowerCase),
 		];
 
 		foreach(new DirectoryIterator($directoryPath) as $fileInfo) {
@@ -207,27 +209,29 @@ class Autoloader {
 		return $matchingFileName;
 	}
 
-	protected function hyphenateFileName(string $fileName):string {
-		$hyphenated = "";
-		$pathInfo = pathinfo(
-			$fileName
+	protected function hyphenate(string $fileName):string {
+		$file = pathinfo(
+			$fileName,
+			PATHINFO_FILENAME
 		);
-		$fileNameNoExt = $pathInfo["filename"];
-		$ext = $pathInfo["extension"];
+		$extension = pathinfo(
+			$fileName,
+			PATHINFO_EXTENSION
+		);
 
-		for($i = 0, $len = strlen($fileNameNoExt); $i < $len; $i++) {
-			$char = $fileNameNoExt[$i];
-			if(ctype_upper($char)
-			&& strlen($hyphenated) > 0) {
-				$hyphenated .= "-";
+		for($i = strlen($file) - 1; $i > 0; $i--) {
+			if(!ctype_upper($file[$i])) {
+				continue;
 			}
 
-			$hyphenated .= strtolower($char);
+			$fileName = substr_replace(
+				$fileName,
+				"-",
+				$i,
+				0
+			);
 		}
 
-		return implode(".", [
-			$hyphenated,
-			$ext,
-		]);
+		return $fileName;
 	}
 }
