@@ -21,12 +21,6 @@
 		}
 	},
 
-	"bin": [
-		"bin/gt-build",
-		"bin/gt-serve",
-		"bin/gt-run"
-	],
-
 	"require": {
 		"phpgt/build": "dev-master",
 		"phpgt/config": "dev-master",
