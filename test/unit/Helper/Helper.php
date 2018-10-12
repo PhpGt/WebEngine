@@ -5,11 +5,8 @@ class Helper {
 	const TMP_PREFIX = "phpgt-webengine";
 	const ROOT_DIRECTORIES = [
 		"data",
-		"src",
 		"vendor",
 		"www",
-	];
-	const SRC_DIRECTORIES = [
 		"api",
 		"asset",
 		"class",
@@ -47,7 +44,7 @@ class Helper {
 	}
 
 	public static function createChildDirectory(string $path, string $childName):string {
-		$dir = implode("/", [
+		$dir = implode(DIRECTORY_SEPARATOR, [
 			$path,
 			$childName,
 		]);
@@ -70,8 +67,9 @@ class Helper {
 			mkdir("$documentRoot/$directory", 0775, true);
 		}
 
-		foreach(self::SRC_DIRECTORIES as $directory) {
-			mkdir("$documentRoot/src/$directory", 0775, true);
-		}
+		touch(implode(DIRECTORY_SEPARATOR, [
+			$documentRoot,
+			"composer.json",
+		]));
 	}
 }
