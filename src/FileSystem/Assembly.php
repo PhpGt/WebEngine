@@ -97,9 +97,9 @@ class Assembly implements Iterator {
 		}
 
 		$parts []= $this->findInDirectory(
-				$this->basename,
-				false
-			);
+			$this->basename,
+			false
+		);
 
 		if($after) {
 			foreach($this->lookupAfter as $lookup) {
@@ -109,6 +109,7 @@ class Assembly implements Iterator {
 				);
 			}
 		}
+
 
 		$parts = array_filter($parts);
 		$parts = array_unique($parts);
@@ -130,8 +131,11 @@ class Assembly implements Iterator {
 
 			$baseNamesToMatch = [
 				$basename,
-				"@*",
 			];
+
+			if($basename[0] !== "_") {
+				$baseNamesToMatch []= "@*";
+			}
 
 			foreach($baseNamesToMatch as $baseNameToMatch) {
 				$glob = implode(DIRECTORY_SEPARATOR, [
