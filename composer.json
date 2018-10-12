@@ -41,8 +41,7 @@
 		"phpgt/session": "dev-master",
 
 		"psr/http-server-middleware": "^1.0",
-		"willdurand/negotiation": "^2.3",
-		"symfony/css-selector": "*"
+		"willdurand/negotiation": "^2.3"
 	},
 
 	"require-dev": {
