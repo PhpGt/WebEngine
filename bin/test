@@ -1,9 +1,0 @@
-#!/usr/bin/env php
-<?php
-/**
- * Initiate tests within current project. Exits with status code 0 on successful
- * test run, 1 for failed Unit test, 2 on failed Acceptance test, 3 on failed
- * Unit and failed Acceptance test.
- *
- * Usage: test [-a|--approot[="..."]] [--type="unit|acceptance|all"]
- */

@@ -1,5 +1,0 @@
-#!/usr/bin/env php
-<?php
-/**
- * Publishes a new live release in accordance with project configuration.
- */
