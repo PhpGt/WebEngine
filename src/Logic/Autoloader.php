@@ -28,14 +28,22 @@ class Autoloader {
 		}
 
 		$absoluteClassName = trim($absoluteClassName, "\\");
-		list(
-			$appNamespace,
-			$logicType
-		) = explode("\\", $absoluteClassName);
-
-		if($appNamespace !== $this->appNamespace) {
+		if(strpos(
+			$absoluteClassName,
+			$this->appNamespace
+		) !== 0) {
 			return;
 		}
+
+		$logicType = substr(
+			$absoluteClassName,
+			strlen($this->appNamespace) + 1
+		);
+		$logicType = substr(
+			$logicType,
+			0,
+			strpos($logicType, "\\")
+		);
 
 		$path = $this->getPathForLogicType($logicType);
 		if(is_null($path)) {
@@ -44,7 +52,7 @@ class Autoloader {
 
 		$relativeClassName = $this->getRelativeClassName(
 			$absoluteClassName,
-			$appNamespace,
+			$this->appNamespace,
 			$logicType
 		);
 
@@ -52,6 +60,7 @@ class Autoloader {
 			$path,
 			$relativeClassName
 		);
+
 
 		$fileName = $this->findFileName(
 			$directoryPath,
@@ -135,9 +144,14 @@ class Autoloader {
 		string $relativeClassName
 	):string {
 		$parts = explode("\\", $relativeClassName);
-		array_pop($parts);
+		$partsToRemove = explode("\\", $this->appNamespace);
 
-		$pageDir = Path::getPageDirectory();
+		foreach($partsToRemove as $i => $part) {
+			array_shift($parts);
+		}
+
+		array_pop($parts);
+		array_pop($parts);
 
 		foreach($parts as $part) {
 			$path .= DIRECTORY_SEPARATOR . $part;
