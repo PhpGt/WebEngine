@@ -222,12 +222,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Build.git",
-                "reference": "6007ea314eab79711126bb37239aff81d68c84e9"
+                "reference": "54a3ab0f270808f514327c2f295a657c46ae1db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Build/zipball/6007ea314eab79711126bb37239aff81d68c84e9",
-                "reference": "6007ea314eab79711126bb37239aff81d68c84e9",
+                "url": "https://api.github.com/repos/PhpGt/Build/zipball/54a3ab0f270808f514327c2f295a657c46ae1db7",
+                "reference": "54a3ab0f270808f514327c2f295a657c46ae1db7",
                 "shasum": ""
             },
             "require": {
@@ -252,7 +252,7 @@
                 "MIT"
             ],
             "description": "Build system for PHP 7 projects.",
-            "time": "2018-11-15T10:51:53+00:00"
+            "time": "2018-12-03T09:04:40+00:00"
         },
         {
             "name": "phpgt/config",
@@ -260,12 +260,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Config.git",
-                "reference": "5c58ec6588c493fdbe30b6d2efd0ba374002a008"
+                "reference": "df436b701e143bfe033dc5a28586a1a90b4e50ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Config/zipball/5c58ec6588c493fdbe30b6d2efd0ba374002a008",
-                "reference": "5c58ec6588c493fdbe30b6d2efd0ba374002a008",
+                "url": "https://api.github.com/repos/PhpGt/Config/zipball/df436b701e143bfe033dc5a28586a1a90b4e50ad",
+                "reference": "df436b701e143bfe033dc5a28586a1a90b4e50ad",
                 "shasum": ""
             },
             "require": {
@@ -295,7 +295,7 @@
                 }
             ],
             "description": "Load configuration from ini files or environment variables.",
-            "time": "2018-11-15T15:16:35+00:00"
+            "time": "2018-12-03T09:04:58+00:00"
         },
         {
             "name": "phpgt/cookie",
@@ -303,12 +303,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Cookie.git",
-                "reference": "c795915a2a11e314750d2ab98093bee63dbe745f"
+                "reference": "b5f0171630822c0616255cdb1262446f9e86f675"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Cookie/zipball/c795915a2a11e314750d2ab98093bee63dbe745f",
-                "reference": "c795915a2a11e314750d2ab98093bee63dbe745f",
+                "url": "https://api.github.com/repos/PhpGt/Cookie/zipball/b5f0171630822c0616255cdb1262446f9e86f675",
+                "reference": "b5f0171630822c0616255cdb1262446f9e86f675",
                 "shasum": ""
             },
             "require": {
@@ -334,7 +334,7 @@
                 }
             ],
             "description": "Object oriented cookie handler.",
-            "time": "2018-11-15T10:51:21+00:00"
+            "time": "2018-12-03T09:05:11+00:00"
         },
         {
             "name": "phpgt/csrf",
@@ -342,12 +342,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "e4e838215a13e80418dbc2be4fdc64ea0981bca4"
+                "reference": "a1e3b50263340f117098fbe6b9bdd54a2db9c271"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/e4e838215a13e80418dbc2be4fdc64ea0981bca4",
-                "reference": "e4e838215a13e80418dbc2be4fdc64ea0981bca4",
+                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/a1e3b50263340f117098fbe6b9bdd54a2db9c271",
+                "reference": "a1e3b50263340f117098fbe6b9bdd54a2db9c271",
                 "shasum": ""
             },
             "require": {
@@ -382,7 +382,7 @@
                 }
             ],
             "description": "Automatic protection from Cross-Site Request Forgery.",
-            "time": "2018-11-15T10:51:27+00:00"
+            "time": "2018-12-04T21:45:49+00:00"
         },
         {
             "name": "phpgt/database",
@@ -390,12 +390,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Database.git",
-                "reference": "04f0831b9143214e14f75b0bd5d592f83d9665be"
+                "reference": "398f60085bb19eafaff28f71960507a984b3722b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Database/zipball/04f0831b9143214e14f75b0bd5d592f83d9665be",
-                "reference": "04f0831b9143214e14f75b0bd5d592f83d9665be",
+                "url": "https://api.github.com/repos/PhpGt/Database/zipball/398f60085bb19eafaff28f71960507a984b3722b",
+                "reference": "398f60085bb19eafaff28f71960507a984b3722b",
                 "shasum": ""
             },
             "require": {
@@ -435,7 +435,7 @@
                 }
             ],
             "description": "Database API organisation.",
-            "time": "2018-11-08T15:29:04+00:00"
+            "time": "2018-12-06T08:52:19+00:00"
         },
         {
             "name": "phpgt/dom",
@@ -443,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "ddf59cf39cb1142d9af2d689d678fbe5c4c6b636"
+                "reference": "374c663ca9468a7cba9871b741b383773af66565"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/ddf59cf39cb1142d9af2d689d678fbe5c4c6b636",
-                "reference": "ddf59cf39cb1142d9af2d689d678fbe5c4c6b636",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/374c663ca9468a7cba9871b741b383773af66565",
+                "reference": "374c663ca9468a7cba9871b741b383773af66565",
                 "shasum": ""
             },
             "require": {
@@ -514,7 +514,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2018-11-15T10:52:04+00:00"
+            "time": "2018-12-03T09:04:27+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -522,12 +522,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "da49db6afc9a66f47a4d7a1cb00e6a6d0bdab1d7"
+                "reference": "7b097ceca0f5a530b3b3901cb3792ad1349d5271"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/da49db6afc9a66f47a4d7a1cb00e6a6d0bdab1d7",
-                "reference": "da49db6afc9a66f47a4d7a1cb00e6a6d0bdab1d7",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/7b097ceca0f5a530b3b3901cb3792ad1349d5271",
+                "reference": "7b097ceca0f5a530b3b3901cb3792ad1349d5271",
                 "shasum": ""
             },
             "require": {
@@ -547,7 +547,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2018-11-26T13:11:23+00:00"
+            "time": "2018-12-03T09:04:52+00:00"
         },
         {
             "name": "phpgt/http",
@@ -555,16 +555,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "1b7f7a62fb17141c2f1bb1740c3d0a044c508446"
+                "reference": "63c8abe6bf0f2121e7bed769173a600aaf56bb60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/1b7f7a62fb17141c2f1bb1740c3d0a044c508446",
-                "reference": "1b7f7a62fb17141c2f1bb1740c3d0a044c508446",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/63c8abe6bf0f2121e7bed769173a600aaf56bb60",
+                "reference": "63c8abe6bf0f2121e7bed769173a600aaf56bb60",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1",
+                "php": ">=7.2",
                 "phpgt/cookie": "*",
                 "phpgt/input": "*",
                 "psr/http-message": "^1.0.1",
@@ -584,7 +584,7 @@
                 "MIT"
             ],
             "description": "PSR-7 HTTP message implementation.",
-            "time": "2018-11-05T12:11:27+00:00"
+            "time": "2018-12-09T21:59:56+00:00"
         },
         {
             "name": "phpgt/input",
@@ -592,12 +592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "7b7d85d9a887f0c9b509cd57a206e380354f5ac1"
+                "reference": "2ebe3b1788c3dffb19be2ad5545b2b8883cd1016"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/7b7d85d9a887f0c9b509cd57a206e380354f5ac1",
-                "reference": "7b7d85d9a887f0c9b509cd57a206e380354f5ac1",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/2ebe3b1788c3dffb19be2ad5545b2b8883cd1016",
+                "reference": "2ebe3b1788c3dffb19be2ad5545b2b8883cd1016",
                 "shasum": ""
             },
             "require": {
@@ -617,7 +617,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2018-11-23T13:39:49+00:00"
+            "time": "2018-12-05T14:25:45+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
@@ -625,16 +625,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ProtectedGlobal.git",
-                "reference": "54d07276634cb36ad700fdb3c22241791e9226a3"
+                "reference": "1c1bad02243e3dfbf6edbfd41e5d2a81879314ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/54d07276634cb36ad700fdb3c22241791e9226a3",
-                "reference": "54d07276634cb36ad700fdb3c22241791e9226a3",
+                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/1c1bad02243e3dfbf6edbfd41e5d2a81879314ca",
+                "reference": "1c1bad02243e3dfbf6edbfd41e5d2a81879314ca",
                 "shasum": ""
             },
+            "require": {
+                "php": ">7.1"
+            },
             "require-dev": {
-                "phpunit/phpunit": "7.4.*"
+                "phpunit/phpunit": "7.*"
             },
             "type": "library",
             "autoload": {
@@ -647,7 +650,7 @@
                 "MIT"
             ],
             "description": "Protect against accidental use of superglobals.",
-            "time": "2018-10-05T08:15:55+00:00"
+            "time": "2018-12-05T16:24:04+00:00"
         },
         {
             "name": "phpgt/session",
@@ -655,12 +658,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "7e662c0a3009d39c508354deefa0559e6e559324"
+                "reference": "db9fa96c9813663c0c1c6659ff60d48a80945d13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/7e662c0a3009d39c508354deefa0559e6e559324",
-                "reference": "7e662c0a3009d39c508354deefa0559e6e559324",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/db9fa96c9813663c0c1c6659ff60d48a80945d13",
+                "reference": "db9fa96c9813663c0c1c6659ff60d48a80945d13",
                 "shasum": ""
             },
             "require": {
@@ -680,7 +683,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2018-11-15T10:52:16+00:00"
+            "time": "2018-12-03T09:06:33+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1761,16 +1764,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.4.5",
+            "version": "7.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "61d34e8dd6eb3555900f0f2a2fa9e7e570730102"
+                "reference": "520723129e2b3fc1dc4c0953e43c9d40e1ecb352"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/61d34e8dd6eb3555900f0f2a2fa9e7e570730102",
-                "reference": "61d34e8dd6eb3555900f0f2a2fa9e7e570730102",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/520723129e2b3fc1dc4c0953e43c9d40e1ecb352",
+                "reference": "520723129e2b3fc1dc4c0953e43c9d40e1ecb352",
                 "shasum": ""
             },
             "require": {
@@ -1815,7 +1818,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.4-dev"
+                    "dev-master": "7.5-dev"
                 }
             },
             "autoload": {
@@ -1841,7 +1844,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-03T05:01:24+00:00"
+            "time": "2018-12-07T07:08:12+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
