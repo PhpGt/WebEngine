@@ -11,6 +11,7 @@ use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
+use Gt\WebEngine\FileSystem\Path;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -43,8 +44,12 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public function start():void {
 		$server = new ServerInfo($_SERVER);
+
+		$cwd = dirname($server->getDocumentRoot());
+		chdir($cwd);
+
 		$config = ConfigFactory::createForProject(
-			dirname($server->getDocumentRoot()),
+			$cwd,
 			implode(DIRECTORY_SEPARATOR, [
 				dirname(__DIR__),
 				"config.default.ini",
