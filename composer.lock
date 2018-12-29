@@ -1256,16 +1256,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "dev-master",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "f6d8ee7e879985caf8ce324ec035da54496b58da"
+                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/f6d8ee7e879985caf8ce324ec035da54496b58da",
-                "reference": "f6d8ee7e879985caf8ce324ec035da54496b58da",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/83e253c8e0be5b0257b881e1827274667c5c17a9",
+                "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9",
                 "shasum": ""
             },
             "require": {
@@ -1303,7 +1303,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-12-24T16:47:08+00:00"
+            "time": "2018-12-25T11:19:39+00:00"
         },
         {
             "name": "webmozart/glob",
@@ -2130,12 +2130,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9d310856515f6773b53b18017c6b35891974b3bd"
+                "reference": "4eba199f3760640fa43b84dba65c1251e014c5a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9d310856515f6773b53b18017c6b35891974b3bd",
-                "reference": "9d310856515f6773b53b18017c6b35891974b3bd",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4eba199f3760640fa43b84dba65c1251e014c5a8",
+                "reference": "4eba199f3760640fa43b84dba65c1251e014c5a8",
                 "shasum": ""
             },
             "require": {
@@ -2203,7 +2203,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-24T13:36:42+00:00"
+            "time": "2018-12-28T13:39:52+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
