@@ -87,6 +87,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 
 		$logicAssembly = $this->router->getLogicAssembly($path);
+
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
 			$baseLogicDirectory,
