@@ -34,11 +34,6 @@ abstract class Router {
 	public function getLogicAssembly(string $uri):Assembly {
 		$directory = $this->getDirectoryForUri($uri);
 		$basename = $this->getBasenameForUri($uri);
-		$logicOrder = array_merge(
-			static::LOGIC_BEFORE,
-			[$basename],
-			static::LOGIC_AFTER
-		);
 
 		$assembly = new Assembly(
 			$this->getBaseViewLogicPath(),
