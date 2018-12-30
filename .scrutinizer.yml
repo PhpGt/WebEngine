@@ -1,0 +1,21 @@
+build:
+  environment:
+    php:
+      version: 7.2.0
+  tests:
+    override:
+      -
+        command: 'vendor/bin/phpunit test/unit --coverage-clover coverage --whitelist src'
+        coverage:
+          file: 'coverage'
+          format: 'php-clover'
+
+checks:
+  php:
+    code_rating: true
+    duplication: true
+
+filter:
+  excluded_paths:
+    - test/*
+    - vendor/*

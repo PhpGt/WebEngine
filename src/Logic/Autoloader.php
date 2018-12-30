@@ -50,10 +50,12 @@ class Autoloader {
 			return;
 		}
 
+		$toRemove = explode("\\", $this->appNamespace);
+		$toRemove []= $logicType;
+
 		$relativeClassName = $this->getRelativeClassName(
 			$absoluteClassName,
-			$this->appNamespace,
-			$logicType
+			...$toRemove
 		);
 
 		$directoryPath = $this->buildDirectoryPathFromRelativeClassName(

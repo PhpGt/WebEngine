@@ -21,9 +21,6 @@ class DirectoryWalkerTest extends TestCase {
 		$randomDirectoryCount = mt_rand($webenginePosition, $numDirectories);
 		$directoryListUpToParent = array_splice($directoryList, 0, $randomDirectoryCount);
 		$parentDirectory = implode(DIRECTORY_SEPARATOR, $directoryListUpToParent);
-		if(DIRECTORY_SEPARATOR === "/") {
-			$parentDirectory = "/$parentDirectory";
-		}
 
 // Create a directory in the $parent_path to look for:
 		$directoryName = $this->getRandomName();
