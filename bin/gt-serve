@@ -52,6 +52,9 @@ foreach(CHILD_PIPES as $pipe) {
 	touch($filePipes[$pipe]);
 }
 
+if(!is_dir($docRoot)) {
+	mkdir($docRoot, 0775, true);
+}
 $command = "php -S $ip:$port -d log_errors=1 -t $docRoot $router";
 fwrite(STDOUT, "Starting server: $command" . PHP_EOL);
 

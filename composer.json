@@ -1,6 +1,5 @@
 {
 	"name": "phpgt/webengine",
-
 	"description": "Rapid development engine.",
 
 	"license": [
@@ -8,6 +7,7 @@
 	],
 
 	"type": "library",
+	"minimum-stability": "dev",
 
 	"autoload": {
 		"psr-4": {
@@ -33,10 +33,10 @@
 		"phpgt/input": "dev-master",
 		"phpgt/protectedglobal": "dev-master",
 		"phpgt/session": "dev-master",
+		"phpgt/fetch": "dev-master",
 
 		"psr/http-server-middleware": "^1.0",
-		"willdurand/negotiation": "^2.3",
-		"symfony/css-selector": "*"
+		"willdurand/negotiation": "^2.3"
 	},
 
 	"require-dev": {

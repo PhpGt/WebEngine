@@ -28,24 +28,34 @@ class Autoloader {
 		}
 
 		$absoluteClassName = trim($absoluteClassName, "\\");
-		list(
-			$appNamespace,
-			$logicType
-		) = explode("\\", $absoluteClassName);
-
-		if($appNamespace !== $this->appNamespace) {
+		if(strpos(
+			$absoluteClassName,
+			$this->appNamespace
+		) !== 0) {
 			return;
 		}
+
+		$logicType = substr(
+			$absoluteClassName,
+			strlen($this->appNamespace) + 1
+		);
+		$logicType = substr(
+			$logicType,
+			0,
+			strpos($logicType, "\\")
+		);
 
 		$path = $this->getPathForLogicType($logicType);
 		if(is_null($path)) {
 			return;
 		}
 
+		$toRemove = explode("\\", $this->appNamespace);
+		$toRemove []= $logicType;
+
 		$relativeClassName = $this->getRelativeClassName(
 			$absoluteClassName,
-			$appNamespace,
-			$logicType
+			...$toRemove
 		);
 
 		$directoryPath = $this->buildDirectoryPathFromRelativeClassName(
@@ -58,6 +68,7 @@ class Autoloader {
 			$relativeClassName,
 			$classSuffix
 		);
+
 		if(is_null($fileName)) {
 			return;
 		}
@@ -66,8 +77,8 @@ class Autoloader {
 			$directoryPath,
 			$fileName,
 		]);
-		$autoloadPath = Path::fixPathCase($autoloadPath);
 
+		$autoloadPath = Path::fixPathCase($autoloadPath);
 		$this->requireAndCheck($autoloadPath, $absoluteClassName);
 	}
 
@@ -135,12 +146,18 @@ class Autoloader {
 		string $relativeClassName
 	):string {
 		$parts = explode("\\", $relativeClassName);
-		array_pop($parts);
+		$partsToRemove = explode("\\", $this->appNamespace);
 
-		$pageDir = Path::getPageDirectory();
+		foreach($partsToRemove as $i => $part) {
+			array_shift($parts);
+		}
+
+		array_pop($parts);
+		array_pop($parts);
 
 		foreach($parts as $part) {
 			$path .= DIRECTORY_SEPARATOR . $part;
+
 			if(!is_dir($path)) {
 				$path = str_replace(
 					DIRECTORY_SEPARATOR . "_",
@@ -148,6 +165,11 @@ class Autoloader {
 					$path
 				);
 			}
+		}
+
+		if(!is_dir($path)) {
+// TODO: Testing required on Unix systems.
+			$path = Path::fixPathCase($path);
 		}
 
 		return $path;
@@ -175,6 +197,17 @@ class Autoloader {
 			$directoryPath
 		);
 
+		$subDirectoryPath = $directoryPath;
+
+		while(count($parts) > 0) {
+			$subDirectoryPath = implode(DIRECTORY_SEPARATOR, [
+				$subDirectoryPath,
+				array_shift($parts),
+			]);
+		}
+
+		$subDirectoryPath = Path::fixPathCase($subDirectoryPath);
+
 		$searchFileNameLowerCase = strtolower($searchFileName);
 		$searchFileNameHyphenatedLowerCase = strtolower(
 			$this->hyphenate($searchFileName)
@@ -186,7 +219,7 @@ class Autoloader {
 			str_replace("_", "@", $searchFileNameHyphenatedLowerCase),
 		];
 
-		foreach(new DirectoryIterator($directoryPath) as $fileInfo) {
+		foreach(new DirectoryIterator($subDirectoryPath) as $fileInfo) {
 			if(!$fileInfo->isFile()) {
 				continue;
 			}
@@ -200,7 +233,14 @@ class Autoloader {
 			$matchingFileName = $fileName;
 		}
 
-		return $matchingFileName;
+		$relativeFileName = substr($subDirectoryPath, strlen($directoryPath));
+		$relativeFileName = trim($relativeFileName, "\\/");
+		$relativeFileName = implode(DIRECTORY_SEPARATOR, [
+			$relativeFileName,
+			$matchingFileName,
+		]);
+
+		return $relativeFileName;
 	}
 
 	protected function hyphenate(string $fileName):string {

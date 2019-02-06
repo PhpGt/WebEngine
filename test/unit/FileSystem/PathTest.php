@@ -15,7 +15,7 @@ class PathTest extends TestCase {
 			$documentRoot,
 			rand(2, 20)
 		);
-		Helper::createChildDirectory($documentRoot, "src");
+		Helper::createSkeletonProject($documentRoot);
 
 		$actualRoot = Path::getApplicationRootDirectory($childPath);
 
@@ -66,7 +66,6 @@ class PathTest extends TestCase {
 		self::assertEquals(
 			implode(DIRECTORY_SEPARATOR, [
 				$documentRoot,
-				"src",
 				"page",
 			]),
 			Path::getPageDirectory($documentRoot)
@@ -81,7 +80,6 @@ class PathTest extends TestCase {
 		self::assertEquals(
 			implode(DIRECTORY_SEPARATOR, [
 				$documentRoot,
-				"src",
 				"api",
 			]),
 			Path::getApiDirectory($documentRoot)
@@ -96,7 +94,6 @@ class PathTest extends TestCase {
 		self::assertEquals(
 			implode(DIRECTORY_SEPARATOR, [
 				$documentRoot,
-				"src",
 				"asset",
 			]),
 			Path::getAssetDirectory($documentRoot)
@@ -111,7 +108,6 @@ class PathTest extends TestCase {
 		self::assertEquals(
 			implode(DIRECTORY_SEPARATOR, [
 				$documentRoot,
-				"src",
 				"script",
 			]),
 			Path::getScriptDirectory($documentRoot)
@@ -126,7 +122,6 @@ class PathTest extends TestCase {
 		self::assertEquals(
 			implode(DIRECTORY_SEPARATOR, [
 				$documentRoot,
-				"src",
 				"style",
 			]),
 			Path::getStyleDirectory($documentRoot)
@@ -141,7 +136,6 @@ class PathTest extends TestCase {
 		self::assertEquals(
 			implode(DIRECTORY_SEPARATOR, [
 				$documentRoot,
-				"src",
 				"class",
 			]),
 			Path::getClassDirectory($documentRoot)

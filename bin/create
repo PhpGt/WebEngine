@@ -1,5 +1,0 @@
-#!/usr/bin/env php
-<?php
-/**
- * Creates a new empty project using the blueprint-empty repository.
- */

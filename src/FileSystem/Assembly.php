@@ -35,7 +35,7 @@ class Assembly implements Iterator {
 		$after = true;
 
 		if($basenameMustExist) {
-			$basenamePath = $this->findInDirectory($basename);
+			$basenamePath = $this->findInDirectory($basename)[0];
 
 			if(is_null($basenamePath)) {
 				throw new BasenameNotFoundException($basename);
@@ -89,34 +89,47 @@ class Assembly implements Iterator {
 
 		if($before) {
 			foreach($this->lookupBefore as $lookup) {
-				$parts []= $this->findInDirectory(
-					$lookup,
-					true
+				$parts = array_merge(
+					$parts,
+					$this->findInDirectory(
+						$lookup,
+						true
+					)
 				);
 			}
 		}
 
-		$parts []= $this->findInDirectory(
+		$parts = array_merge(
+			$parts,
+			$this->findInDirectory(
 				$this->basename,
 				false
-			);
+			)
+		);
 
 		if($after) {
 			foreach($this->lookupAfter as $lookup) {
-				$parts []= $this->findInDirectory(
-					$lookup,
-					true
+				$parts = array_merge(
+					$parts,
+					$this->findInDirectory(
+						$lookup,
+						true
+					)
 				);
 			}
 		}
+
 
 		$parts = array_filter($parts);
 		$parts = array_unique($parts);
 		return array_values(array_filter($parts));
 	}
 
-	protected function findInDirectory(string $basename, bool $bubbleUp = false):?string {
-		$foundPath = null;
+	protected function findInDirectory(
+		string $basename,
+		bool $bubbleUp = false
+	):array {
+		$foundPathList = [];
 		$appRoot = Path::getApplicationRootDirectory($this->path);
 
 		$path = $this->path;
@@ -130,8 +143,11 @@ class Assembly implements Iterator {
 
 			$baseNamesToMatch = [
 				$basename,
-				"@*",
 			];
+
+			if($basename[0] !== "_") {
+				$baseNamesToMatch []= "@*";
+			}
 
 			foreach($baseNamesToMatch as $baseNameToMatch) {
 				$glob = implode(DIRECTORY_SEPARATOR, [
@@ -141,7 +157,7 @@ class Assembly implements Iterator {
 				$matches = glob($glob, GLOB_BRACE);
 
 				if(!empty($matches)) {
-					$foundPath = $matches[0];
+					$foundPathList []= $matches[0];
 					break;
 				}
 			}
@@ -149,7 +165,7 @@ class Assembly implements Iterator {
 			$path = dirname($path);
 		} while($bubbleUp && $path !== $appRoot);
 
-		return $foundPath;
+		return $foundPathList;
 	}
 
 	private function getPath(string $baseName, string $directory):?string {

@@ -36,7 +36,11 @@ class RouterFactory {
 		return $router;
 	}
 
-	protected static function getBestType(string $accept):string {
+	protected static function getBestType(string $accept = null):string {
+		if(empty($accept)) {
+			$accept = "text/html";
+		}
+		
 		$negotiator = new Negotiator();
 		/** @var Accept $acceptHeader */
 		$acceptHeader = $negotiator->getBest(

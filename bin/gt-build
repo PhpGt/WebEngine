@@ -27,21 +27,42 @@ foreach(CHILD_PIPES as $pipe) {
 }
 
 $buildScript = realpath(implode(DIRECTORY_SEPARATOR, [
-	__DIR__,
-	"..",
+	getcwd(),
 	"vendor",
 	"bin",
 	"build",
 ]));
 $command = $buildScript;
 
+// If there is no argument passed that isn't a flag, add webengine's default build path.
+$pathArgumentSet = false;
+
 foreach($argv as $i => $arg) {
 	if($i === 0) {
 		continue;
 	}
 
+	if($arg[0] !== "-") {
+		$pathArgumentSet = true;
+	}
+
 	$command .= " ";
 	$command .= $arg;
+}
+
+if(!$pathArgumentSet) {
+	$webenginePath = implode(DIRECTORY_SEPARATOR, [
+		getcwd(),
+		"vendor",
+		"phpgt",
+		"webengine",
+		"build.default.json",
+	]);
+
+	$command .= " ";
+	$command .= getcwd();
+	$command .= " ";
+	$command .= $webenginePath;
 }
 
 if(!is_file($buildScript)) {
