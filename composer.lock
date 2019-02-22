@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "74f5a9c3f87f87eca0f1e12f9979fe5f",
+    "content-hash": "7cc1cf4ce199ed09cc7d3cf54544de2f",
     "packages": [
         {
             "name": "composer/semver",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/semver.git",
-                "reference": "2b303e43d14d15cc90c8e8db4a1cdb6259f1a5c5"
+                "reference": "e97856ee51b93ba42666de1f1d481d142ec62220"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/semver/zipball/2b303e43d14d15cc90c8e8db4a1cdb6259f1a5c5",
-                "reference": "2b303e43d14d15cc90c8e8db4a1cdb6259f1a5c5",
+                "url": "https://api.github.com/repos/composer/semver/zipball/e97856ee51b93ba42666de1f1d481d142ec62220",
+                "reference": "e97856ee51b93ba42666de1f1d481d142ec62220",
                 "shasum": ""
             },
             "require": {
@@ -66,7 +66,7 @@
                 "validation",
                 "versioning"
             ],
-            "time": "2017-11-06T09:05:54+00:00"
+            "time": "2019-01-30T14:33:02+00:00"
         },
         {
             "name": "ircmaxell/random-lib",
@@ -202,7 +202,7 @@
             ],
             "authors": [
                 {
-                    "name": "Magicalex",
+                    "name": "magicalex",
                     "email": "magicalex@mondedie.fr"
                 }
             ],
@@ -218,21 +218,22 @@
         },
         {
             "name": "php-http/httplug",
-            "version": "v1.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/httplug.git",
-                "reference": "1c6381726c18579c4ca2ef1ec1498fdae8bdf018"
+                "reference": "a11f1e36e8c4ea5b9ebeb60109703e21c4103f02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/httplug/zipball/1c6381726c18579c4ca2ef1ec1498fdae8bdf018",
-                "reference": "1c6381726c18579c4ca2ef1ec1498fdae8bdf018",
+                "url": "https://api.github.com/repos/php-http/httplug/zipball/a11f1e36e8c4ea5b9ebeb60109703e21c4103f02",
+                "reference": "a11f1e36e8c4ea5b9ebeb60109703e21c4103f02",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4",
+                "php": "^7.0",
                 "php-http/promise": "^1.0",
+                "psr/http-client": "^1.0",
                 "psr/http-message": "^1.0"
             },
             "require-dev": {
@@ -242,7 +243,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -270,7 +271,7 @@
                 "client",
                 "http"
             ],
-            "time": "2016-08-31T08:30:17+00:00"
+            "time": "2018-10-31T11:16:59+00:00"
         },
         {
             "name": "php-http/promise",
@@ -328,12 +329,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Build.git",
-                "reference": "78c3b8152acbc86389d4769264138486203ff7e8"
+                "reference": "188b4a5e73cbed49fe8bda74f934f70b23e117dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Build/zipball/78c3b8152acbc86389d4769264138486203ff7e8",
-                "reference": "78c3b8152acbc86389d4769264138486203ff7e8",
+                "url": "https://api.github.com/repos/PhpGt/Build/zipball/188b4a5e73cbed49fe8bda74f934f70b23e117dd",
+                "reference": "188b4a5e73cbed49fe8bda74f934f70b23e117dd",
                 "shasum": ""
             },
             "require": {
@@ -342,7 +343,7 @@
                 "webmozart/glob": "^4.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.3"
+                "phpunit/phpunit": "^8.0"
             },
             "bin": [
                 "bin/build"
@@ -358,7 +359,7 @@
                 "MIT"
             ],
             "description": "Build system for PHP 7 projects.",
-            "time": "2018-12-13T10:57:52+00:00"
+            "time": "2019-02-20T16:24:39+00:00"
         },
         {
             "name": "phpgt/config",
@@ -366,12 +367,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Config.git",
-                "reference": "bb88c82f5f6743d7699161439f3a83905493a986"
+                "reference": "b96b56aebd4463d8c90abd6cde9bb59b4c63d131"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Config/zipball/bb88c82f5f6743d7699161439f3a83905493a986",
-                "reference": "bb88c82f5f6743d7699161439f3a83905493a986",
+                "url": "https://api.github.com/repos/PhpGt/Config/zipball/b96b56aebd4463d8c90abd6cde9bb59b4c63d131",
+                "reference": "b96b56aebd4463d8c90abd6cde9bb59b4c63d131",
                 "shasum": ""
             },
             "require": {
@@ -379,7 +380,7 @@
                 "php": ">=7.1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "6.4.*|7.3.*|7.4.*|7.5.*"
+                "phpunit/phpunit": "6.4.*|7.3.*|7.4.*|7.5.*|8.0.*"
             },
             "bin": [
                 "bin/config-generate"
@@ -401,7 +402,7 @@
                 }
             ],
             "description": "Load configuration from ini files or environment variables.",
-            "time": "2018-12-13T10:58:09+00:00"
+            "time": "2019-02-20T16:24:49+00:00"
         },
         {
             "name": "phpgt/cookie",
@@ -409,19 +410,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Cookie.git",
-                "reference": "453511bfb09c39f468518da09d411bcfe33ed1d7"
+                "reference": "db0573744d665eb30ec19b891c7b383c3934a6b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Cookie/zipball/453511bfb09c39f468518da09d411bcfe33ed1d7",
-                "reference": "453511bfb09c39f468518da09d411bcfe33ed1d7",
+                "url": "https://api.github.com/repos/PhpGt/Cookie/zipball/db0573744d665eb30ec19b891c7b383c3934a6b9",
+                "reference": "db0573744d665eb30ec19b891c7b383c3934a6b9",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1"
+                "php": "^7.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.3"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -440,7 +441,7 @@
                 }
             ],
             "description": "Object oriented cookie handler.",
-            "time": "2018-12-13T10:57:59+00:00"
+            "time": "2019-02-20T16:24:54+00:00"
         },
         {
             "name": "phpgt/csrf",
@@ -448,22 +449,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "f8b72369d36f1260ff02199b1b098ed3c90fe85c"
+                "reference": "454b864f7429107df3fe4c042e5a31905a8425fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/f8b72369d36f1260ff02199b1b098ed3c90fe85c",
-                "reference": "f8b72369d36f1260ff02199b1b098ed3c90fe85c",
+                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/454b864f7429107df3fe4c042e5a31905a8425fb",
+                "reference": "454b864f7429107df3fe4c042e5a31905a8425fb",
                 "shasum": ""
             },
             "require": {
                 "ircmaxell/random-lib": "^1.2",
-                "php": ">=7.1",
-                "phpgt/dom": ">1.0",
-                "phpgt/session": "dev-master"
+                "php": ">=7.2",
+                "phpgt/dom": ">=1.0",
+                "phpgt/session": "dev-master@dev"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.4|^7.0"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -488,7 +489,7 @@
                 }
             ],
             "description": "Automatic protection from Cross-Site Request Forgery.",
-            "time": "2018-12-15T14:14:48+00:00"
+            "time": "2019-02-22T16:40:38+00:00"
         },
         {
             "name": "phpgt/curl",
@@ -496,21 +497,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Curl.git",
-                "reference": "e6b548c3ce23647dd7c76aec680825412cff8bf5"
+                "reference": "8f0152cd7dd0cdfb51eb54916d7d30f11bc762e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Curl/zipball/e6b548c3ce23647dd7c76aec680825412cff8bf5",
-                "reference": "e6b548c3ce23647dd7c76aec680825412cff8bf5",
+                "url": "https://api.github.com/repos/PhpGt/Curl/zipball/8f0152cd7dd0cdfb51eb54916d7d30f11bc762e4",
+                "reference": "8f0152cd7dd0cdfb51eb54916d7d30f11bc762e4",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "php": ">=7.1.0"
+                "php": ">=7.2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.5.1"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -535,7 +536,7 @@
                 "http",
                 "interface"
             ],
-            "time": "2018-12-13T10:57:48+00:00"
+            "time": "2019-02-20T16:25:21+00:00"
         },
         {
             "name": "phpgt/database",
@@ -543,22 +544,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Database.git",
-                "reference": "398f60085bb19eafaff28f71960507a984b3722b"
+                "reference": "fe917720197dc90e2e0118cc98ad8469e189121d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Database/zipball/398f60085bb19eafaff28f71960507a984b3722b",
-                "reference": "398f60085bb19eafaff28f71960507a984b3722b",
+                "url": "https://api.github.com/repos/PhpGt/Database/zipball/fe917720197dc90e2e0118cc98ad8469e189121d",
+                "reference": "fe917720197dc90e2e0118cc98ad8469e189121d",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
-                "php": "^7.1",
+                "php": "^7.2",
                 "phpgt/config": "*"
             },
             "require-dev": {
                 "ext-sqlite3": "*",
-                "phpunit/phpunit": "^7.0"
+                "phpunit/phpunit": "8.*"
             },
             "bin": [
                 "bin/db-migrate"
@@ -588,7 +589,7 @@
                 }
             ],
             "description": "Database API organisation.",
-            "time": "2018-12-06T08:52:19+00:00"
+            "time": "2019-02-19T09:15:53+00:00"
         },
         {
             "name": "phpgt/dom",
@@ -596,22 +597,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "aff90d9de11319dc58734490fe4d8ea842b6f2cd"
+                "reference": "3222bf0ed2d6ad03d507a6e51b57392e5eaf6797"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/aff90d9de11319dc58734490fe4d8ea842b6f2cd",
-                "reference": "aff90d9de11319dc58734490fe4d8ea842b6f2cd",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/3222bf0ed2d6ad03d507a6e51b57392e5eaf6797",
+                "reference": "3222bf0ed2d6ad03d507a6e51b57392e5eaf6797",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-mbstring": "*",
-                "php": ">=7.1.0",
+                "php": ">=7.2.0",
                 "symfony/css-selector": "3.2.14"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.0"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -667,7 +668,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2018-12-13T10:57:56+00:00"
+            "time": "2019-02-19T09:16:01+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -675,19 +676,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "616c8e809f54c3c98fc02ca36d8aa744beddfbc5"
+                "reference": "207b4b2b6ce695e389634d88ba3f1d26576efee8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/616c8e809f54c3c98fc02ca36d8aa744beddfbc5",
-                "reference": "616c8e809f54c3c98fc02ca36d8aa744beddfbc5",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/207b4b2b6ce695e389634d88ba3f1d26576efee8",
+                "reference": "207b4b2b6ce695e389634d88ba3f1d26576efee8",
                 "shasum": ""
             },
             "require": {
                 "phpgt/dom": "dev-master"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.*"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -700,7 +701,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2018-12-13T10:58:01+00:00"
+            "time": "2019-02-20T16:25:39+00:00"
         },
         {
             "name": "phpgt/fetch",
@@ -708,21 +709,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Fetch.git",
-                "reference": "7b8891eb312c463436b31ea67b622f88b83e18c5"
+                "reference": "f2e50b8aa07adcf08ee33c95489a492159804dd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Fetch/zipball/7b8891eb312c463436b31ea67b622f88b83e18c5",
-                "reference": "7b8891eb312c463436b31ea67b622f88b83e18c5",
+                "url": "https://api.github.com/repos/PhpGt/Fetch/zipball/f2e50b8aa07adcf08ee33c95489a492159804dd0",
+                "reference": "f2e50b8aa07adcf08ee33c95489a492159804dd0",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
                 "php": ">=7.2",
-                "php-http/httplug": "^1.1",
-                "phpgt/curl": "dev-master",
-                "phpgt/http": "dev-master",
+                "php-http/httplug": "^2.0",
+                "phpgt/curl": "dev-master@dev",
+                "phpgt/http": "dev-master@dev",
                 "react/event-loop": "^1.0",
                 "react/promise": "2.*"
             },
@@ -731,7 +732,7 @@
                 "php-http/client-implementation": "1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.*"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -762,7 +763,7 @@
                 "post",
                 "xmlhttprequest"
             ],
-            "time": "2018-12-09T22:12:26+00:00"
+            "time": "2019-02-22T16:52:09+00:00"
         },
         {
             "name": "phpgt/http",
@@ -770,23 +771,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "63c8abe6bf0f2121e7bed769173a600aaf56bb60"
+                "reference": "3031187bd1f4bdf332a98eb545c069867979d610"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/63c8abe6bf0f2121e7bed769173a600aaf56bb60",
-                "reference": "63c8abe6bf0f2121e7bed769173a600aaf56bb60",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/3031187bd1f4bdf332a98eb545c069867979d610",
+                "reference": "3031187bd1f4bdf332a98eb545c069867979d610",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
-                "phpgt/cookie": "*",
-                "phpgt/input": "*",
+                "phpgt/cookie": "dev-master@dev",
+                "phpgt/input": "dev-master@dev",
                 "psr/http-message": "^1.0.1",
                 "willdurand/negotiation": "^2.3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.4"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -799,7 +800,7 @@
                 "MIT"
             ],
             "description": "PSR-7 HTTP message implementation.",
-            "time": "2018-12-09T21:59:56+00:00"
+            "time": "2019-02-22T16:54:32+00:00"
         },
         {
             "name": "phpgt/input",
@@ -807,19 +808,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "3586ff2ba4a9c54b00644bd20893b7f8a7c7620a"
+                "reference": "a317aeacb5bf2cb78802fabf65178f69e7e3f337"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/3586ff2ba4a9c54b00644bd20893b7f8a7c7620a",
-                "reference": "3586ff2ba4a9c54b00644bd20893b7f8a7c7620a",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/a317aeacb5bf2cb78802fabf65178f69e7e3f337",
+                "reference": "a317aeacb5bf2cb78802fabf65178f69e7e3f337",
                 "shasum": ""
             },
             "require": {
                 "phpgt/http": "dev-master"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.*"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -832,7 +833,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2018-12-13T10:58:12+00:00"
+            "time": "2019-02-20T16:25:59+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
@@ -840,19 +841,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ProtectedGlobal.git",
-                "reference": "45b32431cc45d736f54fda61f33c74d7f7407bd6"
+                "reference": "0d6e6c8730894cb52f1a65f6e381676a3706b028"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/45b32431cc45d736f54fda61f33c74d7f7407bd6",
-                "reference": "45b32431cc45d736f54fda61f33c74d7f7407bd6",
+                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/0d6e6c8730894cb52f1a65f6e381676a3706b028",
+                "reference": "0d6e6c8730894cb52f1a65f6e381676a3706b028",
                 "shasum": ""
             },
             "require": {
                 "php": ">7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.*"
+                "phpunit/phpunit": "8.*"
             },
             "type": "library",
             "autoload": {
@@ -865,7 +866,7 @@
                 "MIT"
             ],
             "description": "Protect against accidental use of superglobals.",
-            "time": "2018-12-15T17:42:34+00:00"
+            "time": "2019-02-20T16:26:18+00:00"
         },
         {
             "name": "phpgt/session",
@@ -873,19 +874,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "3355cccfb362baed4548acd3e1869db10a7a07ee"
+                "reference": "fd473ce50d300b4031edf0f804c0e9409f870dae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/3355cccfb362baed4548acd3e1869db10a7a07ee",
-                "reference": "3355cccfb362baed4548acd3e1869db10a7a07ee",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/fd473ce50d300b4031edf0f804c0e9409f870dae",
+                "reference": "fd473ce50d300b4031edf0f804c0e9409f870dae",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1"
+                "php": ">=7.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.3"
+                "phpunit/phpunit": "^8.0"
             },
             "type": "library",
             "autoload": {
@@ -898,7 +899,56 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2018-12-13T10:57:46+00:00"
+            "time": "2019-02-22T16:22:34+00:00"
+        },
+        {
+            "name": "psr/http-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-client.git",
+                "reference": "496a823ef742b632934724bf769560c2a5c7c44e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-client/zipball/496a823ef742b632934724bf769560c2a5c7c44e",
+                "reference": "496a823ef742b632934724bf769560c2a5c7c44e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "psr/http-message": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP clients",
+            "homepage": "https://github.com/php-fig/http-client",
+            "keywords": [
+                "http",
+                "http-client",
+                "psr",
+                "psr-18"
+            ],
+            "time": "2018-10-30T23:29:13+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1058,27 +1108,28 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "0266aff7aa7b0613b1f38a723e14a0ebc55cfca3"
+                "reference": "a0ecac955c67b57c40fe4a1b88a7cca1b58c982d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/0266aff7aa7b0613b1f38a723e14a0ebc55cfca3",
-                "reference": "0266aff7aa7b0613b1f38a723e14a0ebc55cfca3",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/a0ecac955c67b57c40fe4a1b88a7cca1b58c982d",
+                "reference": "a0ecac955c67b57c40fe4a1b88a7cca1b58c982d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.8.35 || ^5.7 || ^6.4"
+                "phpunit/phpunit": "^7.0 || ^6.4 || ^5.7 || ^4.8.35"
             },
             "suggest": {
                 "ext-event": "~1.0 for ExtEventLoop",
-                "ext-pcntl": "For signal handling support when using the StreamSelectLoop"
+                "ext-pcntl": "For signal handling support when using the StreamSelectLoop",
+                "ext-uv": "* for ExtUvLoop"
             },
             "type": "library",
             "autoload": {
@@ -1095,7 +1146,7 @@
                 "asynchronous",
                 "event-loop"
             ],
-            "time": "2018-07-11T14:37:46+00:00"
+            "time": "2019-02-07T16:19:49+00:00"
         },
         {
             "name": "react/promise",
@@ -1103,12 +1154,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "f4edc2581617431aea50430749db55cc3fc031b3"
+                "reference": "43896aa097d0233da13f81ca9df4efef5177cc82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/f4edc2581617431aea50430749db55cc3fc031b3",
-                "reference": "f4edc2581617431aea50430749db55cc3fc031b3",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/43896aa097d0233da13f81ca9df4efef5177cc82",
+                "reference": "43896aa097d0233da13f81ca9df4efef5177cc82",
                 "shasum": ""
             },
             "require": {
@@ -1141,7 +1192,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2018-06-13T15:59:06+00:00"
+            "time": "2019-01-08T16:10:34+00:00"
         },
         {
             "name": "symfony/css-selector",
@@ -1198,16 +1249,16 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.10.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "e3d826245268269cd66f8326bd8bc066687b4a19"
+                "reference": "82ebae02209c21113908c229e9883c419720738a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/e3d826245268269cd66f8326bd8bc066687b4a19",
-                "reference": "e3d826245268269cd66f8326bd8bc066687b4a19",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/82ebae02209c21113908c229e9883c419720738a",
+                "reference": "82ebae02209c21113908c229e9883c419720738a",
                 "shasum": ""
             },
             "require": {
@@ -1219,7 +1270,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9-dev"
+                    "dev-master": "1.11-dev"
                 }
             },
             "autoload": {
@@ -1252,7 +1303,7 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2018-08-06T14:22:27+00:00"
+            "time": "2019-02-06T07:57:58+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -1458,12 +1509,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/instantiator.git",
-                "reference": "8c8c1afee0f929f17528fe1721de5d58e15f71c7"
+                "reference": "16ca33ecc67a625de250f476531dfe5de4c32ff2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/8c8c1afee0f929f17528fe1721de5d58e15f71c7",
-                "reference": "8c8c1afee0f929f17528fe1721de5d58e15f71c7",
+                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/16ca33ecc67a625de250f476531dfe5de4c32ff2",
+                "reference": "16ca33ecc67a625de250f476531dfe5de4c32ff2",
                 "shasum": ""
             },
             "require": {
@@ -1505,7 +1556,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2018-10-15T11:30:00+00:00"
+            "time": "2019-02-20T06:21:04+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1878,28 +1929,28 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "afe4b8aa7526dafeb5a642a70e54a0083ff54d80"
+                "reference": "cfca9c5f7f2694ca0c7749ffb142927d9f05250f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/afe4b8aa7526dafeb5a642a70e54a0083ff54d80",
-                "reference": "afe4b8aa7526dafeb5a642a70e54a0083ff54d80",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/cfca9c5f7f2694ca0c7749ffb142927d9f05250f",
+                "reference": "cfca9c5f7f2694ca0c7749ffb142927d9f05250f",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-xmlwriter": "*",
-                "php": "^7.1",
+                "php": "^7.2",
                 "phpunit/php-file-iterator": "^2.0.2",
                 "phpunit/php-text-template": "^1.2.1",
                 "phpunit/php-token-stream": "^3.0.1",
                 "sebastian/code-unit-reverse-lookup": "^1.0.1",
-                "sebastian/environment": "^4.0",
+                "sebastian/environment": "^4.1",
                 "sebastian/version": "^2.0.1",
                 "theseer/tokenizer": "^1.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.4.4"
+                "phpunit/phpunit": "^8.0"
             },
             "suggest": {
                 "ext-xdebug": "^2.6.1"
@@ -1907,7 +1958,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.1-dev"
+                    "dev-master": "7.0-dev"
                 }
             },
             "autoload": {
@@ -1933,7 +1984,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-09T08:02:16+00:00"
+            "time": "2019-02-15T13:40:27+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1941,12 +1992,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "2da97ea973af95b5ccef2d5bae0f4a976f3923a0"
+                "reference": "5e99c0ea25f1eb9bd4d7380499788302984dd77b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/2da97ea973af95b5ccef2d5bae0f4a976f3923a0",
-                "reference": "2da97ea973af95b5ccef2d5bae0f4a976f3923a0",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/5e99c0ea25f1eb9bd4d7380499788302984dd77b",
+                "reference": "5e99c0ea25f1eb9bd4d7380499788302984dd77b",
                 "shasum": ""
             },
             "require": {
@@ -1983,7 +2034,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2018-10-10T04:54:51+00:00"
+            "time": "2019-02-11T12:49:18+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -2032,12 +2083,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "9ef9968ba27999219d76ae3cef97aa0fa87bd90f"
+                "reference": "eb9e39fb4c2034c31897cdb5f59498fc9126ddcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/9ef9968ba27999219d76ae3cef97aa0fa87bd90f",
-                "reference": "9ef9968ba27999219d76ae3cef97aa0fa87bd90f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/eb9e39fb4c2034c31897cdb5f59498fc9126ddcc",
+                "reference": "eb9e39fb4c2034c31897cdb5f59498fc9126ddcc",
                 "shasum": ""
             },
             "require": {
@@ -2049,7 +2100,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -2073,7 +2124,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2018-06-04T07:17:52+00:00"
+            "time": "2019-02-20T14:16:29+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -2081,12 +2132,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "6df086c042b6bb4fbcfcda15b8e52d5f8955aaee"
+                "reference": "cca9f57a2c7bb3d1e294f2aae84083ffe83dfa92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/6df086c042b6bb4fbcfcda15b8e52d5f8955aaee",
-                "reference": "6df086c042b6bb4fbcfcda15b8e52d5f8955aaee",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/cca9f57a2c7bb3d1e294f2aae84083ffe83dfa92",
+                "reference": "cca9f57a2c7bb3d1e294f2aae84083ffe83dfa92",
                 "shasum": ""
             },
             "require": {
@@ -2122,7 +2173,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2018-10-30T07:50:55+00:00"
+            "time": "2019-02-11T12:50:48+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -2130,12 +2181,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4eba199f3760640fa43b84dba65c1251e014c5a8"
+                "reference": "36f92d57c2b25b778fbf72bc806e6aca0ba344b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4eba199f3760640fa43b84dba65c1251e014c5a8",
-                "reference": "4eba199f3760640fa43b84dba65c1251e014c5a8",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/36f92d57c2b25b778fbf72bc806e6aca0ba344b4",
+                "reference": "36f92d57c2b25b778fbf72bc806e6aca0ba344b4",
                 "shasum": ""
             },
             "require": {
@@ -2145,18 +2196,19 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "ext-xml": "*",
+                "ext-xmlwriter": "*",
                 "myclabs/deep-copy": "^1.7",
                 "phar-io/manifest": "^1.0.2",
                 "phar-io/version": "^2.0",
                 "php": "^7.2",
                 "phpspec/prophecy": "^1.7",
-                "phpunit/php-code-coverage": "^6.0.7",
+                "phpunit/php-code-coverage": "^7.0",
                 "phpunit/php-file-iterator": "^2.0.1",
                 "phpunit/php-text-template": "^1.2.1",
-                "phpunit/php-timer": "^2.0",
+                "phpunit/php-timer": "^2.1",
                 "sebastian/comparator": "^3.0",
                 "sebastian/diff": "^3.0",
-                "sebastian/environment": "^4.0",
+                "sebastian/environment": "^4.1",
                 "sebastian/exporter": "^3.1",
                 "sebastian/global-state": "^3.0",
                 "sebastian/object-enumerator": "^3.0.3",
@@ -2177,7 +2229,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.0-dev"
+                    "dev-master": "8.1-dev"
                 }
             },
             "autoload": {
@@ -2203,7 +2255,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2018-12-28T13:39:52+00:00"
+            "time": "2019-02-22T13:07:17+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -2211,12 +2263,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/code-unit-reverse-lookup.git",
-                "reference": "22f5f5ff892d51035dd1fb4cd6b224a640ffb206"
+                "reference": "383c44e104c1fd46ecc915f55145bd2831318747"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/code-unit-reverse-lookup/zipball/22f5f5ff892d51035dd1fb4cd6b224a640ffb206",
-                "reference": "22f5f5ff892d51035dd1fb4cd6b224a640ffb206",
+                "url": "https://api.github.com/repos/sebastianbergmann/code-unit-reverse-lookup/zipball/383c44e104c1fd46ecc915f55145bd2831318747",
+                "reference": "383c44e104c1fd46ecc915f55145bd2831318747",
                 "shasum": ""
             },
             "require": {
@@ -2248,7 +2300,7 @@
             ],
             "description": "Looks up which function or method a line of code belongs to",
             "homepage": "https://github.com/sebastianbergmann/code-unit-reverse-lookup/",
-            "time": "2018-05-15T05:52:48+00:00"
+            "time": "2019-02-11T12:48:46+00:00"
         },
         {
             "name": "sebastian/comparator",
@@ -2256,12 +2308,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "33825cd25f073faafe98c4a017a5d2b69f3e09d3"
+                "reference": "17ef3ffcdab9194ad7a2715a9fb1235f1361a366"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/33825cd25f073faafe98c4a017a5d2b69f3e09d3",
-                "reference": "33825cd25f073faafe98c4a017a5d2b69f3e09d3",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/17ef3ffcdab9194ad7a2715a9fb1235f1361a366",
+                "reference": "17ef3ffcdab9194ad7a2715a9fb1235f1361a366",
                 "shasum": ""
             },
             "require": {
@@ -2312,7 +2364,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2018-12-04T14:31:16+00:00"
+            "time": "2019-02-11T12:51:04+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -2320,19 +2372,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "6906fbe33455221909eab31d4b8b1517b94aba46"
+                "reference": "d4193340fc9bebb17533e00bc82f61da28fe7125"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/6906fbe33455221909eab31d4b8b1517b94aba46",
-                "reference": "6906fbe33455221909eab31d4b8b1517b94aba46",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/d4193340fc9bebb17533e00bc82f61da28fe7125",
+                "reference": "d4193340fc9bebb17533e00bc82f61da28fe7125",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.0",
+                "phpunit/phpunit": "^7.5 || ^8.0",
                 "symfony/process": "^2 || ^3.3 || ^4"
             },
             "type": "library",
@@ -2368,7 +2420,7 @@
                 "unidiff",
                 "unified diff"
             ],
-            "time": "2018-10-30T05:42:15+00:00"
+            "time": "2019-02-11T12:50:35+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -2376,24 +2428,27 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f"
+                "reference": "dbf7b0d103084622e8a5015452a2650dcb248758"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/febd209a219cea7b56ad799b30ebbea34b71eb8f",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/dbf7b0d103084622e8a5015452a2650dcb248758",
+                "reference": "dbf7b0d103084622e8a5015452a2650dcb248758",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.4"
+                "phpunit/phpunit": "^7.5"
+            },
+            "suggest": {
+                "ext-posix": "*"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0-dev"
+                    "dev-master": "4.1-dev"
                 }
             },
             "autoload": {
@@ -2418,7 +2473,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2018-11-25T09:31:21+00:00"
+            "time": "2019-02-11T12:51:52+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -2426,12 +2481,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/exporter.git",
-                "reference": "c8c4f196e32858e4448bc285e542b61a4c40d9dc"
+                "reference": "8be786b3b65fbe706733d44a4b4a53d5391a4772"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/c8c4f196e32858e4448bc285e542b61a4c40d9dc",
-                "reference": "c8c4f196e32858e4448bc285e542b61a4c40d9dc",
+                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/8be786b3b65fbe706733d44a4b4a53d5391a4772",
+                "reference": "8be786b3b65fbe706733d44a4b4a53d5391a4772",
                 "shasum": ""
             },
             "require": {
@@ -2485,7 +2540,7 @@
                 "export",
                 "exporter"
             ],
-            "time": "2018-06-28T14:22:04+00:00"
+            "time": "2019-02-11T12:49:46+00:00"
         },
         {
             "name": "sebastian/global-state",
@@ -2493,12 +2548,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "3c2d1b3a3417ba87e200f2d009f31dc5e76886cf"
+                "reference": "4b60cdb437ccff1871814451541cbe41f4b8ac58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/3c2d1b3a3417ba87e200f2d009f31dc5e76886cf",
-                "reference": "3c2d1b3a3417ba87e200f2d009f31dc5e76886cf",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/4b60cdb437ccff1871814451541cbe41f4b8ac58",
+                "reference": "4b60cdb437ccff1871814451541cbe41f4b8ac58",
                 "shasum": ""
             },
             "require": {
@@ -2539,7 +2594,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2018-11-26T13:40:26+00:00"
+            "time": "2019-02-11T12:52:08+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -2547,12 +2602,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/object-enumerator.git",
-                "reference": "e6be0a5481aff88f29262c331eab5b3ea939f55f"
+                "reference": "41af86e2a7b06e7e364c81a705b1f7caf6110218"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/object-enumerator/zipball/e6be0a5481aff88f29262c331eab5b3ea939f55f",
-                "reference": "e6be0a5481aff88f29262c331eab5b3ea939f55f",
+                "url": "https://api.github.com/repos/sebastianbergmann/object-enumerator/zipball/41af86e2a7b06e7e364c81a705b1f7caf6110218",
+                "reference": "41af86e2a7b06e7e364c81a705b1f7caf6110218",
                 "shasum": ""
             },
             "require": {
@@ -2586,7 +2641,7 @@
             ],
             "description": "Traverses array structures and object graphs to enumerate all referenced objects",
             "homepage": "https://github.com/sebastianbergmann/object-enumerator/",
-            "time": "2018-10-30T05:41:47+00:00"
+            "time": "2019-02-11T12:50:05+00:00"
         },
         {
             "name": "sebastian/object-reflector",
@@ -2594,12 +2649,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/object-reflector.git",
-                "reference": "7707193304715e3caddf28fc73c02c12ed6f350c"
+                "reference": "fae17b5d19ab523c9e821e5559d27e4c8a5bdee1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/object-reflector/zipball/7707193304715e3caddf28fc73c02c12ed6f350c",
-                "reference": "7707193304715e3caddf28fc73c02c12ed6f350c",
+                "url": "https://api.github.com/repos/sebastianbergmann/object-reflector/zipball/fae17b5d19ab523c9e821e5559d27e4c8a5bdee1",
+                "reference": "fae17b5d19ab523c9e821e5559d27e4c8a5bdee1",
                 "shasum": ""
             },
             "require": {
@@ -2631,7 +2686,7 @@
             ],
             "description": "Allows reflection of object attributes, including inherited and non-public ones",
             "homepage": "https://github.com/sebastianbergmann/object-reflector/",
-            "time": "2018-05-15T05:50:44+00:00"
+            "time": "2019-02-11T12:48:12+00:00"
         },
         {
             "name": "sebastian/recursion-context",
@@ -2639,12 +2694,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/recursion-context.git",
-                "reference": "dbe1869c13935c6080c834fc61424834b9ad5907"
+                "reference": "87b0893f697db6d75943e26d50bf91c82796a371"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/dbe1869c13935c6080c834fc61424834b9ad5907",
-                "reference": "dbe1869c13935c6080c834fc61424834b9ad5907",
+                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/87b0893f697db6d75943e26d50bf91c82796a371",
+                "reference": "87b0893f697db6d75943e26d50bf91c82796a371",
                 "shasum": ""
             },
             "require": {
@@ -2684,7 +2739,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2018-05-15T05:52:05+00:00"
+            "time": "2019-02-11T12:48:28+00:00"
         },
         {
             "name": "sebastian/resource-operations",
