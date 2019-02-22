@@ -101,7 +101,7 @@ As with all wikis, the wiki is open to edit by any registered Github user. Chang
 
 ### Financial contributions
 
-PHP.Gt is open source and free, and always will be. If you feel like supporting the development of PHP.Gt financially, [please pledge a monthly donation via Patreon](https://www.patreon.com/phpgt).
+PHP.Gt is open source and free, and always will be. If you are interested in sponsoring the development of PHP.Gt, [please send an email to sponsors@php.gt](mailto:sponsors@php.gt) for more information.
 
 Coding style guide
 ------------------
