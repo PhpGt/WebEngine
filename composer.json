@@ -12,18 +12,19 @@
 	"require": {
 		"php": ">=7.2",
 		"phpgt/build": "dev-master@dev",
+		"phpgt/cli": "1.*",
 		"phpgt/config": "dev-master@dev",
 		"phpgt/cookie": "dev-master@dev",
+		"phpgt/cron": "dev-master@dev",
 		"phpgt/csrf": "dev-master@dev",
 		"phpgt/database": "dev-master@dev",
 		"phpgt/dom": "dev-master@dev",
 		"phpgt/domtemplate": "dev-master@dev",
+		"phpgt/fetch": "dev-master@dev",
 		"phpgt/http": "dev-master@dev",
 		"phpgt/input": "dev-master@dev",
 		"phpgt/protectedglobal": "dev-master@dev",
 		"phpgt/session": "dev-master@dev",
-		"phpgt/fetch": "dev-master@dev",
-		"phpgt/cli": "dev-master@dev",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^2.3"
