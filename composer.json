@@ -9,25 +9,8 @@
 
 	"type": "library",
 
-	"autoload": {
-		"psr-4": {
-			"Gt\\WebEngine\\": "./src/",
-			"Gt\\Test\\WebEngine\\": "./test/unit/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Gt\\WebEngine\\Test\\": "./test/unit"
-		}
-	},
-
-	"bin": [
-		"bin/gt-build",
-		"bin/gt-serve",
-		"bin/gt-run"
-	],
-
 	"require": {
+		"php": ">=7.2",
 		"phpgt/build": "dev-master@dev",
 		"phpgt/config": "dev-master@dev",
 		"phpgt/cookie": "dev-master@dev",
@@ -48,6 +31,24 @@
 	"require-dev": {
 		"phpunit/phpunit": "8.*"
 	},
+
+	"autoload": {
+		"psr-4": {
+			"Gt\\WebEngine\\": "./src/",
+			"Gt\\Test\\WebEngine\\": "./test/unit/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Gt\\WebEngine\\Test\\": "./test/unit"
+		}
+	},
+
+	"bin": [
+		"bin/gt-build",
+		"bin/gt-serve",
+		"bin/gt-run"
+	],
 
 	"keywords": [
 		"php",

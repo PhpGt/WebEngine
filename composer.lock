@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7cc1cf4ce199ed09cc7d3cf54544de2f",
+    "content-hash": "e4af29e4d54d319321768f2b5849d3f8",
     "packages": [
         {
             "name": "composer/semver",
@@ -202,7 +202,7 @@
             ],
             "authors": [
                 {
-                    "name": "magicalex",
+                    "name": "Magicalex",
                     "email": "magicalex@mondedie.fr"
                 }
             ],
@@ -808,16 +808,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "a317aeacb5bf2cb78802fabf65178f69e7e3f337"
+                "reference": "edbbcbe14223aca7bf3e9762adfc4eecb44cf166"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/a317aeacb5bf2cb78802fabf65178f69e7e3f337",
-                "reference": "a317aeacb5bf2cb78802fabf65178f69e7e3f337",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/edbbcbe14223aca7bf3e9762adfc4eecb44cf166",
+                "reference": "edbbcbe14223aca7bf3e9762adfc4eecb44cf166",
                 "shasum": ""
             },
             "require": {
-                "phpgt/http": "dev-master"
+                "phpgt/http": "dev-master@dev"
             },
             "require-dev": {
                 "phpunit/phpunit": "8.*"
@@ -833,7 +833,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2019-02-20T16:25:59+00:00"
+            "time": "2019-02-22T18:09:10+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
@@ -2885,6 +2885,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.2"
+    },
     "platform-dev": []
 }
