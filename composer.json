@@ -23,6 +23,7 @@
 		"phpgt/protectedglobal": "dev-master@dev",
 		"phpgt/session": "dev-master@dev",
 		"phpgt/fetch": "dev-master@dev",
+		"phpgt/cli": "dev-master@dev",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^2.3"
@@ -34,8 +35,7 @@
 
 	"autoload": {
 		"psr-4": {
-			"Gt\\WebEngine\\": "./src/",
-			"Gt\\Test\\WebEngine\\": "./test/unit/"
+			"Gt\\WebEngine\\": "./src/"
 		}
 	},
 	"autoload-dev": {
@@ -45,9 +45,7 @@
 	},
 
 	"bin": [
-		"bin/gt-build",
-		"bin/gt-serve",
-		"bin/gt-run"
+		"bin/run"
 	],
 
 	"keywords": [

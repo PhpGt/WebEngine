@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e4af29e4d54d319321768f2b5849d3f8",
+    "content-hash": "0d0594b71a4982279c23676b24ff0eb0",
     "packages": [
         {
             "name": "composer/semver",
@@ -360,6 +360,48 @@
             ],
             "description": "Build system for PHP 7 projects.",
             "time": "2019-02-20T16:24:39+00:00"
+        },
+        {
+            "name": "phpgt/cli",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Cli.git",
+                "reference": "a02593d95200309dab3ca771e0c01bc6d74882ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/a02593d95200309dab3ca771e0c01bc6d74882ed",
+                "reference": "a02593d95200309dab3ca771e0c01bc6d74882ed",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "8.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Cli\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Bowler",
+                    "email": "greg.bowler@g105b.com"
+                }
+            ],
+            "description": "Command line interface builder.",
+            "keywords": [
+                "cli",
+                "phpgt",
+                "terminal",
+                "webengine"
+            ],
+            "time": "2019-02-20T16:24:44+00:00"
         },
         {
             "name": "phpgt/config",
@@ -2881,7 +2923,8 @@
         "phpgt/input": 20,
         "phpgt/protectedglobal": 20,
         "phpgt/session": 20,
-        "phpgt/fetch": 20
+        "phpgt/fetch": 20,
+        "phpgt/cli": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
