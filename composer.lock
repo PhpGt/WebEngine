@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e4af29e4d54d319321768f2b5849d3f8",
+    "content-hash": "c4733bb4f1a093b576e8980446625a34",
     "packages": [
         {
             "name": "composer/semver",
@@ -67,6 +67,60 @@
                 "versioning"
             ],
             "time": "2019-01-30T14:33:02+00:00"
+        },
+        {
+            "name": "dragonmantank/cron-expression",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dragonmantank/cron-expression.git",
+                "reference": "714f6a8ab14b1951dcc2141b8e5d21ee96e06474"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/714f6a8ab14b1951dcc2141b8e5d21ee96e06474",
+                "reference": "714f6a8ab14b1951dcc2141b8e5d21ee96e06474",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.4|^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cron\\": "src/Cron/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                },
+                {
+                    "name": "Chris Tankersley",
+                    "email": "chris@ctankersley.com",
+                    "homepage": "https://github.com/dragonmantank"
+                }
+            ],
+            "description": "CRON for PHP: Calculate the next or previous run date and determine if a CRON expression is due",
+            "keywords": [
+                "cron",
+                "schedule"
+            ],
+            "time": "2019-02-14T15:33:25+00:00"
         },
         {
             "name": "ircmaxell/random-lib",
@@ -362,6 +416,48 @@
             "time": "2019-02-20T16:24:39+00:00"
         },
         {
+            "name": "phpgt/cli",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Cli.git",
+                "reference": "36bea0ad76c1e580ebbb769a83c574a769cf3f5a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/36bea0ad76c1e580ebbb769a83c574a769cf3f5a",
+                "reference": "36bea0ad76c1e580ebbb769a83c574a769cf3f5a",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "8.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Cli\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Bowler",
+                    "email": "greg.bowler@g105b.com"
+                }
+            ],
+            "description": "Command line interface builder.",
+            "keywords": [
+                "cli",
+                "phpgt",
+                "terminal",
+                "webengine"
+            ],
+            "time": "2019-02-23T21:35:02+00:00"
+        },
+        {
             "name": "phpgt/config",
             "version": "dev-master",
             "source": {
@@ -442,6 +538,41 @@
             ],
             "description": "Object oriented cookie handler.",
             "time": "2019-02-20T16:24:54+00:00"
+        },
+        {
+            "name": "phpgt/cron",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Cron.git",
+                "reference": "0bf09244b4b971696e46e5bc348b5ddec342a700"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Cron/zipball/0bf09244b4b971696e46e5bc348b5ddec342a700",
+                "reference": "0bf09244b4b971696e46e5bc348b5ddec342a700",
+                "shasum": ""
+            },
+            "require": {
+                "dragonmantank/cron-expression": "^2.2",
+                "php": ">7.2",
+                "phpgt/cli": "1.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7.*"
+            },
+            "bin": [
+                "bin/cron"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Cron\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Run scripts or static functions at regular intervals.",
+            "time": "2019-02-20T16:25:00+00:00"
         },
         {
             "name": "phpgt/csrf",
@@ -2873,15 +3004,16 @@
         "phpgt/build": 20,
         "phpgt/config": 20,
         "phpgt/cookie": 20,
+        "phpgt/cron": 20,
         "phpgt/csrf": 20,
         "phpgt/database": 20,
         "phpgt/dom": 20,
         "phpgt/domtemplate": 20,
+        "phpgt/fetch": 20,
         "phpgt/http": 20,
         "phpgt/input": 20,
         "phpgt/protectedglobal": 20,
-        "phpgt/session": 20,
-        "phpgt/fetch": 20
+        "phpgt/session": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

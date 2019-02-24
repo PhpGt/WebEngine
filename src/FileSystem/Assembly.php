@@ -35,7 +35,7 @@ class Assembly implements Iterator {
 		$after = true;
 
 		if($basenameMustExist) {
-			$basenamePath = $this->findInDirectory($basename)[0];
+			$basenamePath = $this->findInDirectory($basename)[0] ?? null;
 
 			if(is_null($basenamePath)) {
 				throw new BasenameNotFoundException($basename);
