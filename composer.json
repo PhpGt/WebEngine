@@ -45,10 +45,6 @@
 		}
 	},
 
-	"bin": [
-		"bin/run"
-	],
-
 	"keywords": [
 		"php",
 		"phpgt",
