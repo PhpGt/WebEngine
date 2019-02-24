@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4733bb4f1a093b576e8980446625a34",
+    "content-hash": "be1a31ba07d99a7f68737927c0937b97",
     "packages": [
         {
             "name": "composer/semver",
@@ -998,6 +998,36 @@
             ],
             "description": "Protect against accidental use of superglobals.",
             "time": "2019-02-20T16:26:18+00:00"
+        },
+        {
+            "name": "phpgt/server",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Server.git",
+                "reference": "10153426fee1e7d9c18bed4d345d5c43623c87f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Server/zipball/10153426fee1e7d9c18bed4d345d5c43623c87f9",
+                "reference": "10153426fee1e7d9c18bed4d345d5c43623c87f9",
+                "shasum": ""
+            },
+            "require": {
+                "phpgt/cli": "1.*"
+            },
+            "bin": [
+                "./bin/serve"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Server\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Development HTTP server.",
+            "time": "2019-02-20T16:26:23+00:00"
         },
         {
             "name": "phpgt/session",
@@ -3013,6 +3043,7 @@
         "phpgt/http": 20,
         "phpgt/input": 20,
         "phpgt/protectedglobal": 20,
+        "phpgt/server": 20,
         "phpgt/session": 20
     },
     "prefer-stable": false,

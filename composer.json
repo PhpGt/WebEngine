@@ -24,6 +24,7 @@
 		"phpgt/http": "dev-master@dev",
 		"phpgt/input": "dev-master@dev",
 		"phpgt/protectedglobal": "dev-master@dev",
+		"phpgt/server": "dev-master@dev",
 		"phpgt/session": "dev-master@dev",
 
 		"psr/http-server-middleware": "^1.0",
