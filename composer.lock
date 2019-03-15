@@ -256,7 +256,7 @@
             ],
             "authors": [
                 {
-                    "name": "Magicalex",
+                    "name": "magicalex",
                     "email": "magicalex@mondedie.fr"
                 }
             ],
@@ -276,12 +276,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/httplug.git",
-                "reference": "a11f1e36e8c4ea5b9ebeb60109703e21c4103f02"
+                "reference": "d7f1b189a8f15c2d52a6d1d2cff7b57169973119"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/httplug/zipball/a11f1e36e8c4ea5b9ebeb60109703e21c4103f02",
-                "reference": "a11f1e36e8c4ea5b9ebeb60109703e21c4103f02",
+                "url": "https://api.github.com/repos/php-http/httplug/zipball/d7f1b189a8f15c2d52a6d1d2cff7b57169973119",
+                "reference": "d7f1b189a8f15c2d52a6d1d2cff7b57169973119",
                 "shasum": ""
             },
             "require": {
@@ -325,7 +325,7 @@
                 "client",
                 "http"
             ],
-            "time": "2018-10-31T11:16:59+00:00"
+            "time": "2019-03-05T07:37:27+00:00"
         },
         {
             "name": "php-http/promise",
@@ -383,21 +383,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Build.git",
-                "reference": "188b4a5e73cbed49fe8bda74f934f70b23e117dd"
+                "reference": "906c1b224059165034885468495d877b8fc39b9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Build/zipball/188b4a5e73cbed49fe8bda74f934f70b23e117dd",
-                "reference": "188b4a5e73cbed49fe8bda74f934f70b23e117dd",
+                "url": "https://api.github.com/repos/PhpGt/Build/zipball/906c1b224059165034885468495d877b8fc39b9f",
+                "reference": "906c1b224059165034885468495d877b8fc39b9f",
                 "shasum": ""
             },
             "require": {
                 "composer/semver": "^1.4",
-                "php": "^7.1",
+                "php": "^7.2",
                 "webmozart/glob": "^4.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.0"
+                "phpunit/phpunit": "8.*"
             },
             "bin": [
                 "bin/build"
@@ -413,21 +413,24 @@
                 "MIT"
             ],
             "description": "Build system for PHP 7 projects.",
-            "time": "2019-02-20T16:24:39+00:00"
+            "time": "2019-03-14T15:52:47+00:00"
         },
         {
             "name": "phpgt/cli",
-            "version": "v1.1.1",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Cli.git",
-                "reference": "36bea0ad76c1e580ebbb769a83c574a769cf3f5a"
+                "reference": "363ec202fac3ed95b9cf85cc8a51597675acd57e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/36bea0ad76c1e580ebbb769a83c574a769cf3f5a",
-                "reference": "36bea0ad76c1e580ebbb769a83c574a769cf3f5a",
+                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/363ec202fac3ed95b9cf85cc8a51597675acd57e",
+                "reference": "363ec202fac3ed95b9cf85cc8a51597675acd57e",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "8.*"
@@ -455,7 +458,7 @@
                 "terminal",
                 "webengine"
             ],
-            "time": "2019-02-23T21:35:02+00:00"
+            "time": "2019-02-23T22:25:08+00:00"
         },
         {
             "name": "phpgt/config",
@@ -628,12 +631,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Curl.git",
-                "reference": "8f0152cd7dd0cdfb51eb54916d7d30f11bc762e4"
+                "reference": "f5d8bee6b568cd4927573c0ec7323969ef396aee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Curl/zipball/8f0152cd7dd0cdfb51eb54916d7d30f11bc762e4",
-                "reference": "8f0152cd7dd0cdfb51eb54916d7d30f11bc762e4",
+                "url": "https://api.github.com/repos/PhpGt/Curl/zipball/f5d8bee6b568cd4927573c0ec7323969ef396aee",
+                "reference": "f5d8bee6b568cd4927573c0ec7323969ef396aee",
                 "shasum": ""
             },
             "require": {
@@ -667,7 +670,7 @@
                 "http",
                 "interface"
             ],
-            "time": "2019-02-20T16:25:21+00:00"
+            "time": "2019-03-07T13:23:27+00:00"
         },
         {
             "name": "phpgt/database",
@@ -1005,29 +1008,32 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Server.git",
-                "reference": "10153426fee1e7d9c18bed4d345d5c43623c87f9"
+                "reference": "65b98a46cbe6ccec5bb8c4168a7f32ba47da564a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Server/zipball/10153426fee1e7d9c18bed4d345d5c43623c87f9",
-                "reference": "10153426fee1e7d9c18bed4d345d5c43623c87f9",
+                "url": "https://api.github.com/repos/PhpGt/Server/zipball/65b98a46cbe6ccec5bb8c4168a7f32ba47da564a",
+                "reference": "65b98a46cbe6ccec5bb8c4168a7f32ba47da564a",
                 "shasum": ""
             },
             "require": {
                 "phpgt/cli": "1.*"
             },
+            "require-dev": {
+                "phpunit/phpunit": "8.*"
+            },
             "bin": [
-                "./bin/serve"
+                "bin/serve"
             ],
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Gt\\Server\\": "./src"
+                    "Gt\\Server\\": "./src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Development HTTP server.",
-            "time": "2019-02-20T16:26:23+00:00"
+            "time": "2019-02-24T22:24:22+00:00"
         },
         {
             "name": "phpgt/session",
@@ -1453,7 +1459,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "BackEndTea@gmail.com"
+                    "email": "backendtea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -1670,12 +1676,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/instantiator.git",
-                "reference": "16ca33ecc67a625de250f476531dfe5de4c32ff2"
+                "reference": "2145e8cd1f6f6a7cef8d4f8c8c4b4e08529e8a8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/16ca33ecc67a625de250f476531dfe5de4c32ff2",
-                "reference": "16ca33ecc67a625de250f476531dfe5de4c32ff2",
+                "url": "https://api.github.com/repos/doctrine/instantiator/zipball/2145e8cd1f6f6a7cef8d4f8c8c4b4e08529e8a8d",
+                "reference": "2145e8cd1f6f6a7cef8d4f8c8c4b4e08529e8a8d",
                 "shasum": ""
             },
             "require": {
@@ -1686,7 +1692,8 @@
                 "ext-pdo": "*",
                 "ext-phar": "*",
                 "phpbench/phpbench": "^0.13",
-                "phpstan/phpstan-shim": "^0.9.2",
+                "phpstan/phpstan-phpunit": "^0.11",
+                "phpstan/phpstan-shim": "^0.11",
                 "phpunit/phpunit": "^7.0"
             },
             "type": "library",
@@ -1717,7 +1724,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2019-02-20T06:21:04+00:00"
+            "time": "2019-03-12T22:46:11+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2090,12 +2097,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "cfca9c5f7f2694ca0c7749ffb142927d9f05250f"
+                "reference": "0317a769a81845c390e19684d9ba25d7f6aa4707"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/cfca9c5f7f2694ca0c7749ffb142927d9f05250f",
-                "reference": "cfca9c5f7f2694ca0c7749ffb142927d9f05250f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0317a769a81845c390e19684d9ba25d7f6aa4707",
+                "reference": "0317a769a81845c390e19684d9ba25d7f6aa4707",
                 "shasum": ""
             },
             "require": {
@@ -2145,7 +2152,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-15T13:40:27+00:00"
+            "time": "2019-02-26T07:38:26+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2342,12 +2349,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "36f92d57c2b25b778fbf72bc806e6aca0ba344b4"
+                "reference": "ffbbd9727a1424e7737fcb18b8a1077fbb17d4f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/36f92d57c2b25b778fbf72bc806e6aca0ba344b4",
-                "reference": "36f92d57c2b25b778fbf72bc806e6aca0ba344b4",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ffbbd9727a1424e7737fcb18b8a1077fbb17d4f7",
+                "reference": "ffbbd9727a1424e7737fcb18b8a1077fbb17d4f7",
                 "shasum": ""
             },
             "require": {
@@ -2416,7 +2423,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-22T13:07:17+00:00"
+            "time": "2019-03-14T07:10:15+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
