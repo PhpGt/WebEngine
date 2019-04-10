@@ -16,7 +16,7 @@
 		"phpgt/config": "dev-master@dev",
 		"phpgt/cookie": "dev-master@dev",
 		"phpgt/cron": "dev-master@dev",
-		"phpgt/csrf": "dev-master@dev",
+		"phpgt/csrf": "1.*",
 		"phpgt/database": "dev-master@dev",
 		"phpgt/dom": "dev-master@dev",
 		"phpgt/domtemplate": "dev-master@dev",
