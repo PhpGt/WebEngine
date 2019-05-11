@@ -63,12 +63,13 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$path = $request->getUri()->getPath();
 // TODO: Abstract response type needed.
 		$response = new PageResponse();
+		$view = null;
+		$templateDirectory = implode(DIRECTORY_SEPARATOR, [
+			$this->router->getBaseViewLogicPath(),
+			"_component",
+		]);
 
 		try {
-			$templateDirectory = implode(DIRECTORY_SEPARATOR, [
-				$this->router->getBaseViewLogicPath(),
-				"_component",
-			]);
 			$viewAssembly = $this->router->getViewAssembly($path);
 			$view = $this->getView(
 				$response->getBody(),
@@ -79,13 +80,21 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			);
 		}
 		catch(BasenameNotFoundException $exception) {
-// TODO: Handle view not found.
-			die("The requested view is not found!!!");
+			http_response_code(404);
+		}
+		finally {
+// Set an empty view if we have a 404.
+			if(is_null($view)) {
+				$view = $this->getView(
+					$response->getBody(),
+					"",
+					$templateDirectory
+				);
+			}
 		}
 
 		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
-
 		$logicAssembly = $this->router->getLogicAssembly($path);
 
 		$logicObjects = $this->createLogicObjects(
@@ -101,6 +110,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		return $response;
 	}
 
+	/** @throws BasenameNotFoundException */
 	protected abstract function getView(
 		StreamInterface $outputStream,
 		string $body,
@@ -108,6 +118,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		string $path = null,
 		string $type = null
 	):View;
+
 	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
