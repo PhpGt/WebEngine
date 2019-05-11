@@ -13,6 +13,7 @@ use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\AbstractLogic;
 use Gt\WebEngine\Logic\LogicFactory;
+use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
@@ -65,8 +66,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	 */
 	public function handle(ServerRequestInterface $request):ResponseInterface {
 		$path = $request->getUri()->getPath();
-// TODO: Abstract response type needed.
-		$response = new PageResponse();
+		$response = null;
+
+		if($this instanceof PageDispatcher) {
+			$response = new PageResponse();
+		}
+		else {
+			$response = new ApiResponse();
+		}
+
 		$view = null;
 		$templateDirectory = implode(DIRECTORY_SEPARATOR, [
 			$this->router->getBaseViewLogicPath(),
