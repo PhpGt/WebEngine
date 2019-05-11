@@ -1,14 +1,7 @@
 {
-	"repositories": [
-		{
-			"type": "path",
-			"url": "/home/g105b/Code/PhpGt/*"
-		}
-	],
-	"minimum-stability": "dev",
-
 	"name": "phpgt/webengine",
 	"description": "Rapid development engine.",
+	"minimum-stability": "dev",
 
 	"license": [
 		"MIT"
@@ -16,39 +9,41 @@
 
 	"type": "library",
 
-	"autoload": {
-		"psr-4": {
-			"Gt\\WebEngine\\": "./src/",
-			"Gt\\Test\\WebEngine\\": "./test/unit/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Gt\\WebEngine\\Test\\": "./test/unit"
-		}
-	},
-
 	"require": {
-		"phpgt/build": "dev-master",
-		"phpgt/config": "dev-master",
-		"phpgt/cookie": "dev-master",
-		"phpgt/csrf": "dev-master",
-		"phpgt/database": "dev-master",
-		"phpgt/dom": "dev-master",
-		"phpgt/domtemplate": "dev-master",
-		"phpgt/http": "dev-master",
-		"phpgt/input": "dev-master",
-		"phpgt/protectedglobal": "dev-master",
-		"phpgt/session": "dev-master",
-		"phpgt/server": "dev-master",
-		"phpgt/fetch": "dev-master",
+		"php": ">=7.2",
+		"phpgt/build": "dev-master@dev",
+		"phpgt/cli": "1.*",
+		"phpgt/config": "dev-master@dev",
+		"phpgt/cookie": "dev-master@dev",
+		"phpgt/cron": "dev-master@dev",
+		"phpgt/csrf": "1.*",
+		"phpgt/database": "dev-master@dev",
+		"phpgt/dom": "dev-master@dev",
+		"phpgt/domtemplate": "dev-master@dev",
+		"phpgt/fetch": "dev-master@dev",
+		"phpgt/http": "dev-master@dev",
+		"phpgt/input": "dev-master@dev",
+		"phpgt/protectedglobal": "dev-master@dev",
+		"phpgt/server": "dev-master@dev",
+		"phpgt/session": "dev-master@dev",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^2.3"
 	},
 
 	"require-dev": {
-		"phpunit/phpunit": "*"
+		"phpunit/phpunit": "8.*"
+	},
+
+	"autoload": {
+		"psr-4": {
+			"Gt\\WebEngine\\": "./src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Gt\\WebEngine\\Test\\": "./test/unit"
+		}
 	},
 
 	"keywords": [

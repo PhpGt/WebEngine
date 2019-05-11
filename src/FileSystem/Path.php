@@ -137,7 +137,15 @@ class Path {
 		}
 
 		if(empty(self::$appRoot)) {
-			throw new ApplicationRootDirectoryNotSetException();
+			self::$appRoot = getcwd();
+
+			if(!is_file(implode(DIRECTORY_SEPARATOR, [
+				self::$appRoot,
+				"vendor",
+				"autoload.php",
+			]))) {
+				throw new ApplicationRootDirectoryNotSetException();
+			}
 		}
 
 		return self::$appRoot;

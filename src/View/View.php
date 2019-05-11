@@ -12,7 +12,9 @@ abstract class View {
 		$this->viewModel = $viewModel;
 	}
 
-	abstract public function getViewModel();
+	public function getViewModel() {
+		return $this->viewModel;
+	}
 
 	public function stream():void {
 		$this->outputStream->write((string)$this->viewModel);

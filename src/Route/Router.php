@@ -50,21 +50,16 @@ abstract class Router {
 		$directory = $this->getDirectoryForUri($uri);
 		$basename = $this->getBasenameForUri($uri);
 
-		try {
-			$assembly = new Assembly(
-				$this->getBaseViewLogicPath(),
-				$directory,
-				$basename,
-				static::VIEW_EXTENSIONS,
-				static::VIEW_BEFORE,
-				static::VIEW_AFTER,
-				true
-			);
-		}
-		catch(BasenameNotFoundException $exception) {
-			echo "404 NOT FOUND";
-			var_dump($directory);die();
-		}
+		$assembly = new Assembly(
+			$this->getBaseViewLogicPath(),
+			$directory,
+			$basename,
+			static::VIEW_EXTENSIONS,
+			static::VIEW_BEFORE,
+			static::VIEW_AFTER,
+			true
+		);
+
 		return $assembly;
 	}
 
