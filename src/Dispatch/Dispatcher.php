@@ -7,6 +7,7 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
+use Gt\Http\Uri;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
@@ -30,10 +31,13 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected $appNamespace;
 	/** @var TokenStore */
 	protected $csrfProtection;
+	/** @var bool True if the current execution of `handle` is an error */
+	protected $errorHandlingFlag;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
 		$this->appNamespace = $appNamespace;
+		$this->errorHandlingFlag = false;
 	}
 
 	public function storeInternalObjects(
@@ -105,6 +109,10 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		$this->dispatchLogicObjects($logicObjects);
 		$this->injectCsrf($view);
+		if(!$this->errorHandlingFlag
+		&& $errorResponse = $this->httpErrorResponse($request)) {
+			return $errorResponse;
+		}
 		$view->stream();
 
 		return $response;
@@ -173,5 +181,18 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			);
 			$protector->protectAndInject();
 		}
+	}
+
+	protected function httpErrorResponse(
+		ServerRequestInterface $request
+	):?ResponseInterface {
+		$statusCode = http_response_code();
+		if($statusCode < 300) {
+			return null;
+		}
+
+		$request = $request->withUri(new Uri("/$statusCode"));
+		$this->errorHandlingFlag = true;
+		return $this->handle($request);
 	}
 }
