@@ -176,7 +176,7 @@ class Assembly implements Iterator {
 			return $path;
 		}
 
-// Replace the path with any magic directories that exist.
+// Replace the path with any dynamic directories that exist.
 		$pathToScan = $baseName;
 		$subDirectoryParts = explode(
 			DIRECTORY_SEPARATOR,
@@ -191,26 +191,29 @@ class Assembly implements Iterator {
 				$pathToScan .= DIRECTORY_SEPARATOR . $nextDirName;
 			}
 			else {
-				$magicDirectory = null;
+				$dynamicDirectory = null;
 
 				foreach($fileList as $file) {
 					if($file[0] !== "@") {
 						continue;
 					}
 
-					$magicDirectory = $file;
+					$dynamicDirectory = $file;
 				}
 
-				if(is_null($magicDirectory)) {
+				if(is_null($dynamicDirectory)) {
 					break;
 				}
 
-				$pathToScan .= DIRECTORY_SEPARATOR . $magicDirectory;
+				$pathToScan .= DIRECTORY_SEPARATOR . $dynamicDirectory;
 			}
 		} while(!empty($subDirectoryParts));
 
 		if(is_dir($pathToScan)) {
 			return $pathToScan;
+		}
+		if(is_file($pathToScan)) {
+			return dirname($pathToScan);
 		}
 
 		return null;

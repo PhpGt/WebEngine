@@ -2,12 +2,12 @@
 namespace Gt\WebEngine\Logic;
 
 use Gt\Config\Config;
-use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
+use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
@@ -124,7 +124,7 @@ class LogicFactory {
 	}
 
 	public static function getDynamicPathParameters(
-		string $path,
+		string $absolutePath,
 		string $baseDirectory,
 		UriInterface $uri
 	):DynamicPath {
@@ -132,7 +132,7 @@ class LogicFactory {
 		$relativeDirPath = str_replace(
 			$baseDirectory,
 			"",
-			$path
+			$absolutePath
 		);
 		$relativeDirPath = str_replace(
 			DIRECTORY_SEPARATOR,
@@ -144,6 +144,10 @@ class LogicFactory {
 
 		$uriParts = explode("/", $uriPath);
 		$uriParts = array_filter($uriParts);
+
+		if(Path::isDirectoryOrDynamic($absolutePath)) {
+			$uriParts []= "index";
+		}
 
 		$keyValuePairs = [];
 

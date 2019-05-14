@@ -130,6 +130,28 @@ class Path {
 		return $output;
 	}
 
+	public static function isDirectoryOrDynamic(string $absolutePath):bool {
+		if(is_dir($absolutePath)) {
+			return true;
+		}
+
+		$pathParts = explode(DIRECTORY_SEPARATOR, $absolutePath);
+		while(count($pathParts) > 2) {
+			array_pop($pathParts);
+			$searchPath = implode(
+				DIRECTORY_SEPARATOR,
+				$pathParts
+			);
+
+			$dynamicFiles = glob("$searchPath/@*");
+			if(!empty($dynamicFiles)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	protected static function defaultApplicationRoot(string $default = null) {
 		if(!is_null($default)) {
 			self::$appRoot = $default;
