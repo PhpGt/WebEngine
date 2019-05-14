@@ -65,7 +65,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	 * Handle the request and return a response.
 	 */
 	public function handle(ServerRequestInterface $request):ResponseInterface {
-		$path = $request->getUri()->getPath();
+		$uriPath = $request->getUri()->getPath();
 		$response = null;
 
 		if($this instanceof PageDispatcher) {
@@ -82,12 +82,12 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		]);
 
 		try {
-			$viewAssembly = $this->router->getViewAssembly($path);
+			$viewAssembly = $this->router->getViewAssembly($uriPath);
 			$view = $this->getView(
 				$response->getBody(),
 				(string)$viewAssembly,
 				$templateDirectory,
-				$path,
+				$uriPath,
 				$request->getHeaderLine("accept")
 			);
 		}
@@ -107,7 +107,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
-		$logicAssembly = $this->router->getLogicAssembly($path);
+		$logicAssembly = $this->router->getLogicAssembly($uriPath);
 
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
