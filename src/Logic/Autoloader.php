@@ -191,12 +191,6 @@ class Autoloader {
 		$searchFileName = substr($className,0, $suffixPosition);
 		$searchFileName = "$searchFileName.php";
 
-		$directoryPath = str_replace(
-			DIRECTORY_SEPARATOR . "_",
-			DIRECTORY_SEPARATOR . "@",
-			$directoryPath
-		);
-
 		$subDirectoryPath = $directoryPath;
 
 		while(count($parts) > 0) {
@@ -205,6 +199,12 @@ class Autoloader {
 				array_shift($parts),
 			]);
 		}
+
+		$subDirectoryPath = str_replace(
+			DIRECTORY_SEPARATOR . "_",
+			DIRECTORY_SEPARATOR . "@",
+			$subDirectoryPath
+		);
 
 		$subDirectoryPath = Path::fixPathCase($subDirectoryPath);
 

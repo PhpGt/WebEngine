@@ -5,6 +5,6 @@ use Gt\WebEngine\Refactor\ObjectDocument;
 
 class ApiView extends View {
 	public function getViewModel():ObjectDocument {
-		return $this->viewModel;
+		return parent::getViewModel();
 	}
 }

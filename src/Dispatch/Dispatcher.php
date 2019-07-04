@@ -7,11 +7,13 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
+use Gt\Http\Uri;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\AbstractLogic;
 use Gt\WebEngine\Logic\LogicFactory;
+use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
@@ -30,10 +32,13 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected $appNamespace;
 	/** @var TokenStore */
 	protected $csrfProtection;
+	/** @var bool True if the current execution of `handle` is an error */
+	protected $errorHandlingFlag;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
 		$this->appNamespace = $appNamespace;
+		$this->errorHandlingFlag = false;
 	}
 
 	public function storeInternalObjects(
@@ -60,33 +65,49 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	 * Handle the request and return a response.
 	 */
 	public function handle(ServerRequestInterface $request):ResponseInterface {
-		$path = $request->getUri()->getPath();
-// TODO: Abstract response type needed.
-		$response = new PageResponse();
+		$uriPath = $request->getUri()->getPath();
+		$response = null;
+
+		if($this instanceof PageDispatcher) {
+			$response = new PageResponse();
+		}
+		else {
+			$response = new ApiResponse();
+		}
+
+		$view = null;
+		$templateDirectory = implode(DIRECTORY_SEPARATOR, [
+			$this->router->getBaseViewLogicPath(),
+			"_component",
+		]);
 
 		try {
-			$templateDirectory = implode(DIRECTORY_SEPARATOR, [
-				$this->router->getBaseViewLogicPath(),
-				"_component",
-			]);
-			$viewAssembly = $this->router->getViewAssembly($path);
+			$viewAssembly = $this->router->getViewAssembly($uriPath);
 			$view = $this->getView(
 				$response->getBody(),
 				(string)$viewAssembly,
 				$templateDirectory,
-				$path,
+				$uriPath,
 				$request->getHeaderLine("accept")
 			);
 		}
 		catch(BasenameNotFoundException $exception) {
-// TODO: Handle view not found.
-			die("The requested view is not found!!!");
+			http_response_code(404);
+		}
+		finally {
+// Set an empty view if we have a 404.
+			if(is_null($view)) {
+				$view = $this->getView(
+					$response->getBody(),
+					"",
+					$templateDirectory
+				);
+			}
 		}
 
 		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
-
-		$logicAssembly = $this->router->getLogicAssembly($path);
+		$logicAssembly = $this->router->getLogicAssembly($uriPath);
 
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
@@ -96,11 +117,16 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		$this->dispatchLogicObjects($logicObjects);
 		$this->injectCsrf($view);
+		if(!$this->errorHandlingFlag
+		&& $errorResponse = $this->httpErrorResponse($request)) {
+			return $errorResponse;
+		}
 		$view->stream();
 
 		return $response;
 	}
 
+	/** @throws BasenameNotFoundException */
 	protected abstract function getView(
 		StreamInterface $outputStream,
 		string $body,
@@ -108,6 +134,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		string $path = null,
 		string $type = null
 	):View;
+
 	protected abstract function getBaseLogicDirectory(string $docRoot):string;
 
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
@@ -162,5 +189,18 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			);
 			$protector->protectAndInject();
 		}
+	}
+
+	protected function httpErrorResponse(
+		ServerRequestInterface $request
+	):?ResponseInterface {
+		$statusCode = http_response_code();
+		if($statusCode < 300) {
+			return null;
+		}
+
+		$request = $request->withUri(new Uri("/$statusCode"));
+		$this->errorHandlingFlag = true;
+		return $this->handle($request);
 	}
 }

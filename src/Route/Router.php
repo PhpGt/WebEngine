@@ -1,9 +1,8 @@
 <?php
 namespace Gt\WebEngine\Route;
 
-use DirectoryIterator;
 use Gt\WebEngine\FileSystem\Assembly;
-use Gt\WebEngine\FileSystem\BasenameNotFoundException;
+use Gt\WebEngine\FileSystem\Path;
 use Psr\Http\Message\RequestInterface;
 
 abstract class Router {
@@ -50,21 +49,16 @@ abstract class Router {
 		$directory = $this->getDirectoryForUri($uri);
 		$basename = $this->getBasenameForUri($uri);
 
-		try {
-			$assembly = new Assembly(
-				$this->getBaseViewLogicPath(),
-				$directory,
-				$basename,
-				static::VIEW_EXTENSIONS,
-				static::VIEW_BEFORE,
-				static::VIEW_AFTER,
-				true
-			);
-		}
-		catch(BasenameNotFoundException $exception) {
-			echo "404 NOT FOUND";
-			var_dump($directory);die();
-		}
+		$assembly = new Assembly(
+			$this->getBaseViewLogicPath(),
+			$directory,
+			$basename,
+			static::VIEW_EXTENSIONS,
+			static::VIEW_BEFORE,
+			static::VIEW_AFTER,
+			true
+		);
+
 		return $assembly;
 	}
 
@@ -72,7 +66,7 @@ abstract class Router {
 		$basePath = $this->getBaseViewLogicPath();
 		$subPath = $this->getViewLogicSubPath($uri);
 
-		if(!is_dir($basePath . $subPath)) {
+		if(!Path::isDirectoryOrDynamic($basePath . $subPath)) {
 // Note: use of forward slash here is correct due to working with URL, not directory path.
 			$lastSlashPosition = strrpos(
 				$subPath,
@@ -98,7 +92,7 @@ abstract class Router {
 		$subPath = $this->getViewLogicSubPath($uri);
 		$baseName = static::DEFAULT_BASENAME;
 
-		if(!is_dir($basePath . $subPath)) {
+		if(!Path::isDirectoryOrDynamic($basePath . $subPath)) {
 			$lastSlashPosition = strrpos($subPath, DIRECTORY_SEPARATOR);
 			$baseName = substr(
 				$subPath,
