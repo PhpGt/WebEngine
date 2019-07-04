@@ -1,7 +1,6 @@
 {
 	"name": "phpgt/webengine",
 	"description": "Rapid development engine.",
-	"minimum-stability": "dev",
 
 	"license": [
 		"MIT"
