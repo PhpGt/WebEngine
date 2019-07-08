@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c744f7033df9a22dbb10bcd813edca5",
+    "content-hash": "c1e05ac3762a4ab54e3937d049da1479",
     "packages": [
         {
             "name": "composer/semver",
@@ -693,16 +693,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "4eb31b11e9e3b279068dca3f2efad1e46209ff55"
+                "reference": "3d7070765971e3799615d64cf1cad3c24443bea2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/4eb31b11e9e3b279068dca3f2efad1e46209ff55",
-                "reference": "4eb31b11e9e3b279068dca3f2efad1e46209ff55",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/3d7070765971e3799615d64cf1cad3c24443bea2",
+                "reference": "3d7070765971e3799615d64cf1cad3c24443bea2",
                 "shasum": ""
             },
             "require": {
@@ -769,7 +769,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2019-06-17T08:24:24+00:00"
+            "time": "2019-07-08T15:06:07+00:00"
         },
         {
             "name": "phpgt/domtemplate",
