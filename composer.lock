@@ -906,20 +906,20 @@
         },
         {
             "name": "phpgt/input",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "53f00758408dd48cb5a76e389d296d84a1a339fc"
+                "reference": "bf1d707f8a625f64c77b29126975d065fb96765b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/53f00758408dd48cb5a76e389d296d84a1a339fc",
-                "reference": "53f00758408dd48cb5a76e389d296d84a1a339fc",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/bf1d707f8a625f64c77b29126975d065fb96765b",
+                "reference": "bf1d707f8a625f64c77b29126975d065fb96765b",
                 "shasum": ""
             },
             "require": {
-                "phpgt/http": "*"
+                "phpgt/http": ">=1.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "8.*"
@@ -935,7 +935,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2019-04-08T15:03:27+00:00"
+            "time": "2019-07-08T13:43:14+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
