@@ -1,13 +1,4 @@
 {
-	"style/**/*.scss": {
-		"require": {
-			"sass": "*"
-		},
-		"execute": {
-			"command": "sass",
-			"arguments": "--cache-location style/.sass-cache style/main.scss www/style.css"
-		}
-	},
 	"script/**/*.es6": {
 		"require": {
 			"node": "*",
@@ -19,13 +10,24 @@
 			"arguments": "script/main.es6 -o www/script.js --devtool source-map --module-bind js=babel-loader"
 		}
 	},
-	"asset/**/*": {
+
+	"style/**/*.scss": {
 		"require": {
-			"rsync": ">=3.0.0"
+			"sass": "*"
 		},
 		"execute": {
-			"command": "rsync",
-			"arguments": "-a asset/ www/asset --delete"
+			"command": "sass",
+			"arguments": "--cache-location style/.sass-cache style/main.scss www/style.css"
+		}
+	},
+
+	"asset/**/*": {
+		"require": {
+			"vendor/bin/sync": "*"
+		},
+		"execute": {
+			"command": "vendor/bin/sync",
+			"arguments": "asset/ www/asset --delete"
 		}
 	}
 }
