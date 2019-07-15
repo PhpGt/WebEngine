@@ -13,7 +13,7 @@ class FeatureContext extends MinkContext {
 		$cwd = getcwd();
 		chdir("../..");
 		$serveCommand = "vendor/bin/serve";
-		self::$process = new Gt\Daemon\Process("exec $serveCommand");
+		self::$process = new Gt\Daemon\Process("$serveCommand");
 		self::$process->exec();
 		self::$pid = self::$process->getPid();
 		posix_setpgid(self::$pid, self::$pid);
