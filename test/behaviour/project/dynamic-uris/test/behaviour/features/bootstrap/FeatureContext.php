@@ -11,7 +11,7 @@ class FeatureContext extends MinkContext {
 	/** @BeforeSuite */
 	public static function setUp(BeforeSuiteScope $event) {
 		$cwd = getcwd();
-		chdir("../..");
+		chdir(__DIR__ . "/../../../..");
 		$serveCommand = "vendor/bin/serve";
 		self::$process = new Gt\Daemon\Process("$serveCommand");
 		self::$process->exec();
