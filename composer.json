@@ -25,6 +25,7 @@
 		"phpgt/protectedglobal": "*",
 		"phpgt/server": "*",
 		"phpgt/session": "*",
+		"phpgt/sync": "*",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^2.3"
