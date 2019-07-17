@@ -114,8 +114,23 @@ class Path {
 			foreach($iterator as $fileInfo) {
 				$fileName = $fileInfo->getFilename();
 				if(strtolower($fileName) === strtolower($directory)) {
-					$output .= "$fileName" . DIRECTORY_SEPARATOR;
+					$output .= $fileName . DIRECTORY_SEPARATOR;
+					$foundMatch = true;
+					break;
+				}
 
+				$directoryWithHyphensParts = preg_split(
+					'/(?=[A-Z])/',
+					$directory
+				);
+				$directoryWithHyphensParts = array_filter($directoryWithHyphensParts);
+				$directoryWithHyphens = implode(
+					"-",
+					$directoryWithHyphensParts
+				);
+
+				if(strtolower($fileName) === strtolower($directoryWithHyphens)) {
+					$output .= $fileName . DIRECTORY_SEPARATOR;
 					$foundMatch = true;
 					break;
 				}
