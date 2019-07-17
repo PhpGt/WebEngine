@@ -46,7 +46,17 @@ abstract class AbstractLogic {
 		$this->dynamicPath = $dynamicPath;
 	}
 
+	public function before() {
+		// This is not a required function, but it has been placed here
+		// so IDEs can see it when extending Logic classes.
+	}
+
 	abstract public function go();
+
+	public function after() {
+		// This is not a required function, but it has been placed here
+		// so IDEs can see it when extending Logic classes.
+	}
 
 	public function handleDo():void {
 		foreach($this->input as $key => $value) {

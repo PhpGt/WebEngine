@@ -176,8 +176,17 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		foreach($logicObjects as $logic) {
 			$logic->handleDo();
 		}
+
+		foreach($logicObjects as $logic) {
+			$logic->before();
+		}
+
 		foreach($logicObjects as $logic) {
 			$logic->go();
+		}
+
+		foreach($logicObjects as $logic) {
+			$logic->after();
 		}
 	}
 
