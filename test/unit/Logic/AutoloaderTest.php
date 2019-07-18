@@ -11,7 +11,7 @@ class AutoloaderTest extends TestCase {
 			"..",
 			"..",
 			"project",
-			"CommonAutoloader",
+			"dynamic-uris",
 		]);
 
 		$autoloader = new Autoloader(
@@ -35,7 +35,7 @@ class AutoloaderTest extends TestCase {
 			"..",
 			"..",
 			"project",
-			"CommonAutoloader",
+			"dynamic-uris",
 		]);
 
 		$autoloader = new Autoloader(
@@ -44,11 +44,11 @@ class AutoloaderTest extends TestCase {
 		);
 
 		$autoloader->autoload(
-			"\\Test\\App\\Page\\subdir\\_CommonPage"
+			"\\Test\\App\\Page\\dir\\nested\\_CommonPage"
 		);
 
 		self::assertTrue(class_exists(
-			"\\Test\\App\\Page\\SubDir\\_CommonPage",
+			"\\Test\\App\\Page\\dir\\nested\\_CommonPage",
 			false
 		));
 	}

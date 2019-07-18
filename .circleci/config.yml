@@ -24,6 +24,7 @@ jobs:
 
       - run: mkdir test/unit/_junit
       - run: vendor/bin/phpunit -c test/unit/phpunit.xml --log-junit test/unit/_junit/junit.xml -d memory_limit=512M
+      - run:
 
       - store_test_results:
           path: test/unit/_junit

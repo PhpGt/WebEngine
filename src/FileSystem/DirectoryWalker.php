@@ -12,8 +12,9 @@ class DirectoryWalker {
 	public function findParentContaining(string $match):?string {
 		$path = $this->directory;
 
-		while(!$this->pathIsRoot($path)
-		&& !$this->directoryContains($path, $match)) {
+		while(strlen($path) > 0
+		&& (!$this->pathIsRoot($path)
+		&& !$this->directoryContains($path, $match))) {
 			$lastSlashPos = strrpos($path, DIRECTORY_SEPARATOR);
 			$path = substr($path, 0, $lastSlashPos);
 		}
