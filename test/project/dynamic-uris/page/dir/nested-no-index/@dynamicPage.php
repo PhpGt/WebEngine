@@ -10,7 +10,7 @@ class _DynamicPagePage extends Page {
 
 		$this->document->bindKeyValue(
 			"dynamic-page",
-			$this->dynamicPath->get("dynamicPage")
+			$this->dynamicPath->get("dynamicPage") ?? "index"
 		);
 	}
 }

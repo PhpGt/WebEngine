@@ -65,9 +65,9 @@ abstract class Router {
 	protected function getDirectoryForUri(string $uri):string {
 		$basePath = $this->getBaseViewLogicPath();
 		$subPath = $this->getViewLogicSubPath($uri);
+		$absolutePath = $basePath . $subPath;
 
-		if(!Path::isDirectoryOrDynamic($basePath . $subPath)) {
-// Note: use of forward slash here is correct due to working with URL, not directory path.
+		if(Path::isDynamic($absolutePath)) {
 			$lastSlashPosition = strrpos(
 				$subPath,
 				DIRECTORY_SEPARATOR
@@ -79,6 +79,7 @@ abstract class Router {
 			);
 		}
 
+// Note: use of forward slash here is correct due to working with URL, not directory path.
 		$subPath = str_replace(
 			"/",
 			DIRECTORY_SEPARATOR,
@@ -92,13 +93,19 @@ abstract class Router {
 		$subPath = $this->getViewLogicSubPath($uri);
 		$baseName = static::DEFAULT_BASENAME;
 
-		if(!Path::isDirectoryOrDynamic($basePath . $subPath)) {
-			$lastSlashPosition = strrpos($subPath, DIRECTORY_SEPARATOR);
+		$absolutePath = $basePath . $subPath;
+		$lastSlashPosition = strrpos(
+			$subPath,
+			DIRECTORY_SEPARATOR
+		);
+
+		if(Path::isDynamic($absolutePath)) {
 			$baseName = substr(
-				$subPath,
+				$absolutePath,
 				$lastSlashPosition + 1
 			);
 		}
+
 
 		return $baseName;
 	}
