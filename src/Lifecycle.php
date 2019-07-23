@@ -56,6 +56,8 @@ class Lifecycle implements MiddlewareInterface {
 			])
 		);
 
+		$this->defaultSecurityHeaders($config->get("security.default_headers"));
+
 		$input = new Input($_GET, $_POST, $_FILES);
 		$cookie = new CookieHandler($_COOKIE);
 
@@ -121,6 +123,18 @@ class Lifecycle implements MiddlewareInterface {
 
 		$response = $this->process($request, $dispatcher);
 		$this->finish($response);
+	}
+
+	/**
+	 * Set some sensible security headers by default. These can be
+	 * overridden/disabled in the project's config.ini, but it makes sense
+	 * to supply them by default in order to protect user applications
+	 * without the explicit need for security configuration.
+	 */
+	public function defaultSecurityHeaders(string $headersString) {
+		foreach(explode(";", $headersString) as $header) {
+			header(trim($header));
+		}
 	}
 
 	/**
