@@ -30,19 +30,34 @@ abstract class Router {
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
-	public function getLogicAssembly(string $uri):Assembly {
+	public function redirectIndex(string $uri):void {
 		$directory = $this->getDirectoryForUri($uri);
 		$basename = $this->getBasenameForUri($uri);
-
-		$assembly = new Assembly(
-			$this->getBaseViewLogicPath(),
+		$lastSlashPosition = strrpos(
 			$directory,
-			$basename,
-			static::LOGIC_EXTENSIONS,
-			static::LOGIC_BEFORE,
-			static::LOGIC_AFTER
+			DIRECTORY_SEPARATOR
 		);
-		return $assembly;
+		$directoryAfterSlash = substr(
+			$directory,
+			$lastSlashPosition + 1
+		);
+
+		if($basename === self::DEFAULT_BASENAME
+		&& $directoryAfterSlash === self::DEFAULT_BASENAME) {
+			$uri = substr($uri, 0, strrpos($uri, "/"));
+			if(strlen($uri) === 0) {
+				$uri = "/";
+			}
+
+			header(
+				"Location: $uri",
+				true,
+				303
+			);
+			exit;
+		}
+
+
 	}
 
 	public function getViewAssembly(string $uri):Assembly {
@@ -59,6 +74,21 @@ abstract class Router {
 			true
 		);
 
+		return $assembly;
+	}
+
+	public function getLogicAssembly(string $uri):Assembly {
+		$directory = $this->getDirectoryForUri($uri);
+		$basename = $this->getBasenameForUri($uri);
+
+		$assembly = new Assembly(
+			$this->getBaseViewLogicPath(),
+			$directory,
+			$basename,
+			static::LOGIC_EXTENSIONS,
+			static::LOGIC_BEFORE,
+			static::LOGIC_AFTER
+		);
 		return $assembly;
 	}
 

@@ -82,6 +82,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		]);
 
 		try {
+			$this->router->redirectIndex($uriPath);
 			$viewAssembly = $this->router->getViewAssembly($uriPath);
 			$view = $this->getView(
 				$response->getBody(),
