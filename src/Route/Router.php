@@ -119,25 +119,24 @@ abstract class Router {
 	}
 
 	protected function getBasenameForUri(string $uri):string {
-		$basePath = $this->getBaseViewLogicPath();
-		$subPath = $this->getViewLogicSubPath($uri);
-		$baseName = static::DEFAULT_BASENAME;
+		$pageDirPath = $this->getBaseViewLogicPath();
+		$subDirPath = $this->getViewLogicSubPath($uri);
+		$fileBasename = $this->getViewLogicBasename($uri);
 
-		$absolutePath = $basePath . $subPath;
+		$absolutePath = $pageDirPath . $subDirPath . "/" . $fileBasename;
 		$lastSlashPosition = strrpos(
-			$subPath,
+			$subDirPath,
 			DIRECTORY_SEPARATOR
 		);
 
 		if(Path::isDynamic($absolutePath)) {
-			$baseName = substr(
+			$fileBasename = substr(
 				$absolutePath,
 				$lastSlashPosition + 1
 			);
 		}
 
-
-		return $baseName;
+		return $fileBasename;
 	}
 
 	/**
@@ -153,10 +152,45 @@ abstract class Router {
 		$baseViewLogicPath = $this->getBaseViewLogicPath();
 		$absolutePath = $baseViewLogicPath . $uriPath;
 
+		if(!is_dir($absolutePath)) {
+			$absolutePath = dirname($absolutePath);
+		}
+
 		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
 		if(strlen($relativePath) > 1) {
 			$relativePath = rtrim($relativePath, DIRECTORY_SEPARATOR);
 		}
+
 		return $relativePath;
+	}
+
+	protected function getViewLogicBasename(string $uriPath):string {
+		$basename = self::DEFAULT_BASENAME;
+
+		$uriPath = str_replace(
+			"/",
+			DIRECTORY_SEPARATOR,
+			$uriPath
+		);
+		$baseViewLogicPath = $this->getBaseViewLogicPath();
+		$absolutePath = $baseViewLogicPath . $uriPath;
+
+		$lastSlashPos = strrpos($uriPath, "/");
+		$lastSlashAbsolutePos = strrpos($absolutePath, "/");
+		$lastPathPart = substr($uriPath, $lastSlashPos + 1);
+		$absolutePathWithoutLastPart = substr(
+			$absolutePath,
+			0,
+			$lastSlashAbsolutePos
+		);
+
+		$matchingPageFiles = glob("$absolutePath.*");
+		$matchingDynamics = glob("$absolutePathWithoutLastPart/@*");
+		if(!empty($matchingPageFiles)
+		|| !empty($matchingDynamics)) {
+			$basename = $lastPathPart;
+		}
+
+		return $basename;
 	}
 }
