@@ -193,18 +193,16 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		CommonLogicPropertyStore $logicPropertyStore
 	):void {
 		foreach($logicObjects as $logic) {
-			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
+			$this->setLogicProperties($logic, $logicPropertyStore);
 		}
 
 		foreach($logicObjects as $logic) {
 			// TODO: The logic objects are being stored, but not when the do method is being called...
-			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->handleDo();
 		}
 
 		foreach($logicObjects as $logic) {
-			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->go();
 		}
 

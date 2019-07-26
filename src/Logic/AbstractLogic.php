@@ -55,7 +55,9 @@ abstract class AbstractLogic {
 		// so IDEs can see it when extending Logic classes.
 	}
 
-	abstract public function go();
+	public function go() {
+
+	}
 
 	public function after() {
 		// This is not a required function, but it has been placed here
