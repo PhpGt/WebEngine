@@ -57,7 +57,8 @@ class LogicFactory {
 		string $path,
 		string $appNamespace,
 		string $baseDirectory,
-		UriInterface $uri
+		UriInterface $uri,
+		CommonLogicPropertyStore $commonLogicPropertyStore
 	):AbstractLogic {
 		$className = self::getLogicClassFromPath(
 			$path,
@@ -81,7 +82,8 @@ class LogicFactory {
 				self::$cookie,
 				self::$session,
 				self::$database,
-				$dynamicPathParameters
+				$dynamicPathParameters,
+				$commonLogicPropertyStore
 			);
 
 		}

@@ -12,6 +12,10 @@ use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\AbstractLogic;
+use Gt\WebEngine\Logic\CommonApi;
+use Gt\WebEngine\Logic\CommonLogicPropertyStore;
+use Gt\WebEngine\Logic\CommonLogicPropertyStoreReader;
+use Gt\WebEngine\Logic\CommonPage;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
@@ -34,11 +38,14 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected $csrfProtection;
 	/** @var bool True if the current execution of `handle` is an error */
 	protected $errorHandlingFlag;
+	/** @var CommonLogicPropertyStore|null */
+	private $commonLogicPropertyStore;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
 		$this->appNamespace = $appNamespace;
 		$this->errorHandlingFlag = false;
+		$this->commonLogicPropertyStore = null;
 	}
 
 	public function storeInternalObjects(
@@ -110,13 +117,18 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 		$logicAssembly = $this->router->getLogicAssembly($uriPath);
 
+		$commonLogicPropertyStore = new CommonLogicPropertyStore();
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
 			$baseLogicDirectory,
-			$request->getUri()
+			$request->getUri(),
+			$commonLogicPropertyStore
 		);
 
-		$this->dispatchLogicObjects($logicObjects);
+		$this->dispatchLogicObjects(
+			$logicObjects,
+			$commonLogicPropertyStore
+		);
 		$this->injectCsrf($view);
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
@@ -149,17 +161,20 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected function createLogicObjects(
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
-		UriInterface $uri
+		UriInterface $uri,
+		CommonLogicPropertyStore $commonLogicPropertyStore
 	):array {
 		$logicObjects = [];
 
 		foreach($logicAssembly as $logicPath) {
 			try {
+				// TODO: createApiLogicFromPath
 				$logicObjects []= LogicFactory::createPageLogicFromPath(
 					$logicPath,
 					$this->appNamespace,
 					$baseLogicDirectory,
-					$uri
+					$uri,
+					$commonLogicPropertyStore
 				);
 			}
 			catch(TypeError $exception) {
@@ -173,16 +188,23 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	/**
 	 * @param AbstractLogic[] $logicObjects
 	 */
-	protected function dispatchLogicObjects(array $logicObjects):void {
+	protected function dispatchLogicObjects(
+		array $logicObjects,
+		CommonLogicPropertyStore $logicPropertyStore
+	):void {
 		foreach($logicObjects as $logic) {
+			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
 		}
 
 		foreach($logicObjects as $logic) {
+			// TODO: The logic objects are being stored, but not when the do method is being called...
+			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->handleDo();
 		}
 
 		foreach($logicObjects as $logic) {
+			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->go();
 		}
 
@@ -212,5 +234,32 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$request = $request->withUri(new Uri("/$statusCode"));
 		$this->errorHandlingFlag = true;
 		return $this->handle($request);
+	}
+
+	protected function setLogicProperties(
+		AbstractLogic $logic,
+		CommonLogicPropertyStore $logicPropertyStore
+	) {
+		if($logic instanceof CommonPage
+		|| $logic instanceof CommonApi) {
+			return;
+		}
+
+		$propertyStoreReader = new CommonLogicPropertyStoreReader(
+			$logicPropertyStore
+		);
+
+		foreach($propertyStoreReader as $key => $value) {
+			if(in_array($key,CommonLogicPropertyStore::FORBIDDEN_LOGIC_PROPERTIES)) {
+				// TODO: Throw exception
+				continue;
+			}
+
+			if(!property_exists($logic, $key)) {
+				continue;
+			}
+
+			$logic->$key = $value;
+		}
 	}
 }

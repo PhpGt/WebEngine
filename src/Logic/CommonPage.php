@@ -9,9 +9,9 @@ use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
 
-abstract class Page extends AbstractLogic {
-	/** @var HTMLDocument */
-	protected $document;
+abstract class CommonPage extends Page {
+	/** @var CommonLogicPropertyStore */
+	protected $logicProperty;
 
 	public function __construct(
 		HTMLDocument $viewModel,
@@ -21,10 +21,9 @@ abstract class Page extends AbstractLogic {
 		CookieHandler $cookieHandler,
 		Session $session,
 		Database $database,
-		DynamicPath $dynamicPath
+		DynamicPath $dynamicPath,
+		CommonLogicPropertyStore $logicProperty
 	) {
-		$this->document = $viewModel;
-
 		parent::__construct(
 			$viewModel,
 			$config,
@@ -35,5 +34,7 @@ abstract class Page extends AbstractLogic {
 			$database,
 			$dynamicPath
 		);
+
+		$this->logicProperty = $logicProperty;
 	}
 }
