@@ -12,7 +12,8 @@
  * point, but it's safe to prevent unnecessary execution.
  */
 $uri = urldecode(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
-if(is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
+if(strstr($uri, ".")
+|| is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
 	return false;
 }
 
