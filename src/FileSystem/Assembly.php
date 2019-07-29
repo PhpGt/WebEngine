@@ -145,7 +145,9 @@ class Assembly implements Iterator {
 				$basename,
 			];
 
-			if($basename[0] !== "_") {
+			$basenameFirstChar = $basename[0] ?? null;
+
+			if($basenameFirstChar !== "_") {
 				$baseNamesToMatch []= "@*";
 			}
 
