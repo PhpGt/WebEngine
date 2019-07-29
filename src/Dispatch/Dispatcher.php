@@ -89,8 +89,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		]);
 
 		try {
-			$this->router->redirectIndex($uriPath);
-			$viewAssembly = $this->router->getViewAssembly($uriPath);
+			$this->router->redirectInvalidPaths($uriPath);
+			$viewAssembly = $this->router->getViewAssembly();
 			$view = $this->getView(
 				$response->getBody(),
 				(string)$viewAssembly,
@@ -115,7 +115,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		LogicFactory::setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
-		$logicAssembly = $this->router->getLogicAssembly($uriPath);
+		$logicAssembly = $this->router->getLogicAssembly();
 
 		$commonLogicPropertyStore = new CommonLogicPropertyStore();
 		$logicObjects = $this->createLogicObjects(
