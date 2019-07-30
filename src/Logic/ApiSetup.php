@@ -8,8 +8,8 @@ use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
 
-abstract class CommonApi extends Api {
-	/** @var CommonLogicPropertyStore */
+abstract class ApiSetup extends Api {
+	/** @var LogicPropertyStore */
 	protected $logicProperty;
 
 	public function __construct(
@@ -21,7 +21,7 @@ abstract class CommonApi extends Api {
 		Session $session,
 		Database $database,
 		DynamicPath $dynamicPath,
-		CommonLogicPropertyStore $logicProperty
+		LogicPropertyStore $logicProperty
 	) {
 		parent::__construct(
 			$object,

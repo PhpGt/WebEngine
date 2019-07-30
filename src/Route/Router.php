@@ -2,14 +2,13 @@
 namespace Gt\WebEngine\Route;
 
 use Gt\WebEngine\FileSystem\Assembly;
-use Gt\WebEngine\FileSystem\Path;
 use Psr\Http\Message\RequestInterface;
 
 abstract class Router {
 	const DEFAULT_BASENAME = "index";
 	const LOGIC_EXTENSIONS = ["php"];
 	const VIEW_EXTENSIONS = ["html"];
-	const LOGIC_BEFORE = ["_before", "_common"];
+	const LOGIC_BEFORE = ["_setup", "_before", "_common"];
 	const LOGIC_AFTER = ["_after"];
 	const VIEW_BEFORE = ["_header"];
 	const VIEW_AFTER = ["_footer"];

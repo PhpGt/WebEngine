@@ -10,7 +10,7 @@ namespace Gt\WebEngine\Logic;
  * and then within another class such as IndexPage, declare a public property
  * of name $someKey, and it will automatically be set to the correct value.
  */
-class CommonLogicPropertyStore {
+class LogicPropertyStore {
 	const FORBIDDEN_LOGIC_PROPERTIES = [
 		"viewModel",
 		"config",

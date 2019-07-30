@@ -7,7 +7,6 @@ use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
-use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
@@ -58,7 +57,7 @@ class LogicFactory {
 		string $appNamespace,
 		string $baseDirectory,
 		UriInterface $uri,
-		CommonLogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $commonLogicPropertyStore
 	):AbstractLogic {
 		$className = self::getLogicClassFromPath(
 			$path,
@@ -100,6 +99,8 @@ class LogicFactory {
 		string $appNamespace,
 		string $baseDirectory
 	):string {
+		$logicTypeNamespace = null;
+
 		if(self::$view instanceof ApiView) {
 			$logicTypeNamespace = "Api";
 		}

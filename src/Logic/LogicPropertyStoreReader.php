@@ -3,14 +3,14 @@ namespace Gt\WebEngine\Logic;
 
 use Iterator;
 
-class CommonLogicPropertyStoreReader extends CommonLogicPropertyStore implements Iterator {
-	/** @var CommonLogicPropertyStore */
+class LogicPropertyStoreReader extends LogicPropertyStore implements Iterator {
+	/** @var LogicPropertyStore */
 	protected $propertyStore;
 	protected $iteratorKey;
 	protected $iteratorStrings;
 
 	public function __construct(
-		CommonLogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $commonLogicPropertyStore
 	) {
 		$this->propertyStore = $commonLogicPropertyStore;
 	}

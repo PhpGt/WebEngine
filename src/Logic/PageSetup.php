@@ -9,8 +9,8 @@ use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
 
-abstract class CommonPage extends Page {
-	/** @var CommonLogicPropertyStore */
+abstract class PageSetup extends Page {
+	/** @var LogicPropertyStore */
 	protected $logicProperty;
 
 	public function __construct(
@@ -22,7 +22,7 @@ abstract class CommonPage extends Page {
 		Session $session,
 		Database $database,
 		DynamicPath $dynamicPath,
-		CommonLogicPropertyStore $logicProperty
+		LogicPropertyStore $logicProperty
 	) {
 		parent::__construct(
 			$viewModel,
