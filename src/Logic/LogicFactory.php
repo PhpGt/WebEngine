@@ -147,10 +147,10 @@ class LogicFactory {
 		$uriParts = explode("/", $uriPath);
 		$uriParts = array_filter($uriParts);
 
-		if(!Path::isDynamic($absolutePath)
-		&& is_dir($absolutePath)) {
-			$uriParts []= "index";
-		}
+//		if(!Path::isDynamic($absolutePath)
+//		&& is_dir($absolutePath)) {
+//			$uriParts []= "index";
+//		}
 
 		$keyValuePairs = [];
 		foreach($relativeDirParts as $i => $part) {

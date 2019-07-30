@@ -31,7 +31,6 @@ abstract class Router {
 
 		$uri = $request->getUri();
 		$this->baseViewLogicPath = $this->getBaseViewLogicPath();
-
 		$this->viewLogicPath = $this->getViewLogicPath($uri);
 		$this->viewLogicBasename = $this->getViewLogicBasename($uri);
 	}
@@ -103,53 +102,6 @@ abstract class Router {
 		);
 	}
 
-	protected function getRequestDirectory():string {
-		$basePath = $this->baseViewLogicPath;
-		$subPath = $this->viewLogicPath;
-		$absolutePath = $basePath . $subPath;
-
-		if(Path::isDynamic($absolutePath)) {
-			$lastSlashPosition = strrpos(
-				$subPath,
-				DIRECTORY_SEPARATOR
-			);
-			$subPath = substr(
-				$subPath,
-				0,
-				$lastSlashPosition
-			);
-		}
-
-// Note: use of forward slash here is correct due to working with URL, not directory path.
-		$subPath = str_replace(
-			"/",
-			DIRECTORY_SEPARATOR,
-			$subPath
-		);
-		return $subPath;
-	}
-
-	protected function getRequestBasename():?string {
-		$pageDirPath = $this->baseViewLogicPath;
-		$subDirPath = $this->viewLogicPath;
-		$fileBasename = $this->viewLogicBasename;
-
-		$absolutePath = $pageDirPath . $subDirPath . "/" . $fileBasename;
-		$lastSlashPosition = strrpos(
-			$absolutePath,
-			DIRECTORY_SEPARATOR
-		);
-
-		if(Path::isDynamic($absolutePath)) {
-			$fileBasename = substr(
-				$absolutePath,
-				$lastSlashPosition + 1
-			);
-		}
-
-		return $fileBasename;
-	}
-
 	/**
 	 * The view-logic sub-path is the path on disk to the directory
 	 * containing the requested View and Logic files,
@@ -196,8 +148,7 @@ abstract class Router {
 			DIRECTORY_SEPARATOR,
 			$uri
 		);
-		$baseViewLogicPath = $this->baseViewLogicPath;
-		$absolutePath = $baseViewLogicPath . $uriPath;
+		$absolutePath = $this->baseViewLogicPath . $uriPath;
 
 		if($this->isAddressableFile($absolutePath)
 		|| !$this->isAddressableDir($absolutePath)) {
@@ -225,12 +176,28 @@ abstract class Router {
 			return true;
 		}
 
-		return false;
+		return $this->isDynamicFile($absolutePath);
 	}
 
 	protected function isAddressableDir(string $absolutePath):bool {
 		if(is_dir($absolutePath)) {
 			return true;
+		}
+
+		return $this->isDynamicDir($absolutePath);
+	}
+
+	protected function isDynamicFile(string $absolutePath):bool {
+		if(file_exists($absolutePath)) {
+			return false;
+		}
+
+		return false;
+	}
+
+	protected function isDynamicDir(string $absolutePath):bool {
+		if(file_exists($absolutePath)) {
+			return false;
 		}
 
 		return false;
