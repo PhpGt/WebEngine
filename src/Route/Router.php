@@ -137,6 +137,7 @@ abstract class Router {
 
 	protected function getViewLogicBasename(string $uri):?string {
 		$basename = self::DEFAULT_BASENAME;
+		$uri = strtok($uri, "?");
 
 		if($uri === "/") {
 			return $basename;
