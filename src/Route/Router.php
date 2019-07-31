@@ -29,7 +29,7 @@ abstract class Router {
 		$this->request = $request;
 		$this->documentRoot = $documentRoot;
 
-		$uri = $request->getUri();
+		$uri = strtok($request->getUri(), "?");
 		$this->baseViewLogicPath = $this->getBaseViewLogicPath();
 		$this->viewLogicPath = $this->getViewLogicPath($uri);
 		$this->viewLogicBasename = $this->getViewLogicBasename($uri);
@@ -107,14 +107,14 @@ abstract class Router {
 	 * containing the requested View and Logic files,
 	 * relative to the base view-logic path.
 	 */
-	protected function getViewLogicPath(string $uriPath):string {
-		$uriPath = str_replace(
+	protected function getViewLogicPath(string $uri):string {
+		$uri = str_replace(
 			"/",
 			DIRECTORY_SEPARATOR,
-			$uriPath
+			$uri
 		);
 		$baseViewLogicPath = $this->baseViewLogicPath;
-		$absolutePath = $baseViewLogicPath . $uriPath;
+		$absolutePath = $baseViewLogicPath . $uri;
 
 		if(!is_dir($absolutePath)) {
 			$absolutePath = dirname($absolutePath);
