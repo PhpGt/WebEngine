@@ -515,13 +515,13 @@
             "authors": [
                 {
                     "name": "James Fellows",
-                    "email": "mrfellows@gmail.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "mrfellows@gmail.com"
                 },
                 {
                     "name": "Greg Bowler",
-                    "email": "greg.bowler@g105b.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "greg.bowler@g105b.com"
                 }
             ],
             "description": "Automatic protection from Cross-Site Request Forgery.",
@@ -693,16 +693,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v2.0.3",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "ad48666c58910e266bb381c7ff54fc96718d3a96"
+                "reference": "ef1c3a76afb448673e64c353d190e56457d77dcd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/ad48666c58910e266bb381c7ff54fc96718d3a96",
-                "reference": "ad48666c58910e266bb381c7ff54fc96718d3a96",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/ef1c3a76afb448673e64c353d190e56457d77dcd",
+                "reference": "ef1c3a76afb448673e64c353d190e56457d77dcd",
                 "shasum": ""
             },
             "require": {
@@ -769,7 +769,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2019-07-31T15:30:50+00:00"
+            "time": "2019-08-08T12:14:44+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -2834,8 +2834,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "FilterIterator implementation that filters files based on a list of suffixes.",
@@ -2876,8 +2876,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Simple template engine.",
@@ -2925,8 +2925,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Utility class for timing",
@@ -3721,8 +3721,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Collection of value objects that represent the types of the PHP type system",
@@ -3764,8 +3764,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
