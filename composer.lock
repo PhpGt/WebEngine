@@ -782,16 +782,16 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "16ae8a7651d3839d287eb3302dcd5c472e0c1f10"
+                "reference": "136374896f72b36b1336e9a579b3f4aadf9261c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/16ae8a7651d3839d287eb3302dcd5c472e0c1f10",
-                "reference": "16ae8a7651d3839d287eb3302dcd5c472e0c1f10",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/136374896f72b36b1336e9a579b3f4aadf9261c0",
+                "reference": "136374896f72b36b1336e9a579b3f4aadf9261c0",
                 "shasum": ""
             },
             "require": {
@@ -812,7 +812,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2019-07-31T15:35:29+00:00"
+            "time": "2019-08-08T12:14:32+00:00"
         },
         {
             "name": "phpgt/fetch",
