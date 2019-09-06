@@ -36,6 +36,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected $appNamespace;
 	/** @var TokenStore */
 	protected $csrfProtection;
+	/** @var string */
+	protected $contentType;
 	/** @var bool True if the current execution of `handle` is an error */
 	protected $errorHandlingFlag;
 	/** @var LogicPropertyStore|null */
@@ -136,6 +138,10 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		}
 		$view->stream();
 
+		$response = $response->withHeader(
+			"Content-type",
+			$this->router->getContentType()
+		);
 		return $response;
 	}
 

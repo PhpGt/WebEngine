@@ -25,22 +25,24 @@ class RouterFactory {
 		RequestInterface $request,
 		string $documentRoot
 	):Router {
-		$type = self::getBestType($request->getHeaderLine("accept"));
+		$type = self::getType($request->getHeaderLine("accept"));
+		$routerClass = self::getRouterClassForType($type);
 
 		/** @var Router $router */
-		$router = new $type(
+		$router = new $routerClass(
 			$request,
-			$documentRoot
+			$documentRoot,
+			$type
 		);
 
 		return $router;
 	}
 
-	protected static function getBestType(string $accept = null):string {
+	protected static function getType(string $accept = null):string {
 		if(empty($accept)) {
 			$accept = "text/html";
 		}
-		
+
 		$negotiator = new Negotiator();
 		/** @var Accept $acceptHeader */
 		$acceptHeader = $negotiator->getBest(
@@ -52,8 +54,12 @@ class RouterFactory {
 			$type = self::TYPE_DEFAULT;
 		}
 
+		return $type;
+	}
+
+	protected static function getRouterClassForType(string $type):string {
 		if(!array_key_exists($type, self::TYPE_MAP)) {
-			throw new RoutingException("Accept header has no route: $accept");
+			throw new RoutingException("Accept header has no route: $type");
 		}
 
 		return self::TYPE_MAP[$type];
