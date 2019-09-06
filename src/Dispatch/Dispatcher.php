@@ -19,6 +19,7 @@ use Gt\WebEngine\Logic\PageSetup;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
+use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
@@ -84,6 +85,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$response = new ApiResponse();
 		}
 
+		/** @var View|PageView|ApiView $view */
 		$view = null;
 		$templateDirectory = implode(DIRECTORY_SEPARATOR, [
 			$this->router->getBaseViewLogicPath(),
@@ -135,6 +137,10 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
 			return $errorResponse;
+		}
+
+		if($view instanceof PageView) {
+			$view->getViewModel()->removeTemplateAttributes();
 		}
 		$view->stream();
 
