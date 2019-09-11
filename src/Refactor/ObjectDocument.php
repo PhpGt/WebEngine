@@ -11,11 +11,10 @@ class ObjectDocument extends Document {
 
 	protected $type;
 
-	public function __construct(string $document = "", string $type) {
+	public function __construct(string $document, string $type) {
 		parent::__construct();
 
 		$this->type = $type;
-
 		if($this->isJsonString($document)) {
 			$this->loadJSON($document);
 		}
@@ -28,7 +27,7 @@ class ObjectDocument extends Document {
 	}
 
 	public function isJsonString(string $document):bool {
-		return $this->isFirstNonWhiteSpaceCharacter($document, "{");
+		return $this->isFirstNonWhiteSpaceCharacter($document, "{[");
 	}
 
 	public function isXmlString(string $document):bool {
@@ -37,15 +36,23 @@ class ObjectDocument extends Document {
 
 	protected function isFirstNonWhiteSpaceCharacter(
 		string $document,
-		string $firstChar
+		string $firstCharMatch
 	):bool {
 		$i = 0;
 
 		do {
 			$char = $document[$i];
+			$i++;
 		}while(trim($char) === "");
 
-		return $char === $firstChar;
+		for($i = 0; $i < strlen($firstCharMatch); $i++) {
+			$charMatch = $firstCharMatch[$i];
+			if($char === $charMatch) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -56,7 +63,10 @@ class ObjectDocument extends Document {
 		$json = json_decode($jsonString);
 
 		foreach($json as $key => $value) {
-			$node = $this->createElement($key, $value);
+			$valueType = gettype($value);
+			$stringValue = $this->getStringValue($valueType, $value);
+
+			$node = $this->createElement($key, $stringValue);
 			$this->appendChild($node);
 		}
 	}
@@ -82,5 +92,24 @@ class ObjectDocument extends Document {
 		}
 
 		return json_encode($json);
+	}
+
+	protected function getStringValue($type, $value):string {
+		switch($type) {
+		case "bool":
+		case "boolean":
+			return $value ? "true" : "false";
+
+		case "object":
+			// TODO: Recursively load.
+			return "(object)";
+
+		case "int":
+		case "integer":
+		case "float":
+		case "double":
+		default:
+			return (string)$value;
+		}
 	}
 }

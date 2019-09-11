@@ -18,15 +18,22 @@ abstract class Router {
 	/** @var string */
 	protected $documentRoot;
 	/** @var string */
+	protected $contentType;
+	/** @var string */
 	protected $baseViewLogicPath;
 	/** @var string */
 	protected $viewLogicPath;
 	/** @var string|null */
 	protected $viewLogicBasename;
 
-	public function __construct(RequestInterface $request, string $documentRoot) {
+	public function __construct(
+		RequestInterface $request,
+		string $documentRoot,
+		string $contentType
+	) {
 		$this->request = $request;
 		$this->documentRoot = $documentRoot;
+		$this->contentType = $contentType;
 
 		$uri = strtok($request->getUri(), "?");
 		$this->baseViewLogicPath = $this->getBaseViewLogicPath();
@@ -99,6 +106,10 @@ abstract class Router {
 			static::LOGIC_BEFORE,
 			static::LOGIC_AFTER
 		);
+	}
+
+	public function getContentType():string {
+		return $this->contentType;
 	}
 
 	/**

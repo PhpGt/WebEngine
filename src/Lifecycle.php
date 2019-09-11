@@ -125,6 +125,10 @@ class Lifecycle implements MiddlewareInterface {
 		);
 
 		$response = $this->process($request, $dispatcher);
+		$response = $response->withHeader(
+			"Content-type",
+			$router->getContentType()
+		);
 		$this->finish($response);
 	}
 
@@ -228,6 +232,9 @@ class Lifecycle implements MiddlewareInterface {
 	 * finally output to the client, followed by any tidy-up code required.
 	 */
 	public static function finish(ResponseInterface $response):void {
+		foreach($response->getHeaders() as $key => $value) {
+			header("$key: $value");
+		}
 		echo $response->getBody();
 	}
 }

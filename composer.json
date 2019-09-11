@@ -11,6 +11,7 @@
 	"require": {
 		"ext-posix": "*",
 		"ext-dom": "*",
+		"ext-json": "*",
 		"php": ">=7.2",
 		"phpgt/build": "*",
 		"phpgt/cli": "*",
