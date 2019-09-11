@@ -11,7 +11,9 @@ use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
+use Gt\WebEngine\Dispatch\PageDispatcher;
 use Gt\WebEngine\FileSystem\Path;
+use Gt\WebEngine\Route\PageRouter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -104,9 +106,12 @@ class Lifecycle implements MiddlewareInterface {
 			true
 			)
 		);
-		$csrfProtection->processAndVerify(
-			$input->getAll(Input::DATA_BODY)
-		);
+
+		if($router instanceof PageRouter) {
+			$csrfProtection->processAndVerify(
+				$input->getAll(Input::DATA_BODY)
+			);
+		}
 
 		$dispatcher = $this->createDispatcher(
 			$config,
