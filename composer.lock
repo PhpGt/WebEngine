@@ -561,9 +561,9 @@
             "authors": [
                 {
                     "name": "Greg Bowler",
-                    "role": "Developer",
                     "email": "greg.bowler@g105b.com",
-                    "homepage": "https://www.g105b.com"
+                    "homepage": "https://www.g105b.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Convert CSS selectors to XPath queries.",
@@ -782,16 +782,16 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v1.2.2",
+            "version": "v1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "3468817bd99f013ad2d786fc8c177f4c00a8829d"
+                "reference": "2ec8358c62e99503266d6cfc7d352d8f20c79e99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/3468817bd99f013ad2d786fc8c177f4c00a8829d",
-                "reference": "3468817bd99f013ad2d786fc8c177f4c00a8829d",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/2ec8358c62e99503266d6cfc7d352d8f20c79e99",
+                "reference": "2ec8358c62e99503266d6cfc7d352d8f20c79e99",
                 "shasum": ""
             },
             "require": {
@@ -813,7 +813,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2019-09-02T07:25:58+00:00"
+            "time": "2019-09-16T10:06:48+00:00"
         },
         {
             "name": "phpgt/fetch",
