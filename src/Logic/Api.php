@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -21,7 +22,8 @@ abstract class Api extends AbstractLogic {
 		CookieHandler $cookieHandler,
 		Session $session,
 		Database $database,
-		DynamicPath $dynamicPath
+		DynamicPath $dynamicPath,
+		Headers $headers
 	) {
 		$this->document = $object;
 
@@ -33,7 +35,8 @@ abstract class Api extends AbstractLogic {
 			$cookieHandler,
 			$session,
 			$database,
-			$dynamicPath
+			$dynamicPath,
+			$headers
 		);
 	}
 }

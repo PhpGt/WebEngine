@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -21,6 +22,7 @@ abstract class ApiSetup extends Api {
 		Session $session,
 		Database $database,
 		DynamicPath $dynamicPath,
+		Headers $headers,
 		LogicPropertyStore $logicProperty
 	) {
 		parent::__construct(
@@ -31,7 +33,8 @@ abstract class ApiSetup extends Api {
 			$cookieHandler,
 			$session,
 			$database,
-			$dynamicPath
+			$dynamicPath,
+			$headers
 		);
 
 		$this->logicProperty = $logicProperty;

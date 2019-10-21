@@ -5,6 +5,7 @@ use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\DomTemplate\HTMLDocument;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -21,7 +22,8 @@ abstract class Page extends AbstractLogic {
 		CookieHandler $cookieHandler,
 		Session $session,
 		Database $database,
-		DynamicPath $dynamicPath
+		DynamicPath $dynamicPath,
+		Headers $headers
 	) {
 		$this->document = $viewModel;
 
@@ -33,7 +35,8 @@ abstract class Page extends AbstractLogic {
 			$cookieHandler,
 			$session,
 			$database,
-			$dynamicPath
+			$dynamicPath,
+			$headers
 		);
 	}
 }
