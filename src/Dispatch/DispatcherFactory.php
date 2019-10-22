@@ -6,6 +6,7 @@ use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -22,7 +23,8 @@ class DispatcherFactory {
 		Session $session,
 		Database $database,
 		Router $router,
-		TokenStore $csrfProtection
+		TokenStore $csrfProtection,
+		Headers $headers
 	):Dispatcher {
 		$appNamespace = $config->get("app.namespace");
 
@@ -39,7 +41,8 @@ class DispatcherFactory {
 			$input,
 			$cookie,
 			$session,
-			$database
+			$database,
+			$headers
 		);
 
 		$dispatcher->setCsrfProtection($csrfProtection);

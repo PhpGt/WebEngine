@@ -5,6 +5,7 @@ use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\DomTemplate\HTMLDocument;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -22,6 +23,7 @@ abstract class PageSetup extends Page {
 		Session $session,
 		Database $database,
 		DynamicPath $dynamicPath,
+		Headers $headers,
 		LogicPropertyStore $logicProperty
 	) {
 		parent::__construct(
@@ -32,7 +34,8 @@ abstract class PageSetup extends Page {
 			$cookieHandler,
 			$session,
 			$database,
-			$dynamicPath
+			$dynamicPath,
+			$headers
 		);
 
 		$this->logicProperty = $logicProperty;

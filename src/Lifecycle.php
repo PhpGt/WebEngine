@@ -9,6 +9,7 @@ use Gt\Csrf\SessionTokenStore;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
 use Gt\WebEngine\Dispatch\PageDispatcher;
@@ -121,7 +122,8 @@ class Lifecycle implements MiddlewareInterface {
 			$sessionHandler,
 			$database,
 			$router,
-			$csrfProtection
+			$csrfProtection,
+			new Headers($request->getHeaders())
 		);
 
 		$response = $this->process($request, $dispatcher);
@@ -201,7 +203,8 @@ class Lifecycle implements MiddlewareInterface {
 		Session $session,
 		Database $database,
 		Router $router,
-		TokenStore $csrfProtection
+		TokenStore $csrfProtection,
+		Headers $headers
 	):Dispatcher {
 		$dispatcher = DispatcherFactory::create(
 			$config,
@@ -211,7 +214,8 @@ class Lifecycle implements MiddlewareInterface {
 			$session,
 			$database,
 			$router,
-			$csrfProtection
+			$csrfProtection,
+			$headers
 		);
 		return $dispatcher;
 	}

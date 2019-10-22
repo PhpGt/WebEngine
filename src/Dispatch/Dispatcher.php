@@ -6,6 +6,7 @@ use Gt\Cookie\CookieHandler;
 use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Http\Uri;
 use Gt\Input\Input;
@@ -57,7 +58,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Input $input,
 		CookieHandler $cookie,
 		Session $session,
-		Database $database
+		Database $database,
+		Headers $headers
 	):void {
 		LogicFactory::setConfig($config);
 		LogicFactory::setServerInfo($serverInfo);
@@ -65,6 +67,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		LogicFactory::setCookieHandler($cookie);
 		LogicFactory::setSession($session);
 		LogicFactory::setDatabase($database);
+		LogicFactory::setHeaders($headers);
 	}
 
 	public function setCsrfProtection(TokenStore $csrfProtection):void {
@@ -181,7 +184,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		foreach($logicAssembly as $logicPath) {
 			try {
 				// TODO: createApiLogicFromPath
-				$logicObjects []= LogicFactory::createPageLogicFromPath(
+				$logicObjects []= LogicFactory::createLogicObjectFromPath(
 					$logicPath,
 					$this->appNamespace,
 					$baseLogicDirectory,
