@@ -1,15 +1,17 @@
 <?php
-namespace Gt\WebEngine\Test\Router;
+namespace Gt\WebEngine\Test\Route;
 
 use Gt\Http\Request;
 use Gt\WebEngine\Route\ApiRouter;
 use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Route\RoutingException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class RouterFactoryTest extends TestCase {
 	public function testCreateInvalidAcceptHeader() {
+		/** @var Request|MockObject $request */
 		$request = self::createMock(Request::class);
 		$request->method("getHeaderLine")
 			->with("accept")

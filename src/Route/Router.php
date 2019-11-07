@@ -26,38 +26,31 @@ abstract class Router {
 
 	/**
 	 * The base view-logic path is the absolute path on disk to where all View and Logic files
-	 * exist, according to the current Router type.
+	 * exist, according to the current Route type.
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
 	public function redirectIndex(string $uri):void {
-		$directory = $this->getDirectoryForUri($uri);
+//		$directory = $this->getDirectoryForUri($uri);
 		$basename = $this->getBasenameForUri($uri);
 		$lastSlashPosition = strrpos(
-			$directory,
+			$uri,
 			DIRECTORY_SEPARATOR
 		);
-		$directoryAfterSlash = substr(
-			$directory,
+		$partAfterSlash = substr(
+			$uri,
 			$lastSlashPosition + 1
 		);
 
 		if($basename === self::DEFAULT_BASENAME
-		&& $directoryAfterSlash === self::DEFAULT_BASENAME) {
-			$uri = substr($uri, 0, strrpos($uri, "/"));
-			if(strlen($uri) === 0) {
-				$uri = "/";
-			}
-
+		&& $partAfterSlash === self::DEFAULT_BASENAME) {
+			$newUri = substr($uri, 0, strrpos($uri, "/"));
 			header(
-				"Location: $uri",
+				"Location: $newUri",
 				true,
 				303
 			);
-			exit;
 		}
-
-
 	}
 
 	public function getViewAssembly(string $uri):Assembly {
@@ -157,7 +150,7 @@ abstract class Router {
 		}
 
 		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
-		if(strlen($relativePath) > 1) {
+		if(strlen($relativePath) >= 1) {
 			$relativePath = rtrim($relativePath, DIRECTORY_SEPARATOR);
 		}
 
@@ -172,6 +165,11 @@ abstract class Router {
 			DIRECTORY_SEPARATOR,
 			$uriPath
 		);
+
+//		if(substr($uriPath, -1) === DIRECTORY_SEPARATOR) {
+//			$uriPath .= $basename;
+//		}
+
 		$baseViewLogicPath = $this->getBaseViewLogicPath();
 		$absolutePath = $baseViewLogicPath . $uriPath;
 
@@ -188,7 +186,7 @@ abstract class Router {
 		$matchingDynamics = glob("$absolutePathWithoutLastPart/@*");
 		if(!empty($matchingPageFiles)
 		|| !empty($matchingDynamics)) {
-			$basename = $lastPathPart;
+			$basename = $lastPathPart ?: self::DEFAULT_BASENAME;
 		}
 
 		return $basename;
