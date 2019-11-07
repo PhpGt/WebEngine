@@ -63,7 +63,28 @@ class PageRouterTest extends RouterTestCase {
 
 		foreach($assembly as $i => $assemblyPart) {
 			self::assertFileExists($assemblyPart);
+			self::assertStringEndsWith(".html", $assemblyPart);
 		}
+		self::assertNotNull($i);
+	}
+
+	public function testGetLogicAssembly() {
+		$tmp = $this->getTmpDir("testGetLogicAssembly");
+		touch("$tmp/composer.json");
+		mkdir("$tmp/page");
+		touch("$tmp/page/index.php");
+
+		$request = self::createMock(Request::class);
+		$sut = new PageRouter($request, $tmp);
+		$assembly = $sut->getLogicAssembly("/");
+
+		$i = null;
+
+		foreach($assembly as $i => $assemblyPart) {
+			self::assertFileExists($assemblyPart);
+			self::assertStringEndsWith(".php", $assemblyPart);
+		}
+
 		self::assertNotNull($i);
 	}
 }
