@@ -178,7 +178,8 @@ class Lifecycle implements MiddlewareInterface {
 	}
 
 	public function createRouter(RequestInterface $request, string $documentRoot):Router {
-		return RouterFactory::create(
+		$factory = new RouterFactory();
+		return $factory->create(
 			$request,
 			$documentRoot
 		);

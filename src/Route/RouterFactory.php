@@ -19,9 +19,7 @@ class RouterFactory {
 	];
 	const TYPE_DEFAULT = "text/html";
 
-	protected static $routerClassLookup = [];
-
-	public static function create(
+	public function create(
 		RequestInterface $request,
 		string $documentRoot
 	):Router {
@@ -36,7 +34,7 @@ class RouterFactory {
 		return $router;
 	}
 
-	protected static function getBestType(string $accept = null):string {
+	protected function getBestType(string $accept = null):string {
 		if(empty($accept)) {
 			$accept = "text/html";
 		}
