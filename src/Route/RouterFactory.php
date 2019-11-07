@@ -45,9 +45,10 @@ class RouterFactory {
 			$accept,
 			self::ACCEPT_PRIORITIES
 		);
-		$type = $acceptHeader->getType();
-		if(empty($type)) {
-			$type = self::TYPE_DEFAULT;
+
+		$type = null;
+		if($acceptHeader) {
+			$type = $acceptHeader->getType();
 		}
 
 		if(!array_key_exists($type, self::TYPE_MAP)) {
