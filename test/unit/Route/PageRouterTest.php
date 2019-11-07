@@ -22,6 +22,7 @@ class PageRouterTest extends RouterTestCase {
 	 */
 	public function testRedirectIndex(string $uri) {
 		Override::replace("header", __DIR__);
+		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new PageRouter($request, "");
 		$sut->redirectIndex($uri);
@@ -43,6 +44,7 @@ class PageRouterTest extends RouterTestCase {
 		$tmp = $this->getTmpDir("testGetViewAssemblyNoPageDir");
 		touch("$tmp/composer.json");
 
+		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new PageRouter($request, $tmp);
 		self::expectException(RequiredDirectoryNotFoundException::class);
@@ -55,6 +57,7 @@ class PageRouterTest extends RouterTestCase {
 		mkdir("$tmp/page");
 		touch("$tmp/page/index.html");
 
+		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new PageRouter($request, $tmp);
 		$assembly = $sut->getViewAssembly("/");
@@ -74,6 +77,7 @@ class PageRouterTest extends RouterTestCase {
 		mkdir("$tmp/page");
 		touch("$tmp/page/index.php");
 
+		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new PageRouter($request, $tmp);
 		$assembly = $sut->getLogicAssembly("/");
