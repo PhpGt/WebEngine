@@ -99,6 +99,7 @@ class PageRouterTest extends RouterTestCase {
 		mkdir("$tmp/page/item");
 		touch("$tmp/page/@itemName.html");
 
+		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new PageRouter($request, $tmp);
 		$assembly = $sut->getViewAssembly("/item/something");

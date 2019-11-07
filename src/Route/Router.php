@@ -166,10 +166,6 @@ abstract class Router {
 			$uriPath
 		);
 
-//		if(substr($uriPath, -1) === DIRECTORY_SEPARATOR) {
-//			$uriPath .= $basename;
-//		}
-
 		$baseViewLogicPath = $this->getBaseViewLogicPath();
 		$absolutePath = $baseViewLogicPath . $uriPath;
 
