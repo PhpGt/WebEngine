@@ -80,10 +80,6 @@ class Autoloader {
 		if($className[0] !== "\\") {
 			$className = "\\" . $className;
 		}
-
-		if(!class_exists($className)) {
-			throw new AutoloadedClassDoesNotExistException($className);
-		}
 	}
 
 	protected function getClassSuffix($className):?string {
