@@ -21,10 +21,15 @@ class Autoloader {
 		$this->docRoot = $docRoot;
 	}
 
-	public function autoload(string $absoluteClassName):void {
+	/**
+	 * @return ?string Returns the absolute classname of the autoloaded
+	 * class, or null if the required class isn't a Logic class.
+	 * @throws \Gt\WebEngine\FileSystem\PathNotFound
+	 */
+	public function autoload(string $absoluteClassName):?string {
 		$classSuffix = $this->getClassSuffix($absoluteClassName);
 		if(is_null($classSuffix)) {
-			return;
+			return null;
 		}
 
 		$absoluteClassName = trim($absoluteClassName, "\\");
@@ -32,7 +37,7 @@ class Autoloader {
 			$absoluteClassName,
 			$this->appNamespace
 		) !== 0) {
-			return;
+			return null;
 		}
 
 		$logicType = substr(
@@ -71,15 +76,19 @@ class Autoloader {
 		]);
 
 		$autoloadPath = Path::fixPathCase($autoloadPath);
-		$this->requireAndCheck($autoloadPath, $absoluteClassName);
+		return $this->requireAndCheck($autoloadPath, $absoluteClassName);
 	}
 
-	protected function requireAndCheck(string $filePath, string $className):void {
+	protected function requireAndCheck(string $filePath, string $className):string {
+		if(!is_file($filePath)) {
+			throw new AutoloaderException("File path is not correct for when autoloading class '$className'");
+		}
 		require($filePath);
 
 		if($className[0] !== "\\") {
 			$className = "\\" . $className;
 		}
+		return $className;
 	}
 
 	protected function getClassSuffix($className):?string {
@@ -104,11 +113,15 @@ class Autoloader {
 	protected function getPathForLogicType(string $type):string {
 		switch(strtolower($type)) {
 		case "api":
-			return Path::getApiDirectory($this->docRoot);
+			$path = Path::getApiDirectory($this->docRoot);
+			break;
 
 		case "page":
-			return Path::getPageDirectory($this->docRoot);
+			$path = Path::getPageDirectory($this->docRoot);
+			break;
 		}
+
+		return $path;
 	}
 
 	protected function getRelativeClassName(string $absoluteClassName, string...$toRemove) {
@@ -128,12 +141,6 @@ class Autoloader {
 	):string {
 		$parts = explode("\\", $relativeClassName);
 		$partsToRemove = explode("\\", $this->appNamespace);
-
-		foreach($partsToRemove as $i => $part) {
-			array_shift($parts);
-		}
-
-		array_pop($parts);
 		array_pop($parts);
 
 		foreach($parts as $part) {
@@ -173,13 +180,6 @@ class Autoloader {
 		$searchFileName = "$searchFileName.php";
 
 		$subDirectoryPath = $directoryPath;
-
-		while(count($parts) > 0) {
-			$subDirectoryPath = implode(DIRECTORY_SEPARATOR, [
-				$subDirectoryPath,
-				array_shift($parts),
-			]);
-		}
 
 		$subDirectoryPath = str_replace(
 			DIRECTORY_SEPARATOR . "_",

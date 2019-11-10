@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\Test\Logic;
 
 use Gt\WebEngine\Logic\Autoloader;
+use Gt\WebEngine\Logic\AutoloaderException;
 use Gt\WebEngine\Test\Helper\ThisClassShouldNotBeLoadedPage;
 use PHPUnit\Framework\TestCase;
 
@@ -13,6 +14,7 @@ class AutoloaderTest extends TestCase {
 			"..",
 			"project",
 			"dynamic-uris",
+			"www",
 		]);
 
 		$autoloader = new Autoloader(
@@ -92,5 +94,77 @@ class AutoloaderTest extends TestCase {
 				ThisClassShouldNotBeLoadedPage::class,
 				false
 		));
+	}
+
+	public function testAutoloadFindsApiClass() {
+		$docRoot = implode(DIRECTORY_SEPARATOR, [
+			__DIR__,
+			"..",
+			"..",
+			"project",
+			"autoloading",
+			"www",
+		]);
+
+		$autoloader = new Autoloader(
+			"Test\\App",
+			realpath($docRoot)
+		);
+
+		$autoloader->autoload(
+			"\\Test\\App\\Api\\ServiceThingApi"
+		);
+
+		self::assertTrue(class_exists(
+			"\\Test\\App\\Api\\ServiceThingApi",
+			false
+		));
+	}
+
+	public function testAutoloadFindsDoublyNestedApiClass() {
+		$docRoot = implode(DIRECTORY_SEPARATOR, [
+			__DIR__,
+			"..",
+			"..",
+			"project",
+			"autoloading",
+			"www",
+		]);
+
+		$autoloader = new Autoloader(
+			"Test\\App",
+			realpath($docRoot)
+		);
+
+		$autoloader->autoload(
+			"\\Test\\App\\Api\\OneNest\\TwoNest\\DoublyNestedApi"
+		);
+
+		self::assertTrue(class_exists(
+			"\\Test\\App\\Api\\OneNest\\TwoNest\\DoublyNestedApi",
+			false
+		));
+	}
+
+	public function testAutoloadFindsDoublyNestedWrongNamedApiClassFile() {
+		$docRoot = implode(DIRECTORY_SEPARATOR, [
+			__DIR__,
+			"..",
+			"..",
+			"project",
+			"autoloading",
+			"www",
+		]);
+
+		$autoloader = new Autoloader(
+			"Test\\App",
+			realpath($docRoot)
+		);
+
+		self::expectException(AutoloaderException::class);
+		self::expectExceptionMessage("File path is not correct for when autoloading class 'Test\\App\\Api\\OneNest\\TwoNest\\WrongNameApi'");
+		$autoloader->autoload(
+			"\\Test\\App\\Api\\OneNest\\TwoNest\\WrongNameApi"
+		);
 	}
 }
