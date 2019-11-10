@@ -34,11 +34,14 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected $csrfProtection;
 	/** @var bool True if the current execution of `handle` is an error */
 	protected $errorHandlingFlag;
+	/** @var LogicFactory */
+	protected $logicFactory;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
 		$this->appNamespace = $appNamespace;
 		$this->errorHandlingFlag = false;
+		$this->logicFactory = new LogicFactory();
 	}
 
 	public function storeInternalObjects(
@@ -49,12 +52,12 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Session $session,
 		Database $database
 	):void {
-		LogicFactory::setConfig($config);
-		LogicFactory::setServerInfo($serverInfo);
-		LogicFactory::setInput($input);
-		LogicFactory::setCookieHandler($cookie);
-		LogicFactory::setSession($session);
-		LogicFactory::setDatabase($database);
+		$this->logicFactory->setConfig($config);
+		$this->logicFactory->setServerInfo($serverInfo);
+		$this->logicFactory->setInput($input);
+		$this->logicFactory->setCookieHandler($cookie);
+		$this->logicFactory->setSession($session);
+		$this->logicFactory->setDatabase($database);
 	}
 
 	public function setCsrfProtection(TokenStore $csrfProtection):void {
@@ -106,7 +109,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			}
 		}
 
-		LogicFactory::setView($view);
+		$this->logicFactory->setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 		$logicAssembly = $this->router->getLogicAssembly($uriPath);
 
@@ -155,7 +158,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		foreach($logicAssembly as $logicPath) {
 			try {
-				$logicObjects []= LogicFactory::createPageLogicFromPath(
+				$logicObjects []= $this->logicFactory->createPageLogicFromPath(
 					$logicPath,
 					$this->appNamespace,
 					$baseLogicDirectory,

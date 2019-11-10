@@ -25,6 +25,7 @@ class DispatcherFactory {
 		TokenStore $csrfProtection
 	):Dispatcher {
 		$appNamespace = $config->get("app.namespace");
+		$dispatcher = null;
 
 		if($router instanceof PageRouter) {
 			$dispatcher = new PageDispatcher($router, $appNamespace);
