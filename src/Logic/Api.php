@@ -7,13 +7,12 @@ abstract class Api extends AbstractLogic {
 	/** @var ObjectDocument */
 	protected $document;
 
-	/** @noinspection PhpMissingParentConstructorInspection */
-	public function __construct($object) {
-		$this->document = $object;
+	/** @param $objectDocument ObjectDocument */
+	public function __construct($objectDocument) {
+		$this->document = $objectDocument;
 
-		call_user_func_array(
-			"parent::__construct",
-			func_get_args()
+		parent::__construct(
+			...func_get_args()
 		);
 	}
 }
