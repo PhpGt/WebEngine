@@ -167,4 +167,26 @@ class AutoloaderTest extends TestCase {
 			"\\Test\\App\\Api\\OneNest\\TwoNest\\WrongNameApi"
 		);
 	}
+
+	public function testAutoloadFindsNestedDynamicApi() {
+		$docRoot = implode(DIRECTORY_SEPARATOR, [
+			__DIR__,
+			"..",
+			"..",
+			"project",
+			"dynamic-uris",
+			"www",
+		]);
+
+		$autoloader = new Autoloader(
+			"Test\\App",
+			realpath($docRoot)
+		);
+
+		$autoloader->autoload("\\Test\\App\\Api\\_DynamicOne\\_DynamicTwo\\_DynApi");
+		self::assertTrue(class_exists(
+			"\\Test\\App\\Api\\_DynamicOne\\_DynamicTwo\\_DynApi",
+			false
+		));
+	}
 }
