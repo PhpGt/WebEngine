@@ -46,10 +46,6 @@ class Autoloader {
 		);
 
 		$path = $this->getPathForLogicType($logicType);
-		if(is_null($path)) {
-			return;
-		}
-
 		$toRemove = explode("\\", $this->appNamespace);
 		$toRemove []= $logicType;
 
@@ -68,10 +64,6 @@ class Autoloader {
 			$relativeClassName,
 			$classSuffix
 		);
-
-		if(is_null($fileName)) {
-			return;
-		}
 
 		$autoloadPath = implode(DIRECTORY_SEPARATOR, [
 			$directoryPath,
@@ -113,21 +105,14 @@ class Autoloader {
 		|| (substr($className, -$length) === $endsWith);
 	}
 
-	protected function getPathForLogicType(string $type) {
-		$type = strtolower($type);
-		$path = null;
-
-		switch($type) {
+	protected function getPathForLogicType(string $type):string {
+		switch(strtolower($type)) {
 		case "api":
-			$path = Path::getApiDirectory($this->docRoot);
-			break;
+			return Path::getApiDirectory($this->docRoot);
 
 		case "page":
-			$path = Path::getPageDirectory($this->docRoot);
-			break;
+			return Path::getPageDirectory($this->docRoot);
 		}
-
-		return $path;
 	}
 
 	protected function getRelativeClassName(string $absoluteClassName, string...$toRemove) {
@@ -179,7 +164,7 @@ class Autoloader {
 		string $directoryPath,
 		string $relativeClassName,
 		string $classSuffix
-	):?string {
+	):string {
 		$matchingFileName = null;
 
 		$parts = explode("\\", $relativeClassName);
