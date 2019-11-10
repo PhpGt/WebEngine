@@ -2,7 +2,11 @@
 namespace Gt\WebEngine\Logic;
 
 class ClassName {
-	public static function transformUriCharacters(string $uri, string $prefix, string $suffix):string {
+	public static function transformUriCharacters(
+		string $uri,
+		string $prefix,
+		string $suffix
+	):string {
 		$uri = $prefix . $uri;
 
 		$uri = strtok($uri, ".");
