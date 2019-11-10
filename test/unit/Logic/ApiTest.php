@@ -19,6 +19,37 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class ApiTest extends TestCase {
+	public function testBeforeAfterGo() {
+		$viewModel = self::createMock(ObjectDocument::class);
+		$config = self::createMock(Config::class);
+		$server = self::createMock(ServerInfo::class);
+		$input = self::createMock(Input::class);
+		$cookie = self::createMock(CookieHandler::class);
+		$session = self::createMock(Session::class);
+		$database = self::createMock(Database::class);
+		$dynamicPath = self::createMock(DynamicPath::class);
+
+		$args = [
+			$viewModel,
+			$config,
+			$server,
+			$input,
+			$cookie,
+			$session,
+			$database,
+			$dynamicPath,
+		];
+
+		$testClass = new class(...$args) extends Api {};
+
+		self::assertIsCallable([$testClass, "before"]);
+		$testClass->before();
+		self::assertIsCallable([$testClass, "go"]);
+		$testClass->go();
+		self::assertIsCallable([$testClass, "after"]);
+		$testClass->after();
+	}
+
 	public function testHandleDo() {
 		$viewModel = self::createMock(ObjectDocument::class);
 		$config = self::createMock(Config::class);
