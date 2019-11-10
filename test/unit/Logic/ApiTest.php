@@ -1,21 +1,18 @@
 <?php
 namespace Gt\WebEngine\Test\Logic;
 
+use PHPUnit\Framework\TestCase;
 use Gt\Config\Config;
-use Gt\Cookie\Cookie;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
-use Gt\Input\InputData\Datum\InputDatum;
 use Gt\Session\Session;
-use Gt\WebEngine\Logic\AbstractLogic;
 use Gt\WebEngine\Logic\Api;
 use Gt\WebEngine\Logic\DynamicPath;
 use Gt\WebEngine\Refactor\ObjectDocument;
+use Gt\WebEngine\Test\Helper\FunctionOverride\Override;
 use Iterator;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class ApiTest extends TestCase {
@@ -130,5 +127,80 @@ class ApiTest extends TestCase {
 		$testClass->testSetupInputData($testData);
 		$testClass->handleDo();
 		self::assertTrue($testClass->testObj->doneSomething);
+	}
+
+	/** @runInSeparateProcess  */
+	public function testReload() {
+		$viewModel = self::createMock(ObjectDocument::class);
+		$config = self::createMock(Config::class);
+		$server = self::createMock(ServerInfo::class);
+		$input = self::createMock(Input::class);
+		$cookie = self::createMock(CookieHandler::class);
+		$session = self::createMock(Session::class);
+		$database = self::createMock(Database::class);
+		$dynamicPath = self::createMock(DynamicPath::class);
+
+		$args = [
+			$viewModel,
+			$config,
+			$server,
+			$input,
+			$cookie,
+			$session,
+			$database,
+			$dynamicPath,
+		];
+
+		$sut = new class(...$args) extends Api {
+			function doTestReload() {
+				$this->reload();
+			}
+		};
+
+		Override::replace("header", __DIR__);
+		$sut->doTestReload();
+		self::assertEquals(
+			1,
+			Override::getNumCalls("header")
+		);
+	}
+
+	public function testGetDynamicPathParameter() {
+		$expectedPathParam = uniqid();
+
+		$viewModel = self::createMock(ObjectDocument::class);
+		$config = self::createMock(Config::class);
+		$server = self::createMock(ServerInfo::class);
+		$input = self::createMock(Input::class);
+		$cookie = self::createMock(CookieHandler::class);
+		$session = self::createMock(Session::class);
+		$database = self::createMock(Database::class);
+		$dynamicPath = self::createMock(DynamicPath::class);
+		$dynamicPath->method("get")
+			->with("testParam")
+			->willReturn($expectedPathParam);
+
+		$args = [
+			$viewModel,
+			$config,
+			$server,
+			$input,
+			$cookie,
+			$session,
+			$database,
+			$dynamicPath,
+		];
+
+		$sut = new class(...$args) extends Api {
+			function doTestDynamicParam($testObj) {
+				$testObj->message = $this->getDynamicPathParameter("testParam");
+			}
+		};
+
+		$testObj = new StdClass();
+		$testObj->message = null;
+		$sut->doTestDynamicParam($testObj);
+
+		self::assertEquals($expectedPathParam, $testObj->message);
 	}
 }

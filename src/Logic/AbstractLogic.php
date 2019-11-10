@@ -90,7 +90,6 @@ abstract class AbstractLogic {
 			true,
 			$code
 		);
-		exit;
 	}
 
 	protected function getDynamicPathParameter(string $parameter):?string {
