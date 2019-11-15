@@ -1048,16 +1048,16 @@
         },
         {
             "name": "phpgt/sync",
-            "version": "v1.2.2",
+            "version": "v1.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Sync.git",
-                "reference": "c2efe6d7093952afb92a75403b28d40d50c41326"
+                "reference": "75bc747e7f477d15345e41b61c0999f61dc8e88e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Sync/zipball/c2efe6d7093952afb92a75403b28d40d50c41326",
-                "reference": "c2efe6d7093952afb92a75403b28d40d50c41326",
+                "url": "https://api.github.com/repos/PhpGt/Sync/zipball/75bc747e7f477d15345e41b61c0999f61dc8e88e",
+                "reference": "75bc747e7f477d15345e41b61c0999f61dc8e88e",
                 "shasum": ""
             },
             "require": {
@@ -1089,7 +1089,7 @@
                 "synchronise",
                 "synchronize"
             ],
-            "time": "2019-11-01T12:39:53+00:00"
+            "time": "2019-11-14T09:17:19+00:00"
         },
         {
             "name": "psr/http-client",
