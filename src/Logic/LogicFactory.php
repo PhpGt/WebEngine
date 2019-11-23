@@ -112,7 +112,6 @@ class LogicFactory {
 
 		if(!Path::isDynamic($absolutePath)
 		&& is_dir($absolutePath)) {
-			var_dump("HEER!)");
 			$uriParts []= "index";
 		}
 
