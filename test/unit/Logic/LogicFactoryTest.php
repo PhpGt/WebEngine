@@ -9,7 +9,6 @@ use Gt\Http\Uri;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\Logic\Api;
-use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Logic\Page;
 use Gt\WebEngine\View\ApiView;
@@ -90,6 +89,39 @@ class LogicFactoryTest extends TestCase {
 		$uri = self::createMock(Uri::class);
 
 		require_once($path);
+
+		$this->view = self::createMock(PageView::class);
+
+		$sut = new LogicFactory();
+		$this->setMocks($sut);
+		$logic = $sut->createPageLogicFromPath(
+			$path,
+			$appNamespace,
+			$baseDirectory,
+			$uri
+		);
+
+		self::assertInstanceOf(Page::class, $logic);
+	}
+
+	public function testCreatePageLogicFromPathPageNoIndexInUri() {
+		$appNamespace = "\\Test\\App";
+		$projectRoot = implode(DIRECTORY_SEPARATOR, [
+			__DIR__,
+			"..",
+			"..",
+			"project",
+			"autoloading",
+		]);
+		$baseDirectory = $projectRoot . "/page";
+		$path = $projectRoot . "/page/dir";
+		/** @var MockObject|UriInterface $uri */
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/dir");
+
+		/** @noinspection PhpIncludeInspection */
+		require_once("$path/index.php");
 
 		$this->view = self::createMock(PageView::class);
 

@@ -12,7 +12,6 @@ use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
 use Psr\Http\Message\UriInterface;
-use TypeError;
 
 class LogicFactory {
 	protected $config;
@@ -59,6 +58,9 @@ class LogicFactory {
 		string $baseDirectory,
 		UriInterface $uri
 	):AbstractLogic {
+		$path = realpath($path);
+		$baseDirectory = realpath($baseDirectory);
+
 		$className = $this->getLogicClassFromPath(
 			$path,
 			$appNamespace,
@@ -148,6 +150,10 @@ class LogicFactory {
 		]);
 
 		$logicPathRelative = substr($path, strlen($baseDirectory));
+		$fullPath = $baseDirectory . $logicPathRelative;
+		if(is_dir($fullPath)) {
+			$logicPathRelative .= "/index";
+		}
 // The relative logic path will be the filename with page directory stripped from the left.
 // /app/src/page/index.php => index.php
 // /app/src/api/child/directory/thing.php => child/directory/thing.php
