@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "640772104a03757cdef96a57dc64c45e",
+    "content-hash": "0a11a87ff2148407d26d3e5c8fb68800",
     "packages": [
         {
             "name": "composer/semver",
@@ -2075,6 +2075,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
@@ -4814,6 +4815,7 @@
     "platform": {
         "ext-posix": "*",
         "ext-dom": "*",
+        "ext-json": "*",
         "php": ">=7.2"
     },
     "platform-dev": []
