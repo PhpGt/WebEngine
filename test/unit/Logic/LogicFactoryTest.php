@@ -4,12 +4,14 @@ namespace Gt\WebEngine\Test\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Http\Uri;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\Logic\Api;
 use Gt\WebEngine\Logic\LogicFactory;
+use Gt\WebEngine\Logic\LogicPropertyStore;
 use Gt\WebEngine\Logic\Page;
 use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
@@ -33,6 +35,8 @@ class LogicFactoryTest extends TestCase {
 	private $database;
 	/** @var View|MockObject */
 	private $view;
+	/** @var Headers|MockObject */
+	private $headers;
 
 	public function setUp():void {
 		$this->config = self::createMock(Config::class);
@@ -42,6 +46,7 @@ class LogicFactoryTest extends TestCase {
 		$this->session = self::createMock(Session::class);
 		$this->database = self::createMock(Database::class);
 		$this->view = self::createMock(View::class);
+		$this->headers = self::createMock(Headers::class);
 	}
 
 	public function testCreatePageLogicFromPathApi() {
@@ -57,6 +62,7 @@ class LogicFactoryTest extends TestCase {
 		$path = $projectRoot . "/api/service-thing.php";
 		/** @var MockObject|UriInterface $uri */
 		$uri = self::createMock(Uri::class);
+		$logicPropertyStore = self::createMock(LogicPropertyStore::class);
 
 		require_once($path);
 
@@ -64,11 +70,12 @@ class LogicFactoryTest extends TestCase {
 
 		$sut = new LogicFactory();
 		$this->setMocks($sut);
-		$logic = $sut->createPageLogicFromPath(
+		$logic = $sut->createLogicObjectFromPath(
 			$path,
 			$appNamespace,
 			$baseDirectory,
-			$uri
+			$uri,
+			$logicPropertyStore
 		);
 
 		self::assertInstanceOf(Api::class, $logic);
@@ -87,6 +94,7 @@ class LogicFactoryTest extends TestCase {
 		$path = $projectRoot . "/page/dir/index.php";
 		/** @var MockObject|UriInterface $uri */
 		$uri = self::createMock(Uri::class);
+		$logicPropertyStore = self::createMock(LogicPropertyStore::class);
 
 		require_once($path);
 
@@ -94,11 +102,12 @@ class LogicFactoryTest extends TestCase {
 
 		$sut = new LogicFactory();
 		$this->setMocks($sut);
-		$logic = $sut->createPageLogicFromPath(
+		$logic = $sut->createLogicObjectFromPath(
 			$path,
 			$appNamespace,
 			$baseDirectory,
-			$uri
+			$uri,
+			$logicPropertyStore
 		);
 
 		self::assertInstanceOf(Page::class, $logic);
@@ -119,6 +128,7 @@ class LogicFactoryTest extends TestCase {
 		$uri = self::createMock(Uri::class);
 		$uri->method("getPath")
 			->willReturn("/dir");
+		$logicPropertyStore = self::createMock(LogicPropertyStore::class);
 
 		/** @noinspection PhpIncludeInspection */
 		require_once("$path/index.php");
@@ -127,11 +137,12 @@ class LogicFactoryTest extends TestCase {
 
 		$sut = new LogicFactory();
 		$this->setMocks($sut);
-		$logic = $sut->createPageLogicFromPath(
+		$logic = $sut->createLogicObjectFromPath(
 			$path,
 			$appNamespace,
 			$baseDirectory,
-			$uri
+			$uri,
+			$logicPropertyStore
 		);
 
 		self::assertInstanceOf(Page::class, $logic);
@@ -145,5 +156,6 @@ class LogicFactoryTest extends TestCase {
 		$factory->setSession($this->session);
 		$factory->setDatabase($this->database);
 		$factory->setView($this->view);
+		$factory->setHeaders($this->headers);
 	}
 }

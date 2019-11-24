@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\Test\Logic;
 
+use Gt\Http\Header\Headers;
 use PHPUnit\Framework\TestCase;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
@@ -25,6 +26,7 @@ class ApiTest extends TestCase {
 		$session = self::createMock(Session::class);
 		$database = self::createMock(Database::class);
 		$dynamicPath = self::createMock(DynamicPath::class);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -35,6 +37,7 @@ class ApiTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$testClass = new class(...$args) extends Api {};
@@ -56,6 +59,7 @@ class ApiTest extends TestCase {
 		$session = self::createMock(Session::class);
 		$database = self::createMock(Database::class);
 		$dynamicPath = self::createMock(DynamicPath::class);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -66,6 +70,7 @@ class ApiTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$testClass = new class(...$args) extends Api {
@@ -139,6 +144,7 @@ class ApiTest extends TestCase {
 		$session = self::createMock(Session::class);
 		$database = self::createMock(Database::class);
 		$dynamicPath = self::createMock(DynamicPath::class);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -149,6 +155,7 @@ class ApiTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$sut = new class(...$args) extends Api {
@@ -179,6 +186,7 @@ class ApiTest extends TestCase {
 		$dynamicPath->method("get")
 			->with("testParam")
 			->willReturn($expectedPathParam);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -189,6 +197,7 @@ class ApiTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$sut = new class(...$args) extends Api {

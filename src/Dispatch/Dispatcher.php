@@ -12,7 +12,11 @@ use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\AbstractLogic;
+use Gt\WebEngine\Logic\ApiSetup;
 use Gt\WebEngine\Logic\LogicFactory;
+use Gt\WebEngine\Logic\LogicPropertyStore;
+use Gt\WebEngine\Logic\LogicPropertyStoreReader;
+use Gt\WebEngine\Logic\PageSetup;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\View\PageView;
@@ -113,13 +117,18 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 		$logicAssembly = $this->router->getLogicAssembly($uriPath);
 
+		$logicPropertyStore = new LogicPropertyStore();
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
 			$baseLogicDirectory,
-			$request->getUri()
+			$request->getUri(),
+			$logicPropertyStore
 		);
 
-		$this->dispatchLogicObjects($logicObjects);
+		$this->dispatchLogicObjects(
+			$logicObjects,
+			$logicPropertyStore
+		);
 		$this->injectCsrf($view);
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
@@ -152,17 +161,19 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected function createLogicObjects(
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
-		UriInterface $uri
+		UriInterface $uri,
+		LogicPropertyStore $commonLogicPropertyStore
 	):array {
 		$logicObjects = [];
 
 		foreach($logicAssembly as $logicPath) {
 			try {
-				$logicObjects []= $this->logicFactory->createPageLogicFromPath(
+				$logicObjects []= $this->logicFactory->createLogicObjectFromPath(
 					$logicPath,
 					$this->appNamespace,
 					$baseLogicDirectory,
-					$uri
+					$uri,
+					$commonLogicPropertyStore
 				);
 			}
 			catch(TypeError $exception) {
@@ -176,8 +187,20 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	/**
 	 * @param AbstractLogic[] $logicObjects
 	 */
-	protected function dispatchLogicObjects(array $logicObjects):void {
+	protected function dispatchLogicObjects(
+		array $logicObjects,
+		LogicPropertyStore $logicPropertyStore
+	):void {
+		foreach($logicObjects as $i => $setupLogic) {
+			if($setupLogic instanceof ApiSetup
+			|| $setupLogic instanceof PageSetup) {
+				$setupLogic->go();
+				unset($logicObjects[$i]);
+			}
+		}
+
 		foreach($logicObjects as $logic) {
+			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
 		}
 
@@ -215,5 +238,32 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$request = $request->withUri(new Uri("/$statusCode"));
 		$this->errorHandlingFlag = true;
 		return $this->handle($request);
+	}
+
+	protected function setLogicProperties(
+		AbstractLogic $logic,
+		LogicPropertyStore $logicPropertyStore
+	):void {
+		if($logic instanceof  PageSetup
+		|| $logic instanceof ApiSetup) {
+			return;
+		}
+
+		$propertyStoreReader = new LogicPropertyStoreReader(
+			$logicPropertyStore
+		);
+
+		foreach($propertyStoreReader as $key => $value) {
+			if(in_array($key, LogicPropertyStoreReader::FORBIDDEN_LOGIC_PROPERTIES)) {
+				// TODO: Throw exception (?)
+				continue;
+			}
+
+			if(!property_exists($logic, $key)) {
+				continue;
+			}
+
+			$logic->$key = $value;
+		}
 	}
 }

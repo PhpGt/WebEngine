@@ -6,6 +6,7 @@ use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\DomTemplate\HTMLDocument;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -28,6 +29,7 @@ class PageTest extends TestCase {
 		$session = self::createMock(Session::class);
 		$database = self::createMock(Database::class);
 		$dynamicPath = self::createMock(DynamicPath::class);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -38,6 +40,7 @@ class PageTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$testClass = new class(...$args) extends Page {};
@@ -59,6 +62,7 @@ class PageTest extends TestCase {
 		$session = self::createMock(Session::class);
 		$database = self::createMock(Database::class);
 		$dynamicPath = self::createMock(DynamicPath::class);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -69,6 +73,7 @@ class PageTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$testClass = new class(...$args) extends Page {
@@ -142,6 +147,7 @@ class PageTest extends TestCase {
 		$session = self::createMock(Session::class);
 		$database = self::createMock(Database::class);
 		$dynamicPath = self::createMock(DynamicPath::class);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -152,6 +158,7 @@ class PageTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$sut = new class(...$args) extends Page {
@@ -182,6 +189,7 @@ class PageTest extends TestCase {
 		$dynamicPath->method("get")
 			->with("testParam")
 			->willReturn($expectedPathParam);
+		$headers = self::createMock(Headers::class);
 
 		$args = [
 			$viewModel,
@@ -192,6 +200,7 @@ class PageTest extends TestCase {
 			$session,
 			$database,
 			$dynamicPath,
+			$headers,
 		];
 
 		$sut = new class(...$args) extends Page {

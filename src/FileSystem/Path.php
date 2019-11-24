@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\FileSystem;
 
 use DirectoryIterator;
+use Gt\WebEngine\Route\Router;
 
 class Path {
 	protected static $appRoot;
@@ -160,6 +161,31 @@ class Path {
 
 		$fixed = rtrim($fixed, DIRECTORY_SEPARATOR);
 		return $fixed;
+	}
+
+	public static function isDynamic(string $absolutePath):bool {
+		$pathParts = explode(
+			DIRECTORY_SEPARATOR,
+			$absolutePath
+		);
+		while(count($pathParts) > 2) {
+			$removed = array_pop($pathParts);
+			$searchPath = implode(
+				DIRECTORY_SEPARATOR,
+				$pathParts
+			);
+			if($removed === Router::DEFAULT_BASENAME) {
+				$indexFiles = glob("$searchPath/index.*");
+				if(!empty($indexFiles)) {
+					return false;
+				}
+			}
+			$dynamicFiles = glob("$searchPath/@*");
+			if(!empty($dynamicFiles)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected static function defaultApplicationRoot(string $default = null) {

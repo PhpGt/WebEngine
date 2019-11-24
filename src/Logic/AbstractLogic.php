@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -24,6 +25,8 @@ abstract class AbstractLogic {
 	protected $database;
 	/** @var DynamicPath */
 	protected $dynamicPath;
+	/** @var Headers */
+	protected $headers;
 
 	public function __construct(
 		$viewModel,
@@ -33,7 +36,8 @@ abstract class AbstractLogic {
 		CookieHandler $cookieHandler,
 		Session $session,
 		Database $database,
-		DynamicPath $dynamicPath
+		DynamicPath $dynamicPath,
+		Headers $headers
 	) {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
 // will have its own type and implementation.
@@ -44,6 +48,7 @@ abstract class AbstractLogic {
 		$this->session = $session;
 		$this->database = $database;
 		$this->dynamicPath = $dynamicPath;
+		$this->headers = $headers;
 	}
 
 	public function before() {

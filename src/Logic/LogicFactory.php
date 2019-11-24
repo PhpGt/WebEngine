@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -14,12 +15,20 @@ use Gt\WebEngine\View\View;
 use Psr\Http\Message\UriInterface;
 
 class LogicFactory {
+	/** @var ?Config */
 	protected $config;
+	/** @var ?ServerInfo */
 	protected $serverInfo;
+	/** @var ?Input */
 	protected $input;
+	/** @var ?CookieHandler */
 	protected $cookie;
+	/** @var ?Session */
 	protected $session;
+	/** @var ?Database */
 	protected $database;
+	/** @var ?Headers */
+	protected $headers;
 
 	/** @var View */
 	protected $view;
@@ -52,11 +61,16 @@ class LogicFactory {
 		$this->view = $view;
 	}
 
-	public function createPageLogicFromPath(
+	public function setHeaders(Headers $headers):void {
+		$this->headers = $headers;
+	}
+
+	public function createLogicObjectFromPath(
 		string $path,
 		string $appNamespace,
 		string $baseDirectory,
-		UriInterface $uri
+		UriInterface $uri,
+		LogicPropertyStore $commonLogicPropertyStore
 	):AbstractLogic {
 		$path = realpath($path);
 		$baseDirectory = realpath($baseDirectory);
@@ -82,7 +96,9 @@ class LogicFactory {
 			$this->cookie,
 			$this->session,
 			$this->database,
-			$dynamicPathParameters
+			$dynamicPathParameters,
+			$this->headers,
+			$commonLogicPropertyStore
 		);
 
 		return $class;
