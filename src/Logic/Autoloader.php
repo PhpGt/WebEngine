@@ -75,7 +75,7 @@ class Autoloader {
 			$fileName,
 		]);
 
-		$autoloadPath = Path::fixPathCase($autoloadPath);
+		$autoloadPath = Path::fixPath($autoloadPath);
 		return $this->requireAndCheck($autoloadPath, $absoluteClassName);
 	}
 
@@ -145,19 +145,13 @@ class Autoloader {
 
 		foreach($parts as $part) {
 			$path .= DIRECTORY_SEPARATOR . $part;
-
-			if(!is_dir($path)) {
-				$path = str_replace(
-					DIRECTORY_SEPARATOR . "_",
-					DIRECTORY_SEPARATOR . "@",
-					$path
-				);
-			}
 		}
 
 		if(!is_dir($path)) {
-// TODO: Testing required on Unix systems.
-			$path = Path::fixPathCase($path);
+// The path of the file on-disk may not always match the class name, due to
+// web-mapping vs. namespace mapping
+// @see https://github.com/PhpGt/StyleGuide/blob/master/directories-files-namespaces/path-mapping.md
+			$path = Path::fixPath($path);
 		}
 
 		return $path;
@@ -187,7 +181,7 @@ class Autoloader {
 			$subDirectoryPath
 		);
 
-		$subDirectoryPath = Path::fixPathCase($subDirectoryPath);
+		$subDirectoryPath = Path::fixPath($subDirectoryPath);
 
 		$searchFileNameLowerCase = strtolower($searchFileName);
 		$searchFileNameHyphenatedLowerCase = strtolower(

@@ -10,14 +10,14 @@ class Path {
 	public static function getApplicationRootDirectory(string $innerDirectory):string {
 		$directoryWalker = new DirectoryWalker($innerDirectory);
 
-		return self::fixPathCase(
+		return self::fixPath(
 			$directoryWalker->findParentContaining("composer.json")
 		);
 	}
 
 	public static function getGtRootDirectory():string {
 		$directoryWalker = new DirectoryWalker(__DIR__);
-		return self::fixPathCase(
+		return self::fixPath(
 			$directoryWalker->findParentContaining("src")
 		);
 	}
@@ -85,37 +85,47 @@ class Path {
 		]);
 	}
 
-	public static function fixPathCase(string $path):string {
+	public static function fixPath(
+		string $path
+	):string {
+		if(file_exists($path)) {
+			return $path;
+		}
+
 // TODO: This breaks within a "jailed" Linux user. See https://github.com/PhpGt/WebEngine/issues/260
 // Use a base directory of "getApplicationRootDirectory", and have this check for a constant
 // defined in go.php?
-		$output = "";
+		$fixed = "";
 		if(DIRECTORY_SEPARATOR === "/") {
-			$output .= DIRECTORY_SEPARATOR;
+			$fixed .= DIRECTORY_SEPARATOR;
 		}
 		$path = str_replace(["/", "\\"], DIRECTORY_SEPARATOR, $path);
 		$pathParts = explode(DIRECTORY_SEPARATOR, $path);
 
 		foreach($pathParts as $directory) {
-			$currentSearchPath = $output;
+			$currentSearchPath = $fixed;
 			$currentSearchPath .= $directory;
 
 // If the directory exists without its path being changed, use that and continue to next child.
 			if(is_dir($currentSearchPath)) {
-				$output = "$currentSearchPath";
+				$fixed = "$currentSearchPath";
 
-				if(strlen($output) > 1) {
-					$output .= DIRECTORY_SEPARATOR;
+				if(strlen($fixed) > 1) {
+					$fixed .= DIRECTORY_SEPARATOR;
 				}
 				continue;
 			}
 
-			$iterator = new DirectoryIterator($output);
+			$iterator = new DirectoryIterator($fixed);
 			$foundMatch = false;
 			foreach($iterator as $fileInfo) {
 				$fileName = $fileInfo->getFilename();
+				if($fileName === "." || $fileName === "..") {
+					continue;
+				}
+
 				if(strtolower($fileName) === strtolower($directory)) {
-					$output .= $fileName . DIRECTORY_SEPARATOR;
+					$fixed .= $fileName . DIRECTORY_SEPARATOR;
 					$foundMatch = true;
 					break;
 				}
@@ -125,13 +135,20 @@ class Path {
 					$directory
 				);
 				$directoryWithHyphensParts = array_filter($directoryWithHyphensParts);
+
 				$directoryWithHyphens = implode(
 					"-",
 					$directoryWithHyphensParts
 				);
 
+				$directoryWithHyphens = str_replace(
+					"_-",
+					"@",
+					$directoryWithHyphens
+				);
+
 				if(strtolower($fileName) === strtolower($directoryWithHyphens)) {
-					$output .= $fileName . DIRECTORY_SEPARATOR;
+					$fixed .= $fileName . DIRECTORY_SEPARATOR;
 					$foundMatch = true;
 					break;
 				}
@@ -142,8 +159,8 @@ class Path {
 			}
 		}
 
-		$output = rtrim($output, DIRECTORY_SEPARATOR);
-		return $output;
+		$fixed = rtrim($fixed, DIRECTORY_SEPARATOR);
+		return $fixed;
 	}
 
 	public static function isDynamic(string $absolutePath):bool {
