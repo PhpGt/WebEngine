@@ -4,18 +4,17 @@ namespace Gt\WebEngine\Logic;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
-use Gt\DomTemplate\HTMLDocument;
 use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
 
-abstract class Page extends AbstractLogic {
-	/** @var HTMLDocument */
-	protected $document;
+abstract class ApiSetup extends Api {
+	/** @var LogicPropertyStore */
+	protected $logicProperty;
 
 	public function __construct(
-		HTMLDocument $viewModel,
+		$object,
 		Config $config,
 		ServerInfo $serverInfo,
 		Input $input,
@@ -23,12 +22,11 @@ abstract class Page extends AbstractLogic {
 		Session $session,
 		Database $database,
 		DynamicPath $dynamicPath,
-		Headers $headers
+		Headers $headers,
+		LogicPropertyStore $logicProperty
 	) {
-		$this->document = $viewModel;
-
 		parent::__construct(
-			$viewModel,
+			$object,
 			$config,
 			$serverInfo,
 			$input,
@@ -38,5 +36,7 @@ abstract class Page extends AbstractLogic {
 			$dynamicPath,
 			$headers
 		);
+
+		$this->logicProperty = $logicProperty;
 	}
 }

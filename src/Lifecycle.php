@@ -9,9 +9,12 @@ use Gt\Csrf\SessionTokenStore;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
+use Gt\WebEngine\Dispatch\PageDispatcher;
 use Gt\WebEngine\FileSystem\Path;
+use Gt\WebEngine\Route\PageRouter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -104,9 +107,12 @@ class Lifecycle implements MiddlewareInterface {
 			true
 			)
 		);
-		$csrfProtection->processAndVerify(
-			$input->getAll(Input::DATA_BODY)
-		);
+
+		if($router instanceof PageRouter) {
+			$csrfProtection->processAndVerify(
+				$input->getAll(Input::DATA_BODY)
+			);
+		}
 
 		$dispatcher = $this->createDispatcher(
 			$config,
@@ -116,10 +122,15 @@ class Lifecycle implements MiddlewareInterface {
 			$sessionHandler,
 			$database,
 			$router,
-			$csrfProtection
+			$csrfProtection,
+			new Headers($request->getHeaders())
 		);
 
 		$response = $this->process($request, $dispatcher);
+		$response = $response->withHeader(
+			"Content-type",
+			$router->getContentType()
+		);
 		$this->finish($response);
 	}
 
@@ -193,7 +204,8 @@ class Lifecycle implements MiddlewareInterface {
 		Session $session,
 		Database $database,
 		Router $router,
-		TokenStore $csrfProtection
+		TokenStore $csrfProtection,
+		Headers $headers
 	):Dispatcher {
 		$dispatcher = DispatcherFactory::create(
 			$config,
@@ -203,7 +215,8 @@ class Lifecycle implements MiddlewareInterface {
 			$session,
 			$database,
 			$router,
-			$csrfProtection
+			$csrfProtection,
+			$headers
 		);
 		return $dispatcher;
 	}
@@ -224,6 +237,9 @@ class Lifecycle implements MiddlewareInterface {
 	 * finally output to the client, followed by any tidy-up code required.
 	 */
 	public static function finish(ResponseInterface $response):void {
+		foreach($response->getHeaders() as $key => $value) {
+			header("$key: $value");
+		}
 		echo $response->getBody();
 	}
 }
