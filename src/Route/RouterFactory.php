@@ -66,10 +66,13 @@ class RouterFactory {
 			$type = self::TYPE_DEFAULT;
 		}
 
-		if(!array_key_exists($type, self::TYPE_MAP)) {
-			throw new RoutingException("Accept header has no route: $type");
+		foreach(explode(",", $type) as $singleType) {
+			$singleType = strtok($singleType, ";");
+			if(array_key_exists($singleType, self::TYPE_MAP)) {
+				return self::TYPE_MAP[$singleType];
+			}
 		}
 
-		return self::TYPE_MAP[$type];
+		throw new RoutingException("Accept header has no route: $type");
 	}
 }
