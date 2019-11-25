@@ -23,19 +23,21 @@ class RouterFactory {
 		RequestInterface $request,
 		string $documentRoot
 	):Router {
-		$type = $this->getType($request->getHeaderLine("accept"));
-		$routerClass = $this->getRouterClassForType($type);
+		$typeHeader = $request->getHeaderLine("accept");
+		$type = $this->getType($typeHeader);
+		$routerClass = $this->getRouterClassForType($typeHeader);
 
 		/** @var Router $router */
 		$router = new $routerClass(
 			$request,
-			$documentRoot
+			$documentRoot,
+			$type
 		);
 
 		return $router;
 	}
 
-	protected function getType(string $accept = null):string {
+	protected function getType(string $accept = null):?string {
 		if(empty($accept)) {
 			$accept = self::TYPE_DEFAULT;
 		}
@@ -47,7 +49,10 @@ class RouterFactory {
 			self::ACCEPT_PRIORITIES
 		);
 
-		$type = $acceptHeader->getType();
+		$type = null;
+		if($acceptHeader) {
+			$type = $acceptHeader->getType();
+		}
 
 		if(empty($type)) {
 			$type = self::TYPE_DEFAULT;
@@ -57,6 +62,10 @@ class RouterFactory {
 	}
 
 	protected function getRouterClassForType(string $type):string {
+		if(empty($type)) {
+			$type = self::TYPE_DEFAULT;
+		}
+
 		if(!array_key_exists($type, self::TYPE_MAP)) {
 			throw new RoutingException("Accept header has no route: $type");
 		}

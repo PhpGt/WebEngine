@@ -3,17 +3,30 @@
 namespace Gt\WebEngine\Test\Route;
 
 use Gt\Http\Request;
+use Gt\Http\Uri;
+use Gt\WebEngine\Dispatch\Dispatcher;
 use Gt\WebEngine\FileSystem\RequiredDirectoryNotFoundException;
 use Gt\WebEngine\Route\ApiRouter;
 use Gt\WebEngine\Route\PageRouter;
+use Gt\WebEngine\Route\Router;
+use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Test\Helper\FunctionOverride\Override;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ApiRouterTest extends RouterTestCase {
 	public function testGetBaseViewLogicPath() {
+		/** @var MockObject|Uri $uri */
+		$uri = self::createMock(Uri::class);
+
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new ApiRouter($request, "");
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new ApiRouter(
+			$request,
+			"",
+			"application/json"
+		);
 		$path = $sut->getBaseViewLogicPath();
 		self::assertEquals("/api", $path);
 	}
@@ -24,9 +37,17 @@ class ApiRouterTest extends RouterTestCase {
 	 */
 	public function testRedirectIndex(string $uri) {
 		Override::replace("header", __DIR__);
+		$uri = self::createMock(Uri::class);
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new ApiRouter($request, "");
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new ApiRouter(
+			$request,
+			"",
+			"application/json"
+		);
+
 		$sut->redirectInvalidPaths($uri);
 
 		$expectedHeaderCalls = [];
@@ -46,11 +67,19 @@ class ApiRouterTest extends RouterTestCase {
 		$tmp = $this->getTmpDir("testGetViewAssemblyNoApiDir");
 		touch("$tmp/composer.json");
 
+		$uri = self::createMock(Uri::class);
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new ApiRouter($request, $tmp);
+		$request->method("getUri")
+			->willReturn($uri);
+
+		$sut = new ApiRouter(
+			$request,
+			$tmp,
+			"application/json"
+		);
 		self::expectException(RequiredDirectoryNotFoundException::class);
-		$sut->getViewAssembly("/");
+		$sut->getViewAssembly($uri);
 	}
 
 	public function testGetViewAssembly() {
@@ -59,10 +88,20 @@ class ApiRouterTest extends RouterTestCase {
 		mkdir("$tmp/api");
 		touch("$tmp/api/example.json");
 
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/example");
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new ApiRouter($request, $tmp);
-		$assembly = $sut->getViewAssembly("/example");
+		$request->method("getUri")
+			->willReturn($uri);
+
+		$sut = new ApiRouter(
+			$request,
+			$tmp,
+			"application/json"
+		);
+		$assembly = $sut->getViewAssembly($uri);
 
 		$i = null;
 
@@ -79,10 +118,21 @@ class ApiRouterTest extends RouterTestCase {
 		mkdir("$tmp/api");
 		touch("$tmp/api/example.php");
 
+		/** @var MockObject|Uri $uri */
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/example");
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new ApiRouter($request, $tmp);
-		$assembly = $sut->getLogicAssembly("/example");
+		$request->method("getUri")
+			->willReturn($uri);
+
+		$sut = new ApiRouter(
+			$request,
+			$tmp,
+			"application/json"
+		);
+		$assembly = $sut->getLogicAssembly();
 
 		$i = null;
 
@@ -99,12 +149,21 @@ class ApiRouterTest extends RouterTestCase {
 		touch("$tmp/composer.json");
 		mkdir("$tmp/api");
 		mkdir("$tmp/api/item");
-		touch("$tmp/api/@itemName.json");
+		touch("$tmp/api/item/@itemName.json");
 
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/item/something");
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new ApiRouter($request, $tmp);
-		$assembly = $sut->getViewAssembly("/item/something");
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new ApiRouter(
+			$request,
+			$tmp,
+			"application/json"
+		);
+		$assembly = $sut->getViewAssembly();
 
 		$i = null;
 

@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\Test\Route;
 
 use Gt\Http\Request;
+use Gt\Http\Uri;
 use Gt\WebEngine\FileSystem\RequiredDirectoryNotFoundException;
 use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Test\Helper\FunctionOverride\Override;
@@ -9,9 +10,17 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class PageRouterTest extends RouterTestCase {
 	public function testGetBaseViewLogicPath() {
+		$uri = self::createMock(Uri::class);
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new PageRouter($request, "");
+		$request->method("getUri")
+			->willReturn($uri);
+
+		$sut = new PageRouter(
+			$request,
+			"",
+			"text/html"
+		);
 		$path = $sut->getBaseViewLogicPath();
 		self::assertEquals("/page", $path);
 	}
@@ -20,11 +29,20 @@ class PageRouterTest extends RouterTestCase {
 	 * @runInSeparateProcess
 	 * @dataProvider dataUri
 	 */
-	public function testRedirectIndex(string $uri) {
+	public function testRedirectIndex(string $uriPath) {
 		Override::replace("header", __DIR__);
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn($uriPath);
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new PageRouter($request, "");
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new PageRouter(
+			$request,
+			"",
+			"text/html"
+		);
 		$sut->redirectInvalidPaths($uri);
 
 		$expectedHeaderCalls = [];
@@ -44,11 +62,20 @@ class PageRouterTest extends RouterTestCase {
 		$tmp = $this->getTmpDir("testGetViewAssemblyNoPageDir");
 		touch("$tmp/composer.json");
 
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/");
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new PageRouter($request, $tmp);
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new PageRouter(
+			$request,
+			$tmp,
+			"text/html"
+		);
 		self::expectException(RequiredDirectoryNotFoundException::class);
-		$sut->getViewAssembly("/");
+		$sut->getViewAssembly();
 	}
 
 	public function testGetViewAssembly() {
@@ -57,10 +84,19 @@ class PageRouterTest extends RouterTestCase {
 		mkdir("$tmp/page");
 		touch("$tmp/page/index.html");
 
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/");
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new PageRouter($request, $tmp);
-		$assembly = $sut->getViewAssembly("/");
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new PageRouter(
+			$request,
+			$tmp,
+			"text/html"
+		);
+		$assembly = $sut->getViewAssembly();
 
 		$i = null;
 
@@ -77,10 +113,21 @@ class PageRouterTest extends RouterTestCase {
 		mkdir("$tmp/page");
 		touch("$tmp/page/index.php");
 
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/");
+
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new PageRouter($request, $tmp);
-		$assembly = $sut->getLogicAssembly("/");
+		$request->method("getUri")
+			->willReturn($uri);
+
+		$sut = new PageRouter(
+			$request,
+			$tmp,
+			"text/html"
+		);
+		$assembly = $sut->getLogicAssembly();
 
 		$i = null;
 
@@ -97,12 +144,22 @@ class PageRouterTest extends RouterTestCase {
 		touch("$tmp/composer.json");
 		mkdir("$tmp/page");
 		mkdir("$tmp/page/item");
-		touch("$tmp/page/@itemName.html");
+		touch("$tmp/page/item/@itemName.html");
+
+		$uri = self::createMock(Uri::class);
+		$uri->method("getPath")
+			->willReturn("/item/something");
 
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
-		$sut = new PageRouter($request, $tmp);
-		$assembly = $sut->getViewAssembly("/item/something");
+		$request->method("getUri")
+			->willReturn($uri);
+		$sut = new PageRouter(
+			$request,
+			$tmp,
+			"text/html"
+		);
+		$assembly = $sut->getViewAssembly();
 
 		$i = null;
 

@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\Test\Route;
 
 use Gt\Http\Request;
+use Gt\Http\Uri;
 use Gt\WebEngine\Route\ApiRouter;
 use Gt\WebEngine\Route\PageRouter;
 use Gt\WebEngine\Route\RouterFactory;
@@ -11,11 +12,14 @@ use PHPUnit\Framework\TestCase;
 
 class RouterFactoryTest extends TestCase {
 	public function testCreateInvalidAcceptHeader() {
+		$uri = self::createMock(Uri::class);
 		/** @var Request|MockObject $request */
 		$request = self::createMock(Request::class);
 		$request->method("getHeaderLine")
 			->with("accept")
 			->willReturn("no/matches");
+		$request->method("getUri")
+			->willReturn($uri);
 
 		self::expectException(RoutingException::class);
 		self::expectExceptionMessage("Accept header has no route: no/matches");
@@ -24,10 +28,14 @@ class RouterFactoryTest extends TestCase {
 	}
 
 	public function testCreateEmptyAcceptHeader() {
+		$uri = self::createMock(Uri::class);
+
 		$request = self::createMock(Request::class);
 		$request->method("getHeaderLine")
 			->with("accept")
 			->willReturn("");
+		$request->method("getUri")
+			->willReturn($uri);
 
 // The accept header should default to text/html if none is provided.
 		$sut = new RouterFactory();
@@ -39,10 +47,13 @@ class RouterFactoryTest extends TestCase {
 	}
 
 	public function testCreateTextHtmlAcceptHeader() {
+		$uri = self::createMock(Uri::class);
 		$request = self::createMock(Request::class);
 		$request->method("getHeaderLine")
 			->with("accept")
 			->willReturn("text/html");
+		$request->method("getUri")
+			->willReturn($uri);
 
 		$sut = new RouterFactory();
 		$router = $sut->create($request, "");
@@ -53,10 +64,13 @@ class RouterFactoryTest extends TestCase {
 	}
 
 	public function testCreateApplicationJsonHeader() {
+		$uri = self::createMock(Uri::class);
 		$request = self::createMock(Request::class);
 		$request->method("getHeaderLine")
 			->with("accept")
 			->willReturn("application/json");
+		$request->method("getUri")
+			->willReturn($uri);
 
 		$sut = new RouterFactory();
 		$router = $sut->create($request, "");
