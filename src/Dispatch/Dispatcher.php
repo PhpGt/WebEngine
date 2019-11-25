@@ -6,6 +6,7 @@ use Gt\Cookie\CookieHandler;
 use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
+use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Http\Uri;
 use Gt\Input\Input;
@@ -19,6 +20,7 @@ use Gt\WebEngine\Logic\LogicPropertyStoreReader;
 use Gt\WebEngine\Logic\PageSetup;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
+use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
 use Gt\WebEngine\Route\Router;
@@ -33,6 +35,7 @@ use TypeError;
 abstract class Dispatcher implements RequestHandlerInterface {
 	/** @var Router */
 	protected $router;
+	/** @var string */
 	protected $appNamespace;
 	/** @var TokenStore */
 	protected $csrfProtection;
@@ -40,12 +43,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected $errorHandlingFlag;
 	/** @var LogicFactory */
 	protected $logicFactory;
+	/** @var ?LogicPropertyStore */
+	protected $logicPropertyStore;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
 		$this->appNamespace = $appNamespace;
 		$this->errorHandlingFlag = false;
 		$this->logicFactory = new LogicFactory();
+		$this->logicPropertyStore = null;
 	}
 
 	public function storeInternalObjects(
@@ -54,7 +60,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Input $input,
 		CookieHandler $cookie,
 		Session $session,
-		Database $database
+		Database $database,
+		Headers $headers
 	):void {
 		$this->logicFactory->setConfig($config);
 		$this->logicFactory->setServerInfo($serverInfo);
@@ -62,6 +69,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		$this->logicFactory->setCookieHandler($cookie);
 		$this->logicFactory->setSession($session);
 		$this->logicFactory->setDatabase($database);
+		$this->logicFactory->setHeaders($headers);
+
 	}
 
 	public function setCsrfProtection(TokenStore $csrfProtection):void {
@@ -82,6 +91,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$response = new ApiResponse();
 		}
 
+		/** @var View|PageView|ApiView|null $view */
 		$view = null;
 		$templateDirectory = implode(DIRECTORY_SEPARATOR, [
 			$this->router->getBaseViewLogicPath(),
@@ -89,8 +99,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		]);
 
 		try {
-			$this->router->redirectIndex($uriPath);
-			$viewAssembly = $this->router->getViewAssembly($uriPath);
+			$this->router->redirectInvalidPaths($uriPath);
+			$viewAssembly = $this->router->getViewAssembly();
 			$view = $this->getView(
 				$response->getBody(),
 				(string)$viewAssembly,
@@ -115,27 +125,37 @@ abstract class Dispatcher implements RequestHandlerInterface {
 
 		$this->logicFactory->setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
-		$logicAssembly = $this->router->getLogicAssembly($uriPath);
+		$logicAssembly = $this->router->getLogicAssembly();
 
-		$logicPropertyStore = new LogicPropertyStore();
+// TODO: Opportunity for dependency injection:
+		$this->logicPropertyStore = new LogicPropertyStore();
+
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
 			$baseLogicDirectory,
 			$request->getUri(),
-			$logicPropertyStore
+			$this->logicPropertyStore
 		);
 
 		$this->dispatchLogicObjects(
 			$logicObjects,
-			$logicPropertyStore
+			$this->logicPropertyStore
 		);
 		$this->injectCsrf($view);
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
 			return $errorResponse;
 		}
+
+		if($view instanceof PageView) {
+			$view->getViewModel()->removeTemplateAttributes();
+		}
 		$view->stream();
 
+		$response = $response->withHeader(
+			"Content-type",
+			$this->router->getContentType()
+		);
 		return $response;
 	}
 
@@ -162,7 +182,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
 		UriInterface $uri,
-		LogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $logicPropertyStore
 	):array {
 		$logicObjects = [];
 
@@ -173,7 +193,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 					$this->appNamespace,
 					$baseLogicDirectory,
 					$uri,
-					$commonLogicPropertyStore
+					$logicPropertyStore
 				);
 			}
 			catch(TypeError $exception) {

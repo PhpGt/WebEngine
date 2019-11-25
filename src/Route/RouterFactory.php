@@ -23,10 +23,11 @@ class RouterFactory {
 		RequestInterface $request,
 		string $documentRoot
 	):Router {
-		$type = self::getBestType($request->getHeaderLine("accept"));
+		$type = $this->getType($request->getHeaderLine("accept"));
+		$routerClass = $this->getRouterClassForType($type);
 
 		/** @var Router $router */
-		$router = new $type(
+		$router = new $routerClass(
 			$request,
 			$documentRoot
 		);
@@ -34,9 +35,9 @@ class RouterFactory {
 		return $router;
 	}
 
-	protected function getBestType(string $accept = null):string {
+	protected function getType(string $accept = null):string {
 		if(empty($accept)) {
-			$accept = "text/html";
+			$accept = self::TYPE_DEFAULT;
 		}
 		
 		$negotiator = new Negotiator();
@@ -46,13 +47,18 @@ class RouterFactory {
 			self::ACCEPT_PRIORITIES
 		);
 
-		$type = null;
-		if($acceptHeader) {
-			$type = $acceptHeader->getType();
+		$type = $acceptHeader->getType();
+
+		if(empty($type)) {
+			$type = self::TYPE_DEFAULT;
 		}
 
+		return $type;
+	}
+
+	protected function getRouterClassForType(string $type):string {
 		if(!array_key_exists($type, self::TYPE_MAP)) {
-			throw new RoutingException("Accept header has no route: $accept");
+			throw new RoutingException("Accept header has no route: $type");
 		}
 
 		return self::TYPE_MAP[$type];

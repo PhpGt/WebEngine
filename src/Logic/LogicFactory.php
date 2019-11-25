@@ -70,7 +70,7 @@ class LogicFactory {
 		string $appNamespace,
 		string $baseDirectory,
 		UriInterface $uri,
-		LogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $logicPropertyStore
 	):AbstractLogic {
 		$path = realpath($path);
 		$baseDirectory = realpath($baseDirectory);
@@ -98,7 +98,7 @@ class LogicFactory {
 			$this->database,
 			$dynamicPathParameters,
 			$this->headers,
-			$commonLogicPropertyStore
+			$logicPropertyStore
 		);
 
 		return $class;
@@ -125,11 +125,6 @@ class LogicFactory {
 
 		$uriParts = explode("/", $uriPath);
 		$uriParts = array_filter($uriParts);
-
-		if(!Path::isDynamic($absolutePath)
-		&& is_dir($absolutePath)) {
-			$uriParts []= "index";
-		}
 
 		$keyValuePairs = [];
 		foreach($relativeDirParts as $i => $part) {

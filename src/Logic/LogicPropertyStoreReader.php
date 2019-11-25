@@ -10,9 +10,9 @@ class LogicPropertyStoreReader extends LogicPropertyStore implements Iterator {
 	protected $iteratorStrings;
 
 	public function __construct(
-		LogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $logicPropertyStore
 	) {
-		$this->propertyStore = $commonLogicPropertyStore;
+		$this->propertyStore = $logicPropertyStore;
 	}
 
 	/** @link https://php.net/manual/en/iterator.rewind.php */

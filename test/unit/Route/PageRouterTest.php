@@ -25,7 +25,7 @@ class PageRouterTest extends RouterTestCase {
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new PageRouter($request, "");
-		$sut->redirectIndex($uri);
+		$sut->redirectInvalidPaths($uri);
 
 		$expectedHeaderCalls = [];
 		$lastPartOfUri = substr(

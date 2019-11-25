@@ -27,7 +27,7 @@ class ApiRouterTest extends RouterTestCase {
 		/** @var MockObject|Request $request */
 		$request = self::createMock(Request::class);
 		$sut = new ApiRouter($request, "");
-		$sut->redirectIndex($uri);
+		$sut->redirectInvalidPaths($uri);
 
 		$expectedHeaderCalls = [];
 		$lastPartOfUri = substr(

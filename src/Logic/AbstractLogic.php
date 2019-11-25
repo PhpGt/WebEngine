@@ -41,6 +41,10 @@ abstract class AbstractLogic {
 	) {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
 // will have its own type and implementation.
+		if(!$viewModel) {
+			return;
+		}
+
 		$this->config = $config;
 		$this->server = $serverInfo;
 		$this->input = $input;
