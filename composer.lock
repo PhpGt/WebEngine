@@ -529,16 +529,16 @@
         },
         {
             "name": "phpgt/cssxpath",
-            "version": "v1.1.1",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/CssXPath.git",
-                "reference": "af4b9583ad4a950225f10a0b9c97d8dc4f14e22d"
+                "reference": "cca4df1a33e18aff1bb775372ece5fddb032ba67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/CssXPath/zipball/af4b9583ad4a950225f10a0b9c97d8dc4f14e22d",
-                "reference": "af4b9583ad4a950225f10a0b9c97d8dc4f14e22d",
+                "url": "https://api.github.com/repos/PhpGt/CssXPath/zipball/cca4df1a33e18aff1bb775372ece5fddb032ba67",
+                "reference": "cca4df1a33e18aff1bb775372ece5fddb032ba67",
                 "shasum": ""
             },
             "require": {
@@ -567,7 +567,7 @@
                 }
             ],
             "description": "Convert CSS selectors to XPath queries.",
-            "time": "2019-08-15T09:48:36+00:00"
+            "time": "2019-11-08T13:40:04+00:00"
         },
         {
             "name": "phpgt/curl",
@@ -701,16 +701,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v2.1.4",
+            "version": "v2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "2348e429b9e8d4eaf2dd550632443be5c60a2206"
+                "reference": "42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/2348e429b9e8d4eaf2dd550632443be5c60a2206",
-                "reference": "2348e429b9e8d4eaf2dd550632443be5c60a2206",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d",
+                "reference": "42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d",
                 "shasum": ""
             },
             "require": {
@@ -778,7 +778,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2019-10-09T08:44:21+00:00"
+            "time": "2019-11-25T17:01:04+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -2077,6 +2077,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
