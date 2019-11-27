@@ -19,14 +19,13 @@ class RouterFactory {
 	];
 	const TYPE_DEFAULT = "text/html";
 
-	protected static $routerClassLookup = [];
-
-	public static function create(
+	public function create(
 		RequestInterface $request,
 		string $documentRoot
 	):Router {
-		$type = self::getType($request->getHeaderLine("accept"));
-		$routerClass = self::getRouterClassForType($type);
+		$typeHeader = $request->getHeaderLine("accept");
+		$type = $this->getType($typeHeader);
+		$routerClass = $this->getRouterClassForType($typeHeader);
 
 		/** @var Router $router */
 		$router = new $routerClass(
@@ -38,18 +37,23 @@ class RouterFactory {
 		return $router;
 	}
 
-	protected static function getType(string $accept = null):string {
+	protected function getType(string $accept = null):?string {
 		if(empty($accept)) {
-			$accept = "text/html";
+			$accept = self::TYPE_DEFAULT;
 		}
-
+		
 		$negotiator = new Negotiator();
 		/** @var Accept $acceptHeader */
 		$acceptHeader = $negotiator->getBest(
 			$accept,
 			self::ACCEPT_PRIORITIES
 		);
-		$type = $acceptHeader->getType();
+
+		$type = null;
+		if($acceptHeader) {
+			$type = $acceptHeader->getType();
+		}
+
 		if(empty($type)) {
 			$type = self::TYPE_DEFAULT;
 		}
@@ -57,11 +61,18 @@ class RouterFactory {
 		return $type;
 	}
 
-	protected static function getRouterClassForType(string $type):string {
-		if(!array_key_exists($type, self::TYPE_MAP)) {
-			throw new RoutingException("Accept header has no route: $type");
+	protected function getRouterClassForType(string $type):string {
+		if(empty($type)) {
+			$type = self::TYPE_DEFAULT;
 		}
 
-		return self::TYPE_MAP[$type];
+		foreach(explode(",", $type) as $singleType) {
+			$singleType = strtok($singleType, ";");
+			if(array_key_exists($singleType, self::TYPE_MAP)) {
+				return self::TYPE_MAP[$singleType];
+			}
+		}
+
+		throw new RoutingException("Accept header has no route: $type");
 	}
 }

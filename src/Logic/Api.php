@@ -15,7 +15,7 @@ abstract class Api extends AbstractLogic {
 	protected $document;
 
 	public function __construct(
-		$object,
+		ObjectDocument $viewModel,
 		Config $config,
 		ServerInfo $serverInfo,
 		Input $input,
@@ -25,10 +25,10 @@ abstract class Api extends AbstractLogic {
 		DynamicPath $dynamicPath,
 		Headers $headers
 	) {
-		$this->document = $object;
+		$this->document = $viewModel;
 
 		parent::__construct(
-			$object,
+			$viewModel,
 			$config,
 			$serverInfo,
 			$input,

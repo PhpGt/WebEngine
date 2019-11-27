@@ -127,10 +127,6 @@ class Lifecycle implements MiddlewareInterface {
 		);
 
 		$response = $this->process($request, $dispatcher);
-		$response = $response->withHeader(
-			"Content-type",
-			$router->getContentType()
-		);
 		$this->finish($response);
 	}
 
@@ -189,7 +185,8 @@ class Lifecycle implements MiddlewareInterface {
 	}
 
 	public function createRouter(RequestInterface $request, string $documentRoot):Router {
-		return RouterFactory::create(
+		$factory = new RouterFactory();
+		return $factory->create(
 			$request,
 			$documentRoot
 		);
@@ -239,6 +236,8 @@ class Lifecycle implements MiddlewareInterface {
 		foreach($response->getHeaders() as $key => $value) {
 			header("$key: $value");
 		}
+// TODO: Check for Location header here. Issue #356.
+
 		echo $response->getBody();
 	}
 }

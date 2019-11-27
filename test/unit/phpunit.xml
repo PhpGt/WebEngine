@@ -11,7 +11,7 @@
 
 	<testsuites>
 		<testsuite name="default">
-			<directory suffix=".php">.</directory>
+			<directory suffix="Test.php">.</directory>
 		</testsuite>
 	</testsuites>
 

@@ -2,7 +2,9 @@
 namespace Gt\WebEngine\Route;
 
 use Gt\WebEngine\FileSystem\Assembly;
+use Gt\WebEngine\FileSystem\Path;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 
 abstract class Router {
 	const DEFAULT_BASENAME = "index";
@@ -23,7 +25,7 @@ abstract class Router {
 	protected $baseViewLogicPath;
 	/** @var string */
 	protected $viewLogicPath;
-	/** @var string|null */
+	/** @var string */
 	protected $viewLogicBasename;
 
 	public function __construct(
@@ -35,7 +37,7 @@ abstract class Router {
 		$this->documentRoot = $documentRoot;
 		$this->contentType = $contentType;
 
-		$uri = strtok($request->getUri(), "?");
+		$uri = $request->getUri();
 		$this->baseViewLogicPath = $this->getBaseViewLogicPath();
 		$this->viewLogicPath = $this->getViewLogicPath($uri);
 		$this->viewLogicBasename = $this->getViewLogicBasename($uri);
@@ -43,7 +45,7 @@ abstract class Router {
 
 	/**
 	 * The base view-logic path is the absolute path on disk to where all View and Logic files
-	 * exist, according to the current Router type.
+	 * exist, according to the current Route type.
 	 */
 	abstract public function getBaseViewLogicPath():string;
 
@@ -55,17 +57,14 @@ abstract class Router {
 				true,
 				303
 			);
-			exit;
+			return;
 		}
 
 		if($this->viewLogicBasename !== self::DEFAULT_BASENAME) {
 			return;
 		}
 
-		$lastSlashPosition = strrpos(
-			$uri,
-			"/"
-		);
+		$lastSlashPosition = strrpos($uri, "/");
 		$lastPieceOfUri = substr($uri, $lastSlashPosition + 1);
 
 		if($lastPieceOfUri !== self::DEFAULT_BASENAME) {
@@ -82,11 +81,10 @@ abstract class Router {
 			true,
 			303
 		);
-		exit;
 	}
 
 	public function getViewAssembly():Assembly {
-		return new Assembly(
+		$assembly = new Assembly(
 			$this->baseViewLogicPath,
 			$this->viewLogicPath,
 			$this->viewLogicBasename,
@@ -95,10 +93,12 @@ abstract class Router {
 			static::VIEW_AFTER,
 			true
 		);
+
+		return $assembly;
 	}
 
 	public function getLogicAssembly():Assembly {
-		return new Assembly(
+		$assembly = new Assembly(
 			$this->baseViewLogicPath,
 			$this->viewLogicPath,
 			$this->viewLogicBasename,
@@ -106,60 +106,100 @@ abstract class Router {
 			static::LOGIC_BEFORE,
 			static::LOGIC_AFTER
 		);
+		return $assembly;
 	}
 
 	public function getContentType():string {
 		return $this->contentType;
 	}
 
-	/**
-	 * The view-logic sub-path is the path on disk to the directory
-	 * containing the requested View and Logic files,
-	 * relative to the base view-logic path.
-	 */
-	protected function getViewLogicPath(string $uri):string {
-		$uri = str_replace(
+	protected function getDirectoryForUri(string $uri):string {
+		$basePath = $this->getBaseViewLogicPath();
+		$subPath = $this->getViewLogicSubPath($uri);
+		$absolutePath = $basePath . $subPath;
+
+		if(Path::isDynamic($absolutePath)) {
+			$lastSlashPosition = strrpos(
+				$subPath,
+				DIRECTORY_SEPARATOR
+			);
+			$subPath = substr(
+				$subPath,
+				0,
+				$lastSlashPosition
+			);
+		}
+
+// Note: use of forward slash here is correct due to working with URL, not directory path.
+		$subPath = str_replace(
 			"/",
 			DIRECTORY_SEPARATOR,
-			$uri
+			$subPath
 		);
-		$baseViewLogicPath = $this->baseViewLogicPath;
-		$absolutePath = $baseViewLogicPath . $uri;
+		return $subPath;
+	}
+
+	protected function getBasenameForUri(string $uri):string {
+die("DEAD FUNCTION?");
+		$pageDirPath = $this->getBaseViewLogicPath();
+		$subDirPath = $this->getViewLogicSubPath($uri);
+		$fileBasename = $this->getViewLogicBasename($uri);
+
+		$absolutePath = $pageDirPath . $subDirPath . "/" . $fileBasename;
+		$lastSlashPosition = strrpos(
+			$subDirPath,
+			DIRECTORY_SEPARATOR
+		);
+
+		if(Path::isDynamic($absolutePath)) {
+			$fileBasename = substr(
+				$absolutePath,
+				$lastSlashPosition + 1
+			);
+		}
+
+		return $fileBasename;
+	}
+
+	/**
+	 * The view-logic sub-path is the path on disk to the directory containing the requested
+	 * View and Logic files, relative to the base view-logic path.
+	 */
+	protected function getViewLogicSubPath(string $uriPath):string {
+		$uriPath = str_replace(
+			"/",
+			DIRECTORY_SEPARATOR,
+			$uriPath
+		);
+		$baseViewLogicPath = $this->getBaseViewLogicPath();
+		$absolutePath = $baseViewLogicPath . $uriPath;
 
 		if(!is_dir($absolutePath)) {
 			$absolutePath = dirname($absolutePath);
-
-			$dynamicMatches = glob("$absolutePath/@*");
-			foreach($dynamicMatches as $match) {
-				if(is_dir($match)) {
-					$absolutePath = $match;
-					break;
-				}
-			}
 		}
 
 		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
-		if(strlen($relativePath) > 1) {
+		if(strlen($relativePath) >= 1) {
 			$relativePath = rtrim($relativePath, DIRECTORY_SEPARATOR);
 		}
 
 		return $relativePath;
 	}
 
-	protected function getViewLogicBasename(string $uri):?string {
+	protected function getViewLogicBasename(UriInterface $uri):?string {
+		$uriPath = $uri->getPath();
 		$basename = self::DEFAULT_BASENAME;
-		$uri = strtok($uri, "?");
 
-		if($uri === "/") {
+		if($uriPath === "/") {
 			return $basename;
 		}
 
-		$uriPath = str_replace(
-			"/",
-			DIRECTORY_SEPARATOR,
-			$uri
-		);
-		$absolutePath = $this->baseViewLogicPath . $uriPath;
+		$absolutePath = $this->baseViewLogicPath
+			. str_replace(
+				"/",
+				DIRECTORY_SEPARATOR,
+				$uriPath
+			);
 
 		if($this->isAddressableFile($absolutePath)
 		|| !$this->isAddressableDir($absolutePath)) {
@@ -174,7 +214,7 @@ abstract class Router {
 
 	/**
 	 * Can the absolute path be addressable via a URI
-	 * as a file OR a directory?
+	 * as a file OR directory?
 	 */
 	protected function isAddressable(string $absolutePath):bool {
 		return $this->isAddressableFile($absolutePath)
@@ -203,6 +243,7 @@ abstract class Router {
 			return false;
 		}
 
+// TODO: Why are we only returning false here?
 		return false;
 	}
 
@@ -211,6 +252,35 @@ abstract class Router {
 			return false;
 		}
 
+// TODO: Why are we only returning false here?
 		return false;
+	}
+
+	/**
+	 * The view-logic sub-path is the path on disk to the directory
+	 * containing the requested View and Logic files,
+	 * relative to the base view-logic path.
+	 */
+	protected function getViewLogicPath(UriInterface $uri):string {
+		$uriPath = $uri->getPath();
+		$uriPath = str_replace(
+			"/",
+			DIRECTORY_SEPARATOR,
+			$uriPath
+		);
+		$absolutePath = $this->baseViewLogicPath . $uriPath;
+
+		if(!is_dir($absolutePath)) {
+			$dynamicMatches = glob("$absolutePath/@*");
+			foreach($dynamicMatches as $match) {
+				if(is_dir($match)) {
+					$absolutePath = $match;
+					break;
+				}
+			}
+		}
+
+		$relativePath = substr($absolutePath, strlen($this->baseViewLogicPath));
+		return $relativePath;
 	}
 }

@@ -21,10 +21,15 @@ class Autoloader {
 		$this->docRoot = $docRoot;
 	}
 
-	public function autoload(string $absoluteClassName):void {
+	/**
+	 * @return ?string Returns the absolute classname of the autoloaded
+	 * class, or null if the required class isn't a Logic class.
+	 * @throws \Gt\WebEngine\FileSystem\PathNotFound
+	 */
+	public function autoload(string $absoluteClassName):?string {
 		$classSuffix = $this->getClassSuffix($absoluteClassName);
 		if(is_null($classSuffix)) {
-			return;
+			return null;
 		}
 
 		$absoluteClassName = trim($absoluteClassName, "\\");
@@ -32,7 +37,7 @@ class Autoloader {
 			$absoluteClassName,
 			$this->appNamespace
 		) !== 0) {
-			return;
+			return null;
 		}
 
 		$logicType = substr(
@@ -46,10 +51,6 @@ class Autoloader {
 		);
 
 		$path = $this->getPathForLogicType($logicType);
-		if(is_null($path)) {
-			return;
-		}
-
 		$toRemove = explode("\\", $this->appNamespace);
 		$toRemove []= $logicType;
 
@@ -69,29 +70,25 @@ class Autoloader {
 			$classSuffix
 		);
 
-		if(is_null($fileName)) {
-			return;
-		}
-
 		$autoloadPath = implode(DIRECTORY_SEPARATOR, [
 			$directoryPath,
 			$fileName,
 		]);
 
-		$autoloadPath = Path::fixPathCase($autoloadPath);
-		$this->requireAndCheck($autoloadPath, $absoluteClassName);
+		$autoloadPath = Path::fixPath($autoloadPath);
+		return $this->requireAndCheck($autoloadPath, $absoluteClassName);
 	}
 
-	protected function requireAndCheck(string $filePath, string $className):void {
+	protected function requireAndCheck(string $filePath, string $className):string {
+		if(!is_file($filePath)) {
+			throw new AutoloaderException("File path is not correct for when autoloading class '$className'");
+		}
 		require($filePath);
 
 		if($className[0] !== "\\") {
 			$className = "\\" . $className;
 		}
-
-		if(!class_exists($className)) {
-			throw new AutoloadedClassDoesNotExistException($className);
-		}
+		return $className;
 	}
 
 	protected function getClassSuffix($className):?string {
@@ -113,11 +110,8 @@ class Autoloader {
 		|| (substr($className, -$length) === $endsWith);
 	}
 
-	protected function getPathForLogicType(string $type) {
-		$type = strtolower($type);
-		$path = null;
-
-		switch($type) {
+	protected function getPathForLogicType(string $type):string {
+		switch(strtolower($type)) {
 		case "api":
 			$path = Path::getApiDirectory($this->docRoot);
 			break;
@@ -147,29 +141,17 @@ class Autoloader {
 	):string {
 		$parts = explode("\\", $relativeClassName);
 		$partsToRemove = explode("\\", $this->appNamespace);
-
-		foreach($partsToRemove as $i => $part) {
-			array_shift($parts);
-		}
-
-		array_pop($parts);
 		array_pop($parts);
 
 		foreach($parts as $part) {
 			$path .= DIRECTORY_SEPARATOR . $part;
-
-			if(!is_dir($path)) {
-				$path = str_replace(
-					DIRECTORY_SEPARATOR . "_",
-					DIRECTORY_SEPARATOR . "@",
-					$path
-				);
-			}
 		}
 
 		if(!is_dir($path)) {
-// TODO: Testing required on Unix systems.
-			$path = Path::fixPathCase($path);
+// The path of the file on-disk may not always match the class name, due to
+// web-mapping vs. namespace mapping
+// @see https://github.com/PhpGt/StyleGuide/blob/master/directories-files-namespaces/path-mapping.md
+			$path = Path::fixPath($path);
 		}
 
 		return $path;
@@ -179,7 +161,7 @@ class Autoloader {
 		string $directoryPath,
 		string $relativeClassName,
 		string $classSuffix
-	):?string {
+	):string {
 		$matchingFileName = null;
 
 		$parts = explode("\\", $relativeClassName);
@@ -193,20 +175,13 @@ class Autoloader {
 
 		$subDirectoryPath = $directoryPath;
 
-		while(count($parts) > 0) {
-			$subDirectoryPath = implode(DIRECTORY_SEPARATOR, [
-				$subDirectoryPath,
-				array_shift($parts),
-			]);
-		}
-
 		$subDirectoryPath = str_replace(
 			DIRECTORY_SEPARATOR . "_",
 			DIRECTORY_SEPARATOR . "@",
 			$subDirectoryPath
 		);
 
-		$subDirectoryPath = Path::fixPathCase($subDirectoryPath);
+		$subDirectoryPath = Path::fixPath($subDirectoryPath);
 
 		$searchFileNameLowerCase = strtolower($searchFileName);
 		$searchFileNameHyphenatedLowerCase = strtolower(

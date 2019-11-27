@@ -41,7 +41,7 @@ abstract class AbstractLogic {
 	) {
 // $viewModel must be stored by this class's concrete constructors, as each type of Logic class
 // will have its own type and implementation.
-		if(!isset($viewModel)) {
+		if(!$viewModel) {
 			return;
 		}
 
@@ -61,7 +61,8 @@ abstract class AbstractLogic {
 	}
 
 	public function go() {
-
+		// This is not a required function, but it has been placed here
+		// so IDEs can see it when extending Logic classes.
 	}
 
 	public function after() {
@@ -98,7 +99,6 @@ abstract class AbstractLogic {
 			true,
 			$code
 		);
-		exit;
 	}
 
 	protected function getDynamicPathParameter(string $parameter):?string {
