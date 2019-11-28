@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "0a11a87ff2148407d26d3e5c8fb68800",
@@ -701,16 +701,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v2.1.4",
+            "version": "v2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "2348e429b9e8d4eaf2dd550632443be5c60a2206"
+                "reference": "42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/2348e429b9e8d4eaf2dd550632443be5c60a2206",
-                "reference": "2348e429b9e8d4eaf2dd550632443be5c60a2206",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d",
+                "reference": "42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d",
                 "shasum": ""
             },
             "require": {
@@ -778,20 +778,20 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2019-10-09T08:44:21+00:00"
+            "time": "2019-11-25T17:01:04+00:00"
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v1.2.7",
+            "version": "v1.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "63106d8366715f0bc0e3d8c795d8136f2fdbc738"
+                "reference": "a36aa7e40bfcee682e25496bfc34a896fdf02c17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/63106d8366715f0bc0e3d8c795d8136f2fdbc738",
-                "reference": "63106d8366715f0bc0e3d8c795d8136f2fdbc738",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/a36aa7e40bfcee682e25496bfc34a896fdf02c17",
+                "reference": "a36aa7e40bfcee682e25496bfc34a896fdf02c17",
                 "shasum": ""
             },
             "require": {
@@ -813,7 +813,7 @@
                 "MIT"
             ],
             "description": "Bind dynamic data to reusable HTML components.",
-            "time": "2019-11-03T16:42:56+00:00"
+            "time": "2019-11-28T12:10:45+00:00"
         },
         {
             "name": "phpgt/fetch",
@@ -879,16 +879,16 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "f7bb4fa882f474d1305768bad20c018fb49ba808"
+                "reference": "394ecdd2a2e2686a467cdf2f837c72105d68398f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/f7bb4fa882f474d1305768bad20c018fb49ba808",
-                "reference": "f7bb4fa882f474d1305768bad20c018fb49ba808",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/394ecdd2a2e2686a467cdf2f837c72105d68398f",
+                "reference": "394ecdd2a2e2686a467cdf2f837c72105d68398f",
                 "shasum": ""
             },
             "require": {
@@ -912,24 +912,24 @@
                 "MIT"
             ],
             "description": "PSR-7 HTTP message implementation.",
-            "time": "2019-11-11T13:02:46+00:00"
+            "time": "2019-11-28T12:05:15+00:00"
         },
         {
             "name": "phpgt/input",
-            "version": "v1.0.1",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "bf1d707f8a625f64c77b29126975d065fb96765b"
+                "reference": "bc70b65bb5c95cc73c49ac5beee15c1ec9d5620e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/bf1d707f8a625f64c77b29126975d065fb96765b",
-                "reference": "bf1d707f8a625f64c77b29126975d065fb96765b",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/bc70b65bb5c95cc73c49ac5beee15c1ec9d5620e",
+                "reference": "bc70b65bb5c95cc73c49ac5beee15c1ec9d5620e",
                 "shasum": ""
             },
             "require": {
-                "phpgt/http": ">=1.0"
+                "phpgt/http": "^1.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "8.*"
@@ -945,7 +945,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user input.",
-            "time": "2019-07-08T13:43:14+00:00"
+            "time": "2019-11-28T11:59:06+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
@@ -1386,16 +1386,16 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.12.0",
+            "version": "v1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "550ebaac289296ce228a706d0867afc34687e3f4"
+                "reference": "f8f0b461be3385e56d6de3dbb5a0df24c0c275e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/550ebaac289296ce228a706d0867afc34687e3f4",
-                "reference": "550ebaac289296ce228a706d0867afc34687e3f4",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/f8f0b461be3385e56d6de3dbb5a0df24c0c275e3",
+                "reference": "f8f0b461be3385e56d6de3dbb5a0df24c0c275e3",
                 "shasum": ""
             },
             "require": {
@@ -1407,7 +1407,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.12-dev"
+                    "dev-master": "1.13-dev"
                 }
             },
             "autoload": {
@@ -1440,7 +1440,7 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2019-08-06T08:03:45+00:00"
+            "time": "2019-11-27T13:56:44+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -4401,16 +4401,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.12.0",
+            "version": "v1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "b42a2f66e8f1b15ccf25652c3424265923eb4f17"
+                "reference": "7b4aab9743c30be783b73de055d24a39cf4b954f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/b42a2f66e8f1b15ccf25652c3424265923eb4f17",
-                "reference": "b42a2f66e8f1b15ccf25652c3424265923eb4f17",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/7b4aab9743c30be783b73de055d24a39cf4b954f",
+                "reference": "7b4aab9743c30be783b73de055d24a39cf4b954f",
                 "shasum": ""
             },
             "require": {
@@ -4422,7 +4422,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.12-dev"
+                    "dev-master": "1.13-dev"
                 }
             },
             "autoload": {
@@ -4456,20 +4456,20 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-08-06T08:03:45+00:00"
+            "time": "2019-11-27T14:18:11+00:00"
         },
         {
             "name": "symfony/polyfill-php73",
-            "version": "v1.12.0",
+            "version": "v1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php73.git",
-                "reference": "2ceb49eaccb9352bff54d22570276bb75ba4a188"
+                "reference": "4b0e2222c55a25b4541305a053013d5647d3a25f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php73/zipball/2ceb49eaccb9352bff54d22570276bb75ba4a188",
-                "reference": "2ceb49eaccb9352bff54d22570276bb75ba4a188",
+                "url": "https://api.github.com/repos/symfony/polyfill-php73/zipball/4b0e2222c55a25b4541305a053013d5647d3a25f",
+                "reference": "4b0e2222c55a25b4541305a053013d5647d3a25f",
                 "shasum": ""
             },
             "require": {
@@ -4478,7 +4478,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.12-dev"
+                    "dev-master": "1.13-dev"
                 }
             },
             "autoload": {
@@ -4514,7 +4514,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-08-06T08:03:45+00:00"
+            "time": "2019-11-27T16:25:15+00:00"
         },
         {
             "name": "symfony/service-contracts",

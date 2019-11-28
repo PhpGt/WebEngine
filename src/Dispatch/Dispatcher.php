@@ -7,8 +7,9 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
+use Gt\Http\HttpRedirectException;
 use Gt\Http\ServerInfo;
-use Gt\Http\Uri;
+use Gt\Http\StatusCode;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
@@ -137,10 +138,17 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$this->logicPropertyStore
 		);
 
-		$this->dispatchLogicObjects(
-			$logicObjects,
-			$this->logicPropertyStore
-		);
+		try {
+			$this->dispatchLogicObjects(
+				$logicObjects,
+				$this->logicPropertyStore
+			);
+		}
+		catch(HttpRedirectException $exception) {
+			$response = $response->withStatus(http_response_code());
+			return $response;
+		}
+
 		$this->injectCsrf($view);
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
@@ -216,24 +224,39 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			|| $setupLogic instanceof PageSetup) {
 				$setupLogic->go();
 				unset($logicObjects[$i]);
+				$this->throwOnRedirect();
 			}
 		}
 
 		foreach($logicObjects as $logic) {
 			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
+			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->handleDo();
+			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->go();
+			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->after();
+			$this->throwOnRedirect();
+		}
+	}
+
+	protected function throwOnRedirect():void {
+		$code = http_response_code();
+		if($code === StatusCode::MOVED_PERMANENTLY
+		|| $code === StatusCode::FOUND
+		|| $code === StatusCode::SEE_OTHER
+		|| $code === StatusCode::TEMPORARY_REDIRECT) {
+			throw new HttpRedirectException($code);
 		}
 	}
 
@@ -250,14 +273,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected function httpErrorResponse(
 		ServerRequestInterface $request
 	):?ResponseInterface {
-		$statusCode = http_response_code();
-		if($statusCode < 300) {
-			return null;
-		}
-
-		$request = $request->withUri(new Uri("/$statusCode"));
-		$this->errorHandlingFlag = true;
-		return $this->handle($request);
+// TODO: Null is returned until issue #299 is resolved (no error handling for now).
+		return null;
 	}
 
 	protected function setLogicProperties(
