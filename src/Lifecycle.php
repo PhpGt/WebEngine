@@ -229,14 +229,15 @@ class Lifecycle implements MiddlewareInterface {
 	}
 
 	/**
-	 * The final part of the lifecycle is the finish function. This is where the response is
-	 * finally output to the client, followed by any tidy-up code required.
+	 * The final part of the lifecycle is the finish function.
+	 * This is where the response is finally output to the client,
+	 * after the response headers are appended from any calls to the native
+	 * header function.
 	 */
 	public static function finish(ResponseInterface $response):void {
 		foreach($response->getHeaders() as $key => $value) {
 			header("$key: $value");
 		}
-// TODO: Check for Location header here. Issue #356.
 
 		echo $response->getBody();
 	}

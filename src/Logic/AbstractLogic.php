@@ -96,9 +96,9 @@ abstract class AbstractLogic {
 	protected function redirect(string $uri, int $code = 303):void {
 		header(
 			"Location: $uri",
-			true,
-			$code
+			true
 		);
+		http_response_code($code);
 	}
 
 	protected function getDynamicPathParameter(string $parameter):?string {
