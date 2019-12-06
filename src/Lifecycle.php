@@ -12,8 +12,6 @@ use Gt\Database\Database;
 use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
-use Gt\WebEngine\Dispatch\PageDispatcher;
-use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\Route\PageRouter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -44,8 +42,11 @@ class Lifecycle implements MiddlewareInterface {
 	/**
 	 * The start of the application's lifecycle. This function breaks the lifecycle down
 	 * into its different functions, in order.
+	 *
+	 * @param bool $render Set to false and the Lifecycle will not render
+	 * the Response object, allowing you to manipulate it elsewhere.
 	 */
-	public function start():void {
+	public function start(bool $render = true):ResponseInterface {
 		$server = new ServerInfo($_SERVER);
 
 		$cwd = dirname($server->getDocumentRoot());
@@ -127,7 +128,7 @@ class Lifecycle implements MiddlewareInterface {
 		);
 
 		$response = $this->process($request, $dispatcher);
-		$this->finish($response);
+		return $this->finish($response, $render);
 	}
 
 	/**
@@ -234,11 +235,18 @@ class Lifecycle implements MiddlewareInterface {
 	 * after the response headers are appended from any calls to the native
 	 * header function.
 	 */
-	public static function finish(ResponseInterface $response):void {
+	public static function finish(
+		ResponseInterface $response,
+		bool $render = true
+	):ResponseInterface {
 		foreach($response->getHeaders() as $key => $value) {
 			header("$key: $value");
 		}
 
-		echo $response->getBody();
+		if($render) {
+			echo $response->getBody();
+		}
+
+		return $response;
 	}
 }
