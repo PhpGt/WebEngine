@@ -27,6 +27,11 @@ class Assembly implements Iterator {
 		bool $basenameMustExist = false
 	) {
 		$this->path = $this->getPath($basePath, $directory);
+
+		if(is_null($this->path)) {
+			throw new RequiredDirectoryNotFoundException($basePath);
+		}
+
 		$this->extensions = $extensions;
 		$this->basename = $basename;
 		$this->lookupBefore = $lookupBefore;
@@ -187,7 +192,11 @@ class Assembly implements Iterator {
 		$subDirectoryParts = array_filter($subDirectoryParts);
 
 		do {
-			$fileList = scandir($pathToScan);
+			$fileList = [];
+			if(is_dir($pathToScan)) {
+				$fileList = scandir($pathToScan);
+			}
+
 			$nextDirName = array_shift($subDirectoryParts);
 			if(in_array($nextDirName, $fileList)) {
 				$pathToScan .= DIRECTORY_SEPARATOR . $nextDirName;

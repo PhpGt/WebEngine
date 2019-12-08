@@ -12,15 +12,14 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "composer.json" }}
-            - v1-dependencies-
+            - composer-{{ checksum "composer.json" }}
 
       - run: composer install -n --prefer-dist
 
       - save_cache:
           paths:
             - ./vendor
-          key: v1-dependencies-{{ checksum "composer.json" }}
+          key: composer-{{ checksum "composer.json" }}
 
       - persist_to_workspace:
           root: /home/circleci/repo

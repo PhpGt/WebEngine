@@ -8,139 +8,103 @@ use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
+use Gt\WebEngine\FileSystem\Path;
 use Gt\WebEngine\View\ApiView;
 use Gt\WebEngine\View\PageView;
 use Gt\WebEngine\View\View;
 use Psr\Http\Message\UriInterface;
-use TypeError;
 
 class LogicFactory {
 	/** @var ?Config */
-	protected static $config;
+	protected $config;
 	/** @var ?ServerInfo */
-	protected static $serverInfo;
+	protected $serverInfo;
 	/** @var ?Input */
-	protected static $input;
+	protected $input;
 	/** @var ?CookieHandler */
-	protected static $cookie;
+	protected $cookie;
 	/** @var ?Session */
-	protected static $session;
+	protected $session;
 	/** @var ?Database */
-	protected static $database;
+	protected $database;
 	/** @var ?Headers */
-	protected static $headers;
+	protected $headers;
 
 	/** @var View */
-	protected static $view;
+	protected $view;
 
-	public static function setConfig(Config $config):void {
-		self::$config = $config;
+	public function setConfig(Config $config):void {
+		$this->config = $config;
 	}
 
-	public static function setServerInfo(ServerInfo $serverInfo):void {
-		self::$serverInfo = $serverInfo;
+	public function setServerInfo(ServerInfo $serverInfo):void {
+		$this->serverInfo = $serverInfo;
 	}
 
-	public static function setInput(Input $input):void {
-		self::$input = $input;
+	public function setInput(Input $input):void {
+		$this->input = $input;
 	}
 
-	public static function setCookieHandler(CookieHandler $cookie):void {
-		self::$cookie = $cookie;
+	public function setCookieHandler(CookieHandler $cookie):void {
+		$this->cookie = $cookie;
 	}
 
-	public static function setSession(Session $session):void {
-		self::$session = $session;
+	public function setSession(Session $session):void {
+		$this->session = $session;
 	}
 
-	public static function setDatabase(Database $database):void {
-		self::$database = $database;
+	public function setDatabase(Database $database):void {
+		$this->database = $database;
 	}
 
-	public static function setView(View $view):void {
-		self::$view = $view;
+	public function setView(View $view):void {
+		$this->view = $view;
 	}
 
-	public static function setHeaders(Headers $headers):void {
-		self::$headers = $headers;
+	public function setHeaders(Headers $headers):void {
+		$this->headers = $headers;
 	}
 
-	public static function createLogicObjectFromPath(
+	public function createLogicObjectFromPath(
 		string $path,
 		string $appNamespace,
 		string $baseDirectory,
 		UriInterface $uri,
-		LogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $logicPropertyStore
 	):AbstractLogic {
-		$className = self::getLogicClassFromPath(
+		$path = realpath($path);
+		$baseDirectory = realpath($baseDirectory);
+
+		$className = $this->getLogicClassFromPath(
 			$path,
 			$appNamespace,
 			$baseDirectory
 		);
 
-		$dynamicPathParameters = self::getDynamicPathParameters(
+		$dynamicPathParameters = $this->getDynamicPathParameters(
 			$path,
 			$baseDirectory,
 			$uri
 		);
 
-		try {
-			/** @var AbstractLogic $class */
-			$class = new $className(
-				self::$view->getViewModel(),
-				self::$config,
-				self::$serverInfo,
-				self::$input,
-				self::$cookie,
-				self::$session,
-				self::$database,
-				$dynamicPathParameters,
-				self::$headers,
-				$commonLogicPropertyStore
-			);
-
-		}
-		catch(TypeError $exception) {
-			throw new InvalidLogicConstructorParameters($exception->getMessage());
-		}
-
-		return $class;
-
-	}
-
-	protected static function getLogicClassFromPath(
-		string $path,
-		string $appNamespace,
-		string $baseDirectory
-	):string {
-		$logicTypeNamespace = null;
-
-		if(self::$view instanceof ApiView) {
-			$logicTypeNamespace = "Api";
-		}
-		if(self::$view instanceof PageView) {
-			$logicTypeNamespace = "Page";
-		}
-		$basePageNamespace = implode("\\", [
-			$appNamespace,
-			$logicTypeNamespace,
-		]);
-
-		$logicPathRelative = substr($path, strlen($baseDirectory));
-// The relative logic path will be the filename with page directory stripped from the left.
-// /app/src/page/index.php => index.php
-// /app/src/api/child/directory/thing.php => child/directory/thing.php
-		$className = ClassName::transformUriCharacters(
-			$logicPathRelative,
-			$basePageNamespace,
-			$logicTypeNamespace
+		/** @var AbstractLogic $class */
+		$class = new $className(
+			$this->view->getViewModel(),
+			$this->config,
+			$this->serverInfo,
+			$this->input,
+			$this->cookie,
+			$this->session,
+			$this->database,
+			$dynamicPathParameters,
+			$this->headers,
+			$logicPropertyStore
 		);
 
-		$className = str_replace("@", "_", $className);
-		return $className;
+		return $class;
 	}
 
-	public static function getDynamicPathParameters(
+	public function getDynamicPathParameters(
 		string $absolutePath,
 		string $baseDirectory,
 		UriInterface $uri
@@ -162,11 +126,6 @@ class LogicFactory {
 		$uriParts = explode("/", $uriPath);
 		$uriParts = array_filter($uriParts);
 
-//		if(!Path::isDynamic($absolutePath)
-//		&& is_dir($absolutePath)) {
-//			$uriParts []= "index";
-//		}
-
 		$keyValuePairs = [];
 		foreach($relativeDirParts as $i => $part) {
 			$part = strtok($part, ".");
@@ -182,5 +141,40 @@ class LogicFactory {
 		}
 
 		return new DynamicPath($keyValuePairs);
+	}
+
+	protected function getLogicClassFromPath(
+		string $path,
+		string $appNamespace,
+		string $baseDirectory
+	):string {
+		$logicTypeNamespace = null;
+		if($this->view instanceof ApiView) {
+			$logicTypeNamespace = "Api";
+		}
+		if($this->view instanceof PageView) {
+			$logicTypeNamespace = "Page";
+		}
+		$basePageNamespace = implode("\\", [
+			$appNamespace,
+			$logicTypeNamespace,
+		]);
+
+		$logicPathRelative = substr($path, strlen($baseDirectory));
+		$fullPath = $baseDirectory . $logicPathRelative;
+		if(is_dir($fullPath)) {
+			$logicPathRelative .= "/index";
+		}
+// The relative logic path will be the filename with page directory stripped from the left.
+// /app/src/page/index.php => index.php
+// /app/src/api/child/directory/thing.php => child/directory/thing.php
+		$className = ClassName::transformUriCharacters(
+			$logicPathRelative,
+			$basePageNamespace,
+			$logicTypeNamespace
+		);
+
+		$className = str_replace("@", "_", $className);
+		return $className;
 	}
 }

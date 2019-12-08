@@ -7,17 +7,18 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
+use Gt\Http\HttpRedirectException;
 use Gt\Http\ServerInfo;
-use Gt\Http\Uri;
+use Gt\Http\StatusCode;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
 use Gt\WebEngine\Logic\AbstractLogic;
 use Gt\WebEngine\Logic\ApiSetup;
+use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Logic\LogicPropertyStore;
 use Gt\WebEngine\Logic\LogicPropertyStoreReader;
 use Gt\WebEngine\Logic\PageSetup;
-use Gt\WebEngine\Logic\LogicFactory;
 use Gt\WebEngine\Response\ApiResponse;
 use Gt\WebEngine\Response\PageResponse;
 use Gt\WebEngine\View\ApiView;
@@ -35,20 +36,22 @@ use TypeError;
 abstract class Dispatcher implements RequestHandlerInterface {
 	/** @var Router */
 	protected $router;
+	/** @var string */
 	protected $appNamespace;
 	/** @var TokenStore */
 	protected $csrfProtection;
-	/** @var string */
-	protected $contentType;
 	/** @var bool True if the current execution of `handle` is an error */
 	protected $errorHandlingFlag;
-	/** @var LogicPropertyStore|null */
-	private $logicPropertyStore;
+	/** @var LogicFactory */
+	protected $logicFactory;
+	/** @var ?LogicPropertyStore */
+	protected $logicPropertyStore;
 
 	public function __construct(Router $router, string $appNamespace) {
 		$this->router = $router;
 		$this->appNamespace = $appNamespace;
 		$this->errorHandlingFlag = false;
+		$this->logicFactory = new LogicFactory();
 		$this->logicPropertyStore = null;
 	}
 
@@ -61,13 +64,14 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Database $database,
 		Headers $headers
 	):void {
-		LogicFactory::setConfig($config);
-		LogicFactory::setServerInfo($serverInfo);
-		LogicFactory::setInput($input);
-		LogicFactory::setCookieHandler($cookie);
-		LogicFactory::setSession($session);
-		LogicFactory::setDatabase($database);
-		LogicFactory::setHeaders($headers);
+		$this->logicFactory->setConfig($config);
+		$this->logicFactory->setServerInfo($serverInfo);
+		$this->logicFactory->setInput($input);
+		$this->logicFactory->setCookieHandler($cookie);
+		$this->logicFactory->setSession($session);
+		$this->logicFactory->setDatabase($database);
+		$this->logicFactory->setHeaders($headers);
+
 	}
 
 	public function setCsrfProtection(TokenStore $csrfProtection):void {
@@ -88,7 +92,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$response = new ApiResponse();
 		}
 
-		/** @var View|PageView|ApiView $view */
+		/** @var View|PageView|ApiView|null $view */
 		$view = null;
 		$templateDirectory = implode(DIRECTORY_SEPARATOR, [
 			$this->router->getBaseViewLogicPath(),
@@ -120,22 +124,31 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			}
 		}
 
-		LogicFactory::setView($view);
+		$this->logicFactory->setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
 		$logicAssembly = $this->router->getLogicAssembly();
 
-		$logicPropertyStore = new LogicPropertyStore();
+// TODO: Opportunity for dependency injection:
+		$this->logicPropertyStore = new LogicPropertyStore();
+
 		$logicObjects = $this->createLogicObjects(
 			$logicAssembly,
 			$baseLogicDirectory,
 			$request->getUri(),
-			$logicPropertyStore
+			$this->logicPropertyStore
 		);
 
-		$this->dispatchLogicObjects(
-			$logicObjects,
-			$logicPropertyStore
-		);
+		try {
+			$this->dispatchLogicObjects(
+				$logicObjects,
+				$this->logicPropertyStore
+			);
+		}
+		catch(HttpRedirectException $exception) {
+			$response = $response->withStatus(http_response_code());
+			return $response;
+		}
+
 		$this->injectCsrf($view);
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
@@ -177,19 +190,18 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
 		UriInterface $uri,
-		LogicPropertyStore $commonLogicPropertyStore
+		LogicPropertyStore $logicPropertyStore
 	):array {
 		$logicObjects = [];
 
 		foreach($logicAssembly as $logicPath) {
 			try {
-				// TODO: createApiLogicFromPath
-				$logicObjects []= LogicFactory::createLogicObjectFromPath(
+				$logicObjects []= $this->logicFactory->createLogicObjectFromPath(
 					$logicPath,
 					$this->appNamespace,
 					$baseLogicDirectory,
 					$uri,
-					$commonLogicPropertyStore
+					$logicPropertyStore
 				);
 			}
 			catch(TypeError $exception) {
@@ -212,24 +224,39 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			|| $setupLogic instanceof PageSetup) {
 				$setupLogic->go();
 				unset($logicObjects[$i]);
+				$this->throwOnRedirect();
 			}
 		}
 
 		foreach($logicObjects as $logic) {
 			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
+			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->handleDo();
+			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->go();
+			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->after();
+			$this->throwOnRedirect();
+		}
+	}
+
+	protected function throwOnRedirect():void {
+		$code = http_response_code();
+		if($code === StatusCode::MOVED_PERMANENTLY
+		|| $code === StatusCode::FOUND
+		|| $code === StatusCode::SEE_OTHER
+		|| $code === StatusCode::TEMPORARY_REDIRECT) {
+			throw new HttpRedirectException($code);
 		}
 	}
 
@@ -246,21 +273,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	protected function httpErrorResponse(
 		ServerRequestInterface $request
 	):?ResponseInterface {
-		$statusCode = http_response_code();
-		if($statusCode < 300) {
-			return null;
-		}
-
-		$request = $request->withUri(new Uri("/$statusCode"));
-		$this->errorHandlingFlag = true;
-		return $this->handle($request);
+// TODO: Null is returned until issue #299 is resolved (no error handling for now).
+		return null;
 	}
 
 	protected function setLogicProperties(
 		AbstractLogic $logic,
 		LogicPropertyStore $logicPropertyStore
-	) {
-		if($logic instanceof PageSetup
+	):void {
+		if($logic instanceof  PageSetup
 		|| $logic instanceof ApiSetup) {
 			return;
 		}
@@ -270,8 +291,8 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		);
 
 		foreach($propertyStoreReader as $key => $value) {
-			if(in_array($key,LogicPropertyStore::FORBIDDEN_LOGIC_PROPERTIES)) {
-				// TODO: Throw exception
+			if(in_array($key, LogicPropertyStoreReader::FORBIDDEN_LOGIC_PROPERTIES)) {
+				// TODO: Throw exception (?)
 				continue;
 			}
 
