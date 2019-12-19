@@ -22,8 +22,8 @@ class PageDispatcher extends Dispatcher {
 			$body,
 			$templateDirectory
 		);
-		$document->extractTemplates();
 		$document->expandComponents();
+		$document->extractTemplates();
 
 		if(!is_null($path)) {
 			$pathHyphens = str_replace("/", "-", $path);
