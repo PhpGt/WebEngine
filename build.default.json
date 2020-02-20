@@ -17,7 +17,7 @@
 		},
 		"execute": {
 			"command": "sass",
-			"arguments": ["--cache-location", "style/.sass-cache", "style/main.scss", "www/style.css"]
+			"arguments": ["style/main.scss", "www/style.css"]
 		}
 	},
 
