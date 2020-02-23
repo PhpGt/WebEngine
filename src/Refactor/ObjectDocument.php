@@ -15,60 +15,6 @@ class ObjectDocument extends Document {
 		parent::__construct();
 
 		$this->type = $type;
-		if($this->isJsonString($document)) {
-			$this->loadJSON($document);
-		}
-		elseif($this->isXmlString($document)) {
-			$this->loadXML($document);
-		}
-		else {
-			throw new DocumentStringParseException("Unknown document type");
-		}
-	}
-
-	public function isJsonString(string $document):bool {
-		return $this->isFirstNonWhiteSpaceCharacter($document, "{[");
-	}
-
-	public function isXmlString(string $document):bool {
-		return $this->isFirstNonWhiteSpaceCharacter($document, "<");
-	}
-
-	protected function isFirstNonWhiteSpaceCharacter(
-		string $document,
-		string $firstCharMatch
-	):bool {
-		$i = 0;
-
-		do {
-			$char = $document[$i];
-			$i++;
-		}while(trim($char) === "");
-
-		for($i = 0; $i < strlen($firstCharMatch); $i++) {
-			$charMatch = $firstCharMatch[$i];
-			if($char === $charMatch) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * TODO: This function is not yet implemented. It acts as a placeholder until it is
-	 * extracted and implemented in its own repository, ObjectDocument.
-	 */
-	public function loadJSON(string $jsonString):void {
-		$json = json_decode($jsonString);
-
-		foreach($json as $key => $value) {
-			$valueType = gettype($value);
-			$stringValue = $this->getStringValue($valueType, $value);
-
-			$node = $this->createElement($key, $stringValue);
-			$this->appendChild($node);
-		}
 	}
 
 	public function __toString() {

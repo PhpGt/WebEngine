@@ -119,7 +119,9 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$view = $this->getView(
 					$response->getBody(),
 					"",
-					$templateDirectory
+					$templateDirectory,
+					null,
+					$request->getHeaderLine("accept")
 				);
 			}
 		}
