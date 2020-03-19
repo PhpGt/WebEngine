@@ -38,6 +38,6 @@ class LogicPropertyStoreReader extends LogicPropertyStore implements Iterator {
 
 	/** @link https://php.net/manual/en/iterator.valid.php */
 	public function valid():bool {
-		return isset($this->propertyStore->kvp[$this->key()]);
+		return array_key_exists($this->key(), $this->propertyStore->kvp);
 	}
 }
