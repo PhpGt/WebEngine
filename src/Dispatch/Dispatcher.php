@@ -119,7 +119,9 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$view = $this->getView(
 					$response->getBody(),
 					"",
-					$templateDirectory
+					$templateDirectory,
+					null,
+					$request->getHeaderLine("accept")
 				);
 			}
 		}
@@ -291,8 +293,12 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		);
 
 		foreach($propertyStoreReader as $key => $value) {
+			if(is_null($value)) {
+				continue;
+			}
+
 			if(in_array($key, LogicPropertyStoreReader::FORBIDDEN_LOGIC_PROPERTIES)) {
-				// TODO: Throw exception (?)
+// TODO: Throw exception (?)
 				continue;
 			}
 
