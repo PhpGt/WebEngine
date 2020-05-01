@@ -11,6 +11,16 @@
 		}
 	},
 
+	"script/**/*.js": {
+		"require": {
+			"vendor/bin/sync": "*"
+		},
+		"execute": {
+			"command": "vendor/bin/sync",
+			"arguments": ["--pattern", "*.js", "script", "www/script"]
+		}
+	},
+
 	"style/**/*.scss": {
 		"require": {
 			"sass": "*"
@@ -18,6 +28,16 @@
 		"execute": {
 			"command": "sass",
 			"arguments": ["style/main.scss", "www/style.css"]
+		}
+	},
+
+	"style/**/*.css": {
+		"require": {
+			"vendor/bin/sync": "*"
+		},
+		"execute": {
+			"command": "vendor/bin/sync",
+			"arguments": ["--pattern", "*.css", "style", "www/style"]
 		}
 	},
 
