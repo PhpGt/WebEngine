@@ -151,7 +151,9 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			return $response;
 		}
 
-		$this->injectCsrf($view);
+		$token = $this->injectCsrf($view);
+		$response = $response->withHeader("X-CSRF", $token);
+
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
 			return $errorResponse;
@@ -262,13 +264,13 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		}
 	}
 
-	protected function injectCsrf(View $view):void {
+	protected function injectCsrf(View $view):string {
 		if($view instanceof PageView) {
 			$protector = new HTMLDocumentProtector(
 				$view->getViewModel(),
 				$this->csrfProtection
 			);
-			$protector->protectAndInject();
+			return $protector->protectAndInject();
 		}
 	}
 
