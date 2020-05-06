@@ -47,7 +47,6 @@ class Lifecycle implements MiddlewareInterface {
 	 * the Response object, allowing you to manipulate it elsewhere.
 	 */
 	public function start(bool $render = true):ResponseInterface {
-		ini_set("display_errors", true);
 		$server = new ServerInfo($_SERVER);
 
 		$cwd = dirname($server->getDocumentRoot());
