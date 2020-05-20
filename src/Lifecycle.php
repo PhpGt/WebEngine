@@ -29,19 +29,20 @@ use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
 
 /**
- * The fundamental purpose of any PHP framework is to provide a mechanism for generating an
- * HTTP response for an incoming HTTP request. Because this is such a common requirement, the
- * PHP Framework Interop Group have specified a "PHP standards recommendation" (PSR) to help
- * define the expected contract between the components of a web framework. The PSR that defines
- * the common interfaces for HTTP server request handlers is PSR-15.
+ * The fundamental purpose of any PHP framework is to provide a mechanism for
+ * generating an HTTP response for an incoming HTTP request. Because this is
+ * such a common requirement, the PHP Framework Interop Group have specified a
+ * "PHP standards recommendation" (PSR) to help define the expected contract
+ * between the components of a web framework. The PSR that defines the common
+ * interfaces for HTTP server request handlers is PSR-15.
  *
  * @see https://github.com/PhpGt/WebEngine/wiki/HTTP-Middleware
  * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-15-request-handlers.md
  */
 class Lifecycle implements MiddlewareInterface {
 	/**
-	 * The start of the application's lifecycle. This function breaks the lifecycle down
-	 * into its different functions, in order.
+	 * The start of the application's lifecycle. This function breaks the
+	 * lifecycle down into its different functions, in order.
 	 *
 	 * @param bool $render Set to false and the Lifecycle will not render
 	 * the Response object, allowing you to manipulate it elsewhere.
@@ -205,7 +206,7 @@ class Lifecycle implements MiddlewareInterface {
 		TokenStore $csrfProtection,
 		Headers $headers
 	):Dispatcher {
-		$dispatcher = DispatcherFactory::create(
+		return DispatcherFactory::create(
 			$config,
 			$serverInfo,
 			$input,
@@ -216,7 +217,6 @@ class Lifecycle implements MiddlewareInterface {
 			$csrfProtection,
 			$headers
 		);
-		return $dispatcher;
 	}
 
 	/**
