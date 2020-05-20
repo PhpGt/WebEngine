@@ -270,15 +270,17 @@ abstract class Dispatcher implements RequestHandlerInterface {
 	}
 
 	protected function injectCsrf(View $view):?string {
+		$token = null;
+
 		if($view instanceof PageView) {
 			$protector = new HTMLDocumentProtector(
 				$view->getViewModel(),
 				$this->csrfProtection
 			);
-			return $protector->protectAndInject();
+			$token = $protector->protectAndInject();
 		}
 
-		return null;
+		return $token;
 	}
 
 	protected function httpErrorResponse(
