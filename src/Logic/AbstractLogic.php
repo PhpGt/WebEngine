@@ -8,6 +8,11 @@ use Gt\Http\Header\Headers;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
+use Gt\WebEngine\HttpException\HttpFound;
+use Gt\WebEngine\HttpException\HttpMovedPermanently;
+use Gt\WebEngine\HttpException\HttpPermanentRedirect;
+use Gt\WebEngine\HttpException\HttpSeeOther;
+use Gt\WebEngine\HttpException\HttpTemporaryRedirect;
 
 abstract class AbstractLogic {
 	protected $viewModel;
@@ -96,9 +101,31 @@ abstract class AbstractLogic {
 	protected function redirect(string $uri, int $code = 303):void {
 		header(
 			"Location: $uri",
-			true
+			true,
+			$code
 		);
-		http_response_code($code);
+
+		switch($code) {
+		case 301:
+			$exception = HttpMovedPermanently::class;
+			break;
+		case 302:
+			$exception = HttpFound::class;
+			break;
+		case 303:
+			$exception = HttpSeeOther::class;
+			break;
+		case 307:
+			$exception = HttpTemporaryRedirect::class;
+			break;
+		case 308:
+			$exception = HttpPermanentRedirect::class;
+			break;
+		default:
+			throw new RedirectCodeNotImplementedException($code);
+		}
+
+		throw new $exception($uri, $code);
 	}
 
 	protected function getDynamicPathParameter(string $parameter):?string {

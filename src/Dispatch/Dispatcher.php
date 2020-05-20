@@ -222,39 +222,24 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			|| $setupLogic instanceof PageSetup) {
 				$setupLogic->go();
 				unset($logicObjects[$i]);
-				$this->throwOnRedirect();
 			}
 		}
 
 		foreach($logicObjects as $logic) {
 			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
-			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->handleDo();
-			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->go();
-			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->after();
-			$this->throwOnRedirect();
-		}
-	}
-
-	protected function throwOnRedirect():void {
-		$code = http_response_code();
-		if($code === StatusCode::MOVED_PERMANENTLY
-		|| $code === StatusCode::FOUND
-		|| $code === StatusCode::SEE_OTHER
-		|| $code === StatusCode::TEMPORARY_REDIRECT) {
-			throw new HttpRedirectException($code);
 		}
 	}
 

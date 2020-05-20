@@ -1,5 +1,5 @@
 <?php
-namespace Gt\WebEngine\HttpError;
+namespace Gt\WebEngine\HttpException;
 
 use Gt\WebEngine\WebEngineException;
 
