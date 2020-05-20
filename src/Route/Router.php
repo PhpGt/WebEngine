@@ -139,28 +139,6 @@ abstract class Router {
 		return $subPath;
 	}
 
-	protected function getBasenameForUri(string $uri):string {
-die("DEAD FUNCTION?");
-		$pageDirPath = $this->getBaseViewLogicPath();
-		$subDirPath = $this->getViewLogicSubPath($uri);
-		$fileBasename = $this->getViewLogicBasename($uri);
-
-		$absolutePath = $pageDirPath . $subDirPath . "/" . $fileBasename;
-		$lastSlashPosition = strrpos(
-			$subDirPath,
-			DIRECTORY_SEPARATOR
-		);
-
-		if(Path::isDynamic($absolutePath)) {
-			$fileBasename = substr(
-				$absolutePath,
-				$lastSlashPosition + 1
-			);
-		}
-
-		return $fileBasename;
-	}
-
 	/**
 	 * The view-logic sub-path is the path on disk to the directory containing the requested
 	 * View and Logic files, relative to the base view-logic path.
