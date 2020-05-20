@@ -17,8 +17,6 @@ class ApiDispatcher extends Dispatcher {
 		string $type = null
 	):View {
 		$object = new ObjectDocument($body, $type);
-
-		$view = new ApiView($outputStream, $object);
-		return $view;
+		return new ApiView($outputStream, $object);
 	}
 }

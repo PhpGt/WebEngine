@@ -2,7 +2,6 @@
 namespace Gt\WebEngine\Route;
 
 use Gt\WebEngine\FileSystem\Assembly;
-use Gt\WebEngine\FileSystem\Path;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -84,7 +83,7 @@ abstract class Router {
 	}
 
 	public function getViewAssembly():Assembly {
-		$assembly = new Assembly(
+		return new Assembly(
 			$this->baseViewLogicPath,
 			$this->viewLogicPath,
 			$this->viewLogicBasename,
@@ -93,12 +92,10 @@ abstract class Router {
 			static::VIEW_AFTER,
 			true
 		);
-
-		return $assembly;
 	}
 
 	public function getLogicAssembly():Assembly {
-		$assembly = new Assembly(
+		return new Assembly(
 			$this->baseViewLogicPath,
 			$this->viewLogicPath,
 			$this->viewLogicBasename,
@@ -106,62 +103,10 @@ abstract class Router {
 			static::LOGIC_BEFORE,
 			static::LOGIC_AFTER
 		);
-		return $assembly;
 	}
 
 	public function getContentType():string {
 		return $this->contentType;
-	}
-
-	protected function getDirectoryForUri(string $uri):string {
-		$basePath = $this->getBaseViewLogicPath();
-		$subPath = $this->getViewLogicSubPath($uri);
-		$absolutePath = $basePath . $subPath;
-
-		if(Path::isDynamic($absolutePath)) {
-			$lastSlashPosition = strrpos(
-				$subPath,
-				DIRECTORY_SEPARATOR
-			);
-			$subPath = substr(
-				$subPath,
-				0,
-				$lastSlashPosition
-			);
-		}
-
-// Note: use of forward slash here is correct due to working with URL, not directory path.
-		$subPath = str_replace(
-			"/",
-			DIRECTORY_SEPARATOR,
-			$subPath
-		);
-		return $subPath;
-	}
-
-	/**
-	 * The view-logic sub-path is the path on disk to the directory containing the requested
-	 * View and Logic files, relative to the base view-logic path.
-	 */
-	protected function getViewLogicSubPath(string $uriPath):string {
-		$uriPath = str_replace(
-			"/",
-			DIRECTORY_SEPARATOR,
-			$uriPath
-		);
-		$baseViewLogicPath = $this->getBaseViewLogicPath();
-		$absolutePath = $baseViewLogicPath . $uriPath;
-
-		if(!is_dir($absolutePath)) {
-			$absolutePath = dirname($absolutePath);
-		}
-
-		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
-		if(strlen($relativePath) >= 1) {
-			$relativePath = rtrim($relativePath, DIRECTORY_SEPARATOR);
-		}
-
-		return $relativePath;
 	}
 
 	protected function getViewLogicBasename(UriInterface $uri):?string {
@@ -188,15 +133,6 @@ abstract class Router {
 		}
 
 		return $basename;
-	}
-
-	/**
-	 * Can the absolute path be addressable via a URI
-	 * as a file OR directory?
-	 */
-	protected function isAddressable(string $absolutePath):bool {
-		return $this->isAddressableFile($absolutePath)
-			|| $this->isAddressableDir($absolutePath);
 	}
 
 	protected function isAddressableFile(string $absolutePath):bool {
@@ -258,7 +194,6 @@ abstract class Router {
 			}
 		}
 
-		$relativePath = substr($absolutePath, strlen($this->baseViewLogicPath));
-		return $relativePath;
+		return substr($absolutePath, strlen($this->baseViewLogicPath));
 	}
 }
