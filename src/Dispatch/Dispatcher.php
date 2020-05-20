@@ -180,16 +180,12 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		string $type = null
 	):View;
 
-	protected abstract function getBaseLogicDirectory(string $docRoot):string;
-
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
 		$bodyContent = file_get_contents($viewFile);
 		$body->write($bodyContent);
 	}
 
-	/**
-	 * @return AbstractLogic[]
-	 */
+	/** @return AbstractLogic[] */
 	protected function createLogicObjects(
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
@@ -216,9 +212,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		return $logicObjects;
 	}
 
-	/**
-	 * @param AbstractLogic[] $logicObjects
-	 */
+	/** @param AbstractLogic[] $logicObjects */
 	protected function dispatchLogicObjects(
 		array $logicObjects,
 		LogicPropertyStore $logicPropertyStore

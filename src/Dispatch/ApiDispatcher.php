@@ -21,8 +21,4 @@ class ApiDispatcher extends Dispatcher {
 		$view = new ApiView($outputStream, $object);
 		return $view;
 	}
-
-	protected function getBaseLogicDirectory(string $docRoot):string {
-		return Path::getApiDirectory($docRoot);
-	}
 }
