@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\Test\Logic;
 
 use Gt\Http\Header\Headers;
+use Gt\WebEngine\HttpException\HttpSeeOther;
 use PHPUnit\Framework\TestCase;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
@@ -164,12 +165,8 @@ class ApiTest extends TestCase {
 			}
 		};
 
-		Override::replace("header", __DIR__);
+		self::expectException(HttpSeeOther::class);
 		$sut->doTestReload();
-		self::assertEquals(
-			1,
-			Override::getNumCalls("header")
-		);
 	}
 
 	public function testGetDynamicPathParameter() {
