@@ -7,9 +7,8 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
-use Gt\Http\HttpRedirectException;
+use Gt\Http\ResponseStatusException\AbstractResponseStatusException;
 use Gt\Http\ServerInfo;
-use Gt\Http\StatusCode;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
@@ -146,8 +145,20 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$this->logicPropertyStore
 			);
 		}
-		catch(HttpRedirectException $exception) {
-			$response = $response->withStatus(http_response_code());
+		catch(AbstractResponseStatusException $exception) {
+			$response = $response->withStatus($exception->getHttpCode());
+			if(preg_match(
+				"/(?P<HEADER_KEY>\S+): (?P<HEADER_VALUE>\S+)/",
+				$exception->getMessage(),
+				$matches)
+			) {
+				var_dump($matches);die();
+				$response = $response->withHeader(
+					$matches["HEADER_KEY"],
+					$matches["HEADER_VALUE"]
+				);
+			}
+
 			return $response;
 		}
 
