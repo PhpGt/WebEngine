@@ -14,9 +14,7 @@ class Assembly implements Iterator {
 	protected $assemblyParts;
 	protected $iteratorKey;
 
-	/**
-	 * @throws BasenameNotFoundException
-	 */
+	/** @throws BasenameNotFoundException */
 	public function __construct(
 		string $basePath,
 		string $directory,
@@ -91,11 +89,13 @@ class Assembly implements Iterator {
 		bool $after = true
 	):array {
 		$parts = [];
+		$beforeParts = [];
+		$afterParts = [];
 
 		if($before) {
 			foreach($this->lookupBefore as $lookup) {
-				$parts = array_merge(
-					$parts,
+				$beforeParts = array_merge(
+					$beforeParts,
 					$this->findInDirectory(
 						$lookup,
 						true
@@ -104,18 +104,15 @@ class Assembly implements Iterator {
 			}
 		}
 
-		$parts = array_merge(
-			$parts,
-			$this->findInDirectory(
-				$this->basename,
-				false
-			)
+		$parts = $this->findInDirectory(
+			$this->basename,
+			false
 		);
 
 		if($after) {
 			foreach($this->lookupAfter as $lookup) {
-				$parts = array_merge(
-					$parts,
+				$afterParts = array_merge(
+					$afterParts,
 					$this->findInDirectory(
 						$lookup,
 						true
@@ -124,6 +121,23 @@ class Assembly implements Iterator {
 			}
 		}
 
+		$sortFnDeeperPathFirst = function(string $a, string $b) {
+			return substr_count($a, "/")
+				> substr_count($b, "/");
+		};
+		$sortFnDeeperPathLast = function(string $a, string $b) {
+			return substr_count($a, "/")
+				> substr_count($b, "/");
+		};
+
+		usort($beforeParts, $sortFnDeeperPathLast);
+		usort($afterParts, $sortFnDeeperPathFirst);
+
+		$parts = array_merge(
+			$beforeParts,
+			$parts,
+			$afterParts
+		);
 
 		$parts = array_filter($parts);
 		$parts = array_unique($parts);
