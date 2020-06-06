@@ -482,16 +482,16 @@
         },
         {
             "name": "phpgt/csrf",
-            "version": "v1.6.0",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "8eae62f62c49d429781422b05797ca7832e5e96b"
+                "reference": "f98b9eb71201bbc7ee94ad81b1fe13bde292cdd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/8eae62f62c49d429781422b05797ca7832e5e96b",
-                "reference": "8eae62f62c49d429781422b05797ca7832e5e96b",
+                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/f98b9eb71201bbc7ee94ad81b1fe13bde292cdd6",
+                "reference": "f98b9eb71201bbc7ee94ad81b1fe13bde292cdd6",
                 "shasum": ""
             },
             "require": {
@@ -525,7 +525,7 @@
                 }
             ],
             "description": "Automatic protection from Cross-Site Request Forgery.",
-            "time": "2019-07-08T10:45:44+00:00"
+            "time": "2020-05-06T17:44:52+00:00"
         },
         {
             "name": "phpgt/cssxpath",
