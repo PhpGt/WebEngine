@@ -701,16 +701,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v2.1.5",
+            "version": "v2.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d"
+                "reference": "fceb86cdb32e846178f75b7f9806d2b77635a879"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d",
-                "reference": "42846f6f5d2c3e656245fb8afe7bfa92ebfd7f4d",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/fceb86cdb32e846178f75b7f9806d2b77635a879",
+                "reference": "fceb86cdb32e846178f75b7f9806d2b77635a879",
                 "shasum": ""
             },
             "require": {
@@ -778,7 +778,7 @@
                 }
             ],
             "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2019-11-25T17:01:04+00:00"
+            "time": "2020-01-15T08:28:10+00:00"
         },
         {
             "name": "phpgt/domtemplate",
