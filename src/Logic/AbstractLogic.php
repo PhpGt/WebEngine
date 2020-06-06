@@ -5,14 +5,14 @@ use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
+use Gt\Http\ResponseStatusException\Redirection\HttpFound;
+use Gt\Http\ResponseStatusException\Redirection\HttpMovedPermanently;
+use Gt\Http\ResponseStatusException\Redirection\HttpPermanentRedirect;
+use Gt\Http\ResponseStatusException\Redirection\HttpSeeOther;
+use Gt\Http\ResponseStatusException\Redirection\HttpTemporaryRedirect;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
-use Gt\WebEngine\HttpException\HttpFound;
-use Gt\WebEngine\HttpException\HttpMovedPermanently;
-use Gt\WebEngine\HttpException\HttpPermanentRedirect;
-use Gt\WebEngine\HttpException\HttpSeeOther;
-use Gt\WebEngine\HttpException\HttpTemporaryRedirect;
 
 abstract class AbstractLogic {
 	protected $viewModel;
@@ -99,12 +99,6 @@ abstract class AbstractLogic {
 	}
 
 	protected function redirect(string $uri, int $code = 303):void {
-		header(
-			"Location: $uri",
-			true,
-			$code
-		);
-
 		switch($code) {
 		case 301:
 			$exception = HttpMovedPermanently::class;

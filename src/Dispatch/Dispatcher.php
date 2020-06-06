@@ -8,6 +8,9 @@ use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
 use Gt\Http\ResponseStatusException\AbstractResponseStatusException;
+use Gt\Http\ResponseStatusException\ClientError\AbstractClientErrorException;
+use Gt\Http\ResponseStatusException\Redirection\AbstractRedirectionException;
+use Gt\Http\ResponseStatusException\ServerError\AbstractServerErrorException;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -109,7 +112,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 				$request->getHeaderLine("accept")
 			);
 		}
-		catch(BasenameNotFoundException $exception) {
+		catch(BasenameNotFoundException $httpException) {
 			http_response_code(404);
 		}
 		finally {
@@ -139,27 +142,48 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$this->logicPropertyStore
 		);
 
+/*
+ * Within the logic objects, code can throw HttpExceptions, such as HttpNotFound,
+ * HttpForbidden, HttpTemporaryRedirect, etc. This try-catch-finally block will
+ * handle any HttpExceptions thrown from the logic objects, but this is not the
+ * only place where these exceptions can be thrown. For example, any syntax error
+ * or runtime error can still generate exceptions, which will be caught upstream
+ * and replaced with a relevant server error exception.
+ *
+ * NOTE: The catch blocks return the updated response object, The finally
+ * block updates the response with the status code of the exception before it
+ * is returned, if one is thrown.
+ */
+		$httpException = null;
 		try {
 			$this->dispatchLogicObjects(
 				$logicObjects,
 				$this->logicPropertyStore
 			);
 		}
-		catch(AbstractResponseStatusException $exception) {
-			$response = $response->withStatus($exception->getHttpCode());
-			if(preg_match(
-				"/(?P<HEADER_KEY>\S+): (?P<HEADER_VALUE>\S+)/",
-				$exception->getMessage(),
-				$matches)
-			) {
-				var_dump($matches);die();
-				$response = $response->withHeader(
-					$matches["HEADER_KEY"],
-					$matches["HEADER_VALUE"]
+		catch(AbstractRedirectionException $httpException) {
+			return $response->withHeader(
+				"Location",
+				$httpException->getMessage()
+			);
+		}
+		catch(AbstractClientErrorException $httpException) {
+			$code = $httpException->getHttpCode();
+			die("CLIENT ERROR! What's that -- $code?");
+		}
+		catch(AbstractServerErrorException $httpException) {
+			$code = $httpException->getHttpCode();
+			die("SERVER ERROR! What's that -- $code?");
+		}
+		catch(AbstractResponseStatusException $httpException) {
+			die("EXCEPTIONAL!");
+		}
+		finally {
+			if($httpException) {
+				$response = $response->withStatus(
+					$httpException->getHttpCode()
 				);
 			}
-
-			return $response;
 		}
 
 		if($token = $this->injectCsrf($view)) {
