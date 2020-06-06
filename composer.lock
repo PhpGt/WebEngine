@@ -1015,16 +1015,16 @@
         },
         {
             "name": "phpgt/session",
-            "version": "v1.0.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Session.git",
-                "reference": "f198c9f5fe9248272c7629b50f87ef9d3092904a"
+                "reference": "512f10d8cc6447c9d5248bac40e211d0975dfb79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Session/zipball/f198c9f5fe9248272c7629b50f87ef9d3092904a",
-                "reference": "f198c9f5fe9248272c7629b50f87ef9d3092904a",
+                "url": "https://api.github.com/repos/PhpGt/Session/zipball/512f10d8cc6447c9d5248bac40e211d0975dfb79",
+                "reference": "512f10d8cc6447c9d5248bac40e211d0975dfb79",
                 "shasum": ""
             },
             "require": {
@@ -1044,7 +1044,7 @@
                 "MIT"
             ],
             "description": "Encapsulated user sessions.",
-            "time": "2019-06-10T08:12:52+00:00"
+            "time": "2020-04-10T19:24:45+00:00"
         },
         {
             "name": "phpgt/sync",
