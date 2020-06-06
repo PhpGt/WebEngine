@@ -447,16 +447,16 @@
         },
         {
             "name": "phpgt/cron",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Cron.git",
-                "reference": "349d478b97ae6e99d16e651b034e0198eba1e8dd"
+                "reference": "43c76a258779f4ec91afd9714072dc199042fa76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Cron/zipball/349d478b97ae6e99d16e651b034e0198eba1e8dd",
-                "reference": "349d478b97ae6e99d16e651b034e0198eba1e8dd",
+                "url": "https://api.github.com/repos/PhpGt/Cron/zipball/43c76a258779f4ec91afd9714072dc199042fa76",
+                "reference": "43c76a258779f4ec91afd9714072dc199042fa76",
                 "shasum": ""
             },
             "require": {
@@ -478,7 +478,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Run scripts or static functions at regular intervals.",
-            "time": "2019-05-31T16:39:38+00:00"
+            "time": "2020-02-20T16:55:22+00:00"
         },
         {
             "name": "phpgt/csrf",
