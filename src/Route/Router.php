@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\Route;
 
+use Gt\Http\ResponseStatusException\Redirection\HttpSeeOther;
 use Gt\WebEngine\FileSystem\Assembly;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -51,12 +52,7 @@ abstract class Router {
 	public function redirectInvalidPaths(string $uri):void {
 		if(strlen($uri) > 1
 		&& substr($uri, -1) === "/") {
-			header(
-				"Location: " . rtrim($uri, "/"),
-				true,
-				303
-			);
-			return;
+			throw new HttpSeeOther(rtrim($uri, "/"));
 		}
 
 		if($this->viewLogicBasename !== self::DEFAULT_BASENAME) {
@@ -75,11 +71,7 @@ abstract class Router {
 			$uri = "/";
 		}
 
-		header(
-			"Location: $uri",
-			true,
-			303
-		);
+		throw new HttpSeeOther($uri);
 	}
 
 	public function getViewAssembly():Assembly {
@@ -89,8 +81,7 @@ abstract class Router {
 			$this->viewLogicBasename,
 			static::VIEW_EXTENSIONS,
 			static::VIEW_BEFORE,
-			static::VIEW_AFTER,
-			true
+			static::VIEW_AFTER
 		);
 	}
 
@@ -107,6 +98,11 @@ abstract class Router {
 
 	public function getContentType():string {
 		return $this->contentType;
+	}
+
+	public function overrideUri(UriInterface $uri) {
+		$this->viewLogicPath = $this->getViewLogicPath($uri);
+		$this->viewLogicBasename = $this->getViewLogicBasename($uri);
 	}
 
 	protected function getViewLogicBasename(UriInterface $uri):?string {

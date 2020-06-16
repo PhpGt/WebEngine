@@ -7,10 +7,6 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
-use Gt\Http\ResponseStatusException\AbstractResponseStatusException;
-use Gt\Http\ResponseStatusException\ClientError\AbstractClientErrorException;
-use Gt\Http\ResponseStatusException\Redirection\AbstractRedirectionException;
-use Gt\Http\ResponseStatusException\ServerError\AbstractServerErrorException;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
@@ -101,32 +97,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			"_component",
 		]);
 
-		try {
-			$this->router->redirectInvalidPaths($uriPath);
-			$viewAssembly = $this->router->getViewAssembly();
-			$view = $this->getView(
-				$response->getBody(),
-				(string)$viewAssembly,
-				$templateDirectory,
-				$uriPath,
-				$request->getHeaderLine("accept")
-			);
-		}
-		catch(BasenameNotFoundException $httpException) {
-			http_response_code(404);
-		}
-		finally {
-// Set an empty view if we have a 404.
-			if(is_null($view)) {
-				$view = $this->getView(
-					$response->getBody(),
-					"",
-					$templateDirectory,
-					null,
-					$request->getHeaderLine("accept")
-				);
-			}
-		}
+		$this->router->redirectInvalidPaths($uriPath);
+		$viewAssembly = $this->router->getViewAssembly();
+		$view = $this->getView(
+			$response->getBody(),
+			(string)$viewAssembly,
+			$templateDirectory,
+			$uriPath,
+			$request->getHeaderLine("accept")
+		);
 
 		$this->logicFactory->setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
@@ -142,6 +121,11 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$this->logicPropertyStore
 		);
 
+		if(!$logicAssembly->basenameExists()
+		&& !$viewAssembly->basenameExists()) {
+			throw new BasenameNotFoundException($uriPath);
+		}
+
 /*
  * Within the logic objects, code can throw HttpExceptions, such as HttpNotFound,
  * HttpForbidden, HttpTemporaryRedirect, etc. This try-catch-finally block will
@@ -150,41 +134,18 @@ abstract class Dispatcher implements RequestHandlerInterface {
  * or runtime error can still generate exceptions, which will be caught upstream
  * and replaced with a relevant server error exception.
  *
+ * Each catch block catches a different type of exception individually so that
+ * different behaviour can be applied for logging/headers/etc.
+ *
  * NOTE: The catch blocks return the updated response object, The finally
  * block updates the response with the status code of the exception before it
  * is returned, if one is thrown.
  */
 		$httpException = null;
-		try {
-			$this->dispatchLogicObjects(
-				$logicObjects,
-				$this->logicPropertyStore
-			);
-		}
-		catch(AbstractRedirectionException $httpException) {
-			return $response->withHeader(
-				"Location",
-				$httpException->getMessage()
-			);
-		}
-		catch(AbstractClientErrorException $httpException) {
-			$code = $httpException->getHttpCode();
-			die("CLIENT ERROR! What's that -- $code?");
-		}
-		catch(AbstractServerErrorException $httpException) {
-			$code = $httpException->getHttpCode();
-			die("SERVER ERROR! What's that -- $code?");
-		}
-		catch(AbstractResponseStatusException $httpException) {
-			die("EXCEPTIONAL!");
-		}
-		finally {
-			if($httpException) {
-				$response = $response->withStatus(
-					$httpException->getHttpCode()
-				);
-			}
-		}
+		$this->dispatchLogicObjects(
+			$logicObjects,
+			$this->logicPropertyStore
+		);
 
 		if($token = $this->injectCsrf($view)) {
 			$response = $response->withHeader("X-CSRF", $token);
@@ -205,6 +166,10 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$this->router->getContentType()
 		);
 		return $response;
+	}
+
+	public function overrideRouterUri(UriInterface $uri):void {
+		$this->router->overrideUri($uri);
 	}
 
 	/** @throws BasenameNotFoundException */

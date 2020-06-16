@@ -14,6 +14,9 @@ class Assembly implements Iterator {
 	protected $assemblyParts;
 	protected $iteratorKey;
 
+	/** @var bool */
+	protected $basenameExists;
+
 	/** @throws BasenameNotFoundException */
 	public function __construct(
 		string $basePath,
@@ -37,9 +40,9 @@ class Assembly implements Iterator {
 		$before = true;
 		$after = true;
 
-		if($basenameMustExist) {
-			$basenamePath = $this->findInDirectory($basename)[0] ?? null;
+		$basenamePath = $this->findInDirectory($basename)[0] ?? null;
 
+		if($basenameMustExist) {
 			if(is_null($basenamePath)) {
 				throw new BasenameNotFoundException($basename);
 			}
@@ -68,6 +71,8 @@ class Assembly implements Iterator {
 			}
 		}
 
+		$this->basenameExists = !is_null($basenamePath);
+
 		$this->assemblyParts = $this->getAssemblyParts(
 			$before,
 			$after
@@ -82,6 +87,10 @@ class Assembly implements Iterator {
 		}
 
 		return $string;
+	}
+
+	public function basenameExists():bool {
+		return $this->basenameExists;
 	}
 
 	protected function getAssemblyParts(

@@ -10,8 +10,13 @@ use Gt\Csrf\TokenStore;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
+use Gt\Http\Response;
+use Gt\Http\ResponseStatusException\AbstractResponseStatusException;
+use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
+use Gt\Http\ResponseStatusException\Redirection\AbstractRedirectionException;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
+use Gt\WebEngine\FileSystem\BasenameNotFoundException;
 use Gt\WebEngine\Route\PageRouter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,6 +32,7 @@ use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
+use RuntimeException;
 
 /**
  * The fundamental purpose of any PHP framework is to provide a mechanism for
@@ -117,19 +123,51 @@ class Lifecycle implements MiddlewareInterface {
 			);
 		}
 
-		$dispatcher = $this->createDispatcher(
-			$config,
-			$server,
-			$input,
-			$cookie,
-			$sessionHandler,
-			$database,
-			$router,
-			$csrfProtection,
-			new Headers($request->getHeaders())
-		);
+		try {
+			$dispatcher = $this->createDispatcher(
+				$config,
+				$server,
+				$input,
+				$cookie,
+				$sessionHandler,
+				$database,
+				$router,
+				$csrfProtection,
+				new Headers($request->getHeaders())
+			);
 
-		$response = $this->process($request, $dispatcher);
+			$response = $this->process($request, $dispatcher);
+		}
+		catch(\Exception $exception) {
+			if($exception instanceof AbstractResponseStatusException) {
+				$code = $exception->getHttpCode();
+			}
+			elseif($exception instanceof BasenameNotFoundException) {
+				$code = 404;
+			}
+			else {
+				$code = 500;
+			}
+
+			$uri = $request->getUri();
+			$dispatcher->overrideRouterUri($uri->withPath("_$code"));
+			try {
+				$response = $this->process($request, $dispatcher);
+			}
+			catch(\Exception $ignoreException) {
+				// TODO: Log exception here.
+				$response = new Response($code);
+			}
+
+			$response = $response->withStatus($code);
+			if($exception instanceof AbstractRedirectionException) {
+				$response = $response->withHeader(
+					"Location",
+					$exception->getMessage()
+				);
+			}
+		}
+
 		return $this->finish($response, $render);
 	}
 
@@ -222,6 +260,7 @@ class Lifecycle implements MiddlewareInterface {
 	/**
 	 * Process an incoming server request and return a response, optionally delegating
 	 * response creation to a handler.
+	 * @throws BasenameNotFoundException
 	 */
 	public function process(
 		ServerRequestInterface $request,
@@ -240,6 +279,7 @@ class Lifecycle implements MiddlewareInterface {
 		ResponseInterface $response,
 		bool $render = true
 	):ResponseInterface {
+		http_response_code($response->getStatusCode());
 		foreach($response->getHeaders() as $key => $value) {
 			header("$key: $value");
 		}
