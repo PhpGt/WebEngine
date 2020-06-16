@@ -41,12 +41,6 @@ class PageDispatcher extends Dispatcher {
 			}
 		}
 
-		$view = new PageView($outputStream, $document);
-		return $view;
-	}
-
-	protected function getBaseLogicDirectory(string $docRoot):string {
-die("I THINK THIS METHOD IS DEAD.");
-		return Path::getPageDirectory($docRoot);
+		return new PageView($outputStream, $document);
 	}
 }

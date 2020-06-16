@@ -14,9 +14,10 @@ class Assembly implements Iterator {
 	protected $assemblyParts;
 	protected $iteratorKey;
 
-	/**
-	 * @throws BasenameNotFoundException
-	 */
+	/** @var bool */
+	protected $basenameExists;
+
+	/** @throws BasenameNotFoundException */
 	public function __construct(
 		string $basePath,
 		string $directory,
@@ -39,9 +40,9 @@ class Assembly implements Iterator {
 		$before = true;
 		$after = true;
 
-		if($basenameMustExist) {
-			$basenamePath = $this->findInDirectory($basename)[0] ?? null;
+		$basenamePath = $this->findInDirectory($basename)[0] ?? null;
 
+		if($basenameMustExist) {
 			if(is_null($basenamePath)) {
 				throw new BasenameNotFoundException($basename);
 			}
@@ -70,6 +71,8 @@ class Assembly implements Iterator {
 			}
 		}
 
+		$this->basenameExists = !is_null($basenamePath);
+
 		$this->assemblyParts = $this->getAssemblyParts(
 			$before,
 			$after
@@ -86,16 +89,22 @@ class Assembly implements Iterator {
 		return $string;
 	}
 
+	public function basenameExists():bool {
+		return $this->basenameExists;
+	}
+
 	protected function getAssemblyParts(
 		bool $before = true,
 		bool $after = true
 	):array {
 		$parts = [];
+		$beforeParts = [];
+		$afterParts = [];
 
 		if($before) {
 			foreach($this->lookupBefore as $lookup) {
-				$parts = array_merge(
-					$parts,
+				$beforeParts = array_merge(
+					$beforeParts,
 					$this->findInDirectory(
 						$lookup,
 						true
@@ -104,18 +113,15 @@ class Assembly implements Iterator {
 			}
 		}
 
-		$parts = array_merge(
-			$parts,
-			$this->findInDirectory(
-				$this->basename,
-				false
-			)
+		$parts = $this->findInDirectory(
+			$this->basename,
+			false
 		);
 
 		if($after) {
 			foreach($this->lookupAfter as $lookup) {
-				$parts = array_merge(
-					$parts,
+				$afterParts = array_merge(
+					$afterParts,
 					$this->findInDirectory(
 						$lookup,
 						true
@@ -124,6 +130,23 @@ class Assembly implements Iterator {
 			}
 		}
 
+		$sortFnDeeperPathFirst = function(string $a, string $b) {
+			return substr_count($a, "/")
+				> substr_count($b, "/");
+		};
+		$sortFnDeeperPathLast = function(string $a, string $b) {
+			return substr_count($a, "/")
+				> substr_count($b, "/");
+		};
+
+		usort($beforeParts, $sortFnDeeperPathLast);
+		usort($afterParts, $sortFnDeeperPathFirst);
+
+		$parts = array_merge(
+			$beforeParts,
+			$parts,
+			$afterParts
+		);
 
 		$parts = array_filter($parts);
 		$parts = array_unique($parts);

@@ -1,8 +1,8 @@
 <?php
 namespace Gt\WebEngine\Route;
 
+use Gt\Http\ResponseStatusException\Redirection\HttpSeeOther;
 use Gt\WebEngine\FileSystem\Assembly;
-use Gt\WebEngine\FileSystem\Path;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -52,12 +52,7 @@ abstract class Router {
 	public function redirectInvalidPaths(string $uri):void {
 		if(strlen($uri) > 1
 		&& substr($uri, -1) === "/") {
-			header(
-				"Location: " . rtrim($uri, "/"),
-				true,
-				303
-			);
-			return;
+			throw new HttpSeeOther(rtrim($uri, "/"));
 		}
 
 		if($this->viewLogicBasename !== self::DEFAULT_BASENAME) {
@@ -76,29 +71,22 @@ abstract class Router {
 			$uri = "/";
 		}
 
-		header(
-			"Location: $uri",
-			true,
-			303
-		);
+		throw new HttpSeeOther($uri);
 	}
 
 	public function getViewAssembly():Assembly {
-		$assembly = new Assembly(
+		return new Assembly(
 			$this->baseViewLogicPath,
 			$this->viewLogicPath,
 			$this->viewLogicBasename,
 			static::VIEW_EXTENSIONS,
 			static::VIEW_BEFORE,
-			static::VIEW_AFTER,
-			true
+			static::VIEW_AFTER
 		);
-
-		return $assembly;
 	}
 
 	public function getLogicAssembly():Assembly {
-		$assembly = new Assembly(
+		return new Assembly(
 			$this->baseViewLogicPath,
 			$this->viewLogicPath,
 			$this->viewLogicBasename,
@@ -106,84 +94,15 @@ abstract class Router {
 			static::LOGIC_BEFORE,
 			static::LOGIC_AFTER
 		);
-		return $assembly;
 	}
 
 	public function getContentType():string {
 		return $this->contentType;
 	}
 
-	protected function getDirectoryForUri(string $uri):string {
-		$basePath = $this->getBaseViewLogicPath();
-		$subPath = $this->getViewLogicSubPath($uri);
-		$absolutePath = $basePath . $subPath;
-
-		if(Path::isDynamic($absolutePath)) {
-			$lastSlashPosition = strrpos(
-				$subPath,
-				DIRECTORY_SEPARATOR
-			);
-			$subPath = substr(
-				$subPath,
-				0,
-				$lastSlashPosition
-			);
-		}
-
-// Note: use of forward slash here is correct due to working with URL, not directory path.
-		$subPath = str_replace(
-			"/",
-			DIRECTORY_SEPARATOR,
-			$subPath
-		);
-		return $subPath;
-	}
-
-	protected function getBasenameForUri(string $uri):string {
-die("DEAD FUNCTION?");
-		$pageDirPath = $this->getBaseViewLogicPath();
-		$subDirPath = $this->getViewLogicSubPath($uri);
-		$fileBasename = $this->getViewLogicBasename($uri);
-
-		$absolutePath = $pageDirPath . $subDirPath . "/" . $fileBasename;
-		$lastSlashPosition = strrpos(
-			$subDirPath,
-			DIRECTORY_SEPARATOR
-		);
-
-		if(Path::isDynamic($absolutePath)) {
-			$fileBasename = substr(
-				$absolutePath,
-				$lastSlashPosition + 1
-			);
-		}
-
-		return $fileBasename;
-	}
-
-	/**
-	 * The view-logic sub-path is the path on disk to the directory containing the requested
-	 * View and Logic files, relative to the base view-logic path.
-	 */
-	protected function getViewLogicSubPath(string $uriPath):string {
-		$uriPath = str_replace(
-			"/",
-			DIRECTORY_SEPARATOR,
-			$uriPath
-		);
-		$baseViewLogicPath = $this->getBaseViewLogicPath();
-		$absolutePath = $baseViewLogicPath . $uriPath;
-
-		if(!is_dir($absolutePath)) {
-			$absolutePath = dirname($absolutePath);
-		}
-
-		$relativePath = substr($absolutePath, strlen($baseViewLogicPath));
-		if(strlen($relativePath) >= 1) {
-			$relativePath = rtrim($relativePath, DIRECTORY_SEPARATOR);
-		}
-
-		return $relativePath;
+	public function overrideUri(UriInterface $uri) {
+		$this->viewLogicPath = $this->getViewLogicPath($uri);
+		$this->viewLogicBasename = $this->getViewLogicBasename($uri);
 	}
 
 	protected function getViewLogicBasename(UriInterface $uri):?string {
@@ -210,15 +129,6 @@ die("DEAD FUNCTION?");
 		}
 
 		return $basename;
-	}
-
-	/**
-	 * Can the absolute path be addressable via a URI
-	 * as a file OR directory?
-	 */
-	protected function isAddressable(string $absolutePath):bool {
-		return $this->isAddressableFile($absolutePath)
-			|| $this->isAddressableDir($absolutePath);
 	}
 
 	protected function isAddressableFile(string $absolutePath):bool {
@@ -280,7 +190,6 @@ die("DEAD FUNCTION?");
 			}
 		}
 
-		$relativePath = substr($absolutePath, strlen($this->baseViewLogicPath));
-		return $relativePath;
+		return substr($absolutePath, strlen($this->baseViewLogicPath));
 	}
 }
