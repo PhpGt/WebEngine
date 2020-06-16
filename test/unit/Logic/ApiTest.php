@@ -2,7 +2,7 @@
 namespace Gt\WebEngine\Test\Logic;
 
 use Gt\Http\Header\Headers;
-use Gt\WebEngine\HttpException\HttpSeeOther;
+use Gt\Http\ResponseStatusException\Redirection\HttpSeeOther;
 use PHPUnit\Framework\TestCase;
 use Gt\Config\Config;
 use Gt\Cookie\CookieHandler;
@@ -13,7 +13,6 @@ use Gt\Session\Session;
 use Gt\WebEngine\Logic\Api;
 use Gt\WebEngine\Logic\DynamicPath;
 use Gt\WebEngine\Refactor\ObjectDocument;
-use Gt\WebEngine\Test\Helper\FunctionOverride\Override;
 use Iterator;
 use stdClass;
 
