@@ -7,9 +7,7 @@ use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\TokenStore;
 use Gt\Database\Database;
 use Gt\Http\Header\Headers;
-use Gt\Http\HttpRedirectException;
 use Gt\Http\ServerInfo;
-use Gt\Http\StatusCode;
 use Gt\Input\Input;
 use Gt\Session\Session;
 use Gt\WebEngine\FileSystem\Assembly;
@@ -99,32 +97,15 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			"_component",
 		]);
 
-		try {
-			$this->router->redirectInvalidPaths($uriPath);
-			$viewAssembly = $this->router->getViewAssembly();
-			$view = $this->getView(
-				$response->getBody(),
-				(string)$viewAssembly,
-				$templateDirectory,
-				$uriPath,
-				$request->getHeaderLine("accept")
-			);
-		}
-		catch(BasenameNotFoundException $exception) {
-			http_response_code(404);
-		}
-		finally {
-// Set an empty view if we have a 404.
-			if(is_null($view)) {
-				$view = $this->getView(
-					$response->getBody(),
-					"",
-					$templateDirectory,
-					null,
-					$request->getHeaderLine("accept")
-				);
-			}
-		}
+		$this->router->redirectInvalidPaths($uriPath);
+		$viewAssembly = $this->router->getViewAssembly();
+		$view = $this->getView(
+			$response->getBody(),
+			(string)$viewAssembly,
+			$templateDirectory,
+			$uriPath,
+			$request->getHeaderLine("accept")
+		);
 
 		$this->logicFactory->setView($view);
 		$baseLogicDirectory = $this->router->getBaseViewLogicPath();
@@ -140,18 +121,36 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			$this->logicPropertyStore
 		);
 
-		try {
-			$this->dispatchLogicObjects(
-				$logicObjects,
-				$this->logicPropertyStore
-			);
-		}
-		catch(HttpRedirectException $exception) {
-			$response = $response->withStatus(http_response_code());
-			return $response;
+		if(!$logicAssembly->basenameExists()
+		&& !$viewAssembly->basenameExists()) {
+			throw new BasenameNotFoundException($uriPath);
 		}
 
-		$this->injectCsrf($view);
+/*
+ * Within the logic objects, code can throw HttpExceptions, such as HttpNotFound,
+ * HttpForbidden, HttpTemporaryRedirect, etc. This try-catch-finally block will
+ * handle any HttpExceptions thrown from the logic objects, but this is not the
+ * only place where these exceptions can be thrown. For example, any syntax error
+ * or runtime error can still generate exceptions, which will be caught upstream
+ * and replaced with a relevant server error exception.
+ *
+ * Each catch block catches a different type of exception individually so that
+ * different behaviour can be applied for logging/headers/etc.
+ *
+ * NOTE: The catch blocks return the updated response object, The finally
+ * block updates the response with the status code of the exception before it
+ * is returned, if one is thrown.
+ */
+		$httpException = null;
+		$this->dispatchLogicObjects(
+			$logicObjects,
+			$this->logicPropertyStore
+		);
+
+		if($token = $this->injectCsrf($view)) {
+			$response = $response->withHeader("X-CSRF", $token);
+		}
+
 		if(!$this->errorHandlingFlag
 		&& $errorResponse = $this->httpErrorResponse($request)) {
 			return $errorResponse;
@@ -169,6 +168,10 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		return $response;
 	}
 
+	public function overrideRouterUri(UriInterface $uri):void {
+		$this->router->overrideUri($uri);
+	}
+
 	/** @throws BasenameNotFoundException */
 	protected abstract function getView(
 		StreamInterface $outputStream,
@@ -178,16 +181,12 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		string $type = null
 	):View;
 
-	protected abstract function getBaseLogicDirectory(string $docRoot):string;
-
 	protected function streamResponse(string $viewFile, StreamInterface $body) {
 		$bodyContent = file_get_contents($viewFile);
 		$body->write($bodyContent);
 	}
 
-	/**
-	 * @return AbstractLogic[]
-	 */
+	/** @return AbstractLogic[] */
 	protected function createLogicObjects(
 		Assembly $logicAssembly,
 		string $baseLogicDirectory,
@@ -214,9 +213,7 @@ abstract class Dispatcher implements RequestHandlerInterface {
 		return $logicObjects;
 	}
 
-	/**
-	 * @param AbstractLogic[] $logicObjects
-	 */
+	/** @param AbstractLogic[] $logicObjects */
 	protected function dispatchLogicObjects(
 		array $logicObjects,
 		LogicPropertyStore $logicPropertyStore
@@ -226,50 +223,37 @@ abstract class Dispatcher implements RequestHandlerInterface {
 			|| $setupLogic instanceof PageSetup) {
 				$setupLogic->go();
 				unset($logicObjects[$i]);
-				$this->throwOnRedirect();
 			}
 		}
 
 		foreach($logicObjects as $logic) {
 			$this->setLogicProperties($logic, $logicPropertyStore);
 			$logic->before();
-			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->handleDo();
-			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->go();
-			$this->throwOnRedirect();
 		}
 
 		foreach($logicObjects as $logic) {
 			$logic->after();
-			$this->throwOnRedirect();
 		}
 	}
 
-	protected function throwOnRedirect():void {
-		$code = http_response_code();
-		if($code === StatusCode::MOVED_PERMANENTLY
-		|| $code === StatusCode::FOUND
-		|| $code === StatusCode::SEE_OTHER
-		|| $code === StatusCode::TEMPORARY_REDIRECT) {
-			throw new HttpRedirectException($code);
-		}
-	}
-
-	protected function injectCsrf(View $view):void {
+	protected function injectCsrf(View $view):?string {
 		if($view instanceof PageView) {
 			$protector = new HTMLDocumentProtector(
 				$view->getViewModel(),
 				$this->csrfProtection
 			);
-			$protector->protectAndInject();
+			return $protector->protectAndInject();
 		}
+
+		return null;
 	}
 
 	protected function httpErrorResponse(

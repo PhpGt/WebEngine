@@ -6,9 +6,7 @@ use Gt\WebEngine\FileSystem\DirectoryWalker;
 use PHPUnit\Framework\TestCase;
 
 class DirectoryWalkerTest extends TestCase {
-	/**
-	 * @dataProvider dataProviderParentExists
-	 */
+	/** @dataProvider dataProviderParentExists */
 	public function testFindParentThatExists(string $directory) {
 // Get a $parent_path further up the tree than the provided $directory:
 		$directoryList = explode(DIRECTORY_SEPARATOR, $directory);

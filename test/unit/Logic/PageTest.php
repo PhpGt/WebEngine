@@ -1,4 +1,4 @@
-<?php /** @noinspection ALL */
+<?php
 
 namespace Gt\WebEngine\Test\Logic;
 
@@ -7,14 +7,12 @@ use Gt\Cookie\CookieHandler;
 use Gt\Database\Database;
 use Gt\DomTemplate\HTMLDocument;
 use Gt\Http\Header\Headers;
+use Gt\Http\ResponseStatusException\Redirection\HttpSeeOther;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Session\Session;
-use Gt\WebEngine\Logic\Api;
 use Gt\WebEngine\Logic\DynamicPath;
 use Gt\WebEngine\Logic\Page;
-use Gt\WebEngine\Refactor\ObjectDocument;
-use Gt\WebEngine\Test\Helper\FunctionOverride\Override;
 use Iterator;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -167,12 +165,8 @@ class PageTest extends TestCase {
 			}
 		};
 
-		Override::replace("header", __DIR__);
+		self::expectException(HttpSeeOther::class);
 		$sut->doTestReload();
-		self::assertEquals(
-			1,
-			Override::getNumCalls("header")
-		);
 	}
 
 	public function testGetDynamicPathParameter() {
