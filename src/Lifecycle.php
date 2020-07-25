@@ -107,7 +107,8 @@ class Lifecycle implements MiddlewareInterface {
 
 		$router = $this->createRouter(
 			$request,
-			$server->getDocumentRoot()
+			$server->getDocumentRoot(),
+			$config->get("app.default_content_type")
 		);
 
 		$csrfProtection = new SessionTokenStore(
@@ -225,8 +226,12 @@ class Lifecycle implements MiddlewareInterface {
 		);
 	}
 
-	public function createRouter(RequestInterface $request, string $documentRoot):Router {
-		$factory = new RouterFactory();
+	public function createRouter(
+		RequestInterface $request,
+		string $documentRoot,
+		string $defaultContentType
+	):Router {
+		$factory = new RouterFactory($defaultContentType);
 		return $factory->create(
 			$request,
 			$documentRoot
