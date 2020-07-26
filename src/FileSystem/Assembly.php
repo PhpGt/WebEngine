@@ -129,13 +129,12 @@ class Assembly implements Iterator {
 			}
 		}
 
-		$sortFnDeeperPathFirst = fn(string $a, string $b)
-			=> substr_count($a, "/") > substr_count($b, "/");
-		$sortFnDeeperPathLast = fn(string $a, string $b)
-			=> substr_count($a, "/") > substr_count($b, "/");
-
-		usort($beforeParts, $sortFnDeeperPathLast);
-		usort($afterParts, $sortFnDeeperPathFirst);
+// Before parts must be in order of outer-inner nested files.
+// After parts must be in order of inner-outer nested files.
+		usort($beforeParts, fn(string $a, string $b)
+			=> substr_count($a, "/") > substr_count($b, "/"));
+		usort($afterParts, fn(string $a, string $b)
+			=> substr_count($a, "/") < substr_count($b, "/"));
 
 		$parts = array_merge(
 			$beforeParts,
