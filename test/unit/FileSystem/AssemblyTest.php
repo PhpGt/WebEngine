@@ -80,6 +80,30 @@ class AssemblyTest extends TestCase {
 		);
 	}
 
+	public function testToStringNestedBefore() {
+		$path = "/nested/example/path";
+		$exampleBeforeStringOuter = "This is BEFORE - outer";
+		$exampleBeforeString = "This is BEFORE";
+		$exampleString = "This is an example";
+		$this->generateAssemblyFiles([
+			$path => $exampleString,
+			"/_before" => $exampleBeforeStringOuter,
+			"/nested/_before" => $exampleBeforeString,
+		]);
+
+		$sut = new Assembly(
+			$this->tmpDir,
+			"/nested/example",
+			"path",
+			["test"],
+			["_before"]
+		);
+		self::assertEquals(
+			$exampleBeforeStringOuter . $exampleBeforeString . $exampleString,
+			$sut
+		);
+	}
+
 	private function generateAssemblyFiles(array $pathContents):void {
 		foreach($pathContents as $path => $content) {
 			$absoluteFilePath = $this->tmpDir . "$path.test";
