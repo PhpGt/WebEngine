@@ -46,6 +46,45 @@ class RouterFactoryTest extends TestCase {
 		);
 	}
 
+	public function testCreateWildcardAcceptHeader() {
+		$uri = self::createMock(Uri::class);
+
+		$request = self::createMock(Request::class);
+		$request->method("getHeaderLine")
+			->with("accept")
+			->willReturn("*/*");
+		$request->method("getUri")
+			->willReturn($uri);
+
+// The accept header should default to text/html if */* is provided.
+		$sut = new RouterFactory();
+		$router = $sut->create($request, "");
+		self::assertInstanceOf(
+			PageRouter::class,
+			$router
+		);
+	}
+
+	public function testCreateWildcardAcceptHeaderWithJsonDefault() {
+		$uri = self::createMock(Uri::class);
+
+		$request = self::createMock(Request::class);
+		$request->method("getHeaderLine")
+			->with("accept")
+			->willReturn("*/*");
+		$request->method("getUri")
+			->willReturn($uri);
+
+// The accept header should default to text/json if */* is provided - this is
+// due to the default value in the config.
+		$sut = new RouterFactory("application/json");
+		$router = $sut->create($request, "");
+		self::assertInstanceOf(
+			ApiRouter::class,
+			$router
+		);
+	}
+
 	public function testCreateTextHtmlAcceptHeader() {
 		$uri = self::createMock(Uri::class);
 		$request = self::createMock(Request::class);

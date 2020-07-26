@@ -17,7 +17,11 @@ class RouterFactory {
 		"application/json" => ApiRouter::class,
 		"application/xml" => ApiRouter::class,
 	];
-	const TYPE_DEFAULT = "text/html";
+	private string $defaultContentType;
+
+	public function __construct(string $defaultContentType = "text/html") {
+		$this->defaultContentType = $defaultContentType;
+	}
 
 	public function create(
 		RequestInterface $request,
@@ -25,7 +29,7 @@ class RouterFactory {
 	):Router {
 		$typeHeader = $request->getHeaderLine("accept");
 		$type = $this->getType($typeHeader);
-		$routerClass = $this->getRouterClassForType($typeHeader);
+		$routerClass = $this->getRouterClassForType($type);
 
 		/** @var Router $router */
 		$router = new $routerClass(
@@ -37,16 +41,20 @@ class RouterFactory {
 		return $router;
 	}
 
-	protected function getType(string $accept = null):?string {
+	protected function getType(string $accept = null):string {
 		if(empty($accept)) {
-			$accept = self::TYPE_DEFAULT;
+			$accept = $this->defaultContentType;
 		}
 		
 		$negotiator = new Negotiator();
+
+		$priorities = self::ACCEPT_PRIORITIES;
+		array_unshift($priorities, $this->defaultContentType);
+
 		/** @var Accept $acceptHeader */
 		$acceptHeader = $negotiator->getBest(
 			$accept,
-			self::ACCEPT_PRIORITIES
+			$priorities
 		);
 
 		$type = null;
@@ -55,7 +63,7 @@ class RouterFactory {
 		}
 
 		if(empty($type)) {
-			$type = self::TYPE_DEFAULT;
+			throw new RoutingException("Accept header has no route: $accept");
 		}
 
 		return $type;
@@ -63,7 +71,7 @@ class RouterFactory {
 
 	protected function getRouterClassForType(string $type):string {
 		if(empty($type)) {
-			$type = self::TYPE_DEFAULT;
+			$type = $this->defaultContentType;
 		}
 
 		foreach(explode(",", $type) as $singleType) {
@@ -72,7 +80,5 @@ class RouterFactory {
 				return self::TYPE_MAP[$singleType];
 			}
 		}
-
-		throw new RoutingException("Accept header has no route: $type");
 	}
 }
