@@ -39,12 +39,50 @@ class AssemblyTest extends TestCase {
 		self::assertEquals($exampleString, $sut);
 	}
 
+	public function testToStringMissingFile() {
+		$path = "/example";
+		$exampleString = "This is an example";
+		$this->generateAssemblyFiles([
+			$path => $exampleString
+		]);
+
+		$sut = new Assembly(
+			$this->tmpDir,
+			"/",
+			"does-not-match",
+			["test"]
+		);
+		self::assertSame("", (string)$sut);
+	}
+
+	public function testToStringBeforeAfter() {
+		$path = "/example";
+		$exampleBeforeStirng = "This is BEFORE";
+		$exampleString = "This is an example";
+		$exampleAfterString = "This is AFTER";
+		$this->generateAssemblyFiles([
+			$path => $exampleString,
+			"/_before" => $exampleBeforeStirng,
+			"/_after" => $exampleAfterString,
+		]);
+
+		$sut = new Assembly(
+			$this->tmpDir,
+			"/",
+			"example",
+			["test"],
+			["_header", "_before"],
+			["_footer", "_after"],
+		);
+		self::assertEquals(
+			$exampleBeforeStirng . $exampleString . $exampleAfterString,
+			$sut
+		);
+	}
+
 	private function generateAssemblyFiles(array $pathContents):void {
 		foreach($pathContents as $path => $content) {
-			$absoluteFilePath = implode(DIRECTORY_SEPARATOR, [
-				$this->tmpDir,
-				"$path.test",
-			]);
+			$absoluteFilePath = $this->tmpDir . "$path.test";
 
 			if(!is_dir(dirname($absoluteFilePath))) {
 				mkdir(dirname($absoluteFilePath), 0775, true);

@@ -188,7 +188,7 @@ class Assembly implements Iterator {
 			}
 
 			$path = dirname($path);
-		} while($bubbleUp && $path !== $appRoot);
+		} while($bubbleUp && $path !== $appRoot && $path !== "/");
 
 		return $foundPathList;
 	}
