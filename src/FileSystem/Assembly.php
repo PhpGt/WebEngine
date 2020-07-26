@@ -23,8 +23,8 @@ class Assembly implements Iterator {
 		string $directory,
 		string $basename,
 		array $extensions,
-		array $lookupBefore,
-		array $lookupAfter,
+		array $lookupBefore = [],
+		array $lookupAfter = [],
 		bool $basenameMustExist = false
 	) {
 		$this->path = $this->getPath($basePath, $directory);
@@ -97,7 +97,6 @@ class Assembly implements Iterator {
 		bool $before = true,
 		bool $after = true
 	):array {
-		$parts = [];
 		$beforeParts = [];
 		$afterParts = [];
 
@@ -130,14 +129,10 @@ class Assembly implements Iterator {
 			}
 		}
 
-		$sortFnDeeperPathFirst = function(string $a, string $b) {
-			return substr_count($a, "/")
-				> substr_count($b, "/");
-		};
-		$sortFnDeeperPathLast = function(string $a, string $b) {
-			return substr_count($a, "/")
-				> substr_count($b, "/");
-		};
+		$sortFnDeeperPathFirst = fn(string $a, string $b)
+			=> substr_count($a, "/") > substr_count($b, "/");
+		$sortFnDeeperPathLast = fn(string $a, string $b)
+			=> substr_count($a, "/") > substr_count($b, "/");
 
 		usort($beforeParts, $sortFnDeeperPathLast);
 		usort($afterParts, $sortFnDeeperPathFirst);
