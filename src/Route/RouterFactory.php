@@ -70,6 +70,8 @@ class RouterFactory {
 	}
 
 	protected function getRouterClassForType(string $type):string {
+		$routerClass = null;
+
 		if(empty($type)) {
 			$type = $this->defaultContentType;
 		}
@@ -77,8 +79,10 @@ class RouterFactory {
 		foreach(explode(",", $type) as $singleType) {
 			$singleType = strtok($singleType, ";");
 			if(array_key_exists($singleType, self::TYPE_MAP)) {
-				return self::TYPE_MAP[$singleType];
+				$routerClass = self::TYPE_MAP[$singleType];
 			}
 		}
+
+		return $routerClass;
 	}
 }
