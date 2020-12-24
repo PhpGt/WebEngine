@@ -704,16 +704,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v2.1.6",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "fceb86cdb32e846178f75b7f9806d2b77635a879"
+                "reference": "af202e2005fdbb2abc39e9f01defafe799dbc402"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/fceb86cdb32e846178f75b7f9806d2b77635a879",
-                "reference": "fceb86cdb32e846178f75b7f9806d2b77635a879",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/af202e2005fdbb2abc39e9f01defafe799dbc402",
+                "reference": "af202e2005fdbb2abc39e9f01defafe799dbc402",
                 "shasum": ""
             },
             "require": {
@@ -721,11 +721,11 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "php": ">=7.2",
-                "phpgt/cssxpath": "*",
+                "phpgt/cssxpath": ">=1.1.2",
                 "psr/http-message": "1.*"
             },
             "require-dev": {
-                "phpunit/phpunit": "8.*"
+                "phpunit/phpunit": ">=9.3.8"
             },
             "type": "library",
             "autoload": {
@@ -780,8 +780,14 @@
                     "role": "Developer"
                 }
             ],
-            "description": "The modern DOM API for PHP 7 projects.",
-            "time": "2020-01-15T08:28:10+00:00"
+            "description": "The modern DOM API for PHP projects.",
+            "funding": [
+                {
+                    "url": "https://github.com/phpgt",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-12-23T12:31:06+00:00"
         },
         {
             "name": "phpgt/domtemplate",
