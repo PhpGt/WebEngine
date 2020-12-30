@@ -820,16 +820,16 @@
         },
         {
             "name": "phpgt/fetch",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Fetch.git",
-                "reference": "85aff9beb7866fa47e120046342edf9d07b52d9b"
+                "reference": "927f8474bc7f470b934244be55d19bd3a4644b96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Fetch/zipball/85aff9beb7866fa47e120046342edf9d07b52d9b",
-                "reference": "85aff9beb7866fa47e120046342edf9d07b52d9b",
+                "url": "https://api.github.com/repos/PhpGt/Fetch/zipball/927f8474bc7f470b934244be55d19bd3a4644b96",
+                "reference": "927f8474bc7f470b934244be55d19bd3a4644b96",
                 "shasum": ""
             },
             "require": {
@@ -847,7 +847,8 @@
                 "php-http/client-implementation": "1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "8.*"
+                "phpstan/phpstan": ">=0.12.42",
+                "phpunit/phpunit": "9.*"
             },
             "type": "library",
             "autoload": {
@@ -878,7 +879,13 @@
                 "post",
                 "xmlhttprequest"
             ],
-            "time": "2019-06-20T15:02:02+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/phpgt",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-12-28T18:29:42+00:00"
         },
         {
             "name": "phpgt/http",
