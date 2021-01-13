@@ -55,6 +55,7 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public function start(bool $render = true):ResponseInterface {
 		ini_set("display_errors", true);
+		ob_start();
 		$server = new ServerInfo($_SERVER);
 
 		$cwd = dirname($server->getDocumentRoot());
@@ -114,7 +115,7 @@ class Lifecycle implements MiddlewareInterface {
 		$csrfProtection = new SessionTokenStore(
 			$sessionHandler->getStore(
 				"gt.csrf",
-			true
+				true
 			)
 		);
 
@@ -169,7 +170,8 @@ class Lifecycle implements MiddlewareInterface {
 			}
 		}
 
-		return $this->finish($response, $render);
+		$buffer = ob_get_clean();
+		return $this->finish($response, $buffer, $render);
 	}
 
 	/**
@@ -282,6 +284,7 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public static function finish(
 		ResponseInterface $response,
+		string $buffer = "",
 		bool $render = true
 	):ResponseInterface {
 		http_response_code($response->getStatusCode());
@@ -290,6 +293,7 @@ class Lifecycle implements MiddlewareInterface {
 		}
 
 		if($render) {
+			echo $buffer;
 			echo $response->getBody();
 		}
 
