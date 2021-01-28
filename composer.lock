@@ -1093,25 +1093,26 @@
         },
         {
             "name": "phpgt/sync",
-            "version": "v1.2.3",
+            "version": "v1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Sync.git",
-                "reference": "75bc747e7f477d15345e41b61c0999f61dc8e88e"
+                "reference": "7da560e6b0dd178a12e190484a30af53cb4071c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Sync/zipball/75bc747e7f477d15345e41b61c0999f61dc8e88e",
-                "reference": "75bc747e7f477d15345e41b61c0999f61dc8e88e",
+                "url": "https://api.github.com/repos/PhpGt/Sync/zipball/7da560e6b0dd178a12e190484a30af53cb4071c8",
+                "reference": "7da560e6b0dd178a12e190484a30af53cb4071c8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
-                "phpgt/cli": "*",
+                "phpgt/cli": "1.3.*",
                 "webmozart/glob": "4.*"
             },
             "require-dev": {
-                "phpunit/phpunit": "8.*"
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "9.*"
             },
             "bin": [
                 "bin/sync"
@@ -1134,7 +1135,7 @@
                 "synchronise",
                 "synchronize"
             ],
-            "time": "2019-11-14T09:17:19+00:00"
+            "time": "2021-01-27T15:55:21+00:00"
         },
         {
             "name": "psr/http-client",
@@ -1510,12 +1511,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
@@ -1556,31 +1557,30 @@
         },
         {
             "name": "webmozart/glob",
-            "version": "4.0.0",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/glob.git",
-                "reference": "732b4fc341f8dd418b0b9d8bff9b2458662cd382"
+                "url": "https://github.com/webmozarts/glob.git",
+                "reference": "06358fafde0f32edb4513f4fd88fe113a40c90ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/glob/zipball/732b4fc341f8dd418b0b9d8bff9b2458662cd382",
-                "reference": "732b4fc341f8dd418b0b9d8bff9b2458662cd382",
+                "url": "https://api.github.com/repos/webmozarts/glob/zipball/06358fafde0f32edb4513f4fd88fe113a40c90ee",
+                "reference": "06358fafde0f32edb4513f4fd88fe113a40c90ee",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3",
+                "php": "^7.3 || ^8.0.0",
                 "webmozart/path-util": "^2.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.6",
-                "sebastian/version": "^1.0.1",
-                "symfony/filesystem": "^2.5"
+                "phpunit/phpunit": "^8.0",
+                "symfony/filesystem": "^5.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0-dev"
+                    "dev-master": "4.1-dev"
                 }
             },
             "autoload": {
@@ -1599,7 +1599,7 @@
                 }
             ],
             "description": "A PHP implementation of Ant's glob.",
-            "time": "2015-12-28T09:48:22+00:00"
+            "time": "2021-01-21T06:17:15+00:00"
         },
         {
             "name": "webmozart/path-util",
