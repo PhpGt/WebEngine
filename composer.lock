@@ -505,25 +505,26 @@
         },
         {
             "name": "phpgt/csrf",
-            "version": "v1.7.0",
+            "version": "v1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "f98b9eb71201bbc7ee94ad81b1fe13bde292cdd6"
+                "reference": "8f58938d57042c9a82c13e8e79cf8f8021e53059"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/f98b9eb71201bbc7ee94ad81b1fe13bde292cdd6",
-                "reference": "f98b9eb71201bbc7ee94ad81b1fe13bde292cdd6",
+                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/8f58938d57042c9a82c13e8e79cf8f8021e53059",
+                "reference": "8f58938d57042c9a82c13e8e79cf8f8021e53059",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2",
-                "phpgt/dom": "*",
-                "phpgt/session": "*"
+                "php": ">=7.4",
+                "phpgt/dom": "2.*",
+                "phpgt/session": "1.*"
             },
             "require-dev": {
-                "phpunit/phpunit": "8.*"
+                "phpstan/phpstan": ">=0.12.64",
+                "phpunit/phpunit": "9.*"
             },
             "type": "library",
             "autoload": {
@@ -548,7 +549,13 @@
                 }
             ],
             "description": "Automatic protection from Cross-Site Request Forgery.",
-            "time": "2020-05-06T17:44:52+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/phpgt",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-01-29T11:32:07+00:00"
         },
         {
             "name": "phpgt/cssxpath",
@@ -1510,12 +1517,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
@@ -1559,12 +1566,12 @@
             "version": "4.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/glob.git",
+                "url": "https://github.com/webmozarts/glob.git",
                 "reference": "732b4fc341f8dd418b0b9d8bff9b2458662cd382"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/glob/zipball/732b4fc341f8dd418b0b9d8bff9b2458662cd382",
+                "url": "https://api.github.com/repos/webmozarts/glob/zipball/732b4fc341f8dd418b0b9d8bff9b2458662cd382",
                 "reference": "732b4fc341f8dd418b0b9d8bff9b2458662cd382",
                 "shasum": ""
             },
