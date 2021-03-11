@@ -7,7 +7,7 @@
 		},
 		"execute": {
 			"command": "webpack",
-			"arguments": ["script/main.es6", "-o", "www/script.js", "--devtool", "source-map", "--module-bind", "js=babel-loader"]
+			"arguments": ["--entry","script/main.es6", "-o", "www/script.js", "--devtool", "source-map", "--mode", "production"]
 		}
 	},
 
