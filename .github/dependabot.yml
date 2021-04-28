@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: phpunit/phpunit
+    versions:
+    - 9.5.1
+    - 9.5.2
+    - 9.5.3
+  - dependency-name: phpgt/config
+    versions:
+    - 1.1.0
+  - dependency-name: phpgt/csrf
+    versions:
+    - 1.7.1
+  - dependency-name: phpgt/sync
+    versions:
+    - 1.2.4
+  - dependency-name: phpgt/session
+    versions:
+    - 1.1.2
