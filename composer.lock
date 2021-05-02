@@ -715,21 +715,21 @@
         },
         {
             "name": "phpgt/database",
-            "version": "v1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Database.git",
-                "reference": "f8ef292148ebb028cc8430ec051447076e8094d5"
+                "reference": "168d6a74c9b97f5df537d875166f1d8c08cb3e86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Database/zipball/f8ef292148ebb028cc8430ec051447076e8094d5",
-                "reference": "f8ef292148ebb028cc8430ec051447076e8094d5",
+                "url": "https://api.github.com/repos/PhpGt/Database/zipball/168d6a74c9b97f5df537d875166f1d8c08cb3e86",
+                "reference": "168d6a74c9b97f5df537d875166f1d8c08cb3e86",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
-                "php": ">=7.2",
+                "php": ">=7.4",
                 "phpgt/config": "*"
             },
             "require-dev": {
@@ -765,7 +765,7 @@
                 }
             ],
             "description": "Database API organisation.",
-            "time": "2021-02-16T17:28:59+00:00"
+            "time": "2021-04-29T17:24:29+00:00"
         },
         {
             "name": "phpgt/dom",
