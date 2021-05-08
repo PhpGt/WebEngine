@@ -38,7 +38,7 @@ class LogicFactoryTest extends TestCase {
 	/** @var Headers|MockObject */
 	private $headers;
 
-	public function setUp():void {
+	protected function setUp():void {
 		$this->config = self::createMock(Config::class);
 		$this->serverInfo = self::createMock(ServerInfo::class);
 		$this->input = self::createMock(Input::class);
