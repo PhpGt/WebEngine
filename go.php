@@ -37,5 +37,5 @@ require(implode(DIRECTORY_SEPARATOR, [
  * Buckle up and enjoy the ride!
  * @link https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
-$lifecycle = new Gt\WebEngine\Lifecycle();
+$lifecycle = new Gt\WebEngine\Middleware\Lifecycle();
 $lifecycle->start();
