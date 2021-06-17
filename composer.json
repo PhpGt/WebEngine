@@ -29,6 +29,7 @@
 		"phpgt/server": "^1.1",
 		"phpgt/session": "^1.1",
 		"phpgt/sync": "^1.2",
+		"phpgt/logger": "dev-master",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^3.0"

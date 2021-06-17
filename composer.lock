@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac0f7f8b218a0614832232df362e734e",
+    "content-hash": "437908dd4f3be75f3947f7bfd87ab1c1",
     "packages": [
         {
             "name": "composer/semver",
@@ -1127,6 +1127,57 @@
                 "source": "https://github.com/PhpGt/Input/tree/v1.1.2"
             },
             "time": "2019-11-29T11:22:35+00:00"
+        },
+        {
+            "name": "phpgt/logger",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Logger.git",
+                "reference": "a6889a7c7a9ff975b7e61ef43b03f16f81340174"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Logger/zipball/a6889a7c7a9ff975b7e61ef43b03f16f81340174",
+                "reference": "a6889a7c7a9ff975b7e61ef43b03f16f81340174",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": ">=0.12.64",
+                "phpunit/phpunit": "^9.5.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Logger\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Bowler",
+                    "email": "greg.bowler@g105b.com"
+                }
+            ],
+            "description": "PSR-3 logger and implementation.",
+            "support": {
+                "issues": "https://github.com/PhpGt/Logger/issues",
+                "source": "https://github.com/PhpGt/Logger/tree/v0.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/PhpGt",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-06-16T15:31:02+00:00"
         },
         {
             "name": "phpgt/protectedglobal",
@@ -6575,7 +6626,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "phpgt/http": 20
+        "phpgt/http": 20,
+        "phpgt/logger": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

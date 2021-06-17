@@ -6,7 +6,7 @@
  * lifecycle is documented at:
  * https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
-
+ini_set("display_errors", "on");
 /**
  * Before any code is executed, return false here if a static file is requested.
  * When running the PHP inbuilt server, this will output the static file.
@@ -24,13 +24,15 @@ if(strstr($uri, ".")
  * classes by their namespace, rather than having to know where on disk the
  * files exist.
  * @link https://getcomposer.org/doc/00-intro.md
- * @noinspection PhpIncludeInspection
  */
-require(implode(DIRECTORY_SEPARATOR, [
-	dirname($_SERVER["DOCUMENT_ROOT"]),
-	"vendor",
-	"autoload.php",
-]));
+foreach([__DIR__, dirname($_SERVER["DOCUMENT_ROOT"])] as $dir) {
+	$autoloadPath = "$dir/vendor/autoload.php";
+	if(file_exists($autoloadPath)) {
+		/** @noinspection PhpIncludeInspection */
+		require $autoloadPath;
+		break;
+	}
+}
 
 /**
  * That's all we need to start the request-response lifecycle.

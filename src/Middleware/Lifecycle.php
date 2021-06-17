@@ -15,6 +15,8 @@ use Gt\Http\ResponseStatusException\AbstractResponseStatusException;
 use Gt\Http\ResponseStatusException\Redirection\AbstractRedirectionException;
 use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
+use Gt\Logger\Log;
+use Gt\WebEngine\Debug\Timer;
 use Gt\WebEngine\FileSystem\BasenameNotFoundException;
 use Gt\WebEngine\Route\PageRouter;
 use JetBrains\PhpStorm\NoReturn;
@@ -32,6 +34,7 @@ use Gt\WebEngine\Logic\Autoloader;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\Route\RouterFactory;
 use Gt\WebEngine\Dispatch\DispatcherFactory;
+use SplFileObject;
 
 /**
  * The fundamental purpose of any PHP framework is to provide a mechanism for
@@ -58,32 +61,31 @@ use Gt\WebEngine\Dispatch\DispatcherFactory;
  * its own Request object, and pass it directly to the "process" function.
  */
 class Lifecycle implements MiddlewareInterface {
-	#[NoReturn]
 	public function start():void {
-// Starting the output buffer is the first task, so any calls to any area of
-// code will not accidentally send output to the client.
-		ob_start();
+// The first thing that's done within the WebEngine lifecycle is start a timer.
+// This timer is only used again at the very end of the call, when finish() is
+// called - at which point the entire duration of the request is logged out (and
+// slow requests are highlighted as a NOTICE).
+		$timer = new Timer();
 
-		// No future code should have direct access to super-global
-// values, so code can be encapsulated and access can be controlled.
-// @link https://www.php.gt/protectedglobal
-		$globals = $this->protectGlobals();
+// Starting the output buffer done before any logic is executed, so any calls
+// to any area of code will not accidentally send output to the client.
+		ob_start();
 
 // A PSR-7 HTTP Request object is created from the current global state, ready
 // for processing by the Handler.
 		$requestFactory = new RequestFactory();
 		$request = $requestFactory->createServerRequestFromGlobalState(
-			$globals["_SERVER"],
-			$globals["_FILES"],
-			$globals["_GET"],
-			$globals["_POST"],
+			$_SERVER,
+			$_FILES,
+			$_GET,
+			$_POST,
 		);
 
 // The handler is an individual component that processes a request and produces
 // a response, as defined by PSR-7. It's where all your applications logic is
-// executed - the brain of WebEngine. It uses the extracted globals to produce
-// the object-oriented alternatives that will be passed to application logic.
-		$handler = new RequestHandler($globals);
+// executed - the brain of WebEngine.
+		$handler = new RequestHandler();
 
 // The request and request handler are passed to the PSR-15 process function,
 // which will return our PSR-7 HTTP Response.
@@ -95,12 +97,18 @@ class Lifecycle implements MiddlewareInterface {
 // Now we can finish the HTTP lifecycle by providing the HTTP response for
 // outputting to the browser, along with the buffer so we can display the
 // contents in a debug area.
-		$this->finish($response, $buffer);
+		$this->finish(
+			$response,
+			$buffer,
+			$timer,
+			$handler->getConfigSection("app")
+		);
 	}
 
 	/**
-	 * Process an incoming server request and return a response, optionally delegating
-	 * response creation to a handler.
+	 * Process an incoming server request and return a response,
+	 * delegating response creation to a handler.
+	 *
 	 * @throws BasenameNotFoundException
 	 */
 	public function process(
@@ -109,6 +117,60 @@ class Lifecycle implements MiddlewareInterface {
 	):ResponseInterface {
 		return $handler->handle($request);
 	}
+
+	public function finish(
+		ResponseInterface $response,
+		string $buffer,
+		Timer $timer,
+		ConfigSection $appConfig
+	):void {
+		http_response_code($response->getStatusCode());
+
+		foreach($response->getHeaders() as $key => $value) {
+			header("$key: $value", true);
+		}
+
+		$renderTo = new SplFileObject($appConfig->getString("render_to"), "w");
+
+		$bufferSize = $appConfig->getInt("render_buffer_size");
+		$bufferLen = strlen($buffer);
+		for($i = 0; $i < $bufferLen; $i += $bufferSize) {
+			$renderTo->fwrite(substr($buffer, $i, $bufferSize));
+		}
+
+		$body = $response->getBody();
+		while(!$body->eof()) {
+			$renderTo->fwrite($body->read($bufferSize));
+		}
+
+// The very last thing that's done before the script ends is to stop the Timer,
+// so we know exactly how long the request-response lifecycle has taken.
+		$timer->stop();
+		$delta = number_format($timer->getDelta(), 2);
+		if($delta >= $appConfig->getFloat("slow_delta")) {
+			Log::warning("Lifecycle end with VERY SLOW delta time: $delta seconds. https://www.php.gt/webengine/slow-delta");
+		}
+		elseif($delta >= $appConfig->getFloat("very_slow_delta")) {
+			Log::notice("Lifecycle end with SLOW delta time: $delta seconds. https://www.php.gt/webengine/slow-delta");
+		}
+		else {
+			Log::debug("Lifecycle end, delta time: $delta seconds.");
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * By default, PHP passes all sensitive user information around in
@@ -124,7 +186,7 @@ class Lifecycle implements MiddlewareInterface {
 	 * @noinspection PhpExpressionResultUnusedInspection
 	 * @return array<string, array<string, string>
 	 */
-	private function protectGlobals():array {
+	private function _old_protectGlobals():array {
 		// TODO: Merge whitelist from config
 		$whitelist = [
 			"_COOKIE" => ["XDEBUG_SESSION"],
@@ -150,28 +212,6 @@ class Lifecycle implements MiddlewareInterface {
 
 		return $cloned;
 	}
-
-
-	#[NoReturn]
-	private function finish(
-		ResponseInterface $response,
-		string $buffer
-	):void {
-		var_dump($response, $buffer);
-		die("FINISH!");
-	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * The start of the application's lifecycle. This function breaks the
