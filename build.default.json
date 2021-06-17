@@ -3,11 +3,12 @@
 		"require": {
 			"node": "*",
 			"babel": "*",
-			"webpack": "*"
+			"webpack": "*",
+			"webpack-cli": "*"
 		},
 		"execute": {
-			"command": "webpack",
-			"arguments": ["script/main.es6", "-o", "www/script.js", "--devtool", "source-map", "--module-bind", "js=babel-loader"]
+			"command": "webpack-cli",
+			"arguments": ["build", "--mode=development", "--devtool=source-map", "--entry=./script/main.es6", "--output-filename=script.js", "--output-path=./www"]
 		}
 	},
 
@@ -27,7 +28,7 @@
 		},
 		"execute": {
 			"command": "sass",
-			"arguments": ["style/main.scss", "www/style.css"]
+			"arguments": ["./style/main.scss", "www/style.css"]
 		}
 	},
 
