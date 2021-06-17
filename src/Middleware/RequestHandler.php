@@ -10,7 +10,6 @@ use Gt\Logger\LogConfig;
 use Gt\Logger\LogHandler\FileHandler;
 use Gt\Logger\LogHandler\StdOutHandler;
 use Gt\Logger\LogHandler\StreamHandler;
-use Gt\WebEngine\Debug\Timer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -31,6 +30,14 @@ class RequestHandler implements RequestHandlerInterface {
 	public function handle(
 		ServerRequestInterface $request
 	):ResponseInterface {
+// TODO: Create a Response object of the correct type.
+// TODO: Assign a Router from WebEngine, but allow developer to override.
+// TODO: Build up a view from the Router's ViewAssembly.
+// TODO: Create a ServiceContainer for passing to Logic objects.
+// TODO: Get a list of Logic objects to execute from Router's LogicAssembly.
+// TODO: Handle 404.
+// TODO: Dispatch Logic objects, catching any errors.
+
 		return new Response();
 	}
 
