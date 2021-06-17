@@ -19,7 +19,6 @@ use Gt\Logger\Log;
 use Gt\WebEngine\Debug\Timer;
 use Gt\WebEngine\FileSystem\BasenameNotFoundException;
 use Gt\WebEngine\Route\PageRouter;
-use JetBrains\PhpStorm\NoReturn;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
