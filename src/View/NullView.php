@@ -2,8 +2,7 @@
 namespace Gt\WebEngine\View;
 
 class NullView extends BaseView {
-
-	protected function createViewModel():mixed {
+	public function createViewModel():mixed {
 		// TODO: Implement createViewModel() method.
 	}
 }

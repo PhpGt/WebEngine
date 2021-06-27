@@ -28,6 +28,7 @@
 	},
 
 	"require-dev": {
+		"phpstan/phpstan": "^0.12",
 		"phpunit/phpunit": "9.*",
 		"behat/behat": "^3.0.5",
 		"behat/mink-extension": "^2.3",
