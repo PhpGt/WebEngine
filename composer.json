@@ -2,6 +2,9 @@
 	"name": "phpgt/webengine",
 	"description": "Rapid development engine.",
 
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+
 	"license": [
 		"MIT"
 	],
@@ -13,23 +16,12 @@
 		"ext-dom": "*",
 		"ext-json": "*",
 		"php": ">=8.0",
-		"phpgt/build": "^1.0",
-		"phpgt/cli": "^1.3",
-		"phpgt/config": "^1.0",
-		"phpgt/cookie": "^1.0",
-		"phpgt/cron": "^1.0",
-		"phpgt/csrf": "^1.6",
-		"phpgt/database": "^1.1",
-		"phpgt/dom": "^2.1",
-		"phpgt/domtemplate": "^1.3",
-		"phpgt/fetch": "^1.0",
-		"phpgt/http": "dev-77-global",
-		"phpgt/input": "^1.1",
-		"phpgt/protectedglobal": "^1.0",
-		"phpgt/server": "^1.1",
-		"phpgt/session": "^1.1",
-		"phpgt/sync": "^1.2",
+		"phpgt/config": "^v1",
+		"phpgt/http": "^v1",
 		"phpgt/logger": "dev-master",
+		"phpgt/routing": "dev-master",
+		"phpgt/dom": "dev-facade",
+		"phpgt/domtemplate": "v2.x-dev",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^3.0"
