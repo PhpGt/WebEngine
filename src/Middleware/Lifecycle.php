@@ -129,17 +129,22 @@ class Lifecycle implements MiddlewareInterface {
 			header("$key: $value", true);
 		}
 
-		$renderTo = new SplFileObject($appConfig->getString("render_to"), "w");
-
-		$bufferSize = $appConfig->getInt("render_buffer_size");
-		$bufferLen = strlen($buffer);
-		for($i = 0; $i < $bufferLen; $i += $bufferSize) {
-			$renderTo->fwrite(substr($buffer, $i, $bufferSize));
+		$buffer = trim($buffer);
+		if(strlen($buffer) > 0) {
+			if(strstr($buffer, "\n")) {
+				$buffer = "\n$buffer";
+			}
+			Log::debug("Logic output: $buffer");
 		}
 
+		$renderBufferSize = $appConfig->getInt("render_buffer_size");
 		$body = $response->getBody();
+		$body->rewind();
+		ob_start();
 		while(!$body->eof()) {
-			$renderTo->fwrite($body->read($bufferSize));
+			echo $body->read($renderBufferSize);
+			ob_flush();
+			flush();
 		}
 
 // The very last thing that's done before the script ends is to stop the Timer,
