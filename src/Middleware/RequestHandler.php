@@ -17,6 +17,7 @@ use Gt\Routing\LogicStream\LogicStreamWrapper;
 use Gt\Routing\Path\PathMatcher;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
+use Gt\WebEngine\DefaultRouter;
 use Gt\WebEngine\Route\Router;
 use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\NullView;
@@ -114,19 +115,15 @@ class RequestHandler implements RequestHandlerInterface {
 		$appRouterClass = $routerConfig->getString("router_class");
 		$defaultRouterFile = dirname(dirname(__DIR__)) . "/router.default.php";
 
-		$routerPathClasses = [
-			$appRouterFile => "\\$namespace\\$appRouterClass",
-			$defaultRouterFile => "\\Gt\\WebEngine\\DefaultRouter",
-		];
-
-		foreach($routerPathClasses as $filePath => $class) {
-			if(file_exists($filePath)) {
-				break;
-			}
+		if(file_exists($appRouterFile)) {
+			require($appRouterFile);
+			$class = "\\$namespace\\$appRouterClass";
+		}
+		else {
+			require($defaultRouterFile);
+			$class = "\\Gt\\WebEngine\\DefaultRouter";
 		}
 
-		/** @noinspection PhpIncludeInspection */
-		require($filePath);
 		/** @var BaseRouter $router */
 		$router = new $class($routerConfig);
 		$router->setContainer($container);

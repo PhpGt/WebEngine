@@ -1,39 +1,15 @@
 <?php
 namespace Gt\WebEngine\Middleware;
 
-use Gt\Config\Config;
-use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
-use Gt\Cookie\CookieHandler;
-use Gt\Csrf\SessionTokenStore;
-use Gt\Csrf\TokenStore;
-use Gt\Database\Connection\Settings;
-use Gt\Database\Database;
-use Gt\Http\Header\Headers;
-use Gt\Http\Response;
-use Gt\Http\ResponseStatusException\AbstractResponseStatusException;
-use Gt\Http\ResponseStatusException\Redirection\AbstractRedirectionException;
-use Gt\Http\ServerInfo;
 use Gt\Http\RequestFactory;
+use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
 use Gt\Logger\Log;
 use Gt\WebEngine\Debug\Timer;
-use Gt\WebEngine\FileSystem\BasenameNotFoundException;
-use Gt\WebEngine\Route\PageRouter;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Gt\Input\Input;
-use Gt\ProtectedGlobal\Protection;
-use Gt\Session\Session;
-use Gt\Session\SessionSetup;
-use Gt\WebEngine\Dispatch\Dispatcher;
-use Gt\WebEngine\Logic\Autoloader;
-use Gt\WebEngine\Route\Router;
-use Gt\WebEngine\Route\RouterFactory;
-use Gt\WebEngine\Dispatch\DispatcherFactory;
-use SplFileObject;
 
 /**
  * The fundamental purpose of any PHP framework is to provide a mechanism for
@@ -107,8 +83,6 @@ class Lifecycle implements MiddlewareInterface {
 	/**
 	 * Process an incoming server request and return a response,
 	 * delegating response creation to a handler.
-	 *
-	 * @throws BasenameNotFoundException
 	 */
 	public function process(
 		ServerRequestInterface $request,
@@ -126,7 +100,8 @@ class Lifecycle implements MiddlewareInterface {
 		http_response_code($response->getStatusCode());
 
 		foreach($response->getHeaders() as $key => $value) {
-			header("$key: $value", true);
+			$stringValue = implode(", ", $value);
+			header("$key: $stringValue", true);
 		}
 
 		$buffer = trim($buffer);
