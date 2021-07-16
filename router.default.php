@@ -24,7 +24,7 @@ class DefaultRouter extends BaseRouter {
 		}
 	}
 
-	#[Get(name: "page-route", accept: "text/html,application/xhtml+xml")]
+	#[Any(name: "page-route", accept: "text/html,application/xhtml+xml")]
 	public function page(PathMatcher $pathMatcher, Request $request):void {
 		$sortNestLevelCallback = fn(string $a, string $b):int =>
 			substr_count($a, "/") > substr_count($b, "/")
@@ -55,6 +55,7 @@ class DefaultRouter extends BaseRouter {
 			"page",
 			"php"
 		);
+
 		usort($matchingLogics, $sortNestLevelCallback);
 		foreach($matchingLogics as $path) {
 			$this->addToLogicAssembly($path);
@@ -92,11 +93,15 @@ class DefaultRouter extends BaseRouter {
 		$filePathNoExt = "$fileDir/$fileName";
 		$filePathNoExtNoSubDir = substr($filePathNoExt, strlen($subDir));
 
-		$uriPathExpanded = $uriPath;
-		if(substr($uriPath, -1) === "/") {
-			$uriPathExpanded .= "index";
+		if($filePathNoExtNoSubDir === $uriPath) {
+			return true;
 		}
 
+		if(substr($uriPath, -1) !== "/") {
+			$uriPath .= "/";
+		}
+
+		$uriPathExpanded = $uriPath . "index";
 		if($filePathNoExtNoSubDir === $uriPathExpanded) {
 			return true;
 		}

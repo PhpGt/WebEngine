@@ -4,9 +4,18 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
-use Gt\Http\Request;
+use Gt\Dom\HTMLDocument;
+use Gt\DomTemplate\DocumentBinder;
+use Gt\DomTemplate\ElementBinder;
+use Gt\DomTemplate\HTMLAttributeBinder;
+use Gt\DomTemplate\HTMLAttributeCollection;
+use Gt\DomTemplate\ListBinder;
+use Gt\DomTemplate\PlaceholderBinder;
+use Gt\DomTemplate\TableBinder;
+use Gt\DomTemplate\TemplateCollection;
 use Gt\Http\Response;
-use Gt\Logger\Log;
+use Gt\Input\Input;
+use Gt\Input\InputData\InputData;
 use Gt\Logger\LogConfig;
 use Gt\Logger\LogHandler\FileHandler;
 use Gt\Logger\LogHandler\StdOutHandler;
@@ -17,9 +26,10 @@ use Gt\Routing\LogicStream\LogicStreamWrapper;
 use Gt\Routing\Path\PathMatcher;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
-use Gt\WebEngine\DefaultRouter;
-use Gt\WebEngine\Route\Router;
+use Gt\WebEngine\Logic\LogicExecutor;
+use Gt\WebEngine\Logic\LogicProjectNamespace;
 use Gt\WebEngine\View\BaseView;
+use Gt\WebEngine\View\HTMLView;
 use Gt\WebEngine\View\NullView;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -45,7 +55,6 @@ class RequestHandler implements RequestHandlerInterface {
 		ServerRequestInterface $request
 	):ResponseInterface {
 // TODO: Handle 404s.
-// TODO: Build up the gt-logic-stream file properly (handle user-defined namespaces, do functions, whatever...
 // TODO: Extract a DI building class to build up all the classes for the container, so the developer can also create their own setup functions (and handle a way of only executing it under certain request conditions).
 // TODO: DomTemplate stuff - hook up the hello, you!
 // TODO: Database?
@@ -74,15 +83,58 @@ class RequestHandler implements RequestHandlerInterface {
 		}
 		$viewModel = $view->createViewModel();
 		$serviceContainer->set($viewModel);
+		if($viewModel instanceof HTMLDocument) {
+			$htmlAttributeBinder = new HTMLAttributeBinder();
+			$htmlAttributeCollection = new HTMLAttributeCollection();
+			$placeholderBinder = new PlaceholderBinder();
+
+			$elementBinder = new ElementBinder(
+				$htmlAttributeBinder,
+				$htmlAttributeCollection,
+				$placeholderBinder
+			);
+			$tableBinder = new TableBinder();
+			$templateCollection = new TemplateCollection($viewModel);
+			$listBinder = new ListBinder($templateCollection);
+
+			$documentBinder = new DocumentBinder(
+				$viewModel,
+				[], // TODO: Get domtemplate config as array.
+				$elementBinder,
+				$placeholderBinder,
+				$tableBinder,
+				$listBinder,
+				$templateCollection
+			);
+
+			$serviceContainer->set($htmlAttributeBinder);
+			$serviceContainer->set($htmlAttributeCollection);
+			$serviceContainer->set($placeholderBinder);
+			$serviceContainer->set($elementBinder);
+			$serviceContainer->set($tableBinder);
+			$serviceContainer->set($templateCollection);
+			$serviceContainer->set($listBinder);
+			$serviceContainer->set($documentBinder);
+		}
+
+// TODO: Kill globals.
+		$input = new Input($_GET, $_POST, $_FILES);
+		$serviceContainer->set($input);
 
 		$injector = new Injector($serviceContainer);
 
-		foreach($logicAssembly as $logicFile) {
-			require("gt-logic-stream://$logicFile");
-			$ns = new LogicStreamNamespace($logicFile);
-			$fqns = LogicStreamWrapper::NAMESPACE_PREFIX . $ns;
-			$injector->invoke(null, "$fqns\\go");
-		}
+		$logicExecutor = new LogicExecutor(
+			$logicAssembly,
+			$injector,
+			$this->config->getString("app.namespace")
+		);
+// TODO: Automatically refresh "do" functions.
+		$input->when("do")->call(
+			fn(InputData $data) => $logicExecutor->invoke(
+				"do_" . $data->getString("do")
+			)
+		);
+		$logicExecutor->invoke("go");
 
 		$view->stream($viewModel);
 		return $response;
