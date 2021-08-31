@@ -5,11 +5,14 @@ use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Dom\HTMLDocument;
+use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
 use Gt\DomTemplate\ElementBinder;
 use Gt\DomTemplate\HTMLAttributeBinder;
 use Gt\DomTemplate\HTMLAttributeCollection;
 use Gt\DomTemplate\ListBinder;
+use Gt\DomTemplate\ModularContent;
+use Gt\DomTemplate\ModularContentExpander;
 use Gt\DomTemplate\PlaceholderBinder;
 use Gt\DomTemplate\TableBinder;
 use Gt\DomTemplate\TemplateCollection;
@@ -84,6 +87,14 @@ class RequestHandler implements RequestHandlerInterface {
 		$viewModel = $view->createViewModel();
 		$serviceContainer->set($viewModel);
 		if($viewModel instanceof HTMLDocument) {
+			$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
+				getcwd(),
+				$this->config->getString("view.component_directory")
+			]));
+			$componentExpander = new ComponentExpander($viewModel, $modularContent);
+			$expanded = $componentExpander->expand();
+//			var_dump($expanded);die();
+
 			$htmlAttributeBinder = new HTMLAttributeBinder();
 			$htmlAttributeCollection = new HTMLAttributeCollection();
 			$placeholderBinder = new PlaceholderBinder();

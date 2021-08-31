@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\View;
 
+use Gt\Dom\Facade\HTMLDocumentFactory;
 use Gt\Dom\HTMLDocument;
 
 class HTMLView extends BaseView {
@@ -10,6 +11,6 @@ class HTMLView extends BaseView {
 			$html .= file_get_contents($viewFile);
 		}
 
-		return new HTMLDocument($html);
+		return HTMLDocumentFactory::create($html);
 	}
 }
