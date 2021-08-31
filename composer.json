@@ -20,7 +20,7 @@
 		"phpgt/http": "^v1",
 		"phpgt/logger": "dev-master",
 		"phpgt/routing": "dev-master",
-		"phpgt/dom": "dev-facade",
+		"phpgt/dom": "v3.0.0-RC1",
 		"phpgt/domtemplate": "v2.x-dev",
 
 		"psr/http-server-middleware": "^1.0",
