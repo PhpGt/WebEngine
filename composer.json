@@ -20,7 +20,7 @@
 		"phpgt/cron": "^1.0",
 		"phpgt/csrf": "^1.6",
 		"phpgt/database": "^1.1",
-		"phpgt/dom": "^2.1",
+		"phpgt/dom": "v3.0.0-RC1",
 		"phpgt/domtemplate": "^1.3",
 		"phpgt/fetch": "^1.0",
 		"phpgt/http": "^1.0",
