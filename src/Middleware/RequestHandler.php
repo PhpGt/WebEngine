@@ -92,8 +92,7 @@ class RequestHandler implements RequestHandlerInterface {
 				$this->config->getString("view.component_directory")
 			]));
 			$componentExpander = new ComponentExpander($viewModel, $modularContent);
-			$expanded = $componentExpander->expand();
-//			var_dump($expanded);die();
+			$componentExpander->expand();
 
 			$htmlAttributeBinder = new HTMLAttributeBinder();
 			$htmlAttributeCollection = new HTMLAttributeCollection();
