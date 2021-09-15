@@ -16,12 +16,13 @@
 		"ext-dom": "*",
 		"ext-json": "*",
 		"php": ">=8.0",
-		"phpgt/config": "^v1",
-		"phpgt/http": "^v1",
+
+		"phpgt/config": "^1.0",
+		"phpgt/http": "^1.0",
 		"phpgt/logger": "dev-master",
 		"phpgt/routing": "dev-master",
-		"phpgt/dom": "v3.0.0-RC1",
-		"phpgt/domtemplate": "v2.x-dev",
+		"phpgt/dom": "^3.0.0",
+		"phpgt/domtemplate": "^2.0",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^3.0"
@@ -29,7 +30,7 @@
 
 	"require-dev": {
 		"phpstan/phpstan": "^0.12",
-		"phpunit/phpunit": "9.*",
+		"phpunit/phpunit": "^9.0",
 		"behat/behat": "^3.0.5",
 		"behat/mink-extension": "^2.3",
 		"behat/mink-goutte-driver": "^1.2"

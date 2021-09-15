@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2627402649e806fd62860453aea8d37f",
+    "content-hash": "81688ceea19627fc8548dfbb815dc104",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -168,16 +168,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v3.0.0-RC1",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "9ff12209e04f7d49ddd55ffd8fc568aab6d285b4"
+                "reference": "cbe5a007908dd24bea14c1eeeccf8cc8f83a225f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/9ff12209e04f7d49ddd55ffd8fc568aab6d285b4",
-                "reference": "9ff12209e04f7d49ddd55ffd8fc568aab6d285b4",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/cbe5a007908dd24bea14c1eeeccf8cc8f83a225f",
+                "reference": "cbe5a007908dd24bea14c1eeeccf8cc8f83a225f",
                 "shasum": ""
             },
             "require": {
@@ -249,7 +249,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v3.0.0-RC1"
+                "source": "https://github.com/PhpGt/Dom/tree/v3.0.0"
             },
             "funding": [
                 {
@@ -257,26 +257,26 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-05-07T10:45:51+00:00"
+            "time": "2021-09-15T18:35:06+00:00"
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v2.x-dev",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "3aeeea0ec26f06ade7f932575101b455f34c1f10"
+                "reference": "ba90345f21c73aa66067cae538b2b10fc7560fdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/3aeeea0ec26f06ade7f932575101b455f34c1f10",
-                "reference": "3aeeea0ec26f06ade7f932575101b455f34c1f10",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/ba90345f21c73aa66067cae538b2b10fc7560fdb",
+                "reference": "ba90345f21c73aa66067cae538b2b10fc7560fdb",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "php": ">=8.0",
-                "phpgt/dom": "v3.0.0-RC1"
+                "phpgt/dom": "^3.0.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "0.12.*",
@@ -295,7 +295,7 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/v2"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v2.0.0"
             },
             "funding": [
                 {
@@ -303,7 +303,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-08-31T16:28:31+00:00"
+            "time": "2021-09-15T18:49:00+00:00"
         },
         {
             "name": "phpgt/http",
@@ -2130,33 +2130,33 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.13.0",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea"
+                "reference": "d86dfc2e2a3cd366cee475e52c6bb3bbc371aa0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be1996ed8adc35c3fd795488a653f4b518be70ea",
-                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/d86dfc2e2a3cd366cee475e52c6bb3bbc371aa0e",
+                "reference": "d86dfc2e2a3cd366cee475e52c6bb3bbc371aa0e",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.2",
-                "php": "^7.2 || ~8.0, <8.1",
+                "php": "^7.2 || ~8.0, <8.2",
                 "phpdocumentor/reflection-docblock": "^5.2",
                 "sebastian/comparator": "^3.0 || ^4.0",
                 "sebastian/recursion-context": "^3.0 || ^4.0"
             },
             "require-dev": {
-                "phpspec/phpspec": "^6.0",
+                "phpspec/phpspec": "^6.0 || ^7.0",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.11.x-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
@@ -2191,22 +2191,22 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/1.13.0"
+                "source": "https://github.com/phpspec/prophecy/tree/1.14.0"
             },
-            "time": "2021-03-17T13:42:18+00:00"
+            "time": "2021-09-10T09:02:12+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.96",
+            "version": "0.12.99",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "a98bdc51318f20fcae8c953d266f81a70254917f"
+                "reference": "b4d40f1d759942f523be267a1bab6884f46ca3f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a98bdc51318f20fcae8c953d266f81a70254917f",
-                "reference": "a98bdc51318f20fcae8c953d266f81a70254917f",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b4d40f1d759942f523be267a1bab6884f46ca3f7",
+                "reference": "b4d40f1d759942f523be267a1bab6884f46ca3f7",
                 "shasum": ""
             },
             "require": {
@@ -2237,7 +2237,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.96"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.99"
             },
             "funding": [
                 {
@@ -2257,7 +2257,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-08-21T11:55:13+00:00"
+            "time": "2021-09-12T20:09:55+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -3627,6 +3627,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": true,
             "time": "2020-09-28T06:45:17+00:00"
         },
         {
@@ -5130,8 +5131,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "phpgt/logger": 20,
-        "phpgt/routing": 20,
-        "phpgt/domtemplate": 20
+        "phpgt/routing": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
