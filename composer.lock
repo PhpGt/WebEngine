@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e32c4d69a6303f4491541f3a679f2f73",
+    "content-hash": "fd36670603b165b7048da74f2647a50d",
     "packages": [
         {
             "name": "composer/semver",
@@ -923,25 +923,26 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v1.4.0",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "151ed5fe3ff0cc4aa0229bc3575cebcf05da8cfd"
+                "reference": "ba90345f21c73aa66067cae538b2b10fc7560fdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/151ed5fe3ff0cc4aa0229bc3575cebcf05da8cfd",
-                "reference": "151ed5fe3ff0cc4aa0229bc3575cebcf05da8cfd",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/ba90345f21c73aa66067cae538b2b10fc7560fdb",
+                "reference": "ba90345f21c73aa66067cae538b2b10fc7560fdb",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "phpgt/dom": "*"
+                "php": ">=8.0",
+                "phpgt/dom": "^3.0.0"
             },
             "require-dev": {
-                "ext-intl": "*",
-                "phpunit/phpunit": "8.*"
+                "phpstan/phpstan": "0.12.*",
+                "phpunit/phpunit": "9.*"
             },
             "type": "library",
             "autoload": {
@@ -956,9 +957,15 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/master"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v2.0.0"
             },
-            "time": "2020-05-24T19:43:38+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/PhpGt",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-09-15T18:49:00+00:00"
         },
         {
             "name": "phpgt/fetch",
@@ -6667,5 +6674,5 @@
         "php": ">=8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
