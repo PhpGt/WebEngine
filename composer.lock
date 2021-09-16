@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e32c4d69a6303f4491541f3a679f2f73",
+    "content-hash": "69d10edd5e94ac83c3c5d7ae22a35ffe",
     "packages": [
         {
             "name": "composer/semver",
@@ -830,16 +830,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v3.0.0-RC1",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "9ff12209e04f7d49ddd55ffd8fc568aab6d285b4"
+                "reference": "cbe5a007908dd24bea14c1eeeccf8cc8f83a225f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/9ff12209e04f7d49ddd55ffd8fc568aab6d285b4",
-                "reference": "9ff12209e04f7d49ddd55ffd8fc568aab6d285b4",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/cbe5a007908dd24bea14c1eeeccf8cc8f83a225f",
+                "reference": "cbe5a007908dd24bea14c1eeeccf8cc8f83a225f",
                 "shasum": ""
             },
             "require": {
@@ -911,7 +911,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v3.0.0-RC1"
+                "source": "https://github.com/PhpGt/Dom/tree/v3.0.0"
             },
             "funding": [
                 {
@@ -919,7 +919,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-05-07T10:45:51+00:00"
+            "time": "2021-09-15T18:35:06+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -6655,9 +6655,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpgt/dom": 5
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -6667,5 +6665,5 @@
         "php": ">=8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
