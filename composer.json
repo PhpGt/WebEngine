@@ -19,7 +19,7 @@
 
 		"phpgt/config": "^1.0",
 		"phpgt/http": "^1.0",
-		"phpgt/logger": "dev-master",
+		"phpgt/logger": "^1.0",
 		"phpgt/routing": "dev-master",
 		"phpgt/dom": "^3.0.0",
 		"phpgt/domtemplate": "^2.0",
@@ -43,7 +43,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Gt\\WebEngine\\Test\\": "./test/unit"
+			"Gt\\WebEngine\\Test\\": "./test/phpunit"
 		}
 	},
 
