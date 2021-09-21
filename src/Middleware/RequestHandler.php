@@ -12,7 +12,10 @@ use Gt\DomTemplate\HTMLAttributeBinder;
 use Gt\DomTemplate\HTMLAttributeCollection;
 use Gt\DomTemplate\ListBinder;
 use Gt\DomTemplate\ModularContent;
+use Gt\DomTemplate\ModularContentDirectoryNotFoundException;
 use Gt\DomTemplate\ModularContentExpander;
+use Gt\DomTemplate\ModularContentFileNotFoundException;
+use Gt\DomTemplate\PartialExpander;
 use Gt\DomTemplate\PlaceholderBinder;
 use Gt\DomTemplate\TableBinder;
 use Gt\DomTemplate\TemplateCollection;
@@ -87,12 +90,26 @@ class RequestHandler implements RequestHandlerInterface {
 		$viewModel = $view->createViewModel();
 		$serviceContainer->set($viewModel);
 		if($viewModel instanceof HTMLDocument) {
-			$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
-				getcwd(),
-				$this->config->getString("view.component_directory")
-			]));
-			$componentExpander = new ComponentExpander($viewModel, $modularContent);
-			$componentExpander->expand();
+			try {
+				$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
+					getcwd(),
+					$this->config->getString("view.component_directory")
+				]));
+				$componentExpander = new ComponentExpander($viewModel, $modularContent);
+				$componentExpander->expand();
+			}
+			catch(ModularContentDirectoryNotFoundException) {}
+
+			try {
+				$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
+					getcwd(),
+					$this->config->getString("view.partial_directory")
+				]));
+
+				$partialExpander = new PartialExpander($viewModel, $modularContent);
+				$partialExpander->expand();
+			}
+			catch(ModularContentDirectoryNotFoundException) {}
 
 			$htmlAttributeBinder = new HTMLAttributeBinder();
 			$htmlAttributeCollection = new HTMLAttributeCollection();
