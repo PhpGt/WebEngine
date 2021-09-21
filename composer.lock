@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea65705209ac4e598d1b13e2adff0592",
+    "content-hash": "45d051740e6610be5d52151245845426",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -5127,11 +5127,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": {
         "phpgt/routing": 20
     },
-    "prefer-stable": true,
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "ext-posix": "*",
