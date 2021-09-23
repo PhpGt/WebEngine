@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45d051740e6610be5d52151245845426",
+    "content-hash": "b16b4224c19e0f6d98d126f524bab66c",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -56,6 +56,65 @@
                 "source": "https://github.com/Magicalex/WriteiniFile/tree/master"
             },
             "time": "2018-09-09T12:40:38+00:00"
+        },
+        {
+            "name": "phpgt/cli",
+            "version": "v1.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Cli.git",
+                "reference": "3f00088f76225088602e6d9faa1cf90fbd2205d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/3f00088f76225088602e6d9faa1cf90fbd2205d3",
+                "reference": "3f00088f76225088602e6d9faa1cf90fbd2205d3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-readline": "*",
+                "php": ">=8.0",
+                "phpgt/daemon": "1.*"
+            },
+            "require-dev": {
+                "phpstan/phpstan": ">=0.12.64",
+                "phpunit/phpunit": "9.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Cli\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Bowler",
+                    "email": "greg.bowler@g105b.com"
+                }
+            ],
+            "description": "Command line interface builder.",
+            "keywords": [
+                "cli",
+                "phpgt",
+                "terminal",
+                "webengine"
+            ],
+            "support": {
+                "issues": "https://github.com/PhpGt/Cli/issues",
+                "source": "https://github.com/PhpGt/Cli/tree/v1.3.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/PhpGt",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-06-15T19:01:44+00:00"
         },
         {
             "name": "phpgt/config",
@@ -165,6 +224,112 @@
                 }
             ],
             "time": "2021-01-28T13:27:01+00:00"
+        },
+        {
+            "name": "phpgt/daemon",
+            "version": "v1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Daemon.git",
+                "reference": "6490df99a22818149f30e3af408002ea7f73e035"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Daemon/zipball/6490df99a22818149f30e3af408002ea7f73e035",
+                "reference": "6490df99a22818149f30e3af408002ea7f73e035",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": ">=0.12.42",
+                "phpunit/phpunit": "9.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Daemon\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Background script execution with cross-platform compatible streaming.",
+            "support": {
+                "issues": "https://github.com/PhpGt/Daemon/issues",
+                "source": "https://github.com/PhpGt/Daemon/tree/v1.1.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/phpgt",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-02-02T17:33:16+00:00"
+        },
+        {
+            "name": "phpgt/database",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Database.git",
+                "reference": "db929a74e7e57f8424027c8fe685b37c6459db86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Database/zipball/db929a74e7e57f8424027c8fe685b37c6459db86",
+                "reference": "db929a74e7e57f8424027c8fe685b37c6459db86",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": ">=7.4",
+                "phpgt/cli": "^1.3",
+                "phpgt/config": "^v1.1.0"
+            },
+            "require-dev": {
+                "ext-sqlite3": "*",
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "^9.4"
+            },
+            "bin": [
+                "bin/migrate"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Database\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Bowler",
+                    "email": "greg.bowler@g105b.com"
+                },
+                {
+                    "name": "James Fellows",
+                    "email": "james.fellows@finanscapes.com"
+                },
+                {
+                    "name": "Christopher Paul Shaw",
+                    "email": "i-am-in-your-code-stealing-your-lulz@chris-shaw.com"
+                }
+            ],
+            "description": "Database API organisation.",
+            "support": {
+                "issues": "https://github.com/PhpGt/Database/issues",
+                "source": "https://github.com/PhpGt/Database/tree/v1.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/PhpGt",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-09-23T09:07:04+00:00"
         },
         {
             "name": "phpgt/dom",
