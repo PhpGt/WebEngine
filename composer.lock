@@ -366,21 +366,22 @@
         },
         {
             "name": "phpgt/cli",
-            "version": "v1.3.1",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Cli.git",
-                "reference": "02e25f8c0908f6977bda7ff5ddf1c0af75ba3c4b"
+                "reference": "3f00088f76225088602e6d9faa1cf90fbd2205d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/02e25f8c0908f6977bda7ff5ddf1c0af75ba3c4b",
-                "reference": "02e25f8c0908f6977bda7ff5ddf1c0af75ba3c4b",
+                "url": "https://api.github.com/repos/PhpGt/Cli/zipball/3f00088f76225088602e6d9faa1cf90fbd2205d3",
+                "reference": "3f00088f76225088602e6d9faa1cf90fbd2205d3",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=7.4",
+                "ext-readline": "*",
+                "php": ">=8.0",
                 "phpgt/daemon": "1.*"
             },
             "require-dev": {
@@ -412,15 +413,15 @@
             ],
             "support": {
                 "issues": "https://github.com/PhpGt/Cli/issues",
-                "source": "https://github.com/PhpGt/Cli/tree/v1.3.1"
+                "source": "https://github.com/PhpGt/Cli/tree/v1.3.2"
             },
             "funding": [
                 {
-                    "url": "https://github.com/phpgt",
+                    "url": "https://github.com/sponsors/PhpGt",
                     "type": "github"
                 }
             ],
-            "time": "2021-02-15T09:40:11+00:00"
+            "time": "2021-06-15T19:01:44+00:00"
         },
         {
             "name": "phpgt/config",
@@ -522,16 +523,16 @@
         },
         {
             "name": "phpgt/cron",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Cron.git",
-                "reference": "a2eb61546c617b8880c90207bad2e6918d32bedb"
+                "reference": "b6b1e8d762d6149e0d7bcb81f8e4cc3bf1dcfa6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Cron/zipball/a2eb61546c617b8880c90207bad2e6918d32bedb",
-                "reference": "a2eb61546c617b8880c90207bad2e6918d32bedb",
+                "url": "https://api.github.com/repos/PhpGt/Cron/zipball/b6b1e8d762d6149e0d7bcb81f8e4cc3bf1dcfa6c",
+                "reference": "b6b1e8d762d6149e0d7bcb81f8e4cc3bf1dcfa6c",
                 "shasum": ""
             },
             "require": {
@@ -556,15 +557,15 @@
             "description": "Run scripts or static functions at regular intervals.",
             "support": {
                 "issues": "https://github.com/PhpGt/Cron/issues",
-                "source": "https://github.com/PhpGt/Cron/tree/v1.0.2"
+                "source": "https://github.com/PhpGt/Cron/tree/v1.0.3"
             },
             "funding": [
                 {
-                    "url": "https://github.com/phpgt",
+                    "url": "https://github.com/sponsors/PhpGt",
                     "type": "github"
                 }
             ],
-            "time": "2021-02-15T09:58:17+00:00"
+            "time": "2021-09-23T10:47:38+00:00"
         },
         {
             "name": "phpgt/csrf",
