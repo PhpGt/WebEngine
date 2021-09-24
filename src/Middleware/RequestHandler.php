@@ -4,6 +4,8 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
+use Gt\Database\Connection\Settings;
+use Gt\Database\Database;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
@@ -63,11 +65,23 @@ class RequestHandler implements RequestHandlerInterface {
 // TODO: Handle 404s.
 // TODO: Extract a DI building class to build up all the classes for the container, so the developer can also create their own setup functions (and handle a way of only executing it under certain request conditions).
 // TODO: DomTemplate stuff - hook up the hello, you!
-// TODO: Database?
+// TODO: Lazy Database?
 // TODO: CSRF?
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
 		$serviceContainer->set(new PathMatcher(getcwd()));
+
+		$dbSettings = new Settings(
+			$this->config->get("database.query_directory"),
+			$this->config->get("database.driver"),
+			$this->config->get("database.schema"),
+			$this->config->get("database.host"),
+			$this->config->get("database.port"),
+			$this->config->get("database.username"),
+			$this->config->get("database.password")
+		);
+		$database = new Database($dbSettings);
+		$serviceContainer->set($database);
 
 		$router = $this->createRouter($serviceContainer);
 		$router->route($request);
