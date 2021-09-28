@@ -21,6 +21,7 @@
 		"phpgt/dom": "^3.0.0",
 		"phpgt/domtemplate": "^2.0",
 		"phpgt/database": "^1.4",
+		"phpgt/sync": "^1.2",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^3.0"
