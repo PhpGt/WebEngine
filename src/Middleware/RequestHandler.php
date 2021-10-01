@@ -31,6 +31,7 @@ use Gt\Logger\LogHandler\StreamHandler;
 use Gt\Routing\BaseRouter;
 use Gt\Routing\LogicStream\LogicStreamNamespace;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
+use Gt\Routing\Path\DynamicPath;
 use Gt\Routing\Path\PathMatcher;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
@@ -93,6 +94,12 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$viewAssembly = $router->getViewAssembly();
 		$logicAssembly = $router->getLogicAssembly();
+		$dynamicPath = new DynamicPath(
+			$request->getUri()->getPath(),
+			$viewAssembly,
+			$logicAssembly,
+		);
+		$serviceContainer->set($dynamicPath);
 
 		if(count($viewAssembly) === 0) {
 			$response = $response->withStatus(404);
