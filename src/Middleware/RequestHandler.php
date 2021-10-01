@@ -72,17 +72,18 @@ class RequestHandler implements RequestHandlerInterface {
 		$serviceContainer->set($request);
 		$serviceContainer->set(new PathMatcher(getcwd()));
 
-		$dbSettings = new Settings(
-			$this->config->get("database.query_directory"),
-			$this->config->get("database.driver"),
-			$this->config->get("database.schema"),
-			$this->config->get("database.host"),
-			$this->config->get("database.port"),
-			$this->config->get("database.username"),
-			$this->config->get("database.password")
-		);
-		$database = new Database($dbSettings);
-		$serviceContainer->set($database);
+		$serviceContainer->setLoader(Database::class, function():Database {
+			$dbSettings = new Settings(
+				$this->config->get("database.query_directory"),
+				$this->config->get("database.driver"),
+				$this->config->get("database.schema"),
+				$this->config->get("database.host"),
+				$this->config->get("database.port"),
+				$this->config->get("database.username"),
+				$this->config->get("database.password")
+			);
+			return new Database($dbSettings);
+		});
 
 		$router = $this->createRouter($serviceContainer);
 		$router->route($request);

@@ -728,16 +728,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "bb598c5338c51e5113fbb69001fa96ea243cffae"
+                "reference": "0b57dc998e020932af3c8d69c7c9fc063f73f9b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/bb598c5338c51e5113fbb69001fa96ea243cffae",
-                "reference": "bb598c5338c51e5113fbb69001fa96ea243cffae",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/0b57dc998e020932af3c8d69c7c9fc063f73f9b3",
+                "reference": "0b57dc998e020932af3c8d69c7c9fc063f73f9b3",
                 "shasum": ""
             },
             "require": {
@@ -764,7 +764,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.0.0"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.0"
             },
             "funding": [
                 {
@@ -772,30 +772,30 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-08-29T17:41:04+00:00"
+            "time": "2021-10-01T16:27:53+00:00"
         },
         {
             "name": "phpgt/sync",
-            "version": "v1.2.6",
+            "version": "v1.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Sync.git",
-                "reference": "863c60643ff1ee816705a7ccb9cd0e7deeb83763"
+                "reference": "711ac05de467ec2f68835797844ae27eb4992124"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Sync/zipball/863c60643ff1ee816705a7ccb9cd0e7deeb83763",
-                "reference": "863c60643ff1ee816705a7ccb9cd0e7deeb83763",
+                "url": "https://api.github.com/repos/PhpGt/Sync/zipball/711ac05de467ec2f68835797844ae27eb4992124",
+                "reference": "711ac05de467ec2f68835797844ae27eb4992124",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2",
+                "php": ">=8.0",
                 "phpgt/cli": "1.3.*",
                 "webmozart/glob": "4.*"
             },
             "require-dev": {
                 "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "9.*"
+                "phpunit/phpunit": "^9.5"
             },
             "bin": [
                 "bin/sync"
@@ -820,9 +820,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PhpGt/Sync/issues",
-                "source": "https://github.com/PhpGt/Sync/tree/v1.2.6"
+                "source": "https://github.com/PhpGt/Sync/tree/v1.2.7"
             },
-            "time": "2021-02-15T11:03:02+00:00"
+            "time": "2021-09-30T11:14:34+00:00"
         },
         {
             "name": "phpgt/typesafegetter",
