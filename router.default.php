@@ -48,6 +48,8 @@ class DefaultRouter extends BaseRouter {
 			return 0;
 		};
 
+		$pathMatcher->addFilter([$this, "filterUri"]);
+
 		$matchingLogics = $pathMatcher->findForUriPath(
 			$request->getUri()->getPath(),
 			"page",
@@ -78,5 +80,36 @@ class DefaultRouter extends BaseRouter {
 		DynamicPath $dynamicPath
 	):void {
 		$this->addToLogicAssembly("class/Output/Greeter.php");
+	}
+
+	public function filterUri(
+		string $filePath,
+		string $uriPath,
+		string $baseDir,
+		string $subDir
+	):bool {
+		$fileName = pathinfo($filePath, PATHINFO_FILENAME);
+		$fileDir = pathinfo($filePath, PATHINFO_DIRNAME);
+		$filePathNoExt = "$fileDir/$fileName";
+		$filePathNoExtNoSubDir = substr($filePathNoExt, strlen($subDir));
+
+		if($filePathNoExtNoSubDir === $uriPath) {
+			return true;
+		}
+
+		if(substr($uriPath, -1) !== "/") {
+			$uriPath .= "/";
+		}
+
+		$uriPathExpanded = $uriPath . "index";
+		if($filePathNoExtNoSubDir === $uriPathExpanded) {
+			return true;
+		}
+
+		if($fileName[0] === "_") {
+			return true;
+		}
+
+		return false;
 	}
 }
