@@ -15,12 +15,13 @@
 		"php": ">=8.0",
 
 		"phpgt/config": "^1.0",
-		"phpgt/http": "^1.0",
-		"phpgt/logger": "^1.0",
-		"phpgt/routing": "dev-master",
 		"phpgt/dom": "^3.0.0",
 		"phpgt/domtemplate": "^2.0",
 		"phpgt/database": "^1.4",
+		"phpgt/http": "^1.0",
+		"phpgt/logger": "^1.0",
+		"phpgt/routing": "dev-master",
+		"phpgt/servicecontainer": "^1.1.1",
 		"phpgt/sync": "^1.2",
 
 		"psr/http-server-middleware": "^1.0",

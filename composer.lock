@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15349178ac9418d2d5197b429e99dc45",
+    "content-hash": "0ef6e23fdd3abb0b2d551af599cfff05",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -728,16 +728,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "0b57dc998e020932af3c8d69c7c9fc063f73f9b3"
+                "reference": "10b237f04ffc76a17db0958c69a4e6824f931553"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/0b57dc998e020932af3c8d69c7c9fc063f73f9b3",
-                "reference": "0b57dc998e020932af3c8d69c7c9fc063f73f9b3",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/10b237f04ffc76a17db0958c69a4e6824f931553",
+                "reference": "10b237f04ffc76a17db0958c69a4e6824f931553",
                 "shasum": ""
             },
             "require": {
@@ -764,7 +764,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.0"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.1"
             },
             "funding": [
                 {
@@ -772,7 +772,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-10-01T16:27:53+00:00"
+            "time": "2021-10-02T09:17:13+00:00"
         },
         {
             "name": "phpgt/sync",

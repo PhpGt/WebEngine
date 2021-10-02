@@ -71,19 +71,9 @@ class RequestHandler implements RequestHandlerInterface {
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
 		$serviceContainer->set(new PathMatcher(getcwd()));
-
-		$serviceContainer->setLoader(Database::class, function():Database {
-			$dbSettings = new Settings(
-				$this->config->get("database.query_directory"),
-				$this->config->get("database.driver"),
-				$this->config->get("database.schema"),
-				$this->config->get("database.host"),
-				$this->config->get("database.port"),
-				$this->config->get("database.username"),
-				$this->config->get("database.password")
-			);
-			return new Database($dbSettings);
-		});
+		$serviceContainer->addLoaderClass(
+			new ServiceLoader($this->config, $serviceContainer)
+		);
 
 		$router = $this->createRouter($serviceContainer);
 		$router->route($request);
@@ -111,6 +101,7 @@ class RequestHandler implements RequestHandlerInterface {
 		}
 		$viewModel = $view->createViewModel();
 		$serviceContainer->set($viewModel);
+
 		if($viewModel instanceof HTMLDocument) {
 			try {
 				$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
@@ -132,38 +123,6 @@ class RequestHandler implements RequestHandlerInterface {
 				$partialExpander->expand();
 			}
 			catch(ModularContentDirectoryNotFoundException) {}
-
-			$htmlAttributeBinder = new HTMLAttributeBinder();
-			$htmlAttributeCollection = new HTMLAttributeCollection();
-			$placeholderBinder = new PlaceholderBinder();
-
-			$elementBinder = new ElementBinder(
-				$htmlAttributeBinder,
-				$htmlAttributeCollection,
-				$placeholderBinder
-			);
-			$tableBinder = new TableBinder();
-			$templateCollection = new TemplateCollection($viewModel);
-			$listBinder = new ListBinder($templateCollection);
-
-			$documentBinder = new DocumentBinder(
-				$viewModel,
-				[], // TODO: Get domtemplate config as array.
-				$elementBinder,
-				$placeholderBinder,
-				$tableBinder,
-				$listBinder,
-				$templateCollection
-			);
-
-			$serviceContainer->set($htmlAttributeBinder);
-			$serviceContainer->set($htmlAttributeCollection);
-			$serviceContainer->set($placeholderBinder);
-			$serviceContainer->set($elementBinder);
-			$serviceContainer->set($tableBinder);
-			$serviceContainer->set($templateCollection);
-			$serviceContainer->set($listBinder);
-			$serviceContainer->set($documentBinder);
 		}
 
 // TODO: Kill globals.
