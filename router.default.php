@@ -110,6 +110,12 @@ class DefaultRouter extends BaseRouter {
 			return true;
 		}
 
+		if($fileName[0] === "@") {
+			return true;
+		}
+
+		var_dump($filePath);
+
 		return false;
 	}
 }
