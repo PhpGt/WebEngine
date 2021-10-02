@@ -114,8 +114,6 @@ class DefaultRouter extends BaseRouter {
 			return true;
 		}
 
-		var_dump($filePath);
-
 		return false;
 	}
 }
