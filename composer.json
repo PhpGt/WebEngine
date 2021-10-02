@@ -20,7 +20,7 @@
 		"phpgt/database": "^1.4",
 		"phpgt/http": "^1.0",
 		"phpgt/logger": "^1.0",
-		"phpgt/routing": "dev-master",
+		"phpgt/routing": "^1.0",
 		"phpgt/servicecontainer": "^1.1.1",
 		"phpgt/sync": "^1.2",
 
