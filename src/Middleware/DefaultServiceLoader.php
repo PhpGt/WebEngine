@@ -5,7 +5,6 @@ use Gt\Config\Config;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Dom\Document;
-use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\DocumentBinder;
 use Gt\DomTemplate\ElementBinder;
 use Gt\DomTemplate\HTMLAttributeBinder;
@@ -16,12 +15,11 @@ use Gt\DomTemplate\TableBinder;
 use Gt\DomTemplate\TemplateCollection;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\LazyLoad;
-use Gt\WebEngine\View\HTMLView;
 
-class ServiceLoader {
+class DefaultServiceLoader {
 	public function __construct(
-		private Config $config,
-		private Container $container
+		protected Config $config,
+		protected Container $container
 	) {
 	}
 

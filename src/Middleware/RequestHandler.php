@@ -83,15 +83,28 @@ class RequestHandler implements RequestHandlerInterface {
 		$serviceContainer->set($request);
 		$serviceContainer->set(new PathMatcher(getcwd()));
 		$serviceContainer->addLoaderClass(
-			new ServiceLoader($this->config, $serviceContainer)
+			new DefaultServiceLoader(
+				$this->config,
+				$serviceContainer
+			)
 		);
 		$customServiceContainerClassName = implode("\\", [
 			$this->config->get("app.namespace"),
 			$this->config->get("app.service_loader"),
 		]);
 		if(class_exists($customServiceContainerClassName)) {
+			$constructorArgs = [];
+			if(is_a($customServiceContainerClassName, DefaultServiceLoader::class, true)) {
+				$constructorArgs = [
+					$this->config,
+					$serviceContainer,
+				];
+			}
+
 			$serviceContainer->addLoaderClass(
-				new $customServiceContainerClassName()
+				new $customServiceContainerClassName(
+					...$constructorArgs
+				)
 			);
 		}
 
