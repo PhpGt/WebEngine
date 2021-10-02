@@ -24,6 +24,7 @@ use Gt\DomTemplate\TemplateCollection;
 use Gt\Http\Response;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
+use Gt\Logger\Log;
 use Gt\Logger\LogConfig;
 use Gt\Logger\LogHandler\FileHandler;
 use Gt\Logger\LogHandler\StdOutHandler;
@@ -35,6 +36,7 @@ use Gt\Routing\Path\DynamicPath;
 use Gt\Routing\Path\PathMatcher;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
+use Gt\WebEngine\Logic\AppAutoloader;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\Logic\LogicProjectNamespace;
 use Gt\WebEngine\View\BaseView;
@@ -53,7 +55,16 @@ class RequestHandler implements RequestHandlerInterface {
 			getcwd(),
 			getcwd() . "/vendor/phpgt/webengine/config.default.ini"
 		);
-		$this->setupLogger($this->config->getSection("logger"));
+		$this->setupLogger(
+			$this->config->getSection("logger")
+		);
+
+		$appAutoloader = new AppAutoloader(
+			$this->config->get("app.namespace"),
+			$this->config->get("app.class_dir"),
+		);
+		$appAutoloader->setup();
+
 		stream_wrapper_register(
 			"gt-logic-stream",
 			LogicStreamWrapper::class
@@ -74,6 +85,15 @@ class RequestHandler implements RequestHandlerInterface {
 		$serviceContainer->addLoaderClass(
 			new ServiceLoader($this->config, $serviceContainer)
 		);
+		$customServiceContainerClassName = implode("\\", [
+			$this->config->get("app.namespace"),
+			$this->config->get("app.service_loader"),
+		]);
+		if(class_exists($customServiceContainerClassName)) {
+			$serviceContainer->addLoaderClass(
+				new $customServiceContainerClassName()
+			);
+		}
 
 		$router = $this->createRouter($serviceContainer);
 		$router->route($request);
