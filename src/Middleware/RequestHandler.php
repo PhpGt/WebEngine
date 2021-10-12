@@ -4,33 +4,20 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
-use Gt\Database\Connection\Settings;
-use Gt\Database\Database;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
-use Gt\DomTemplate\ElementBinder;
-use Gt\DomTemplate\HTMLAttributeBinder;
-use Gt\DomTemplate\HTMLAttributeCollection;
-use Gt\DomTemplate\ListBinder;
 use Gt\DomTemplate\ModularContent;
 use Gt\DomTemplate\ModularContentDirectoryNotFoundException;
-use Gt\DomTemplate\ModularContentExpander;
-use Gt\DomTemplate\ModularContentFileNotFoundException;
 use Gt\DomTemplate\PartialExpander;
-use Gt\DomTemplate\PlaceholderBinder;
-use Gt\DomTemplate\TableBinder;
-use Gt\DomTemplate\TemplateCollection;
 use Gt\Http\Response;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
-use Gt\Logger\Log;
 use Gt\Logger\LogConfig;
 use Gt\Logger\LogHandler\FileHandler;
 use Gt\Logger\LogHandler\StdOutHandler;
 use Gt\Logger\LogHandler\StreamHandler;
 use Gt\Routing\BaseRouter;
-use Gt\Routing\LogicStream\LogicStreamNamespace;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
 use Gt\Routing\Path\DynamicPath;
 use Gt\Routing\Path\PathMatcher;
@@ -38,9 +25,7 @@ use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
 use Gt\WebEngine\Logic\AppAutoloader;
 use Gt\WebEngine\Logic\LogicExecutor;
-use Gt\WebEngine\Logic\LogicProjectNamespace;
 use Gt\WebEngine\View\BaseView;
-use Gt\WebEngine\View\HTMLView;
 use Gt\WebEngine\View\NullView;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -75,9 +60,6 @@ class RequestHandler implements RequestHandlerInterface {
 		ServerRequestInterface $request
 	):ResponseInterface {
 // TODO: Handle 404s.
-// TODO: Extract a DI building class to build up all the classes for the container, so the developer can also create their own setup functions (and handle a way of only executing it under certain request conditions).
-// TODO: DomTemplate stuff - hook up the hello, you!
-// TODO: Lazy Database?
 // TODO: CSRF?
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
