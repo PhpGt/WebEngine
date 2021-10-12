@@ -159,6 +159,10 @@ class RequestHandler implements RequestHandlerInterface {
 		);
 		$logicExecutor->invoke("go");
 
+		/** @var DocumentBinder $documentBinder */
+		$documentBinder = $serviceContainer->get(DocumentBinder::class);
+		$documentBinder->cleanBindAttributes();
+
 		$view->stream($viewModel);
 		return $response;
 	}
