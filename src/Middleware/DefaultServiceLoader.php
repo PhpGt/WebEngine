@@ -2,6 +2,7 @@
 namespace Gt\WebEngine\Middleware;
 
 use Gt\Config\Config;
+use Gt\Database\Connection\DefaultSettings;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Dom\Document;
@@ -32,7 +33,10 @@ class DefaultServiceLoader {
 			$this->config->get("database.host"),
 			$this->config->get("database.port"),
 			$this->config->get("database.username"),
-			$this->config->get("database.password")
+			$this->config->get("database.password"),
+			$this->config->get("database.connection_name") ?: DefaultSettings::DEFAULT_NAME,
+			$this->config->get("database.collation") ?: DefaultSettings::DEFAULT_COLLATION,
+			$this->config->get("database.charset") ?: DefaultSettings::DEFAULT_CHARSET,
 		);
 		return new Database($dbSettings);
 	}
