@@ -151,10 +151,9 @@ class RequestHandler implements RequestHandlerInterface {
 			$injector,
 			$this->config->getString("app.namespace")
 		);
-// TODO: Automatically refresh "do" functions.
 		$input->when("do")->call(
 			fn(InputData $data) => $logicExecutor->invoke(
-				"do_" . $data->getString("do")
+				"do_" . str_replace("-", "_", $data->getString("do"))
 			)
 		);
 		$logicExecutor->invoke("go");
