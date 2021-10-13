@@ -25,7 +25,10 @@ class DefaultRouter extends BaseRouter {
 	}
 
 	#[Any(name: "page-route", accept: "text/html,application/xhtml+xml")]
-	public function page(PathMatcher $pathMatcher, Request $request):void {
+	public function page(
+		PathMatcher $pathMatcher,
+		Request $request
+	):void {
 		$sortNestLevelCallback = fn(string $a, string $b):int =>
 			substr_count($a, "/") > substr_count($b, "/")
 			? 1
@@ -111,7 +114,8 @@ class DefaultRouter extends BaseRouter {
 		}
 
 		if($fileName[0] === "@") {
-			return true;
+			$dirMatcher = dirname(substr($filePath, strlen($subDir))) . "/";
+			return str_starts_with($uriPath, $dirMatcher);
 		}
 
 		return false;
