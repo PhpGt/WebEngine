@@ -138,6 +138,15 @@ class RequestHandler implements RequestHandlerInterface {
 				$partialExpander->expand();
 			}
 			catch(ModularContentDirectoryNotFoundException) {}
+
+			$bodyClass = "uri";
+			foreach(explode("/", $request->getUri()->getPath()) as $i => $pathPart) {
+				if($i === 0) {
+					continue;
+				}
+				$bodyClass .= "--$pathPart";
+				$viewModel->body->classList->add($bodyClass);
+			}
 		}
 
 // TODO: Kill globals.
