@@ -67,6 +67,7 @@ class RequestHandler implements RequestHandlerInterface {
 		$serviceContainer->addLoaderClass(
 			new DefaultServiceLoader(
 				$this->config,
+				$request,
 				$serviceContainer
 			)
 		);
