@@ -101,8 +101,9 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$viewAssembly = $router->getViewAssembly();
 		$logicAssembly = $router->getLogicAssembly();
+		$uriPath = $request->getUri()->getPath();
 		$dynamicPath = new DynamicPath(
-			$request->getUri()->getPath(),
+			$uriPath,
 			$viewAssembly,
 			$logicAssembly,
 		);
@@ -140,13 +141,14 @@ class RequestHandler implements RequestHandlerInterface {
 			}
 			catch(ModularContentDirectoryNotFoundException) {}
 
-			$bodyClass = "uri";
-			foreach(explode("/", $request->getUri()->getPath()) as $i => $pathPart) {
+			$viewModel->body->classList->add("uri" . str_replace("/", "--", $uriPath));
+			$bodyDirClass = "dir";
+			foreach(explode("/", $uriPath) as $i => $pathPart) {
 				if($i === 0) {
 					continue;
 				}
-				$bodyClass .= "--$pathPart";
-				$viewModel->body->classList->add($bodyClass);
+				$bodyDirClass .= "--$pathPart";
+				$viewModel->body->classList->add($bodyDirClass);
 			}
 		}
 
