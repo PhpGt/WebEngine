@@ -4,6 +4,9 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
+use Gt\Csrf\ArrayTokenStore;
+use Gt\Csrf\HTMLDocumentProtector;
+use Gt\Csrf\SessionTokenStore;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
@@ -23,6 +26,7 @@ use Gt\Routing\Path\DynamicPath;
 use Gt\Routing\Path\PathMatcher;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
+use Gt\Session\Session;
 use Gt\WebEngine\Logic\AppAutoloader;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
@@ -60,7 +64,6 @@ class RequestHandler implements RequestHandlerInterface {
 		ServerRequestInterface $request
 	):ResponseInterface {
 // TODO: Handle 404s.
-// TODO: CSRF?
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
 		$serviceContainer->set(new PathMatcher(getcwd()));
@@ -80,6 +83,7 @@ class RequestHandler implements RequestHandlerInterface {
 			if(is_a($customServiceContainerClassName, DefaultServiceLoader::class, true)) {
 				$constructorArgs = [
 					$this->config,
+					$request,
 					$serviceContainer,
 				];
 			}
@@ -101,13 +105,15 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$viewAssembly = $router->getViewAssembly();
 		$logicAssembly = $router->getLogicAssembly();
-		$uriPath = $request->getUri()->getPath();
+		$requestUri = $request->getUri();
+		$uriPath = $requestUri->getPath();
 		$dynamicPath = new DynamicPath(
 			$uriPath,
 			$viewAssembly,
 			$logicAssembly,
 		);
 		$serviceContainer->set($dynamicPath);
+		$serviceContainer->set($uriPath);
 
 		if(count($viewAssembly) === 0) {
 			$response = $response->withStatus(404);
