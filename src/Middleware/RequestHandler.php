@@ -113,7 +113,6 @@ class RequestHandler implements RequestHandlerInterface {
 			$logicAssembly,
 		);
 		$serviceContainer->set($dynamicPath);
-		$serviceContainer->set($uriPath);
 
 		if(count($viewAssembly) === 0) {
 			$response = $response->withStatus(404);
@@ -124,6 +123,8 @@ class RequestHandler implements RequestHandlerInterface {
 		}
 		$viewModel = $view->createViewModel();
 		$serviceContainer->set($viewModel);
+
+// TODO: Set a Session loader here, so the CSRF handler can use it.
 
 		if($viewModel instanceof HTMLDocument) {
 			try {
@@ -156,6 +157,26 @@ class RequestHandler implements RequestHandlerInterface {
 				$bodyDirClass .= "--$pathPart";
 				$viewModel->body->classList->add($bodyDirClass);
 			}
+
+//			TODO: Complete CSRF implementation - maybe use its own cookie?
+//			$serviceContainer->setLoader(Session::class, function():Session {
+//				$sessionHandler = new \Gt\Session\FileHandler();
+//				return new Session(
+//					$sessionHandler,
+//					$this->getConfigSection("session") ?? []
+//				);
+//			});
+//
+//			/** @var Session $session */
+//			$session = $serviceContainer->get(Session::class);
+//			$csrfTokenStore = new SessionTokenStore($session->getStore("csrf", true));
+//
+//			if($request->getMethod() === "POST") {
+//				$csrfTokenStore->processAndVerify($_POST);
+//			}
+//
+//			$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
+//			$protector->protectAndInject();
 		}
 
 // TODO: Kill globals.

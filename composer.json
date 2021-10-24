@@ -15,6 +15,7 @@
 		"php": ">=8.0",
 
 		"phpgt/config": "^1.0",
+		"phpgt/csrf": "^1.7.2",
 		"phpgt/dom": "^3.0.0",
 		"phpgt/domtemplate": "^2.0",
 		"phpgt/database": "^1.4",
