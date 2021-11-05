@@ -77,6 +77,7 @@ class RequestHandler implements RequestHandlerInterface {
 				$serviceContainer
 			)
 		);
+		$serviceContainer->set($this->config);
 		$customServiceContainerClassName = implode("\\", [
 			$this->config->get("app.namespace"),
 			$this->config->get("app.service_loader"),
