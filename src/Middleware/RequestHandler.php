@@ -16,6 +16,7 @@ use Gt\DomTemplate\PartialExpander;
 use Gt\Http\Response;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
+use Gt\Logger\Log;
 use Gt\Logger\LogConfig;
 use Gt\Logger\LogHandler\FileHandler;
 use Gt\Logger\LogHandler\StdOutHandler;
@@ -27,6 +28,7 @@ use Gt\Routing\Path\PathMatcher;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\Injector;
 use Gt\Session\Session;
+use Gt\Session\SessionSetup;
 use Gt\WebEngine\Logic\AppAutoloader;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
@@ -158,15 +160,20 @@ class RequestHandler implements RequestHandlerInterface {
 				$viewModel->body->classList->add($bodyDirClass);
 			}
 
+//			ini_set('session.serialize_handler', 'php_serialize');
+			$sessionConfig = $this->config->getSection("session");
+			$sessionId = $_COOKIE[$sessionConfig["name"]];
+			$sessionHandler = SessionSetup::attachHandler(
+				$sessionConfig->getString("handler")
+			);
+			$session = new Session(
+				$sessionHandler,
+				$sessionConfig,
+				$sessionId
+			);
+			$serviceContainer->set($session);
+
 //			TODO: Complete CSRF implementation - maybe use its own cookie?
-//			$serviceContainer->setLoader(Session::class, function():Session {
-//				$sessionHandler = new \Gt\Session\FileHandler();
-//				return new Session(
-//					$sessionHandler,
-//					$this->getConfigSection("session") ?? []
-//				);
-//			});
-//
 //			/** @var Session $session */
 //			$session = $serviceContainer->get(Session::class);
 //			$csrfTokenStore = new SessionTokenStore($session->getStore("csrf", true));
@@ -196,6 +203,7 @@ class RequestHandler implements RequestHandlerInterface {
 			)
 		);
 		$logicExecutor->invoke("go");
+		$logicExecutor->invoke("go_after");
 
 		/** @var DocumentBinder $documentBinder */
 		$documentBinder = $serviceContainer->get(DocumentBinder::class);
