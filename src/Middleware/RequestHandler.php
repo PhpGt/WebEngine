@@ -14,6 +14,7 @@ use Gt\DomTemplate\ModularContent;
 use Gt\DomTemplate\ModularContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
 use Gt\Http\Response;
+use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
 use Gt\Logger\Log;
@@ -96,6 +97,9 @@ class RequestHandler implements RequestHandlerInterface {
 				)
 			);
 		}
+
+		$server = new ServerInfo($_SERVER);
+		$serviceContainer->set($server);
 
 		$router = $this->createRouter($serviceContainer);
 		$router->route($request);
