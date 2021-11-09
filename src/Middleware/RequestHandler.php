@@ -167,7 +167,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 //			ini_set('session.serialize_handler', 'php_serialize');
 			$sessionConfig = $this->config->getSection("session");
-			$sessionId = $_COOKIE[$sessionConfig["name"]];
+			$sessionId = $_COOKIE[$sessionConfig["name"]] ?? null;
 			$sessionHandler = SessionSetup::attachHandler(
 				$sessionConfig->getString("handler")
 			);
