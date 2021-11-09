@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "62b18e5691bbf01fc4777fb3dd271187",
+    "content-hash": "b909866b0e91632d5a546f12b215ed2f",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -716,30 +716,30 @@
         },
         {
             "name": "phpgt/routing",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Routing.git",
-                "reference": "7b5080b3dec22cd3bca31693ca15ec26c699d511"
+                "reference": "a9ccd0193ba807e85a2754839ff60d371407f04c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/7b5080b3dec22cd3bca31693ca15ec26c699d511",
-                "reference": "7b5080b3dec22cd3bca31693ca15ec26c699d511",
+                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/a9ccd0193ba807e85a2754839ff60d371407f04c",
+                "reference": "a9ccd0193ba807e85a2754839ff60d371407f04c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.0",
-                "phpgt/config": "^v1.1.0",
-                "phpgt/http": "^v1",
+                "phpgt/config": "^1.1.0",
+                "phpgt/http": "^1",
                 "phpgt/servicecontainer": "1.*",
                 "phpgt/typesafegetter": "^1.2.2",
                 "psr/http-message": "1.*",
                 "willdurand/negotiation": "^3.0"
             },
             "require-dev": {
-                "phpstan/phpstan": ">=0.12.82",
-                "phpunit/phpunit": ">=9.3.8"
+                "phpstan/phpstan": "~1.1",
+                "phpunit/phpunit": "~9.5"
             },
             "type": "library",
             "autoload": {
@@ -773,7 +773,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PhpGt/Routing/issues",
-                "source": "https://github.com/PhpGt/Routing/tree/v1.0.1"
+                "source": "https://github.com/PhpGt/Routing/tree/v1.0.2"
             },
             "funding": [
                 {
@@ -781,7 +781,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-03T13:29:17+00:00"
+            "time": "2021-11-09T12:57:45+00:00"
         },
         {
             "name": "phpgt/servicecontainer",
@@ -2823,16 +2823,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.0.2",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91"
+                "reference": "bcea0ae85868a89d5789c75f012c93129f842934"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
-                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/bcea0ae85868a89d5789c75f012c93129f842934",
+                "reference": "bcea0ae85868a89d5789c75f012c93129f842934",
                 "shasum": ""
             },
             "require": {
@@ -2863,7 +2863,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.0.2"
+                "source": "https://github.com/phpstan/phpstan/tree/1.1.2"
             },
             "funding": [
                 {
@@ -2883,7 +2883,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-03T16:09:51+00:00"
+            "time": "2021-11-09T12:41:09+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
