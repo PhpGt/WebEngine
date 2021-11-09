@@ -69,7 +69,6 @@ class RequestHandler implements RequestHandlerInterface {
 // TODO: Handle 404s.
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
-		$serviceContainer->set(new PathMatcher(getcwd()));
 		$serviceContainer->addLoaderClass(
 			new DefaultServiceLoader(
 				$this->config,

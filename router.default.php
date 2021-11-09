@@ -6,6 +6,8 @@ use Gt\Routing\BaseRouter;
 use Gt\Routing\Method\Any;
 use Gt\Routing\Method\Get;
 use Gt\Routing\Method\Post;
+use Gt\Routing\Path\FileMatch\BasicFileMatch;
+use Gt\Routing\Path\FileMatch\MagicFileMatch;
 use Gt\Routing\Path\PathMatcher;
 use Gt\Routing\Path\DynamicPath;
 use Gt\WebEngine\View\BaseView;
@@ -26,56 +28,53 @@ class DefaultRouter extends BaseRouter {
 
 	#[Any(name: "page-route", accept: "text/html,application/xhtml+xml")]
 	public function page(
-		PathMatcher $pathMatcher,
 		Request $request
 	):void {
-		$sortNestLevelCallback = fn(string $a, string $b):int =>
-			substr_count($a, "/") > substr_count($b, "/")
-			? 1
-			: -1;
-		$sortViewOrder = function(string $a, string $b):int {
-			$fileNameA = pathinfo($a, PATHINFO_FILENAME);
-			$fileNameB = pathinfo($b, PATHINFO_FILENAME);
-			if($fileNameA === "_header") {
-				return -1;
+		$pathMatcher = new PathMatcher("page");
+		$this->setViewClass(HTMLView::class);
+		$pathMatcher->addFilter(function(string $filePath, string $uriPath, string $baseDir):bool {
+// There are three types of matching files: Basic, Magic and Dynamic.
+// Basic is where a URI matches directly to a file on disk.
+// Magic is where a URI matches a PHP.Gt-specific file, like _common or _header.
+// Dynamic is where a URI matches a file/directory marked as dynamic with "@".
+			$basicFileMatch = new BasicFileMatch($filePath, $baseDir);
+			if($basicFileMatch->matches($uriPath)) {
+				return true;
 			}
-			elseif($fileNameA === "_footer") {
-				return 1;
-			}
-			elseif($fileNameB === "_header") {
-				return 1;
-			}
-			elseif($fileNameB === "_footer") {
-				return -1;
-			}
-			return 0;
-		};
 
-		$pathMatcher->addFilter([$this, "filterUri"]);
+			$magicFileMatch = new MagicFileMatch($filePath, $baseDir);
+			if($magicFileMatch->matches($uriPath)) {
+				return true;
+			}
+
+			return false;
+		});
+
+		$sortNestLevelCallback = fn(string $a, string $b) =>
+			substr_count($a, "/") > substr_count($b, "/");
+		$footerSort = fn(string $a, string $b) =>
+		strtok(basename($a), ".") === "_footer" ? 1 : 0;
 
 		$matchingLogics = $pathMatcher->findForUriPath(
 			$request->getUri()->getPath(),
 			"page",
 			"php"
 		);
-
 		usort($matchingLogics, $sortNestLevelCallback);
 		foreach($matchingLogics as $path) {
 			$this->addToLogicAssembly($path);
 		}
 
-		$matchingViewFilePaths = $pathMatcher->findForUriPath(
+		$matchingViews = $pathMatcher->findForUriPath(
 			$request->getUri()->getPath(),
 			"page",
 			"html"
 		);
-		usort($matchingViewFilePaths, $sortNestLevelCallback);
-		usort($matchingViewFilePaths, $sortViewOrder);
-		foreach($matchingViewFilePaths as $path) {
+		usort($matchingViews, $sortNestLevelCallback);
+		usort($matchingViews, $footerSort);
+		foreach($matchingViews as $path) {
 			$this->addToViewAssembly($path);
 		}
-
-		$this->setViewClass(HTMLView::class);
 	}
 
 	#[Post(path: "/greet/@name", function: "greet", accept: "text/plain")]
@@ -83,41 +82,5 @@ class DefaultRouter extends BaseRouter {
 		DynamicPath $dynamicPath
 	):void {
 		$this->addToLogicAssembly("class/Output/Greeter.php");
-	}
-
-	public function filterUri(
-		string $filePath,
-		string $uriPath,
-		string $baseDir,
-		string $subDir
-	):bool {
-		$fileName = pathinfo($filePath, PATHINFO_FILENAME);
-		$fileDir = pathinfo($filePath, PATHINFO_DIRNAME);
-		$filePathNoExt = "$fileDir/$fileName";
-		$filePathNoExtNoSubDir = substr($filePathNoExt, strlen($subDir));
-
-		if($filePathNoExtNoSubDir === $uriPath) {
-			return true;
-		}
-
-		if(substr($uriPath, -1) !== "/") {
-			$uriPath .= "/";
-		}
-
-		$uriPathExpanded = $uriPath . "index";
-		if($filePathNoExtNoSubDir === $uriPathExpanded) {
-			return true;
-		}
-
-		if($fileName[0] === "_") {
-			return true;
-		}
-
-		if($fileName[0] === "@") {
-			$dirMatcher = dirname(substr($filePath, strlen($subDir))) . "/";
-			return str_starts_with($uriPath, $dirMatcher);
-		}
-
-		return false;
 	}
 }
