@@ -785,16 +785,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.1.1",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "10b237f04ffc76a17db0958c69a4e6824f931553"
+                "reference": "8d0faf7325af1b5e46e24a19c5fa6a4f9371c240"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/10b237f04ffc76a17db0958c69a4e6824f931553",
-                "reference": "10b237f04ffc76a17db0958c69a4e6824f931553",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8d0faf7325af1b5e46e24a19c5fa6a4f9371c240",
+                "reference": "8d0faf7325af1b5e46e24a19c5fa6a4f9371c240",
                 "shasum": ""
             },
             "require": {
@@ -821,7 +821,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.1"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.2"
             },
             "funding": [
                 {
@@ -829,7 +829,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-10-02T09:17:13+00:00"
+            "time": "2021-11-09T11:41:52+00:00"
         },
         {
             "name": "phpgt/session",
@@ -982,20 +982,20 @@
         },
         {
             "name": "psr/container",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "2ae37329ee82f91efadc282cc2d527fd6065a5ef"
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/2ae37329ee82f91efadc282cc2d527fd6065a5ef",
-                "reference": "2ae37329ee82f91efadc282cc2d527fd6065a5ef",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/c71ecc56dfe541dbd90c5360474fbc405f8d5963",
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.0"
+                "php": ">=7.4.0"
             },
             "type": "library",
             "extra": {
@@ -1029,9 +1029,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-fig/container/issues",
-                "source": "https://github.com/php-fig/container/tree/2.0.1"
+                "source": "https://github.com/php-fig/container/tree/2.0.2"
             },
-            "time": "2021-03-24T13:40:57+00:00"
+            "time": "2021-11-05T16:47:00+00:00"
         },
         {
             "name": "psr/http-message",
@@ -1435,6 +1435,7 @@
                 "issues": "https://github.com/webmozart/path-util/issues",
                 "source": "https://github.com/webmozart/path-util/tree/2.3.0"
             },
+            "abandoned": "symfony/filesystem",
             "time": "2015-12-17T08:42:14+00:00"
         },
         {
