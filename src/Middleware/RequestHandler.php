@@ -67,6 +67,16 @@ class RequestHandler implements RequestHandlerInterface {
 		ServerRequestInterface $request
 	):ResponseInterface {
 // TODO: Handle 404s.
+		$response = new Response();
+		$requestUri = $request->getUri();
+		$uriPath = $requestUri->getPath();
+
+		if(!str_ends_with($uriPath, "/")) {
+			return $response
+				->withHeader("Location", "$uriPath/")
+				->withStatus(307);
+		}
+
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
 		$serviceContainer->addLoaderClass(
@@ -103,7 +113,6 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$router = $this->createRouter($serviceContainer);
 		$router->route($request);
-		$response = new Response();
 
 		$viewClass = $router->getViewClass() ?? NullView::class;
 		/** @var BaseView $view */
@@ -111,8 +120,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$viewAssembly = $router->getViewAssembly();
 		$logicAssembly = $router->getLogicAssembly();
-		$requestUri = $request->getUri();
-		$uriPath = $requestUri->getPath();
+
 		$dynamicPath = new DynamicPath(
 			$uriPath,
 			$viewAssembly,
