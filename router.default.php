@@ -52,8 +52,25 @@ class DefaultRouter extends BaseRouter {
 
 		$sortNestLevelCallback = fn(string $a, string $b) =>
 			substr_count($a, "/") > substr_count($b, "/");
+
+// These two sort functions allow multiple headers and footers to be in nested
+// directories. The outer ternary always puts _header at the start of the list
+// and _footer at the end of the list. The inner ternary sorts _header files so
+// the highest level header is at the start of the list, with the reverse logic
+// applied to footers.
+		$headerSort = fn(string $a, string $b) =>
+		strtok(basename($a), ".") === "_header"
+			? strtok(basename($b), ".") === "_header"
+			? substr_count($a, "/") > substr_count($b, "/")
+			: 0
+			: 1;
+
 		$footerSort = fn(string $a, string $b) =>
-		strtok(basename($a), ".") === "_footer" ? 1 : 0;
+		strtok(basename($a), ".") === "_footer"
+			? strtok(basename($b), ".") === "_footer"
+			? substr_count($a, "/") < substr_count($b, "/")
+			: 1
+			: 0;
 
 		$matchingLogics = $pathMatcher->findForUriPath(
 			$request->getUri()->getPath(),
@@ -71,6 +88,7 @@ class DefaultRouter extends BaseRouter {
 			"html"
 		);
 		usort($matchingViews, $sortNestLevelCallback);
+		usort($matchingViews, $headerSort);
 		usort($matchingViews, $footerSort);
 		foreach($matchingViews as $path) {
 			$this->addToViewAssembly($path);
