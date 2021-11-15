@@ -10,8 +10,8 @@ use Gt\Csrf\SessionTokenStore;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
-use Gt\DomTemplate\ModularContent;
-use Gt\DomTemplate\ModularContentDirectoryNotFoundException;
+use Gt\DomTemplate\PartialContent;
+use Gt\DomTemplate\PartialContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
@@ -146,25 +146,25 @@ class RequestHandler implements RequestHandlerInterface {
 
 		if($viewModel instanceof HTMLDocument) {
 			try {
-				$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
+				$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
 					getcwd(),
 					$this->config->getString("view.component_directory")
 				]));
-				$componentExpander = new ComponentExpander($viewModel, $modularContent);
+				$componentExpander = new ComponentExpander($viewModel, $partial);
 				$componentExpander->expand();
 			}
-			catch(ModularContentDirectoryNotFoundException) {}
+			catch(PartialContentDirectoryNotFoundException) {}
 
 			try {
-				$modularContent = new ModularContent(implode(DIRECTORY_SEPARATOR, [
+				$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
 					getcwd(),
 					$this->config->getString("view.partial_directory")
 				]));
 
-				$partialExpander = new PartialExpander($viewModel, $modularContent);
+				$partialExpander = new PartialExpander($viewModel, $partial);
 				$partialExpander->expand();
 			}
-			catch(ModularContentDirectoryNotFoundException) {}
+			catch(PartialContentDirectoryNotFoundException) {}
 
 			$viewModel->body->classList->add("uri" . str_replace("/", "--", $uriPath));
 			$bodyDirClass = "dir";
