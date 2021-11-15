@@ -223,7 +223,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 		/** @var DocumentBinder $documentBinder */
 		$documentBinder = $serviceContainer->get(DocumentBinder::class);
-		$documentBinder->cleanBindAttributes();
+		$documentBinder->cleanDatasets();
 
 		$view->stream($viewModel);
 		return $response;
