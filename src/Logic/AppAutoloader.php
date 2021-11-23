@@ -23,7 +23,6 @@ class AppAutoloader {
 			return;
 		}
 
-		Log::debug("Autoloading: $className");
 		$classNameWithoutAppNamespace = substr(
 			$className,
 			strlen($this->namespace) + 1
