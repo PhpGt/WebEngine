@@ -71,7 +71,13 @@ class DefaultServiceLoader {
 
 	#[LazyLoad(TableBinder::class)]
 	public function loadTableBinder():TableBinder {
-		return new TableBinder();
+		return new TableBinder(
+			$this->container->get(TemplateCollection::class),
+			$this->container->get(ElementBinder::class),
+			$this->container->get(HTMLAttributeBinder::class),
+			$this->container->get(HTMLAttributeCollection::class),
+			$this->container->get(PlaceholderBinder::class),
+		);
 	}
 
 	#[LazyLoad(TemplateCollection::class)]
