@@ -50,27 +50,64 @@ class DefaultRouter extends BaseRouter {
 			return false;
 		});
 
+// This sort function allow multiple headers and footers to be in nested
+// directories, so the highest level header is at the start of the list,
+// with the reverse logic applied to footers.
+// TODO: Extract into own function. Should this be maintained within PHP.Gt/Routing ?
+		$headerFooterSort = function(string $a, string $b):int {
+			$fileNameA = pathinfo($a, PATHINFO_FILENAME);
+			$fileNameB = pathinfo($b, PATHINFO_FILENAME);
+
+			if($fileNameA === "_header") {
+				if($fileNameB === "_header") {
+					$aDepth = substr_count($a, "/");
+					$bDepth = substr_count($b, "/");
+					if($aDepth > $bDepth) {
+						return 1;
+					}
+					elseif($aDepth < $bDepth) {
+						return -1;
+					}
+					else {
+						return 0;
+					}
+				}
+
+
+				return -1;
+			}
+
+			if($fileNameA === "_footer") {
+				if($fileNameB === "_footer") {
+					$aDepth = substr_count($a, "/");
+					$bDepth = substr_count($b, "/");
+					if($aDepth < $bDepth) {
+						return 1;
+					}
+					elseif($aDepth > $bDepth) {
+						return -1;
+					}
+					else {
+						return 0;
+					}
+				}
+
+				return 1;
+			}
+
+			if($fileNameB === "_header") {
+				return 1;
+			}
+
+			if($fileNameB === "_footer") {
+				return -1;
+			}
+
+			return 0;
+		};
+
 		$sortNestLevelCallback = fn(string $a, string $b) =>
 			substr_count($a, "/") > substr_count($b, "/");
-
-// These two sort functions allow multiple headers and footers to be in nested
-// directories. The outer ternary always puts _header at the start of the list
-// and _footer at the end of the list. The inner ternary sorts _header files so
-// the highest level header is at the start of the list, with the reverse logic
-// applied to footers.
-		$headerSort = fn(string $a, string $b) =>
-		strtok(basename($a), ".") === "_header"
-			? strtok(basename($b), ".") === "_header"
-			? substr_count($a, "/") > substr_count($b, "/")
-			: 0
-			: 1;
-
-		$footerSort = fn(string $a, string $b) =>
-		strtok(basename($a), ".") === "_footer"
-			? strtok(basename($b), ".") === "_footer"
-			? substr_count($a, "/") < substr_count($b, "/")
-			: 1
-			: 0;
 
 		$matchingLogics = $pathMatcher->findForUriPath(
 			$request->getUri()->getPath(),
@@ -87,9 +124,7 @@ class DefaultRouter extends BaseRouter {
 			"page",
 			"html"
 		);
-		usort($matchingViews, $sortNestLevelCallback);
-		usort($matchingViews, $headerSort);
-		usort($matchingViews, $footerSort);
+		usort($matchingViews, $headerFooterSort);
 		foreach($matchingViews as $path) {
 			$this->addToViewAssembly($path);
 		}
