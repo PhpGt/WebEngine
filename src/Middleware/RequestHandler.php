@@ -166,9 +166,12 @@ class RequestHandler implements RequestHandlerInterface {
 			}
 			catch(PartialContentDirectoryNotFoundException) {}
 
-			$viewModel->body->classList->add("uri" . str_replace("/", "--", $uriPath));
+			$dynamicUri = $dynamicPath->getUrl("page/");
+			$dynamicUri = str_replace("/", "--", $dynamicUri);
+			$dynamicUri = str_replace("@", "_", $dynamicUri);
+			$viewModel->body->classList->add("uri" . $dynamicUri);
 			$bodyDirClass = "dir";
-			foreach(explode("/", $uriPath) as $i => $pathPart) {
+			foreach(explode("--", $dynamicUri) as $i => $pathPart) {
 				if($i === 0) {
 					continue;
 				}
