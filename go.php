@@ -6,24 +6,8 @@
  * lifecycle is documented at:
  * https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
+chdir(dirname($_SERVER["DOCUMENT_ROOT"]));
 ini_set("display_errors", "on");
-//set_error_handler(function(
-//	int $errno,
-//	string $errstr,
-//	?string $errfile = null,
-//	?int $errline = null,
-//	?array $errcontext = null
-//) {
-//	echo "ERROR $errno - $errfile ($errline): $errstr";
-//	foreach(debug_backtrace() as $debug) {
-//		if(!isset($debug["file"])) {
-//			continue;
-//		}
-//
-//		echo "$debug[file] ($debug[line])\n";
-//	}
-//	exit;
-//});
 /**
  * Before any code is executed, return false here if a static file is requested.
  * When running the PHP inbuilt server, this will output the static file.

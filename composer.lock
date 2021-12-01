@@ -716,29 +716,29 @@
         },
         {
             "name": "phpgt/routing",
-            "version": "v1.0.2",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Routing.git",
-                "reference": "a9ccd0193ba807e85a2754839ff60d371407f04c"
+                "reference": "757c2f396b914e9d0f1ab101f70b7dc50c091e34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/a9ccd0193ba807e85a2754839ff60d371407f04c",
-                "reference": "a9ccd0193ba807e85a2754839ff60d371407f04c",
+                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/757c2f396b914e9d0f1ab101f70b7dc50c091e34",
+                "reference": "757c2f396b914e9d0f1ab101f70b7dc50c091e34",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.0",
-                "phpgt/config": "^1.1.0",
-                "phpgt/http": "^1",
+                "phpgt/config": "^v1.1.0",
+                "phpgt/http": "^v1",
                 "phpgt/servicecontainer": "1.*",
                 "phpgt/typesafegetter": "^1.2.2",
                 "psr/http-message": "1.*",
                 "willdurand/negotiation": "^3.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "~1.1",
+                "phpstan/phpstan": "~1.2",
                 "phpunit/phpunit": "~9.5"
             },
             "type": "library",
@@ -773,7 +773,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PhpGt/Routing/issues",
-                "source": "https://github.com/PhpGt/Routing/tree/v1.0.2"
+                "source": "https://github.com/PhpGt/Routing/tree/v1.0.4"
             },
             "funding": [
                 {
@@ -781,7 +781,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-09T12:57:45+00:00"
+            "time": "2021-11-28T15:50:58+00:00"
         },
         {
             "name": "phpgt/servicecontainer",
@@ -2429,16 +2429,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.13.1",
+            "version": "v4.13.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "63a79e8daa781cac14e5195e63ed8ae231dd10fd"
+                "reference": "210577fe3cf7badcc5814d99455df46564f3c077"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/63a79e8daa781cac14e5195e63ed8ae231dd10fd",
-                "reference": "63a79e8daa781cac14e5195e63ed8ae231dd10fd",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/210577fe3cf7badcc5814d99455df46564f3c077",
+                "reference": "210577fe3cf7badcc5814d99455df46564f3c077",
                 "shasum": ""
             },
             "require": {
@@ -2479,9 +2479,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.13.1"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.13.2"
             },
-            "time": "2021-11-03T20:52:16+00:00"
+            "time": "2021-11-30T19:35:32+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -4631,16 +4631,16 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v5.3.4",
+            "version": "v5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "7fb120adc7f600a59027775b224c13a33530dd90"
+                "reference": "44b933f98bb4b5220d10bed9ce5662f8c2d13dcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/7fb120adc7f600a59027775b224c13a33530dd90",
-                "reference": "7fb120adc7f600a59027775b224c13a33530dd90",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/44b933f98bb4b5220d10bed9ce5662f8c2d13dcc",
+                "reference": "44b933f98bb4b5220d10bed9ce5662f8c2d13dcc",
                 "shasum": ""
             },
             "require": {
@@ -4677,7 +4677,7 @@
             "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/css-selector/tree/v5.3.4"
+                "source": "https://github.com/symfony/css-selector/tree/v5.4.0"
             },
             "funding": [
                 {
@@ -4693,7 +4693,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-21T12:38:00+00:00"
+            "time": "2021-09-09T08:06:01+00:00"
         },
         {
             "name": "symfony/debug",
