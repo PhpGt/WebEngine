@@ -16,7 +16,7 @@ ini_set("display_errors", "on");
  */
 $uri = urldecode(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
 if(strstr($uri, ".")
-|| is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
+	|| is_file($_SERVER["DOCUMENT_ROOT"] . $uri)) {
 	return false;
 }
 
@@ -40,5 +40,16 @@ foreach([__DIR__, dirname($_SERVER["DOCUMENT_ROOT"])] as $dir) {
  * Buckle up and enjoy the ride!
  * @link https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
+include("init.php");
 $lifecycle = new Gt\WebEngine\Middleware\Lifecycle();
-$lifecycle->start();
+try {
+	$lifecycle->start();
+}
+catch(Exception $e) {
+	if(function_exists("exception_handler")) {
+		call_user_func("exception_handler", $e);
+	}
+	else {
+		throw $e;
+	}
+}
