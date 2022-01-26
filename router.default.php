@@ -107,7 +107,11 @@ class DefaultRouter extends BaseRouter {
 		};
 
 		$sortNestLevelCallback = fn(string $a, string $b) =>
-			substr_count($a, "/") > substr_count($b, "/");
+		substr_count($a, "/") > substr_count($b, "/")
+			? 1
+			: (substr_count($a, "/") < substr_count($b, "/")
+			? -1
+			: 0);
 
 		$matchingLogics = $pathMatcher->findForUriPath(
 			$request->getUri()->getPath(),
