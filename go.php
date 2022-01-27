@@ -40,7 +40,9 @@ foreach([__DIR__, dirname($_SERVER["DOCUMENT_ROOT"])] as $dir) {
  * Buckle up and enjoy the ride!
  * @link https://github.com/PhpGt/WebEngine/wiki/From-request-to-response
  */
-include("init.php");
+if(file_exists("init.php")) {
+	require("init.php");
+}
 $lifecycle = new Gt\WebEngine\Middleware\Lifecycle();
 try {
 	$lifecycle->start();
