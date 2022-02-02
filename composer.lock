@@ -721,16 +721,16 @@
         },
         {
             "name": "phpgt/routing",
-            "version": "v1.0.4",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Routing.git",
-                "reference": "757c2f396b914e9d0f1ab101f70b7dc50c091e34"
+                "reference": "847f46706a358340989cb996ce499fdcd8fca498"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/757c2f396b914e9d0f1ab101f70b7dc50c091e34",
-                "reference": "757c2f396b914e9d0f1ab101f70b7dc50c091e34",
+                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/847f46706a358340989cb996ce499fdcd8fca498",
+                "reference": "847f46706a358340989cb996ce499fdcd8fca498",
                 "shasum": ""
             },
             "require": {
@@ -778,7 +778,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PhpGt/Routing/issues",
-                "source": "https://github.com/PhpGt/Routing/tree/v1.0.4"
+                "source": "https://github.com/PhpGt/Routing/tree/v1.0.5"
             },
             "funding": [
                 {
@@ -786,7 +786,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-28T15:50:58+00:00"
+            "time": "2022-01-31T13:57:32+00:00"
         },
         {
             "name": "phpgt/servicecontainer",
@@ -2027,16 +2027,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.4.3",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "89d10839dbfc95eeb7da656578b4a899ad2b59b1"
+                "reference": "f7409da1e26c6dee172cce744034b869a2f27a9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/89d10839dbfc95eeb7da656578b4a899ad2b59b1",
-                "reference": "89d10839dbfc95eeb7da656578b4a899ad2b59b1",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f7409da1e26c6dee172cce744034b869a2f27a9e",
+                "reference": "f7409da1e26c6dee172cce744034b869a2f27a9e",
                 "shasum": ""
             },
             "require": {
@@ -2067,7 +2067,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.4.3"
+                "source": "https://github.com/phpstan/phpstan/tree/1.4.4"
             },
             "funding": [
                 {
@@ -2087,7 +2087,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-28T16:27:17+00:00"
+            "time": "2022-01-31T16:50:49+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
