@@ -26,7 +26,7 @@ class DefaultRouter extends BaseRouter {
 		}
 	}
 
-	#[Any(name: "page-route", accept: "text/html,application/xhtml+xml,*.*")]
+	#[Any(name: "page-route", accept: "text/html,application/xhtml+xml,*/*")]
 	public function page(
 		Request $request
 	):void {
