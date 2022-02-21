@@ -3,12 +3,11 @@
 		"require": {
 			"node": "*",
 			"babel": "*",
-			"webpack": "*",
-			"webpack-cli": "*"
+			"webpack": "*"
 		},
 		"execute": {
-			"command": "webpack-cli",
-			"arguments": ["build", "--mode=development", "--devtool=source-map", "--entry=./script/main.es6", "--output-filename=script.js", "--output-path=./www"]
+			"command": "webpack",
+			"arguments": ["--entry","./script/main.es6", "--output-path", "./www", "--output-filename", "script.js", "--devtool", "source-map", "--mode", "production"]
 		}
 	},
 
