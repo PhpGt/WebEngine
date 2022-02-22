@@ -721,16 +721,16 @@
         },
         {
             "name": "phpgt/routing",
-            "version": "v1.0.5",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Routing.git",
-                "reference": "847f46706a358340989cb996ce499fdcd8fca498"
+                "reference": "72e6b4fa50a3375dba1b8529d2ecca88afe1ca7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/847f46706a358340989cb996ce499fdcd8fca498",
-                "reference": "847f46706a358340989cb996ce499fdcd8fca498",
+                "url": "https://api.github.com/repos/PhpGt/Routing/zipball/72e6b4fa50a3375dba1b8529d2ecca88afe1ca7e",
+                "reference": "72e6b4fa50a3375dba1b8529d2ecca88afe1ca7e",
                 "shasum": ""
             },
             "require": {
@@ -743,8 +743,8 @@
                 "willdurand/negotiation": "^3.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "~1.2",
-                "phpunit/phpunit": "~9.5"
+                "phpstan/phpstan": "^1.2",
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -778,7 +778,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PhpGt/Routing/issues",
-                "source": "https://github.com/PhpGt/Routing/tree/v1.0.5"
+                "source": "https://github.com/PhpGt/Routing/tree/v1.1.0"
             },
             "funding": [
                 {
@@ -786,7 +786,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-31T13:57:32+00:00"
+            "time": "2022-02-21T22:56:21+00:00"
         },
         {
             "name": "phpgt/servicecontainer",
