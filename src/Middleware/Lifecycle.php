@@ -3,7 +3,7 @@ namespace Gt\WebEngine\Middleware;
 
 use Gt\Config\ConfigSection;
 use Gt\Http\RequestFactory;
-use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
+use Gt\Http\StatusCode;
 use Gt\Logger\Log;
 use Gt\WebEngine\Debug\Timer;
 use Psr\Http\Message\ResponseInterface;
@@ -97,7 +97,7 @@ class Lifecycle implements MiddlewareInterface {
 		Timer $timer,
 		ConfigSection $appConfig
 	):void {
-		http_response_code($response->getStatusCode());
+		http_response_code($response->getStatusCode() ?? StatusCode::OK);
 
 		foreach($response->getHeaders() as $key => $value) {
 			$stringValue = implode(", ", $value);
