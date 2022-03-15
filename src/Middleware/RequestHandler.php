@@ -73,7 +73,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 // Force removal of trailing slashes in URLs. 307 is used here to preserve any
 // POST data that may be in the request.
-		if(str_ends_with($uriPath, "/")) {
+		if(str_ends_with($uriPath, "/") && $uriPath !== "/") {
 			return $response
 				->withHeader("Location", substr($requestUri, 0, -1))
 				->withStatus(307);
