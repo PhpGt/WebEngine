@@ -71,13 +71,11 @@ class RequestHandler implements RequestHandlerInterface {
 		$requestUri = $request->getUri();
 		$uriPath = $requestUri->getPath();
 
-// Force trailing slashes in URLs. This is useful for consistency, but also
-// helps identify that WebEngine requests do not match an actual static file, as
-// file requests will never end in a slash.
-// 307 is used here to preserve any POST data that may be in the request.
-		if(!str_ends_with($uriPath, "/")) {
+// Force removal of trailing slashes in URLs. 307 is used here to preserve any
+// POST data that may be in the request.
+		if(str_ends_with($uriPath, "/")) {
 			return $response
-				->withHeader("Location", "$requestUri/")
+				->withHeader("Location", substr($requestUri, 0, -1))
 				->withStatus(307);
 		}
 
