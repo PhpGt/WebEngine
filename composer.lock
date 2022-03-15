@@ -489,26 +489,26 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v2.2.3",
+            "version": "v2.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "d8ea73c17a81ab54bea671701b324650f4d7dc48"
+                "reference": "7c8e6bab544834d8d58a2288a3b41de4782e5a81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/d8ea73c17a81ab54bea671701b324650f4d7dc48",
-                "reference": "d8ea73c17a81ab54bea671701b324650f4d7dc48",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/7c8e6bab544834d8d58a2288a3b41de4782e5a81",
+                "reference": "7c8e6bab544834d8d58a2288a3b41de4782e5a81",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "php": ">=8.0",
-                "phpgt/dom": "^3.0.0"
+                "phpgt/dom": "^3.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "~1.1",
-                "phpunit/phpunit": "~9.5"
+                "phpstan/phpstan": "^v1.4",
+                "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
             "autoload": {
@@ -523,7 +523,7 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/v2.2.3"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v2.2.4"
             },
             "funding": [
                 {
@@ -531,7 +531,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-30T16:25:30+00:00"
+            "time": "2022-03-14T17:31:28+00:00"
         },
         {
             "name": "phpgt/http",
