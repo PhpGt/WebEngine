@@ -33,6 +33,17 @@ class DefaultRouter extends BaseRouter {
 		$pathMatcher = new PathMatcher("page");
 		$this->setViewClass(HTMLView::class);
 		$pathMatcher->addFilter(function(string $filePath, string $uriPath, string $baseDir):bool {
+			foreach(glob($baseDir . $uriPath . ".*") as $globMatch) {
+				$URI_CONTAINER = pathinfo($uriPath, PATHINFO_DIRNAME);
+				$TRIM_THIS = $baseDir . $URI_CONTAINER;
+				if(str_starts_with($globMatch, $TRIM_THIS)) {
+					$trimmed = substr($filePath, strlen($TRIM_THIS));
+					if(str_contains($trimmed, "@")) {
+						return false;
+					}
+				}
+			}
+
 // There are three types of matching files: Basic, Magic and Dynamic.
 // Basic is where a URI matches directly to a file on disk.
 // Magic is where a URI matches a PHP.Gt-specific file, like _common or _header.
