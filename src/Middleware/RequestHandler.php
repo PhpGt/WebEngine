@@ -78,7 +78,7 @@ class RequestHandler implements RequestHandlerInterface {
 // 307 is used here to preserve any POST data that may be in the request.
 		if(!str_ends_with($uriPath, "/")) {
 			return $response
-				->withHeader("Location", "$requestUri/")
+				->withHeader("Location", $requestUri->withPath($requestUri->getPath() . "/"))
 				->withStatus(307);
 		}
 
