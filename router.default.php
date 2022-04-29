@@ -14,18 +14,6 @@ use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\HTMLView;
 
 class DefaultRouter extends BaseRouter {
-	#[Any(name: "api-route", accept: "application/json,application/xml")]
-	public function api(Request $request, PathMatcher $pathMatcher):void {
-		echo "API ROUTE CALLBACK", PHP_EOL;
-		foreach($pathMatcher->findForUriPath(
-			$request->getUri()->getPath(),
-			"api/v1",
-			"php"
-		) as $logicName => $path) {
-			$this->addToLogicAssembly($path);
-		}
-	}
-
 	#[Any(name: "page-route", accept: "text/html,application/xhtml+xml,*/*")]
 	public function page(
 		Request $request
@@ -143,12 +131,5 @@ class DefaultRouter extends BaseRouter {
 		foreach($matchingViews as $path) {
 			$this->addToViewAssembly($path);
 		}
-	}
-
-	#[Post(path: "/greet/@name", function: "greet", accept: "text/plain")]
-	public function dynamicText(
-		DynamicPath $dynamicPath
-	):void {
-		$this->addToLogicAssembly("class/Output/Greeter.php");
 	}
 }
