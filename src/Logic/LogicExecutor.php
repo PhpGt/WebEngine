@@ -1,7 +1,6 @@
 <?php
 namespace Gt\WebEngine\Logic;
 
-use Gt\Input\InputData\InputData;
 use Gt\Routing\Assembly;
 use Gt\Routing\LogicStream\LogicStreamNamespace;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
@@ -61,7 +60,6 @@ class LogicExecutor {
 
 	private function loadLogicFile(string $file):void {
 		$streamPath = LogicStreamWrapper::STREAM_NAME . "://$file";
-		/** @noinspection PhpIncludeInspection */
 		require($streamPath);
 	}
 }

@@ -1,12 +1,13 @@
 <?php
 namespace Gt\WebEngine\Logic;
 
-class LogicProjectNamespace implements \Stringable {
+use Stringable;
+
+class LogicProjectNamespace implements Stringable {
 	public function __construct(
 		private string $path,
 		private string $namespacePrefix
 	) {
-
 	}
 
 	public function __toString():string {

@@ -1,8 +1,6 @@
 <?php /** @noinspection PhpIncludeInspection */
 namespace Gt\WebEngine\Logic;
 
-use Gt\Logger\Log;
-
 class AppAutoloader {
 	public function __construct(
 		private string $namespace,
