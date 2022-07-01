@@ -28,7 +28,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * @link https://github.com/PhpGt/WebEngine/wiki/HTTP-Middleware
  *
  * At the start of the lifecycle, when using an ordinary HTTP server such as
- * Apache or Nginx, there isn't actually any Request object available yet:
+ * Apache or Nginx, no Request objects are available yet:
  * that's the job of the "start" function. It will create an appropriate
  * Request object and pass it to the "process" function for handling.
  *
