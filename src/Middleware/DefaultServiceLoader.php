@@ -28,7 +28,7 @@ class DefaultServiceLoader {
 	) {
 	}
 
-	#[LazyLoad(Database::class)]
+	#[LazyLoad]
 	public function loadDatabase():Database {
 		$dbSettings = new Settings(
 			$this->config->get("database.query_directory"),
@@ -45,22 +45,22 @@ class DefaultServiceLoader {
 		return new Database($dbSettings);
 	}
 
-	#[LazyLoad(HTMLAttributeBinder::class)]
+	#[LazyLoad]
 	public function loadHTMLAttributeBinder():HTMLAttributeBinder {
 		return new HTMLAttributeBinder();
 	}
 
-	#[LazyLoad(HTMLAttributeCollection::class)]
+	#[LazyLoad]
 	public function loadHTMLAttributeCollection():HTMLAttributeCollection {
 		return new HTMLAttributeCollection();
 	}
 
-	#[LazyLoad(PlaceholderBinder::class)]
+	#[LazyLoad]
 	public function loadPlaceholderBinder():PlaceholderBinder {
 		return new PlaceholderBinder();
 	}
 
-	#[LazyLoad(ElementBinder::class)]
+	#[LazyLoad]
 	public function loadElementBinder():ElementBinder {
 		return new ElementBinder(
 			$this->container->get(HTMLAttributeBinder::class),
@@ -69,7 +69,7 @@ class DefaultServiceLoader {
 		);
 	}
 
-	#[LazyLoad(TableBinder::class)]
+	#[LazyLoad]
 	public function loadTableBinder():TableBinder {
 		return new TableBinder(
 			$this->container->get(TemplateCollection::class),
@@ -80,20 +80,20 @@ class DefaultServiceLoader {
 		);
 	}
 
-	#[LazyLoad(TemplateCollection::class)]
+	#[LazyLoad]
 	public function loadTemplateCollection():TemplateCollection {
 		$document = $this->container->get(Document::class);
 		return new TemplateCollection($document);
 	}
 
-	#[LazyLoad(ListBinder::class)]
+	#[LazyLoad]
 	public function loadListBinder():ListBinder {
 		return new ListBinder(
 			$this->container->get(TemplateCollection::class)
 		);
 	}
 
-	#[LazyLoad(DocumentBinder::class)]
+	#[LazyLoad]
 	public function loadDocumentBinder():DocumentBinder {
 		$document = $this->container->get(Document::class);
 		return new DocumentBinder(
@@ -107,7 +107,7 @@ class DefaultServiceLoader {
 		);
 	}
 
-	#[LazyLoad(Uri::class)]
+	#[LazyLoad]
 	public function loadRequestUri():UriInterface {
 		return $this->request->getUri();
 	}

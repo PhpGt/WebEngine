@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b25d0cf160c9e995cd3c11b3c8e57847",
+    "content-hash": "23f6b58dd8a1ed18b2e0169ec90fc819",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -493,12 +493,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "4aabdd1f34da27ef5b99fce1f9749595413e67db"
+                "reference": "67bb701244be3cf49edfabf4439286ba070b45df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/4aabdd1f34da27ef5b99fce1f9749595413e67db",
-                "reference": "4aabdd1f34da27ef5b99fce1f9749595413e67db",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/67bb701244be3cf49edfabf4439286ba070b45df",
+                "reference": "67bb701244be3cf49edfabf4439286ba070b45df",
                 "shasum": ""
             },
             "require": {
@@ -531,7 +531,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T14:55:01+00:00"
+            "time": "2022-07-01T12:37:12+00:00"
         },
         {
             "name": "phpgt/http",
@@ -798,16 +798,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.1.2",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "8d0faf7325af1b5e46e24a19c5fa6a4f9371c240"
+                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8d0faf7325af1b5e46e24a19c5fa6a4f9371c240",
-                "reference": "8d0faf7325af1b5e46e24a19c5fa6a4f9371c240",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
+                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
                 "shasum": ""
             },
             "require": {
@@ -818,8 +818,8 @@
                 "psr/container-implementation": "1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.*",
-                "phpunit/phpunit": "9.*"
+                "phpstan/phpstan": "v1.8.0",
+                "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
             "autoload": {
@@ -834,7 +834,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.2"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.3"
             },
             "funding": [
                 {
@@ -842,7 +842,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-09T11:41:52+00:00"
+            "time": "2022-07-01T12:03:28+00:00"
         },
         {
             "name": "phpgt/session",
@@ -3450,7 +3450,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "phpgt/domtemplate": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
