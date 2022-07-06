@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "23f6b58dd8a1ed18b2e0169ec90fc819",
+    "content-hash": "77aede1783ab67aa485695d236a94309",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -170,64 +170,6 @@
                 }
             ],
             "time": "2021-01-30T14:24:07+00:00"
-        },
-        {
-            "name": "phpgt/csrf",
-            "version": "v1.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "42bd6f329f1a3d2b46731cb5965d4d0bb262b40e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/42bd6f329f1a3d2b46731cb5965d4d0bb262b40e",
-                "reference": "42bd6f329f1a3d2b46731cb5965d4d0bb262b40e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1",
-                "phpgt/dom": "^4.0.0",
-                "phpgt/session": "1.*"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "v1.8.0",
-                "phpunit/phpunit": "v9.5.21"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Gt\\Csrf\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Fellows",
-                    "email": "mrfellows@gmail.com",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Greg Bowler",
-                    "email": "greg.bowler@g105b.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Automatic protection from Cross-Site Request Forgery.",
-            "support": {
-                "issues": "https://github.com/PhpGt/Csrf/issues",
-                "source": "https://github.com/PhpGt/Csrf/tree/v1.8.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sponsors/PhpGt",
-                    "type": "github"
-                }
-            ],
-            "time": "2022-07-02T10:14:22+00:00"
         },
         {
             "name": "phpgt/cssxpath",
@@ -493,12 +435,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "67bb701244be3cf49edfabf4439286ba070b45df"
+                "reference": "4aabdd1f34da27ef5b99fce1f9749595413e67db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/67bb701244be3cf49edfabf4439286ba070b45df",
-                "reference": "67bb701244be3cf49edfabf4439286ba070b45df",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/4aabdd1f34da27ef5b99fce1f9749595413e67db",
+                "reference": "4aabdd1f34da27ef5b99fce1f9749595413e67db",
                 "shasum": ""
             },
             "require": {
@@ -531,7 +473,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T12:37:12+00:00"
+            "time": "2022-07-01T14:55:01+00:00"
         },
         {
             "name": "phpgt/http",
@@ -3450,9 +3392,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpgt/domtemplate": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
