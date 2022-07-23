@@ -18,7 +18,6 @@ use Gt\Http\Uri;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\LazyLoad;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
 
 class DefaultServiceLoader {
 	public function __construct(
@@ -108,7 +107,7 @@ class DefaultServiceLoader {
 	}
 
 	#[LazyLoad(Uri::class)]
-	public function loadRequestUri():UriInterface {
+	public function loadRequestUri():Uri {
 		return $this->request->getUri();
 	}
 }
