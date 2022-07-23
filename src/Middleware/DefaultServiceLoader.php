@@ -108,7 +108,7 @@ class DefaultServiceLoader {
 	}
 
 	#[LazyLoad]
-	public function loadRequestUri():UriInterface {
+	public function loadRequestUri():Uri {
 		return $this->request->getUri();
 	}
 }
