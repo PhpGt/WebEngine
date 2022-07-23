@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b25d0cf160c9e995cd3c11b3c8e57847",
+    "content-hash": "77aede1783ab67aa485695d236a94309",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -172,64 +172,6 @@
             "time": "2021-01-30T14:24:07+00:00"
         },
         {
-            "name": "phpgt/csrf",
-            "version": "v1.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PhpGt/Csrf.git",
-                "reference": "42bd6f329f1a3d2b46731cb5965d4d0bb262b40e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Csrf/zipball/42bd6f329f1a3d2b46731cb5965d4d0bb262b40e",
-                "reference": "42bd6f329f1a3d2b46731cb5965d4d0bb262b40e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1",
-                "phpgt/dom": "^4.0.0",
-                "phpgt/session": "1.*"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "v1.8.0",
-                "phpunit/phpunit": "v9.5.21"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Gt\\Csrf\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Fellows",
-                    "email": "mrfellows@gmail.com",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Greg Bowler",
-                    "email": "greg.bowler@g105b.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Automatic protection from Cross-Site Request Forgery.",
-            "support": {
-                "issues": "https://github.com/PhpGt/Csrf/issues",
-                "source": "https://github.com/PhpGt/Csrf/tree/v1.8.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sponsors/PhpGt",
-                    "type": "github"
-                }
-            ],
-            "time": "2022-07-02T10:14:22+00:00"
-        },
-        {
             "name": "phpgt/cssxpath",
             "version": "v1.1.4",
             "source": {
@@ -391,16 +333,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v4.0.0",
+            "version": "v4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "e27378f0fefe1952353fcd082e4189243ebfcfee"
+                "reference": "6d802e8ed4b3bf42887d1ea23a10ebf29094d492"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/e27378f0fefe1952353fcd082e4189243ebfcfee",
-                "reference": "e27378f0fefe1952353fcd082e4189243ebfcfee",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/6d802e8ed4b3bf42887d1ea23a10ebf29094d492",
+                "reference": "6d802e8ed4b3bf42887d1ea23a10ebf29094d492",
                 "shasum": ""
             },
             "require": {
@@ -477,7 +419,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v4.0.0"
+                "source": "https://github.com/PhpGt/Dom/tree/v4.0.1"
             },
             "funding": [
                 {
@@ -485,29 +427,29 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T11:24:27+00:00"
+            "time": "2022-07-12T15:19:44+00:00"
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v3.0.0",
+            "version": "v3.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "4aabdd1f34da27ef5b99fce1f9749595413e67db"
+                "reference": "b7e1835ec61670aca67a5df769be19ee190448bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/4aabdd1f34da27ef5b99fce1f9749595413e67db",
-                "reference": "4aabdd1f34da27ef5b99fce1f9749595413e67db",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/b7e1835ec61670aca67a5df769be19ee190448bb",
+                "reference": "b7e1835ec61670aca67a5df769be19ee190448bb",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "php": ">=8.1",
-                "phpgt/dom": "^v4.0.0"
+                "phpgt/dom": "v4.0.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.0",
+                "phpstan/phpstan": "v1.8.1",
                 "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
@@ -523,7 +465,7 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.0.0"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.1.3"
             },
             "funding": [
                 {
@@ -531,7 +473,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T14:55:01+00:00"
+            "time": "2022-07-14T11:01:20+00:00"
         },
         {
             "name": "phpgt/http",
@@ -798,16 +740,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.1.2",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "8d0faf7325af1b5e46e24a19c5fa6a4f9371c240"
+                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8d0faf7325af1b5e46e24a19c5fa6a4f9371c240",
-                "reference": "8d0faf7325af1b5e46e24a19c5fa6a4f9371c240",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
+                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
                 "shasum": ""
             },
             "require": {
@@ -818,8 +760,8 @@
                 "psr/container-implementation": "1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.*",
-                "phpunit/phpunit": "9.*"
+                "phpstan/phpstan": "v1.8.0",
+                "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
             "autoload": {
@@ -834,7 +776,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.2"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.3"
             },
             "funding": [
                 {
@@ -842,7 +784,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-09T11:41:52+00:00"
+            "time": "2022-07-01T12:03:28+00:00"
         },
         {
             "name": "phpgt/session",
@@ -947,23 +889,24 @@
         },
         {
             "name": "phpgt/typesafegetter",
-            "version": "v1.2.2",
+            "version": "v1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/TypeSafeGetter.git",
-                "reference": "ffeb5d847b3a4b36081a5cd180587fc4d83c6e31"
+                "reference": "ebffd758e69b8a0eebcad30f3daf408915b9ddf3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/TypeSafeGetter/zipball/ffeb5d847b3a4b36081a5cd180587fc4d83c6e31",
-                "reference": "ffeb5d847b3a4b36081a5cd180587fc4d83c6e31",
+                "url": "https://api.github.com/repos/PhpGt/TypeSafeGetter/zipball/ebffd758e69b8a0eebcad30f3daf408915b9ddf3",
+                "reference": "ebffd758e69b8a0eebcad30f3daf408915b9ddf3",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": ">=0.12.42"
+                "phpstan/phpstan": "v1.8.0",
+                "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
             "autoload": {
@@ -984,7 +927,7 @@
             "description": "An interface for objects that expose type-safe getter methods.",
             "support": {
                 "issues": "https://github.com/PhpGt/TypeSafeGetter/issues",
-                "source": "https://github.com/PhpGt/TypeSafeGetter/tree/v1.2.2"
+                "source": "https://github.com/PhpGt/TypeSafeGetter/tree/v1.2.4"
             },
             "funding": [
                 {
@@ -992,7 +935,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-01-30T12:18:23+00:00"
+            "time": "2022-07-08T17:17:42+00:00"
         },
         {
             "name": "psr/container",
@@ -3460,5 +3403,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
