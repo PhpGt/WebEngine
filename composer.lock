@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77aede1783ab67aa485695d236a94309",
+    "content-hash": "ae57cfdf71001f6a8a0940f70f458c8f",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -936,6 +936,58 @@
                 }
             ],
             "time": "2022-07-08T17:17:42+00:00"
+        },
+        {
+            "name": "phpgt/ulid",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/Ulid.git",
+                "reference": "1f80ca627f1c39cf46a21dad717c68e0d47b8614"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/Ulid/zipball/1f80ca627f1c39cf46a21dad717c68e0d47b8614",
+                "reference": "1f80ca627f1c39cf46a21dad717c68e0d47b8614",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "v1.8.0",
+                "phpunit/phpunit": "v9.5.21"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\Ulid\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Bowler",
+                    "email": "greg.bowler@g105b.com",
+                    "homepage": "https://www.g105b.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Unique, lexicographically sortable identifiers.",
+            "support": {
+                "issues": "https://github.com/PhpGt/Ulid/issues",
+                "source": "https://github.com/PhpGt/Ulid/tree/v1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/PhpGt",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-07-01T10:54:45+00:00"
         },
         {
             "name": "psr/container",
