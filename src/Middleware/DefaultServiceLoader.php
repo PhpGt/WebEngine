@@ -14,16 +14,14 @@ use Gt\DomTemplate\ListBinder;
 use Gt\DomTemplate\PlaceholderBinder;
 use Gt\DomTemplate\TableBinder;
 use Gt\DomTemplate\TemplateCollection;
+use Gt\Http\Request;
 use Gt\Http\Uri;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\LazyLoad;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
 
 class DefaultServiceLoader {
 	public function __construct(
 		protected Config $config,
-		protected RequestInterface $request,
 		protected Container $container
 	) {
 	}
@@ -109,6 +107,6 @@ class DefaultServiceLoader {
 
 	#[LazyLoad]
 	public function loadRequestUri():Uri {
-		return $this->request->getUri();
+		return $this->container->get(Request::class)->getUri();
 	}
 }

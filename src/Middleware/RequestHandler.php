@@ -12,6 +12,7 @@ use Gt\DomTemplate\PartialContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
+use Gt\Http\StatusCode;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
 use Gt\Logger\LogConfig;
@@ -34,14 +35,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestHandler implements RequestHandlerInterface {
-	private Config $config;
+	/** @var callable(ResponseInterface,ConfigSection) */
+	private $finishCallback;
 
 	public function __construct(
+		private readonly Config $config,
+		callable $finishCallback,
 	) {
-		$this->config = ConfigFactory::createForProject(
-			getcwd(),
-			getcwd() . "/vendor/phpgt/webengine/config.default.ini"
-		);
+		$this->finishCallback = $finishCallback;
+
 		$this->setupLogger(
 			$this->config->getSection("logger")
 		);
@@ -63,6 +65,12 @@ class RequestHandler implements RequestHandlerInterface {
 	):ResponseInterface {
 // TODO: Handle 404s.
 		$response = new Response();
+		$response->setExitCallback(fn() => call_user_func(
+			$this->finishCallback,
+			$response,
+			$this->config->getSection("app")
+		));
+
 		$requestUri = $request->getUri();
 		$uriPath = $requestUri->getPath();
 
@@ -79,10 +87,10 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$serviceContainer = new Container();
 		$serviceContainer->set($request);
+		$serviceContainer->set($response);
 		$serviceContainer->addLoaderClass(
 			new DefaultServiceLoader(
 				$this->config,
-				$request,
 				$serviceContainer
 			)
 		);
@@ -96,7 +104,6 @@ class RequestHandler implements RequestHandlerInterface {
 			if(is_a($customServiceContainerClassName, DefaultServiceLoader::class, true)) {
 				$constructorArgs = [
 					$this->config,
-					$request,
 					$serviceContainer,
 				];
 			}
@@ -128,8 +135,8 @@ class RequestHandler implements RequestHandlerInterface {
 		);
 		$serviceContainer->set($dynamicPath);
 
-		if(count($viewAssembly) === 0) {
-			$response = $response->withStatus(404);
+		if(!$viewAssembly->containsDistinctFile()) {
+			$response = $response->withStatus(StatusCode::NOT_FOUND);
 		}
 
 		foreach($viewAssembly as $viewFile) {

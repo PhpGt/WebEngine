@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\Middleware;
 
+use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Http\RequestFactory;
 use Gt\Http\StatusCode;
@@ -36,14 +37,19 @@ use Psr\Http\Server\RequestHandlerInterface;
  * its own Request object, and pass it directly to the "process" function.
  */
 class Lifecycle implements MiddlewareInterface {
+	private Timer $timer;
+
 	public function start():void {
+//		set_error_handler(function($errno, $errstr, $errfile, $errline) {
+//			throw new \Exception($errstr, $errno, 0, $errfile, $errline);
+//		}, E_WARNING);
 // The first thing that's done within the WebEngine lifecycle is start a timer.
-// This timer is only used again at the very end of the call, when finish() is
+// This timer is only used again at the end of the call, when finish() is
 // called - at which point the entire duration of the request is logged out (and
 // slow requests are highlighted as a NOTICE).
-		$timer = new Timer();
+		$this->timer = new Timer();
 
-// Starting the output buffer done before any logic is executed, so any calls
+// Starting the output buffer is done before any logic is executed, so any calls
 // to any area of code will not accidentally send output to the client.
 		ob_start();
 
@@ -58,25 +64,27 @@ class Lifecycle implements MiddlewareInterface {
 		);
 
 // The handler is an individual component that processes a request and produces
-// a response, as defined by PSR-7. It's where all your applications logic is
-// executed - the brain of WebEngine.
-		$handler = new RequestHandler();
+// a response, as defined by PSR-7. It's where all your application's logic is
+// executed - the brain of WebEngine. Here we pass in a reference to the finish
+// function, so the RequestHandler can complete the request early if needed.
+		$handler = new RequestHandler(
+			ConfigFactory::createForProject(
+				getcwd(),
+				"vendor/phpgt/webengine/config.default.ini"
+			),
+			$this->finish(...),
+		);
 
 // The request and request handler are passed to the PSR-15 process function,
 // which will return our PSR-7 HTTP Response.
 		$response = $this->process($request, $handler);
 
-// All logic will have executed at this point, so we clean the output buffer in
-// case there was any accidental data echoed to the page.
-		$buffer = ob_get_clean();
 // Now we can finish the HTTP lifecycle by providing the HTTP response for
 // outputting to the browser, along with the buffer so we can display the
 // contents in a debug area.
 		$this->finish(
 			$response,
-			$buffer,
-			$timer,
-			$handler->getConfigSection("app")
+			$handler->getConfigSection("app"),
 		);
 	}
 
@@ -86,17 +94,16 @@ class Lifecycle implements MiddlewareInterface {
 	 */
 	public function process(
 		ServerRequestInterface $request,
-		RequestHandlerInterface $handler
+		RequestHandlerInterface $handler,
 	):ResponseInterface {
 		return $handler->handle($request);
 	}
 
 	public function finish(
 		ResponseInterface $response,
-		string $buffer,
-		Timer $timer,
 		ConfigSection $appConfig
 	):void {
+		$buffer = trim(ob_get_clean());
 		http_response_code($response->getStatusCode() ?? StatusCode::OK);
 
 		foreach($response->getHeaders() as $key => $value) {
@@ -104,9 +111,8 @@ class Lifecycle implements MiddlewareInterface {
 			header("$key: $stringValue", true);
 		}
 
-		$buffer = trim($buffer);
 		if(strlen($buffer) > 0) {
-			if(strstr($buffer, "\n")) {
+			if(str_contains($buffer, "\n")) {
 				$buffer = "\n$buffer";
 			}
 			Log::debug("Logic output: $buffer");
@@ -124,8 +130,8 @@ class Lifecycle implements MiddlewareInterface {
 
 // The very last thing that's done before the script ends is to stop the Timer,
 // so we know exactly how long the request-response lifecycle has taken.
-		$timer->stop();
-		$delta = number_format($timer->getDelta(), 2);
+		$this->timer->stop();
+		$delta = number_format($this->timer->getDelta(), 2);
 		if($delta >= $appConfig->getFloat("slow_delta")) {
 			Log::warning("Lifecycle end with VERY SLOW delta time: $delta seconds. https://www.php.gt/webengine/slow-delta");
 		}
