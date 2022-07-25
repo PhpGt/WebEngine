@@ -740,16 +740,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.1.3",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51"
+                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
-                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
+                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
                 "shasum": ""
             },
             "require": {
@@ -760,7 +760,7 @@
                 "psr/container-implementation": "1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.0",
+                "phpstan/phpstan": "v1.8.2",
                 "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
@@ -776,7 +776,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.3"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.2.0"
             },
             "funding": [
                 {
@@ -784,7 +784,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T12:03:28+00:00"
+            "time": "2022-07-24T22:32:36+00:00"
         },
         {
             "name": "phpgt/session",
@@ -3455,5 +3455,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
