@@ -939,16 +939,16 @@
         },
         {
             "name": "phpgt/ulid",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Ulid.git",
-                "reference": "1f80ca627f1c39cf46a21dad717c68e0d47b8614"
+                "reference": "17edd130b29fc4ca70d457d9758ac6208ceaa6ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Ulid/zipball/1f80ca627f1c39cf46a21dad717c68e0d47b8614",
-                "reference": "1f80ca627f1c39cf46a21dad717c68e0d47b8614",
+                "url": "https://api.github.com/repos/PhpGt/Ulid/zipball/17edd130b29fc4ca70d457d9758ac6208ceaa6ab",
+                "reference": "17edd130b29fc4ca70d457d9758ac6208ceaa6ab",
                 "shasum": ""
             },
             "require": {
@@ -979,7 +979,7 @@
             "description": "Unique, lexicographically sortable identifiers.",
             "support": {
                 "issues": "https://github.com/PhpGt/Ulid/issues",
-                "source": "https://github.com/PhpGt/Ulid/tree/v1.0.0"
+                "source": "https://github.com/PhpGt/Ulid/tree/v1.1.0"
             },
             "funding": [
                 {
@@ -987,7 +987,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T10:54:45+00:00"
+            "time": "2022-07-30T19:02:35+00:00"
         },
         {
             "name": "psr/container",
@@ -3455,5 +3455,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
