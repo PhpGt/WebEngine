@@ -477,27 +477,27 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.1.4",
+            "version": "v1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "80ed7269050bc0f2de2402c5461711dd2418f55f"
+                "reference": "1b93fa9489100d649f29f59226cc52cd7c0812cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/80ed7269050bc0f2de2402c5461711dd2418f55f",
-                "reference": "80ed7269050bc0f2de2402c5461711dd2418f55f",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/1b93fa9489100d649f29f59226cc52cd7c0812cb",
+                "reference": "1b93fa9489100d649f29f59226cc52cd7c0812cb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.0",
                 "phpgt/input": "^v1",
                 "psr/http-message": "^v1.0.1",
-                "willdurand/negotiation": "v3.0.*"
+                "willdurand/negotiation": "v3.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": ">=0.12.64",
-                "phpunit/phpunit": "9.*"
+                "phpstan/phpstan": "v1.8.1",
+                "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
             "autoload": {
@@ -512,7 +512,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/v1.1.4"
+                "source": "https://github.com/PhpGt/Http/tree/v1.1.5"
             },
             "funding": [
                 {
@@ -520,7 +520,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-23T15:45:09+00:00"
+            "time": "2022-07-25T14:31:55+00:00"
         },
         {
             "name": "phpgt/input",
@@ -740,16 +740,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.1.3",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51"
+                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
-                "reference": "8628f96e1b7a7b5d93377f9a1c33b3464dc43d51",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
+                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
                 "shasum": ""
             },
             "require": {
@@ -760,7 +760,7 @@
                 "psr/container-implementation": "1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.0",
+                "phpstan/phpstan": "v1.8.2",
                 "phpunit/phpunit": "v9.5.21"
             },
             "type": "library",
@@ -776,7 +776,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.1.3"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.2.0"
             },
             "funding": [
                 {
@@ -784,7 +784,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T12:03:28+00:00"
+            "time": "2022-07-24T22:32:36+00:00"
         },
         {
             "name": "phpgt/session",
@@ -939,16 +939,16 @@
         },
         {
             "name": "phpgt/ulid",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Ulid.git",
-                "reference": "1f80ca627f1c39cf46a21dad717c68e0d47b8614"
+                "reference": "17edd130b29fc4ca70d457d9758ac6208ceaa6ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Ulid/zipball/1f80ca627f1c39cf46a21dad717c68e0d47b8614",
-                "reference": "1f80ca627f1c39cf46a21dad717c68e0d47b8614",
+                "url": "https://api.github.com/repos/PhpGt/Ulid/zipball/17edd130b29fc4ca70d457d9758ac6208ceaa6ab",
+                "reference": "17edd130b29fc4ca70d457d9758ac6208ceaa6ab",
                 "shasum": ""
             },
             "require": {
@@ -979,7 +979,7 @@
             "description": "Unique, lexicographically sortable identifiers.",
             "support": {
                 "issues": "https://github.com/PhpGt/Ulid/issues",
-                "source": "https://github.com/PhpGt/Ulid/tree/v1.0.0"
+                "source": "https://github.com/PhpGt/Ulid/tree/v1.1.0"
             },
             "funding": [
                 {
@@ -987,7 +987,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-01T10:54:45+00:00"
+            "time": "2022-07-30T19:02:35+00:00"
         },
         {
             "name": "psr/container",
@@ -1370,16 +1370,16 @@
         },
         {
             "name": "willdurand/negotiation",
-            "version": "3.0.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/willdurand/Negotiation.git",
-                "reference": "04e14f38d4edfcc974114a07d2777d90c98f3d9c"
+                "reference": "68e9ea0553ef6e2ee8db5c1d98829f111e623ec2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/willdurand/Negotiation/zipball/04e14f38d4edfcc974114a07d2777d90c98f3d9c",
-                "reference": "04e14f38d4edfcc974114a07d2777d90c98f3d9c",
+                "url": "https://api.github.com/repos/willdurand/Negotiation/zipball/68e9ea0553ef6e2ee8db5c1d98829f111e623ec2",
+                "reference": "68e9ea0553ef6e2ee8db5c1d98829f111e623ec2",
                 "shasum": ""
             },
             "require": {
@@ -1420,9 +1420,9 @@
             ],
             "support": {
                 "issues": "https://github.com/willdurand/Negotiation/issues",
-                "source": "https://github.com/willdurand/Negotiation/tree/3.0.0"
+                "source": "https://github.com/willdurand/Negotiation/tree/3.1.0"
             },
-            "time": "2020-09-25T08:01:41+00:00"
+            "time": "2022-01-30T20:08:53+00:00"
         }
     ],
     "packages-dev": [

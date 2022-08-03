@@ -102,7 +102,7 @@ class Lifecycle implements MiddlewareInterface {
 	public function finish(
 		ResponseInterface $response,
 		ConfigSection $appConfig
-	):void {
+	):never {
 		$buffer = trim(ob_get_clean());
 		http_response_code($response->getStatusCode() ?? StatusCode::OK);
 
@@ -141,5 +141,7 @@ class Lifecycle implements MiddlewareInterface {
 		else {
 			Log::debug("Lifecycle end, delta time: $delta seconds.");
 		}
+
+		exit;
 	}
 }
