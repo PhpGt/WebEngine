@@ -138,9 +138,6 @@ class Lifecycle implements MiddlewareInterface {
 		elseif($delta >= $appConfig->getFloat("very_slow_delta")) {
 			Log::notice("Lifecycle end with SLOW delta time: $delta seconds. https://www.php.gt/webengine/slow-delta");
 		}
-		else {
-			Log::debug("Lifecycle end, delta time: $delta seconds.");
-		}
 
 		exit;
 	}
