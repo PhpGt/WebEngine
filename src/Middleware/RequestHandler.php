@@ -142,8 +142,9 @@ class RequestHandler implements RequestHandlerInterface {
 		foreach($viewAssembly as $viewFile) {
 			$view->addViewFile($viewFile);
 		}
-		$viewModel = $view->createViewModel();
-		$serviceContainer->set($viewModel);
+		if($viewModel = $view->createViewModel()) {
+			$serviceContainer->set($viewModel);
+		}
 
 // TODO: Set a Session loader here, so the CSRF handler can use it.
 
