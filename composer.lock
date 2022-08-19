@@ -333,16 +333,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v4.0.2",
+            "version": "v4.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "32106d0ea4273f9366d35e58bfdf3bfdb2548c7a"
+                "reference": "69a86b6d4ed75c00c17f26f0410c69bbf23a4226"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/32106d0ea4273f9366d35e58bfdf3bfdb2548c7a",
-                "reference": "32106d0ea4273f9366d35e58bfdf3bfdb2548c7a",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/69a86b6d4ed75c00c17f26f0410c69bbf23a4226",
+                "reference": "69a86b6d4ed75c00c17f26f0410c69bbf23a4226",
                 "shasum": ""
             },
             "require": {
@@ -419,7 +419,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v4.0.2"
+                "source": "https://github.com/PhpGt/Dom/tree/v4.0.3"
             },
             "funding": [
                 {
@@ -427,7 +427,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-24T18:51:01+00:00"
+            "time": "2022-08-12T11:21:55+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -3455,5 +3455,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
