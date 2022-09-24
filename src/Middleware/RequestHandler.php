@@ -21,6 +21,7 @@ use Gt\Logger\LogConfig;
 use Gt\Logger\LogHandler\FileHandler;
 use Gt\Logger\LogHandler\StdOutHandler;
 use Gt\Logger\LogHandler\StreamHandler;
+use Gt\ProtectedGlobal\Protection;
 use Gt\Routing\BaseRouter;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
 use Gt\Routing\Path\DynamicPath;
@@ -211,9 +212,22 @@ class RequestHandler implements RequestHandlerInterface {
 			$response = $response->withHeader("x-csrf", $tokens);
 		}
 
-// TODO: Kill globals.
 		$input = new Input($_GET, $_POST, $_FILES);
 		$serviceContainer->set($input);
+
+		Protection::removeGlobals($GLOBALS, [
+			"_GET" => ["xdebug"],
+		]);
+		Protection::overrideInternals(
+			$GLOBALS,
+			$_ENV,
+			$_SERVER,
+			$_GET,
+			$_POST,
+			$_FILES,
+			$_COOKIE,
+			$_SESSION,
+		);
 
 		$injector = new Injector($serviceContainer);
 
