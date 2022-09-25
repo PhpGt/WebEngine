@@ -215,20 +215,12 @@ class RequestHandler implements RequestHandlerInterface {
 		$input = new Input($_GET, $_POST, $_FILES);
 		$serviceContainer->set($input);
 
-// TODO: Re-enable protected globals
-//		Protection::removeGlobals($GLOBALS, [
-//			"_GET" => ["xdebug"],
-//		]);
-//		Protection::overrideInternals(
-//			$GLOBALS,
-//			$_ENV,
-//			$_SERVER,
-//			$_GET,
-//			$_POST,
-//			$_FILES,
-//			$_COOKIE,
-//			$_SESSION,
-//		);
+		Protection::overrideInternals(
+			Protection::removeGlobals($GLOBALS, [
+// TODO: Configure the whitelisted globals.
+				"_GET" => ["xdebug"],
+			]
+		));
 
 		$injector = new Injector($serviceContainer);
 

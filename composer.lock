@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b1fb79f4fc1286b820e47716f4085ff7",
+    "content-hash": "dcdbe48bfb7c301b60174a5ebcc48371",
     "packages": [
         {
             "name": "magicalex/write-ini-file",
@@ -726,6 +726,44 @@
                 }
             ],
             "time": "2021-03-23T12:46:44+00:00"
+        },
+        {
+            "name": "phpgt/protectedglobal",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhpGt/ProtectedGlobal.git",
+                "reference": "6e8c0b1729a52723e29e551be38c390a0178bfd4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhpGt/ProtectedGlobal/zipball/6e8c0b1729a52723e29e551be38c390a0178bfd4",
+                "reference": "6e8c0b1729a52723e29e551be38c390a0178bfd4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">7.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^v1.8",
+                "phpunit/phpunit": "^v9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gt\\ProtectedGlobal\\": "./src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Protect against accidental use of superglobals.",
+            "support": {
+                "issues": "https://github.com/PhpGt/ProtectedGlobal/issues",
+                "source": "https://github.com/PhpGt/ProtectedGlobal/tree/v1.1.1"
+            },
+            "time": "2022-09-25T12:04:38+00:00"
         },
         {
             "name": "phpgt/routing",

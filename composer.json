@@ -7,7 +7,6 @@
 	],
 
 	"type": "library",
-
 	"require": {
 		"ext-posix": "*",
 		"ext-dom": "*",
@@ -21,6 +20,7 @@
 		"phpgt/database": "^1.4",
 		"phpgt/http": "^1.1",
 		"phpgt/logger": "^1.0",
+		"phpgt/protectedglobal": "^v1.1",
 		"phpgt/routing": "^1.0",
 		"phpgt/servicecontainer": "^1.1",
 		"phpgt/session": "^1.1",
