@@ -4,6 +4,8 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
+use Gt\Csrf\HTMLDocumentProtector;
+use Gt\Csrf\SessionTokenStore;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
@@ -184,7 +186,6 @@ class RequestHandler implements RequestHandlerInterface {
 				$viewModel->body->classList->add($bodyDirClass);
 			}
 
-//			ini_set('session.serialize_handler', 'php_serialize');
 			$sessionConfig = $this->config->getSection("session");
 			$sessionId = $_COOKIE[$sessionConfig["name"]] ?? null;
 			$sessionHandler = SessionSetup::attachHandler(
@@ -197,35 +198,37 @@ class RequestHandler implements RequestHandlerInterface {
 			);
 			$serviceContainer->set($session);
 
-//			TODO: Complete CSRF implementation - maybe use its own cookie?
-//			/** @var Session $session */
-//			$session = $serviceContainer->get(Session::class);
-//			$csrfTokenStore = new SessionTokenStore($session->getStore("csrf", true));
-//
-//			if($request->getMethod() === "POST") {
-//				$csrfTokenStore->processAndVerify($_POST);
-//			}
-//
-//			$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
-//			$protector->protectAndInject();
+			$session = $serviceContainer->get(Session::class);
+			$csrfTokenStore = new SessionTokenStore(
+				$session->getStore("csrf", true)
+			);
+
+			if($request->getMethod() === "POST") {
+				$csrfTokenStore->verify($_POST);
+			}
+
+			$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
+			$tokens = $protector->protect(HTMLDocumentProtector::ONE_TOKEN_PER_FORM);
+			$response = $response->withHeader("x-csrf", $tokens);
 		}
 
 		$input = new Input($_GET, $_POST, $_FILES);
 		$serviceContainer->set($input);
 
-		Protection::removeGlobals($GLOBALS, [
-			"_GET" => ["xdebug"],
-		]);
-		Protection::overrideInternals(
-			$GLOBALS,
-			$_ENV,
-			$_SERVER,
-			$_GET,
-			$_POST,
-			$_FILES,
-			$_COOKIE,
-			$_SESSION,
-		);
+// TODO: Re-enable protected globals
+//		Protection::removeGlobals($GLOBALS, [
+//			"_GET" => ["xdebug"],
+//		]);
+//		Protection::overrideInternals(
+//			$GLOBALS,
+//			$_ENV,
+//			$_SERVER,
+//			$_GET,
+//			$_POST,
+//			$_FILES,
+//			$_COOKIE,
+//			$_SESSION,
+//		);
 
 		$injector = new Injector($serviceContainer);
 
