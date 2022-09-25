@@ -4,13 +4,17 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
 use Gt\Http\RequestFactory;
+use Gt\Http\Response;
+use Gt\Http\ResponseFactory;
 use Gt\Http\StatusCode;
+use Gt\Http\Stream;
 use Gt\Logger\Log;
 use Gt\WebEngine\Debug\Timer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
 /**
  * The fundamental purpose of any PHP framework is to provide a mechanism for
@@ -38,8 +42,11 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class Lifecycle implements MiddlewareInterface {
 	private Timer $timer;
+	private Throwable $throwable;
 
 	public function start():void {
+		set_error_handler($this->error(...), E_ALL);
+
 //		set_error_handler(function($errno, $errstr, $errfile, $errline) {
 //			throw new \Exception($errstr, $errno, 0, $errfile, $errline);
 //		}, E_WARNING);
@@ -77,7 +84,25 @@ class Lifecycle implements MiddlewareInterface {
 
 // The request and request handler are passed to the PSR-15 process function,
 // which will return our PSR-7 HTTP Response.
-		$response = $this->process($request, $handler);
+		try {
+			$response = $this->process($request, $handler);
+		}
+		catch(Throwable $throwable) {
+// TODO: $response = $this->process($request, $errorHandler)
+// There should be some sort of magical error handler created at this point,
+// but most of the refactoring of the RequestHandler::handle() function can
+// be shared to this other Handler. This kills two birds with one stone, as
+// when generating the new response, it should still have user-code executing
+// wherever possible. Question: should _common still fire? I don't think so...
+/// ... but _error should!
+			$response = $this->responseFromThrowable($throwable);
+
+			$this->throwable = $throwable;
+			trigger_error(
+				$throwable->getMessage(),
+				E_USER_ERROR,
+			);
+		}
 
 // Now we can finish the HTTP lifecycle by providing the HTTP response for
 // outputting to the browser, along with the buffer so we can display the
@@ -97,6 +122,57 @@ class Lifecycle implements MiddlewareInterface {
 		RequestHandlerInterface $handler,
 	):ResponseInterface {
 		return $handler->handle($request);
+	}
+
+	public function error(
+		int $errno,
+		string $errstr,
+		?string $errfile = null,
+		?int $errline = null,
+		?array $errcontext = null,
+	):bool {
+		$params = ["error", $errstr];
+		if(isset($this->throwable)) {
+			array_push($params, $this->throwable, get_class($this->throwable));
+		}
+		call_user_func_array($this->debugOutput(...), $params);
+		return true;
+	}
+
+	public function debugOutput(
+		string $name,
+		string $message,
+		mixed $detail = null,
+		?string $detailName = null,
+	):void {
+		$detailJs = "";
+		if(!is_null($detail)) {
+			if(!is_null($detailName)) {
+				$detailJs .= "console.group(\"$detailName\");";
+			}
+//			$detailJs .= "console.log(`" . print_r($detail, true) . "`)";
+			if(!is_null($detailName)) {
+				$detailJs .= "console.groupEnd();";
+			}
+		}
+		$js = <<<JS
+			<script class="webengine-debug--$name">
+			console.group("%cphp.gt/webengine", "display: inline-block; padding: 0.5em 1em; background: #26a5e3; color: white; cursor: pointer");
+			console.info(`$message`);
+			$detailJs
+			console.groupEnd();
+			</script>
+			JS;
+		$js = str_replace("</script", "<\\/script", $js);
+		echo $js;
+	}
+
+	public function responseFromThrowable(Throwable $throwable):Response {
+		$response = new Response();
+		$body = new Stream();
+		$body->write("errrrrrrrrrrror!");
+		$response = $response->withBody($body);
+		return $response;
 	}
 
 	public function finish(
@@ -127,15 +203,8 @@ class Lifecycle implements MiddlewareInterface {
 		}
 
 		if(strlen($buffer) > 0) {
-			$buffer = str_replace("</script", "<\\/script", $buffer);
-			$js = <<<JS
-			<script id="webengine-debug">
-			console.group("%cphp.gt/webengine", "display: inline-block; padding: 0.5em 1em; background: #26a5e3; color: white; cursor: pointer");
-			console.info(`$buffer`);
-			console.groupEnd();
-			</script>
-			JS;
-			echo $js;
+			$this->debugOutput("buffer", $buffer);
+			exit;
 		}
 
 // The very last thing that's done before the script ends is to stop the Timer,
