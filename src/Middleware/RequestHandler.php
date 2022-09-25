@@ -233,8 +233,12 @@ class RequestHandler implements RequestHandlerInterface {
 					$csrfTokenStore->verify($_POST);
 				}
 
+				$sharing = match($this->config->getString("security.csrf_token_sharing")) {
+					"per-page" => HTMLDocumentProtector::ONE_TOKEN_PER_PAGE,
+					default => HTMLDocumentProtector::ONE_TOKEN_PER_FORM,
+				};
 				$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
-				$tokens = $protector->protect(HTMLDocumentProtector::ONE_TOKEN_PER_FORM);
+				$tokens = $protector->protect($sharing);
 				$response = $response->withHeader($this->config->getString("security.csrf_header"), $tokens);
 			}
 		}
