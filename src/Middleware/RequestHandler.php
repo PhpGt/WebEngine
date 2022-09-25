@@ -197,13 +197,14 @@ class RequestHandler implements RequestHandlerInterface {
 			$serviceContainer->set($session);
 
 			$session = $serviceContainer->get(Session::class);
-			$csrfTokenStore = new SessionTokenStore(
-				$session->getStore("webengine.csrf", true)
-			);
 
 			$shouldVerifyCsrf = true;
 			$ignoredPathArray = explode(",", $this->config->getString("security.csrf_ignore_path") ?? "");
 			foreach($ignoredPathArray as $ignoredPath) {
+				if(empty($ignoredPath)) {
+					continue;
+				}
+
 				if(str_contains($ignoredPath, "*")) {
 					$pattern = strtr(rtrim($ignoredPath, "/"), [
 						"*" => ".*",
@@ -220,6 +221,14 @@ class RequestHandler implements RequestHandlerInterface {
 			}
 
 			if($shouldVerifyCsrf) {
+				$csrfTokenStore = new SessionTokenStore(
+					$session->getStore("webengine.csrf", true),
+					$this->config->getInt("security.csrf_max_tokens")
+				);
+				$csrfTokenStore->setTokenLength(
+					$this->config->getInt("security.csrf_token_length")
+				);
+
 				if($request->getMethod() === "POST") {
 					$csrfTokenStore->verify($_POST);
 				}
