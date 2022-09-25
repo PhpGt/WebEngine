@@ -201,13 +201,33 @@ class RequestHandler implements RequestHandlerInterface {
 				$session->getStore("webengine.csrf", true)
 			);
 
-			if($request->getMethod() === "POST") {
-				$csrfTokenStore->verify($_POST);
+			$shouldVerifyCsrf = true;
+			$ignoredPathArray = explode(",", $this->config->getString("security.csrf_ignore_path") ?? "");
+			foreach($ignoredPathArray as $ignoredPath) {
+				if(str_contains($ignoredPath, "*")) {
+					$pattern = strtr(rtrim($ignoredPath, "/"), [
+						"*" => ".*",
+					]);
+					if(preg_match("|$pattern|", rtrim($uriPath, "/"))) {
+						$shouldVerifyCsrf = false;
+					}
+				}
+				else {
+					if(rtrim($uriPath, "/") === rtrim($ignoredPath, "/")) {
+						$shouldVerifyCsrf = false;
+					}
+				}
 			}
 
-			$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
-			$tokens = $protector->protect(HTMLDocumentProtector::ONE_TOKEN_PER_FORM);
-			$response = $response->withHeader($this->config->getString("security.csrf_header"), $tokens);
+			if($shouldVerifyCsrf) {
+				if($request->getMethod() === "POST") {
+					$csrfTokenStore->verify($_POST);
+				}
+
+				$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
+				$tokens = $protector->protect(HTMLDocumentProtector::ONE_TOKEN_PER_FORM);
+				$response = $response->withHeader($this->config->getString("security.csrf_header"), $tokens);
+			}
 		}
 
 		$input = new Input($_GET, $_POST, $_FILES);
