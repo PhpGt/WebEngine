@@ -149,8 +149,6 @@ class RequestHandler implements RequestHandlerInterface {
 			$serviceContainer->set($viewModel);
 		}
 
-// TODO: Set a Session loader here, so the CSRF handler can use it.
-
 		if($viewModel instanceof HTMLDocument) {
 			try {
 				$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
@@ -200,7 +198,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 			$session = $serviceContainer->get(Session::class);
 			$csrfTokenStore = new SessionTokenStore(
-				$session->getStore("csrf", true)
+				$session->getStore("webengine.csrf", true)
 			);
 
 			if($request->getMethod() === "POST") {
@@ -209,7 +207,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 			$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
 			$tokens = $protector->protect(HTMLDocumentProtector::ONE_TOKEN_PER_FORM);
-			$response = $response->withHeader("x-csrf", $tokens);
+			$response = $response->withHeader($this->config->getString("security.csrf_header"), $tokens);
 		}
 
 		$input = new Input($_GET, $_POST, $_FILES);
@@ -217,8 +215,12 @@ class RequestHandler implements RequestHandlerInterface {
 
 		Protection::overrideInternals(
 			Protection::removeGlobals($GLOBALS, [
-// TODO: Configure the whitelisted globals.
-				"_GET" => ["xdebug"],
+				"_ENV" => explode(",", $this->config->getString("app.globals_whitelist_env") ?? ""),
+				"_SERVER" => explode(",", $this->config->getString("app.globals_whitelist_server") ?? ""),
+				"_GET" => explode(",", $this->config->getString("app.globals_whitelist_get") ?? ""),
+				"_POST" => explode(",", $this->config->getString("app.globals_whitelist_post") ?? ""),
+				"_FILES" => explode(",", $this->config->getString("app.globals_whitelist_files") ?? ""),
+				"_COOKIES" => explode(",", $this->config->getString("app.globals_whitelist_cookies") ?? ""),
 			]
 		));
 
