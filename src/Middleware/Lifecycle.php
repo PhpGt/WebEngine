@@ -112,10 +112,8 @@ class Lifecycle implements MiddlewareInterface {
 		}
 
 		if(strlen($buffer) > 0) {
-			if(str_contains($buffer, "\n")) {
-				$buffer = "\n$buffer";
-			}
-			Log::debug("Logic output: $buffer");
+			$newLine = str_contains($buffer, "\n") ? "\n" : "";
+			Log::debug("Logic output: {$newLine}{$buffer}");
 		}
 
 		$renderBufferSize = $appConfig->getInt("render_buffer_size");
@@ -126,6 +124,18 @@ class Lifecycle implements MiddlewareInterface {
 			echo $body->read($renderBufferSize);
 			ob_flush();
 			flush();
+		}
+
+		if(strlen($buffer) > 0) {
+			$buffer = str_replace("</script", "<\\/script", $buffer);
+			$js = <<<JS
+			<script id="webengine-debug">
+			console.group("%cphp.gt/webengine", "display: inline-block; padding: 0.5em 1em; background: #26a5e3; color: white; cursor: pointer");
+			console.info(`$buffer`);
+			console.groupEnd();
+			</script>
+			JS;
+			echo $js;
 		}
 
 // The very last thing that's done before the script ends is to stop the Timer,

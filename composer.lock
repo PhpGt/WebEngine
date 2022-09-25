@@ -391,16 +391,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v4.0.3",
+            "version": "v4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "69a86b6d4ed75c00c17f26f0410c69bbf23a4226"
+                "reference": "19ad48319273f725bcbfb9b2784cdf1deb1cf27f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/69a86b6d4ed75c00c17f26f0410c69bbf23a4226",
-                "reference": "69a86b6d4ed75c00c17f26f0410c69bbf23a4226",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/19ad48319273f725bcbfb9b2784cdf1deb1cf27f",
+                "reference": "19ad48319273f725bcbfb9b2784cdf1deb1cf27f",
                 "shasum": ""
             },
             "require": {
@@ -408,13 +408,13 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "php": ">=8.1",
-                "phpgt/cssxpath": "^1.1",
-                "phpgt/propfunc": "^1.0",
-                "psr/http-message": "^1.0"
+                "phpgt/cssxpath": "^v1.1",
+                "phpgt/propfunc": "^v1.0",
+                "psr/http-message": "^v1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.2",
-                "phpunit/phpunit": "v9.5.21"
+                "phpstan/phpstan": "v1.8",
+                "phpunit/phpunit": "v9.5"
             },
             "type": "library",
             "autoload": {
@@ -477,7 +477,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v4.0.3"
+                "source": "https://github.com/PhpGt/Dom/tree/v4.1.0"
             },
             "funding": [
                 {
@@ -485,7 +485,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-08-12T11:21:55+00:00"
+            "time": "2022-09-25T10:57:14+00:00"
         },
         {
             "name": "phpgt/domtemplate",
