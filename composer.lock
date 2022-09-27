@@ -836,16 +836,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c"
+                "reference": "653f928d8a0a658d0589135efe144520d32c2b4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
-                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/653f928d8a0a658d0589135efe144520d32c2b4a",
+                "reference": "653f928d8a0a658d0589135efe144520d32c2b4a",
                 "shasum": ""
             },
             "require": {
@@ -856,8 +856,8 @@
                 "psr/container-implementation": "1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.2",
-                "phpunit/phpunit": "v9.5.21"
+                "phpstan/phpstan": "^v1.8",
+                "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
             "autoload": {
@@ -872,7 +872,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.2.0"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.2.1"
             },
             "funding": [
                 {
@@ -880,7 +880,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-24T22:32:36+00:00"
+            "time": "2022-09-26T17:51:21+00:00"
         },
         {
             "name": "phpgt/session",
