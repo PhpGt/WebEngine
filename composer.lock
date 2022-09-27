@@ -535,16 +535,16 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.1.5",
+            "version": "v1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "1b93fa9489100d649f29f59226cc52cd7c0812cb"
+                "reference": "ec7a74dd32bd2f105684937b7650097a8f2d843b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/1b93fa9489100d649f29f59226cc52cd7c0812cb",
-                "reference": "1b93fa9489100d649f29f59226cc52cd7c0812cb",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/ec7a74dd32bd2f105684937b7650097a8f2d843b",
+                "reference": "ec7a74dd32bd2f105684937b7650097a8f2d843b",
                 "shasum": ""
             },
             "require": {
@@ -554,8 +554,8 @@
                 "willdurand/negotiation": "v3.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.1",
-                "phpunit/phpunit": "v9.5.21"
+                "phpstan/phpstan": "^v1.8",
+                "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
             "autoload": {
@@ -570,7 +570,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/v1.1.5"
+                "source": "https://github.com/PhpGt/Http/tree/v1.1.6"
             },
             "funding": [
                 {
@@ -578,28 +578,28 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-25T14:31:55+00:00"
+            "time": "2022-09-26T19:55:44+00:00"
         },
         {
             "name": "phpgt/input",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "95136bcbe1c50c3d8db90eb3b1944d049ec2b2a0"
+                "reference": "fbcd56090e6b69050ebf585e31aa3b8decbbfa0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/95136bcbe1c50c3d8db90eb3b1944d049ec2b2a0",
-                "reference": "95136bcbe1c50c3d8db90eb3b1944d049ec2b2a0",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/fbcd56090e6b69050ebf585e31aa3b8decbbfa0a",
+                "reference": "fbcd56090e6b69050ebf585e31aa3b8decbbfa0a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.0",
+                "php": ">=8.1",
                 "phpgt/http": "^v1.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "^v1.4",
+                "phpstan/phpstan": "^v1.8",
                 "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
@@ -615,7 +615,7 @@
             "description": "Encapsulated user input.",
             "support": {
                 "issues": "https://github.com/PhpGt/Input/issues",
-                "source": "https://github.com/PhpGt/Input/tree/v1.2.0"
+                "source": "https://github.com/PhpGt/Input/tree/v1.2.1"
             },
             "funding": [
                 {
@@ -623,7 +623,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-18T19:03:02+00:00"
+            "time": "2022-09-27T10:37:03+00:00"
         },
         {
             "name": "phpgt/logger",
