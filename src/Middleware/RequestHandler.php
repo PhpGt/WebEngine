@@ -4,8 +4,6 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Config\ConfigFactory;
 use Gt\Config\ConfigSection;
-use Gt\Csrf\HTMLDocumentProtector;
-use Gt\Csrf\SessionTokenStore;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
@@ -149,6 +147,9 @@ class RequestHandler implements RequestHandlerInterface {
 			$serviceContainer->set($viewModel);
 		}
 
+		$input = new Input($_GET, $_POST, $_FILES);
+		$serviceContainer->set($input);
+
 		if($viewModel instanceof HTMLDocument) {
 			try {
 				$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
@@ -195,67 +196,19 @@ class RequestHandler implements RequestHandlerInterface {
 				$sessionId
 			);
 			$serviceContainer->set($session);
-
-			$session = $serviceContainer->get(Session::class);
-
-			$shouldVerifyCsrf = true;
-			$ignoredPathArray = explode(",", $this->config->getString("security.csrf_ignore_path") ?? "");
-			foreach($ignoredPathArray as $ignoredPath) {
-				if(empty($ignoredPath)) {
-					continue;
-				}
-
-				if(str_contains($ignoredPath, "*")) {
-					$pattern = strtr(rtrim($ignoredPath, "/"), [
-						"*" => ".*",
-					]);
-					if(preg_match("|$pattern|", rtrim($uriPath, "/"))) {
-						$shouldVerifyCsrf = false;
-					}
-				}
-				else {
-					if(rtrim($uriPath, "/") === rtrim($ignoredPath, "/")) {
-						$shouldVerifyCsrf = false;
-					}
-				}
-			}
-
-			if($shouldVerifyCsrf) {
-				$csrfTokenStore = new SessionTokenStore(
-					$session->getStore("webengine.csrf", true),
-					$this->config->getInt("security.csrf_max_tokens")
-				);
-				$csrfTokenStore->setTokenLength(
-					$this->config->getInt("security.csrf_token_length")
-				);
-
-				if($request->getMethod() === "POST") {
-					$csrfTokenStore->verify($_POST);
-				}
-
-				$sharing = match($this->config->getString("security.csrf_token_sharing")) {
-					"per-page" => HTMLDocumentProtector::ONE_TOKEN_PER_PAGE,
-					default => HTMLDocumentProtector::ONE_TOKEN_PER_FORM,
-				};
-				$protector = new HTMLDocumentProtector($viewModel, $csrfTokenStore);
-				$tokens = $protector->protect($sharing);
-				$response = $response->withHeader($this->config->getString("security.csrf_header"), $tokens);
-			}
 		}
-
-		$input = new Input($_GET, $_POST, $_FILES);
-		$serviceContainer->set($input);
 
 		Protection::overrideInternals(
 			Protection::removeGlobals($GLOBALS, [
-				"_ENV" => explode(",", $this->config->getString("app.globals_whitelist_env") ?? ""),
-				"_SERVER" => explode(",", $this->config->getString("app.globals_whitelist_server") ?? ""),
-				"_GET" => explode(",", $this->config->getString("app.globals_whitelist_get") ?? ""),
-				"_POST" => explode(",", $this->config->getString("app.globals_whitelist_post") ?? ""),
-				"_FILES" => explode(",", $this->config->getString("app.globals_whitelist_files") ?? ""),
-				"_COOKIES" => explode(",", $this->config->getString("app.globals_whitelist_cookies") ?? ""),
-			]
-		));
+					"_ENV" => explode(",", $this->config->getString("app.globals_whitelist_env") ?? ""),
+					"_SERVER" => explode(",", $this->config->getString("app.globals_whitelist_server") ?? ""),
+					"_GET" => explode(",", $this->config->getString("app.globals_whitelist_get") ?? ""),
+					"_POST" => explode(",", $this->config->getString("app.globals_whitelist_post") ?? ""),
+					"_FILES" => explode(",", $this->config->getString("app.globals_whitelist_files") ?? ""),
+					"_COOKIES" => explode(",", $this->config->getString("app.globals_whitelist_cookies") ?? ""),
+				]
+			)
+		);
 
 		$injector = new Injector($serviceContainer);
 
