@@ -270,7 +270,8 @@ class RequestHandler implements RequestHandlerInterface {
 			);
 			$tokens = $protector->protect($sharing);
 			$this->response = $this->response->withHeader($this->config->getString("security.csrf_header"), $tokens);
-		}
+			}
+
 	}
 
 	protected function handleProtectedGlobals():void {
