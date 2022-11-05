@@ -45,11 +45,6 @@ class Lifecycle implements MiddlewareInterface {
 	private Throwable $throwable;
 
 	public function start():void {
-		set_error_handler($this->error(...), E_ALL);
-
-//		set_error_handler(function($errno, $errstr, $errfile, $errline) {
-//			throw new \Exception($errstr, $errno, 0, $errfile, $errline);
-//		}, E_WARNING);
 // The first thing that's done within the WebEngine lifecycle is start a timer.
 // This timer is only used again at the end of the call, when finish() is
 // called - at which point the entire duration of the request is logged out (and
@@ -88,16 +83,19 @@ class Lifecycle implements MiddlewareInterface {
 			$response = $this->process($request, $handler);
 		}
 		catch(Throwable $throwable) {
-// TODO: $response = $this->process($request, $errorHandler)
-// There should be some sort of magical error handler created at this point,
-// but most of the refactoring of the RequestHandler::handle() function can
-// be shared to this other Handler. This kills two birds with one stone, as
-// when generating the new response, it should still have user-code executing
-// wherever possible. Question: should _common still fire? I don't think so...
-/// ... but _error should!
-			$response = $this->responseFromThrowable($throwable);
-
 			$this->throwable = $throwable;
+
+			$errorHandler = new ErrorRequestHandler(
+				ConfigFactory::createForProject(
+					getcwd(),
+					"vendor/phpgt/webengine/config.default.ini"
+				),
+				$this->finish(...),
+				$throwable,
+				$handler->getServiceContainer(),
+			);
+			$response = $this->process($request, $errorHandler);
+
 			trigger_error(
 				$throwable->getMessage(),
 				E_USER_ERROR,
@@ -150,7 +148,7 @@ class Lifecycle implements MiddlewareInterface {
 			if(!is_null($detailName)) {
 				$detailJs .= "console.group(\"$detailName\");";
 			}
-//			$detailJs .= "console.log(`" . print_r($detail, true) . "`)";
+			$detailJs .= "console.log(`" . print_r($detail, true) . "`)";
 			if(!is_null($detailName)) {
 				$detailJs .= "console.groupEnd();";
 			}

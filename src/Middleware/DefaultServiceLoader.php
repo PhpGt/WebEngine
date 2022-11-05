@@ -14,7 +14,9 @@ use Gt\DomTemplate\ListBinder;
 use Gt\DomTemplate\PlaceholderBinder;
 use Gt\DomTemplate\TableBinder;
 use Gt\DomTemplate\TemplateCollection;
+use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Request;
+use Gt\Http\Response;
 use Gt\Http\Uri;
 use Gt\ServiceContainer\Container;
 use Gt\ServiceContainer\LazyLoad;
@@ -24,6 +26,12 @@ class DefaultServiceLoader {
 		protected Config $config,
 		protected Container $container
 	) {
+	}
+
+	#[LazyLoad]
+	public function loadResponseHeaders():ResponseHeaders {
+		$response = $this->container->get(Response::class);
+		return $response->headers;
 	}
 
 	#[LazyLoad]
