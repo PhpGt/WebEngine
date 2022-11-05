@@ -8,6 +8,7 @@
  */
 chdir(dirname($_SERVER["DOCUMENT_ROOT"]));
 ini_set("display_errors", "on");
+ini_set("html_errors", "false");
 /**
  * Before any code is executed, return false here if a static file is requested.
  * When running the PHP inbuilt server, this will output the static file.
@@ -26,7 +27,7 @@ if(strstr($uri, ".")
  * files exist.
  * @link https://getcomposer.org/doc/00-intro.md
  */
-foreach([__DIR__, dirname($_SERVER["DOCUMENT_ROOT"])] as $dir) {
+foreach([dirname($_SERVER["DOCUMENT_ROOT"]), __DIR__] as $dir) {
 	$autoloadPath = "$dir/vendor/autoload.php";
 	if(file_exists($autoloadPath)) {
 		/** @noinspection PhpIncludeInspection */
