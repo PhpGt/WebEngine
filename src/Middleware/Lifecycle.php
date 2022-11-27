@@ -153,7 +153,9 @@ class Lifecycle implements MiddlewareInterface {
 		JS;
 
 		foreach($this->debugOutput as $type => $groupedData) {
-			$js .= "\n\tconsole.group(\"$type\")";
+			if($type !== "error") {
+				$js .= "\n\tconsole.group(\"$type\")";
+			}
 
 			foreach($groupedData as $data) {
 				$message = $data[0];
