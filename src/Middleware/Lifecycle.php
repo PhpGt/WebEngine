@@ -6,6 +6,8 @@ use Gt\Config\ConfigSection;
 use Gt\Http\RequestFactory;
 use Gt\Http\Response;
 use Gt\Http\ResponseFactory;
+use Gt\Http\ResponseStatusException\ClientError\ClientErrorException;
+use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
 use Gt\Http\StatusCode;
 use Gt\Http\Stream;
 use Gt\Logger\Log;
@@ -51,10 +53,6 @@ class Lifecycle implements MiddlewareInterface {
 // called - at which point the entire duration of the request is logged out (and
 // slow requests are highlighted as a NOTICE).
 		$this->timer = new Timer();
-
-// Starting the output buffer is done before any logic is executed, so any calls
-// to any area of code will not accidentally send output to the client.
-		ob_start();
 
 // A PSR-7 HTTP Request object is created from the current global state, ready
 // for processing by the Handler.
@@ -190,7 +188,6 @@ class Lifecycle implements MiddlewareInterface {
 		ResponseInterface $response,
 		ConfigSection $appConfig
 	):never {
-		$buffer = trim(ob_get_clean());
 		http_response_code($response->getStatusCode() ?? StatusCode::OK);
 
 		foreach($response->getHeaders() as $key => $value) {

@@ -4,6 +4,7 @@ namespace Gt\WebEngine\Middleware;
 use Gt\Config\Config;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\DocumentBinder;
+use Gt\Http\ResponseStatusException\ClientError\ClientErrorException;
 use Gt\Http\ResponseStatusException\ResponseStatusException;
 use Gt\Http\Uri;
 use Gt\ServiceContainer\Container;
@@ -26,11 +27,13 @@ class ErrorRequestHandler extends RequestHandler {
 		ServerRequestInterface $request
 	):ResponseInterface {
 		$errorCode = 500;
-		if($this->throwable instanceof ResponseStatusException) {
+		/** @noinspection PhpConditionAlreadyCheckedInspection */
+		if($this->throwable instanceof ResponseStatusException
+		|| $this->throwable instanceof ClientErrorException) {
 			$errorCode = $this->throwable->getHttpCode();
 		}
 
-		$errorUri = new Uri("/_$errorCode/");
+		$errorUri = new Uri("/_error/$errorCode/");
 		$errorRequest = $request->withUri($errorUri);
 
 		$this->completeRequestHandling($errorRequest, $this->serviceContainer);

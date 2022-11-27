@@ -13,6 +13,7 @@ use Gt\DomTemplate\PartialContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
 use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Response;
+use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
 use Gt\Http\ServerInfo;
 use Gt\Http\StatusCode;
 use Gt\Input\Input;
@@ -143,7 +144,6 @@ class RequestHandler implements RequestHandlerInterface {
 // TODO: Why is this in the handle function?
 		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
 		$documentBinder->cleanDatasets();
-
 		$this->view->stream($this->viewModel);
 
 		$responseHeaders = $this->serviceContainer->get(ResponseHeaders::class);
@@ -173,8 +173,10 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$this->serviceContainer->set($this->dynamicPath);
 
-		if(!$this->viewAssembly->containsDistinctFile()) {
-			$this->response = $this->response->withStatus(StatusCode::NOT_FOUND);
+		if(!$this->viewAssembly->containsDistinctFile()
+		&& !$this instanceof ErrorRequestHandler) {
+			throw new HttpNotFound();
+//			$this->response = $this->response->withStatus(StatusCode::NOT_FOUND);
 		}
 
 		foreach($this->viewAssembly as $viewFile) {
@@ -344,6 +346,7 @@ class RequestHandler implements RequestHandlerInterface {
 		foreach($logicExecutor->invoke("go_after") as $fileFunc) {
 			ob_flush();
 		}
+		ob_end_clean();
 	}
 
 	protected function setupLogger(ConfigSection $logConfig):void {
