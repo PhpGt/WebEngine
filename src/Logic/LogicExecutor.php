@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\Logic;
 
+use Generator;
 use Gt\Routing\Assembly;
 use Gt\Routing\LogicStream\LogicStreamNamespace;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
@@ -17,7 +18,12 @@ class LogicExecutor {
 		}
 	}
 
-	public function invoke(string $name):void {
+	/**
+	 * @return Generator<string> A concatenated string consisting of the
+	 * project path to the file being invoked, followed by two colons and
+	 * the name of the invoked function, for example: page/index::go
+	 */
+	public function invoke(string $name):Generator {
 		foreach($this->assembly as $file) {
 			$nsProject = (string)(new LogicProjectNamespace(
 				$file,
@@ -55,6 +61,8 @@ class LogicExecutor {
 					}
 				}
 			}
+// TODO: Unit test this
+			yield "$file::$name()";
 		}
 	}
 
