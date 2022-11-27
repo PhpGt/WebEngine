@@ -3,8 +3,6 @@ namespace Gt\WebEngine\Middleware;
 
 use Gt\Config\Config;
 use Gt\Config\ConfigSection;
-use Gt\Csrf\HTMLDocumentProtector;
-use Gt\Csrf\SessionTokenStore;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
