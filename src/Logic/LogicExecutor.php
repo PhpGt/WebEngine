@@ -1,6 +1,7 @@
 <?php
 namespace Gt\WebEngine\Logic;
 
+use Generator;
 use Gt\Routing\Assembly;
 use Gt\Routing\LogicStream\LogicStreamNamespace;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
@@ -17,7 +18,8 @@ class LogicExecutor {
 		}
 	}
 
-	public function invoke(string $name):void {
+	/** @return Generator<string> filename::function() */
+	public function invoke(string $name):Generator {
 		foreach($this->assembly as $file) {
 			$nsProject = (string)(new LogicProjectNamespace(
 				$file,
@@ -36,6 +38,7 @@ class LogicExecutor {
 						$instance,
 						$name
 					);
+					yield "$file::$name()";
 				}
 			}
 			else {
@@ -52,6 +55,7 @@ class LogicExecutor {
 							null,
 							$fnReference
 						);
+						yield "$file::$name()";
 					}
 				}
 			}

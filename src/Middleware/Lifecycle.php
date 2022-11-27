@@ -125,7 +125,6 @@ class Lifecycle implements MiddlewareInterface {
 		Log::debug("Logic output: {$newLine}{$buffer}");
 		$this->setDebugOutput(
 			$file,
-			"Output buffer",
 			$buffer
 		);
 	}

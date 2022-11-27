@@ -306,29 +306,44 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function handleLogicExecution():void {
-		$file = "PUT THE FILENAME HERE";
-		ob_start(fn(string $buffer) => call_user_func($this->obCallback, $file, $buffer));
-
 		$logicExecutor = new LogicExecutor(
 			$this->logicAssembly,
 			$this->injector,
 			$this->config->getString("app.namespace")
 		);
-		$logicExecutor->invoke("go_before");
+
+		$fileFunc = "";
+		ob_start(function(string $buffer)use(&$fileFunc) {
+			if(!$buffer) {
+				return;
+			}
+			call_user_func($this->obCallback, $fileFunc, $buffer);
+		});
+
+		foreach($logicExecutor->invoke("go_before") as $fileFunc) {
+			ob_flush();
+		}
 
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
-			fn(InputData $data) => $logicExecutor->invoke(
-				"do_" . str_replace(
-					"-",
-					"_",
-					$data->getString("do")
-				)
-			)
+			function(InputData $data)use($logicExecutor, &$fileFunc):void {
+				$doString = "do_" . str_replace(
+						"-",
+						"_",
+						$data->getString("do"),
+					);
+				foreach($logicExecutor->invoke($doString) as $fileFunc) {
+					ob_flush();
+				}
+			}
 		);
-		$logicExecutor->invoke("go");
-		$logicExecutor->invoke("go_after");
-		ob_clean();
+
+		foreach($logicExecutor->invoke("go") as $fileFunc) {
+			ob_flush();
+		}
+		foreach($logicExecutor->invoke("go_after") as $fileFunc) {
+			ob_flush();
+		}
 	}
 
 	protected function setupLogger(ConfigSection $logConfig):void {
