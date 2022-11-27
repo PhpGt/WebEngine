@@ -41,6 +41,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestHandler implements RequestHandlerInterface {
 	/** @var callable(ResponseInterface,ConfigSection) */
 	protected $finishCallback;
+	/** @var callable(string, string) */
+	protected $obCallback;
 	protected Container $serviceContainer;
 	protected Injector $injector;
 	protected ResponseInterface $response;
@@ -53,8 +55,10 @@ class RequestHandler implements RequestHandlerInterface {
 	public function __construct(
 		protected readonly Config $config,
 		callable $finishCallback,
+		callable $obCallback,
 	) {
 		$this->finishCallback = $finishCallback;
+		$this->obCallback = $obCallback;
 
 		$this->setupLogger(
 			$this->config->getSection("logger")
@@ -90,13 +94,29 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function completeRequestHandling(
-		ServerRequestInterface $request
+		ServerRequestInterface $request,
+		?Container $container = null,
 	):void {
+		if($container) {
+			$this->serviceContainer = $container;
+		}
 		$this->setupResponse($request);
 		$this->forceTrailingSlashes($request);
 		$this->setupServiceContainer();
 
-		$input = new Input($_GET, $_POST, $_FILES);
+		if($container?->has(Input::class)) {
+			$input = $container->get(Input::class);
+		}
+		else {
+			$input = new Input($_GET, $_POST, $_FILES);
+		}
+
+		if($container?->has(ServerInfo::class)) {
+			$serverInfo = $container->get(ServerInfo::class);
+		}
+		else {
+			$serverInfo = new ServerInfo($_SERVER);
+		}
 
 		$this->serviceContainer->set(
 			$this->config,
@@ -104,10 +124,9 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->response,
 			$this->response->headers,
 			$input,
-			new ServerInfo($_SERVER),
+			$serverInfo,
 		);
 		$this->injector = new Injector($this->serviceContainer);
-
 		$this->handleRouting($request);
 		if(!$this->serviceContainer->has(Session::class)) {
 			$this->handleSession();
@@ -287,6 +306,9 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function handleLogicExecution():void {
+		$file = "PUT THE FILENAME HERE";
+		ob_start(fn(string $buffer) => call_user_func($this->obCallback, $file, $buffer));
+
 		$logicExecutor = new LogicExecutor(
 			$this->logicAssembly,
 			$this->injector,
@@ -306,6 +328,7 @@ class RequestHandler implements RequestHandlerInterface {
 		);
 		$logicExecutor->invoke("go");
 		$logicExecutor->invoke("go_after");
+		ob_clean();
 	}
 
 	protected function setupLogger(ConfigSection $logConfig):void {

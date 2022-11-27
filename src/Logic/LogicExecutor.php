@@ -60,6 +60,6 @@ class LogicExecutor {
 
 	private function loadLogicFile(string $file):void {
 		$streamPath = LogicStreamWrapper::STREAM_NAME . "://$file";
-		require($streamPath);
+		require_once($streamPath);
 	}
 }

@@ -15,10 +15,11 @@ class ErrorRequestHandler extends RequestHandler {
 	public function __construct(
 		Config $config,
 		callable $finishCallback,
+		callable $obCallback,
 		private Throwable $throwable,
 		protected Container $serviceContainer,
 	) {
-		parent::__construct($config, $finishCallback);
+		parent::__construct($config, $finishCallback, $obCallback);
 	}
 
 	public function handle(
@@ -29,10 +30,10 @@ class ErrorRequestHandler extends RequestHandler {
 			$errorCode = $this->throwable->getHttpCode();
 		}
 
-		$errorUri = new Uri("/_$errorCode");
+		$errorUri = new Uri("/_$errorCode/");
 		$errorRequest = $request->withUri($errorUri);
 
-		$this->completeRequestHandling($errorRequest);
+		$this->completeRequestHandling($errorRequest, $this->serviceContainer);
 		$this->response = $this->response->withStatus($errorCode);
 		return $this->response;
 	}
