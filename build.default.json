@@ -7,7 +7,17 @@
 		},
 		"execute": {
 			"command": "webpack",
-			"arguments": ["--entry","./script/script.es6", "--output-path", "./www", "--output-filename", "script.js", "--devtool", "source-map", "--mode", "production"]
+			"arguments": ["--entry","./script/script.es6", "--output-path", "./www", "--output-filename", "script.js", "--devtool", "source-map", "--mode", "development"]
+		}
+	},
+
+	"script/*sw.js": {
+		"require": {
+			"vendor/bin/sync": "*"
+		},
+		"execute": {
+			"command": "vendor/bin/sync",
+			"arguments": ["--pattern", "*sw.js", "script", "www/"]
 		}
 	},
 
