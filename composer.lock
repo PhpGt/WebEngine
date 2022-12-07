@@ -535,27 +535,27 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.1.5",
+            "version": "v1.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "1b93fa9489100d649f29f59226cc52cd7c0812cb"
+                "reference": "6d32a4cbf3efea655b3204591501fc84721b00ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/1b93fa9489100d649f29f59226cc52cd7c0812cb",
-                "reference": "1b93fa9489100d649f29f59226cc52cd7c0812cb",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/6d32a4cbf3efea655b3204591501fc84721b00ca",
+                "reference": "6d32a4cbf3efea655b3204591501fc84721b00ca",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.0",
+                "php": ">=8.1",
                 "phpgt/input": "^v1",
                 "psr/http-message": "^v1.0.1",
                 "willdurand/negotiation": "v3.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.1",
-                "phpunit/phpunit": "v9.5.21"
+                "phpstan/phpstan": "^v1.8",
+                "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
             "autoload": {
@@ -570,7 +570,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/v1.1.5"
+                "source": "https://github.com/PhpGt/Http/tree/v1.1.7"
             },
             "funding": [
                 {
@@ -578,28 +578,28 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-25T14:31:55+00:00"
+            "time": "2022-09-28T16:04:19+00:00"
         },
         {
             "name": "phpgt/input",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Input.git",
-                "reference": "95136bcbe1c50c3d8db90eb3b1944d049ec2b2a0"
+                "reference": "fbcd56090e6b69050ebf585e31aa3b8decbbfa0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Input/zipball/95136bcbe1c50c3d8db90eb3b1944d049ec2b2a0",
-                "reference": "95136bcbe1c50c3d8db90eb3b1944d049ec2b2a0",
+                "url": "https://api.github.com/repos/PhpGt/Input/zipball/fbcd56090e6b69050ebf585e31aa3b8decbbfa0a",
+                "reference": "fbcd56090e6b69050ebf585e31aa3b8decbbfa0a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.0",
+                "php": ">=8.1",
                 "phpgt/http": "^v1.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "^v1.4",
+                "phpstan/phpstan": "^v1.8",
                 "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
@@ -615,7 +615,7 @@
             "description": "Encapsulated user input.",
             "support": {
                 "issues": "https://github.com/PhpGt/Input/issues",
-                "source": "https://github.com/PhpGt/Input/tree/v1.2.0"
+                "source": "https://github.com/PhpGt/Input/tree/v1.2.1"
             },
             "funding": [
                 {
@@ -623,7 +623,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-18T19:03:02+00:00"
+            "time": "2022-09-27T10:37:03+00:00"
         },
         {
             "name": "phpgt/logger",
@@ -836,16 +836,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c"
+                "reference": "653f928d8a0a658d0589135efe144520d32c2b4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
-                "reference": "bdfd2f2b5c9af8c5c77f3bd0a20e8c59f1b9999c",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/653f928d8a0a658d0589135efe144520d32c2b4a",
+                "reference": "653f928d8a0a658d0589135efe144520d32c2b4a",
                 "shasum": ""
             },
             "require": {
@@ -856,8 +856,8 @@
                 "psr/container-implementation": "1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.2",
-                "phpunit/phpunit": "v9.5.21"
+                "phpstan/phpstan": "^v1.8",
+                "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
             "autoload": {
@@ -872,7 +872,7 @@
             "description": "Centralised construction of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.2.0"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.2.1"
             },
             "funding": [
                 {
@@ -880,7 +880,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-24T22:32:36+00:00"
+            "time": "2022-09-26T17:51:21+00:00"
         },
         {
             "name": "phpgt/session",
@@ -1653,16 +1653,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.1",
+            "version": "v4.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "0ef6c55a3f47f89d7a374e6f835197a0b5fcf900"
+                "reference": "f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/0ef6c55a3f47f89d7a374e6f835197a0b5fcf900",
-                "reference": "0ef6c55a3f47f89d7a374e6f835197a0b5fcf900",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc",
+                "reference": "f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc",
                 "shasum": ""
             },
             "require": {
@@ -1703,9 +1703,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.1"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.2"
             },
-            "time": "2022-09-04T07:30:47+00:00"
+            "time": "2022-11-12T15:38:23+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1930,25 +1930,30 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.6.1",
+            "version": "1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "77a32518733312af16a44300404e945338981de3"
+                "reference": "48f445a408c131e38cab1c235aa6d2bb7a0bb20d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/77a32518733312af16a44300404e945338981de3",
-                "reference": "77a32518733312af16a44300404e945338981de3",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/48f445a408c131e38cab1c235aa6d2bb7a0bb20d",
+                "reference": "48f445a408c131e38cab1c235aa6d2bb7a0bb20d",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "phpdocumentor/reflection-common": "^2.0"
             },
             "require-dev": {
                 "ext-tokenizer": "*",
-                "psalm/phar": "^4.8"
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.8",
+                "phpstan/phpstan-phpunit": "^1.1",
+                "phpunit/phpunit": "^9.5",
+                "rector/rector": "^0.13.9",
+                "vimeo/psalm": "^4.25"
             },
             "type": "library",
             "extra": {
@@ -1974,9 +1979,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.1"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.2"
             },
-            "time": "2022-03-15T21:29:03+00:00"
+            "time": "2022-10-14T12:47:21+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -2106,16 +2111,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.17",
+            "version": "9.2.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "aa94dc41e8661fe90c7316849907cba3007b10d8"
+                "reference": "c77b56b63e3d2031bd8997fcec43c1925ae46559"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/aa94dc41e8661fe90c7316849907cba3007b10d8",
-                "reference": "aa94dc41e8661fe90c7316849907cba3007b10d8",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/c77b56b63e3d2031bd8997fcec43c1925ae46559",
+                "reference": "c77b56b63e3d2031bd8997fcec43c1925ae46559",
                 "shasum": ""
             },
             "require": {
@@ -2171,7 +2176,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.17"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.19"
             },
             "funding": [
                 {
@@ -2179,7 +2184,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-08-30T12:24:04+00:00"
+            "time": "2022-11-18T07:47:47+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
