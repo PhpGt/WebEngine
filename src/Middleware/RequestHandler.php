@@ -270,7 +270,7 @@ class RequestHandler implements RequestHandlerInterface {
 			);
 			$tokens = $protector->protect($sharing);
 			$this->response = $this->response->withHeader($this->config->getString("security.csrf_header"), $tokens);
-			}
+		}
 
 	}
 
@@ -293,20 +293,30 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->injector,
 			$this->config->getString("app.namespace")
 		);
-		$logicExecutor->invoke("go_before");
+		foreach($logicExecutor->invoke("go_before") as $file) {
+			// TODO: Hook up to debug output
+		}
 
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
-			fn(InputData $data) => $logicExecutor->invoke(
-				"do_" . str_replace(
-					"-",
-					"_",
-					$data->getString("do")
-				)
-			)
+			function(InputData $data)use($logicExecutor) {
+				foreach($logicExecutor->invoke(
+					"do_" . str_replace(
+						"-",
+						"_",
+						$data->getString("do")
+					)
+				) as $file) {
+					// TODO: Hook up to debug output
+				}
+			}
 		);
-		$logicExecutor->invoke("go");
-		$logicExecutor->invoke("go_after");
+		foreach($logicExecutor->invoke("go") as $file) {
+			// TODO: Hook up to debug output
+		}
+		foreach($logicExecutor->invoke("go_after") as $file) {
+			// TODO: Hook up to debug output
+		}
 	}
 
 	protected function setupLogger(ConfigSection $logConfig):void {
