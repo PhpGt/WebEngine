@@ -6,8 +6,6 @@ use Gt\Config\ConfigSection;
 use Gt\Http\RequestFactory;
 use Gt\Http\Response;
 use Gt\Http\ResponseFactory;
-use Gt\Http\ResponseStatusException\ClientError\ClientErrorException;
-use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
 use Gt\Http\StatusCode;
 use Gt\Http\Stream;
 use Gt\Logger\Log;
@@ -45,7 +43,6 @@ use Throwable;
 class Lifecycle implements MiddlewareInterface {
 	private Timer $timer;
 	private Throwable $throwable;
-	private array $debugOutput;
 
 	public function start():void {
 // The first thing that's done within the WebEngine lifecycle is start a timer.
@@ -53,6 +50,10 @@ class Lifecycle implements MiddlewareInterface {
 // called - at which point the entire duration of the request is logged out (and
 // slow requests are highlighted as a NOTICE).
 		$this->timer = new Timer();
+
+// Starting the output buffer is done before any logic is executed, so any calls
+// to any area of code will not accidentally send output to the client.
+		ob_start();
 
 // A PSR-7 HTTP Request object is created from the current global state, ready
 // for processing by the Handler.
@@ -74,28 +75,31 @@ class Lifecycle implements MiddlewareInterface {
 				"vendor/phpgt/webengine/config.default.ini"
 			),
 			$this->finish(...),
-			$this->obCallback(...),
 		);
 
 // The request and request handler are passed to the PSR-15 process function,
 // which will return our PSR-7 HTTP Response.
 		try {
-			$this->debugOutput = [];
 			$response = $this->process($request, $handler);
 		}
 		catch(Throwable $throwable) {
 			$this->throwable = $throwable;
+
 			$errorHandler = new ErrorRequestHandler(
 				ConfigFactory::createForProject(
 					getcwd(),
 					"vendor/phpgt/webengine/config.default.ini"
 				),
 				$this->finish(...),
-				$this->obCallback(...),
 				$throwable,
 				$handler->getServiceContainer(),
 			);
 			$response = $this->process($request, $errorHandler);
+
+			trigger_error(
+				$throwable->getMessage(),
+				E_USER_ERROR,
+			);
 		}
 
 // Now we can finish the HTTP lifecycle by providing the HTTP response for
@@ -118,76 +122,62 @@ class Lifecycle implements MiddlewareInterface {
 		return $handler->handle($request);
 	}
 
-	private function obCallback(string $file, string $buffer):void {
-		$newLine = str_contains($buffer, "\n") ? "\n" : "";
-		Log::debug("Logic output: {$newLine}{$buffer}");
-		$this->setDebugOutput(
-			$file,
-			$buffer
-		);
+	public function error(
+		int $errno,
+		string $errstr,
+		?string $errfile = null,
+		?int $errline = null,
+		?array $errcontext = null,
+	):bool {
+		$params = ["error", $errstr];
+		if(isset($this->throwable)) {
+			array_push($params, $this->throwable, get_class($this->throwable));
+		}
+		call_user_func_array($this->debugOutput(...), $params);
+		return true;
 	}
 
-	private function setDebugOutput(
+	public function debugOutput(
 		string $name,
 		string $message,
 		mixed $detail = null,
+		?string $detailName = null,
 	):void {
-		if(!isset($this->debugOutput[$name])) {
-			$this->debugOutput[$name] = [];
+		$detailJs = "";
+		if(!is_null($detail)) {
+			if(!is_null($detailName)) {
+				$detailJs .= "console.group(\"$detailName\");";
+			}
+			$detailJs .= "console.log(`" . print_r($detail, true) . "`)";
+			if(!is_null($detailName)) {
+				$detailJs .= "console.groupEnd();";
+			}
 		}
-		array_push(
-			$this->debugOutput[$name],
-			[$message, $detail],
-		);
+		$js = <<<JS
+			<script class="webengine-debug--$name">
+			console.group("%cphp.gt/webengine", "display: inline-block; padding: 0.5em 1em; background: #26a5e3; color: white; cursor: pointer");
+			console.info(`$message`);
+			$detailJs
+			console.groupEnd();
+			</script>
+			JS;
+//		$js = str_replace("</script", "<\\/script", $js);
+		echo $js;
 	}
 
-	private function getDebugOutputScript():string {
-		if(empty($this->debugOutput)) {
-			return "";
-		}
-
-		$js = <<<JS
-		console.group("%cphp.gt/webengine", "display: inline-block; padding: 0.5em 1em; background: #26a5e3; color: white; cursor: pointer");
-		JS;
-
-		foreach($this->debugOutput as $type => $groupedData) {
-			if($type !== "error") {
-				$js .= "\n\tconsole.group(\"$type\")";
-			}
-
-			foreach($groupedData as $data) {
-				$message = $data[0];
-				$output = "";
-				if(!empty($data[1])) {
-					if(is_string($data[1])) {
-						$newLine = "";
-						if(str_contains($data[1], "\n")) {
-							$newLine = "\n";
-						}
-						$output .= "`$newLine" . $data[1] . "`";
-					}
-					else {
-						$output = json_encode($data[1]);
-					}
-				}
-
-				$consoleType = "info";
-				if($type === "error") {
-					$consoleType = "error";
-				}
-				$js .= "\n\t\tconsole.$consoleType(`$message`, $output)";
-			}
-
-			$js .= "\n\tconsole.groupEnd()";
-		}
-		$js .= "\nconsole.groupEnd();";
-		return "<script id=\"webengine-debug\">$js</script>";
+	public function responseFromThrowable(Throwable $throwable):Response {
+		$response = new Response();
+		$body = new Stream();
+		$body->write("errrrrrrrrrrror!");
+		$response = $response->withBody($body);
+		return $response;
 	}
 
 	public function finish(
 		ResponseInterface $response,
 		ConfigSection $appConfig
 	):never {
+		$buffer = trim(ob_get_clean());
 		http_response_code($response->getStatusCode() ?? StatusCode::OK);
 
 		foreach($response->getHeaders() as $key => $value) {
@@ -195,20 +185,9 @@ class Lifecycle implements MiddlewareInterface {
 			header("$key: $stringValue", true);
 		}
 
-		if(isset($this->throwable)) {
-			$throwableClass = get_class($this->throwable);
-
-			$context = [
-				"File" => $this->throwable->getFile(),
-				"Line" => $this->throwable->getLine(),
-				"Trace" => $this->throwable->getTrace(),
-			];
-			$this->setDebugOutput(
-				"error",
-				"PHP Error ($throwableClass): " . $this->throwable->getMessage(),
-				$context
-			);
-			Log::error($this->throwable->getMessage(), $context);
+		if(strlen($buffer) > 0) {
+			$newLine = str_contains($buffer, "\n") ? "\n" : "";
+			Log::debug("Logic output: {$newLine}{$buffer}");
 		}
 
 		$renderBufferSize = $appConfig->getInt("render_buffer_size");
@@ -221,8 +200,10 @@ class Lifecycle implements MiddlewareInterface {
 			flush();
 		}
 
-		echo $this->getDebugOutputScript();
-		ob_end_flush();
+		if(strlen($buffer) > 0) {
+			$this->debugOutput("buffer", $buffer);
+			exit;
+		}
 
 // The very last thing that's done before the script ends is to stop the Timer,
 // so we know exactly how long the request-response lifecycle has taken.

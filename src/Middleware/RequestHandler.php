@@ -3,6 +3,8 @@ namespace Gt\WebEngine\Middleware;
 
 use Gt\Config\Config;
 use Gt\Config\ConfigSection;
+use Gt\Csrf\HTMLDocumentProtector;
+use Gt\Csrf\SessionTokenStore;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
@@ -11,7 +13,6 @@ use Gt\DomTemplate\PartialContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
 use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Response;
-use Gt\Http\ResponseStatusException\ClientError\HttpNotFound;
 use Gt\Http\ServerInfo;
 use Gt\Http\StatusCode;
 use Gt\Input\Input;
@@ -40,8 +41,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestHandler implements RequestHandlerInterface {
 	/** @var callable(ResponseInterface,ConfigSection) */
 	protected $finishCallback;
-	/** @var callable(string, string) */
-	protected $obCallback;
 	protected Container $serviceContainer;
 	protected Injector $injector;
 	protected ResponseInterface $response;
@@ -54,10 +53,8 @@ class RequestHandler implements RequestHandlerInterface {
 	public function __construct(
 		protected readonly Config $config,
 		callable $finishCallback,
-		callable $obCallback,
 	) {
 		$this->finishCallback = $finishCallback;
-		$this->obCallback = $obCallback;
 
 		$this->setupLogger(
 			$this->config->getSection("logger")
@@ -93,29 +90,13 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function completeRequestHandling(
-		ServerRequestInterface $request,
-		?Container $container = null,
+		ServerRequestInterface $request
 	):void {
-		if($container) {
-			$this->serviceContainer = $container;
-		}
 		$this->setupResponse($request);
 		$this->forceTrailingSlashes($request);
 		$this->setupServiceContainer();
 
-		if($container?->has(Input::class)) {
-			$input = $container->get(Input::class);
-		}
-		else {
-			$input = new Input($_GET, $_POST, $_FILES);
-		}
-
-		if($container?->has(ServerInfo::class)) {
-			$serverInfo = $container->get(ServerInfo::class);
-		}
-		else {
-			$serverInfo = new ServerInfo($_SERVER);
-		}
+		$input = new Input($_GET, $_POST, $_FILES);
 
 		$this->serviceContainer->set(
 			$this->config,
@@ -123,9 +104,10 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->response,
 			$this->response->headers,
 			$input,
-			$serverInfo,
+			new ServerInfo($_SERVER),
 		);
 		$this->injector = new Injector($this->serviceContainer);
+
 		$this->handleRouting($request);
 		if(!$this->serviceContainer->has(Session::class)) {
 			$this->handleSession();
@@ -133,7 +115,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 		if($this->viewModel instanceof HTMLDocument) {
 			$this->handleHTMLDocumentViewModel();
-			$this->handleCsrf($request);
+//			$this->handleCsrf($request);
 		}
 
 		$this->handleProtectedGlobals();
@@ -142,6 +124,7 @@ class RequestHandler implements RequestHandlerInterface {
 // TODO: Why is this in the handle function?
 		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
 		$documentBinder->cleanDatasets();
+
 		$this->view->stream($this->viewModel);
 
 		$responseHeaders = $this->serviceContainer->get(ResponseHeaders::class);
@@ -171,10 +154,8 @@ class RequestHandler implements RequestHandlerInterface {
 
 		$this->serviceContainer->set($this->dynamicPath);
 
-		if(!$this->viewAssembly->containsDistinctFile()
-		&& !$this instanceof ErrorRequestHandler) {
-			throw new HttpNotFound();
-//			$this->response = $this->response->withStatus(StatusCode::NOT_FOUND);
+		if(!$this->viewAssembly->containsDistinctFile()) {
+			$this->response = $this->response->withStatus(StatusCode::NOT_FOUND);
 		}
 
 		foreach($this->viewAssembly as $viewFile) {
@@ -289,7 +270,8 @@ class RequestHandler implements RequestHandlerInterface {
 			);
 			$tokens = $protector->protect($sharing);
 			$this->response = $this->response->withHeader($this->config->getString("security.csrf_header"), $tokens);
-		}
+			}
+
 	}
 
 	protected function handleProtectedGlobals():void {
@@ -311,40 +293,20 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->injector,
 			$this->config->getString("app.namespace")
 		);
-
-		$fileFunc = "";
-		ob_start(function(string $buffer)use(&$fileFunc) {
-			if(!$buffer) {
-				return;
-			}
-			call_user_func($this->obCallback, $fileFunc, $buffer);
-		});
-
-		foreach($logicExecutor->invoke("go_before") as $fileFunc) {
-			ob_flush();
-		}
+		$logicExecutor->invoke("go_before");
 
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
-			function(InputData $data)use($logicExecutor, &$fileFunc):void {
-				$doString = "do_" . str_replace(
-						"-",
-						"_",
-						$data->getString("do"),
-					);
-				foreach($logicExecutor->invoke($doString) as $fileFunc) {
-					ob_flush();
-				}
-			}
+			fn(InputData $data) => $logicExecutor->invoke(
+				"do_" . str_replace(
+					"-",
+					"_",
+					$data->getString("do")
+				)
+			)
 		);
-
-		foreach($logicExecutor->invoke("go") as $fileFunc) {
-			ob_flush();
-		}
-		foreach($logicExecutor->invoke("go_after") as $fileFunc) {
-			ob_flush();
-		}
-		ob_end_clean();
+		$logicExecutor->invoke("go");
+		$logicExecutor->invoke("go_after");
 	}
 
 	protected function setupLogger(ConfigSection $logConfig):void {
