@@ -26,6 +26,7 @@
 		"phpgt/session": "^1.1",
 		"phpgt/sync": "^1.2",
 		"phpgt/ulid": "^v1.0.0",
+		"phpgt/gtcommand": "^v1.0",
 
 		"psr/http-server-middleware": "^1.0",
 		"willdurand/negotiation": "^3.0"

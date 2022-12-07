@@ -161,7 +161,7 @@ class Lifecycle implements MiddlewareInterface {
 			console.groupEnd();
 			</script>
 			JS;
-		$js = str_replace("</script", "<\\/script", $js);
+//		$js = str_replace("</script", "<\\/script", $js);
 		echo $js;
 	}
 
