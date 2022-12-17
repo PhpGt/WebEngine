@@ -53,6 +53,10 @@ class RequestHandler implements RequestHandlerInterface {
 	public function __construct(
 		protected readonly Config $config,
 		callable $finishCallback,
+		protected array $getArray,
+		protected array $postArray,
+		protected array $filesArray,
+		protected array $serverArray,
 	) {
 		$this->finishCallback = $finishCallback;
 
@@ -96,7 +100,7 @@ class RequestHandler implements RequestHandlerInterface {
 		$this->forceTrailingSlashes($request);
 		$this->setupServiceContainer();
 
-		$input = new Input($_GET, $_POST, $_FILES);
+		$input = new Input($this->getArray, $this->postArray, $this->filesArray);
 
 		$this->serviceContainer->set(
 			$this->config,
@@ -104,7 +108,7 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->response,
 			$this->response->headers,
 			$input,
-			new ServerInfo($_SERVER),
+			new ServerInfo($this->serverArray),
 		);
 		$this->injector = new Injector($this->serviceContainer);
 
