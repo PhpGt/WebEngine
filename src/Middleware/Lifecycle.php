@@ -75,6 +75,10 @@ class Lifecycle implements MiddlewareInterface {
 				"vendor/phpgt/webengine/config.default.ini"
 			),
 			$this->finish(...),
+			$_GET,
+			$_POST,
+			$_FILES,
+			$_SERVER,
 		);
 
 // The request and request handler are passed to the PSR-15 process function,
