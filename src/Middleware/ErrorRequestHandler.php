@@ -17,8 +17,19 @@ class ErrorRequestHandler extends RequestHandler {
 		callable $finishCallback,
 		private Throwable $throwable,
 		protected Container $serviceContainer,
+		protected array $getArray,
+		protected array $postArray,
+		protected array $filesArray,
+		protected array $serverArray,
 	) {
-		parent::__construct($config, $finishCallback);
+		parent::__construct(
+			$config,
+			$finishCallback,
+			$this->getArray,
+			$this->postArray,
+			$this->filesArray,
+			$this->serverArray,
+		);
 	}
 
 	public function handle(
