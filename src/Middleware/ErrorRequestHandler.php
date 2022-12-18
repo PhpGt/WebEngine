@@ -40,6 +40,7 @@ class ErrorRequestHandler extends RequestHandler {
 			$errorCode = $this->throwable->getHttpCode();
 		}
 
+		$this->originalUri = $request->getUri();
 		$errorUri = new Uri("/_$errorCode");
 		$errorRequest = $request->withUri($errorUri);
 
