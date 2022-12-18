@@ -15,6 +15,7 @@ use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
 use Gt\Http\StatusCode;
+use Gt\Http\Uri;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
 use Gt\Logger\LogConfig;
@@ -49,6 +50,7 @@ class RequestHandler implements RequestHandlerInterface {
 	protected DynamicPath $dynamicPath;
 	protected HTMLDocument/*|NullViewModel*/ $viewModel;
 	protected BaseView $view;
+	protected Uri $originalUri;
 
 	public function __construct(
 		protected readonly Config $config,
@@ -89,6 +91,7 @@ class RequestHandler implements RequestHandlerInterface {
 	public function handle(
 		ServerRequestInterface $request
 	):ResponseInterface {
+		$this->originalUri = $request->getUri();
 		$this->completeRequestHandling($request);
 		return $this->response;
 	}
@@ -151,7 +154,7 @@ class RequestHandler implements RequestHandlerInterface {
 		$this->logicAssembly = $router->getLogicAssembly();
 
 		$this->dynamicPath = new DynamicPath(
-			$request->getUri()->getPath(),
+			$this->originalUri->getPath(),
 			$this->viewAssembly,
 			$this->logicAssembly,
 		);
