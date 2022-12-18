@@ -55,14 +55,20 @@ class Lifecycle implements MiddlewareInterface {
 // to any area of code will not accidentally send output to the client.
 		ob_start();
 
+		$originalGlobals = [
+			"get" => $_GET,
+			"post" => $_POST,
+			"files" => $_FILES,
+			"server" => $_SERVER,
+		];
 // A PSR-7 HTTP Request object is created from the current global state, ready
 // for processing by the Handler.
 		$requestFactory = new RequestFactory();
 		$request = $requestFactory->createServerRequestFromGlobalState(
-			$_SERVER,
-			$_FILES,
-			$_GET,
-			$_POST,
+			$originalGlobals["server"],
+			$originalGlobals["files"],
+			$originalGlobals["get"],
+			$originalGlobals["post"],
 		);
 
 // The handler is an individual component that processes a request and produces
@@ -75,6 +81,10 @@ class Lifecycle implements MiddlewareInterface {
 				"vendor/phpgt/webengine/config.default.ini"
 			),
 			$this->finish(...),
+			$originalGlobals["get"],
+			$originalGlobals["post"],
+			$originalGlobals["files"],
+			$originalGlobals["server"],
 		);
 
 // The request and request handler are passed to the PSR-15 process function,
@@ -93,6 +103,10 @@ class Lifecycle implements MiddlewareInterface {
 				$this->finish(...),
 				$throwable,
 				$handler->getServiceContainer(),
+				$originalGlobals["get"],
+				$originalGlobals["post"],
+				$originalGlobals["files"],
+				$originalGlobals["server"],
 			);
 			$response = $this->process($request, $errorHandler);
 
