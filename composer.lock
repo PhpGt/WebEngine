@@ -633,7 +633,7 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v4.1.0",
+            "version": "v4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
@@ -719,7 +719,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v4.1.0"
+                "source": "https://github.com/PhpGt/Dom/tree/v4.1.1"
             },
             "funding": [
                 {
@@ -731,16 +731,16 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v3.1.4",
+            "version": "v3.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "7b822944111d3a9a7bc87c4d277bc0c7fc05b66b"
+                "reference": "1310c55736295a898829d7bde9c6caabfff4762d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/7b822944111d3a9a7bc87c4d277bc0c7fc05b66b",
-                "reference": "7b822944111d3a9a7bc87c4d277bc0c7fc05b66b",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/1310c55736295a898829d7bde9c6caabfff4762d",
+                "reference": "1310c55736295a898829d7bde9c6caabfff4762d",
                 "shasum": ""
             },
             "require": {
@@ -749,8 +749,8 @@
                 "phpgt/dom": "^v4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8.1",
-                "phpunit/phpunit": "v9.5.21"
+                "phpstan/phpstan": "^v1.8",
+                "phpunit/phpunit": "^v9.5"
             },
             "type": "library",
             "autoload": {
@@ -765,7 +765,7 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.1.4"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.1.5"
             },
             "funding": [
                 {
@@ -773,7 +773,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-24T19:28:31+00:00"
+            "time": "2022-12-18T16:15:11+00:00"
         },
         {
             "name": "phpgt/gtcommand",
@@ -3892,5 +3892,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
