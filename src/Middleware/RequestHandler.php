@@ -125,6 +125,8 @@ class RequestHandler implements RequestHandlerInterface {
 		$this->handleProtectedGlobals();
 		$this->handleLogicExecution();
 
+		$this->tidyView($this->viewModel);
+
 // TODO: Why is this in the handle function?
 		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
 		$documentBinder->cleanDatasets();
@@ -424,5 +426,17 @@ class RequestHandler implements RequestHandlerInterface {
 				)
 			)
 			->withStatus(307);
+	}
+
+	// TODO: Handle other types of view.
+	private function tidyView(HTMLDocument $document):void {
+		foreach($document->querySelectorAll("body title, [data-page-title]") as $element) {
+			$existing = $document->querySelector("title");
+			$existing->remove();
+
+			$title = $document->createElement("title");
+			$title->innerText = $element->innerText;
+			$document->head->appendChild($title);
+		}
 	}
 }
