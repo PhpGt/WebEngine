@@ -731,7 +731,7 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "v3.1.5",
+            "version": "v3.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
@@ -765,7 +765,7 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.1.5"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.1.6"
             },
             "funding": [
                 {
@@ -3892,5 +3892,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
