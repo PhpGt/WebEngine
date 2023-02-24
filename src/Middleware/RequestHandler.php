@@ -31,6 +31,7 @@ use Gt\ServiceContainer\Injector;
 use Gt\Session\Session;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Logic\AppAutoloader;
+use Gt\WebEngine\Logic\LogicAttribute\NoReloadDo;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\NullView;
@@ -304,14 +305,23 @@ class RequestHandler implements RequestHandlerInterface {
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
 			function(InputData $data)use($logicExecutor) {
-				foreach($logicExecutor->invoke(
-					"do_" . str_replace(
-						"-",
-						"_",
-						$data->getString("do")
-					)
-				) as $file) {
-					// TODO: Hook up to debug output
+				$reloadResponse = true;
+
+				$doName = "do_" . str_replace(
+					"-",
+					"_",
+					$data->getString("do")
+				);
+
+				foreach($logicExecutor->invoke($doName) as $file) {
+					$attributeArray = $this->getAttributesFromFile($file);
+					if(in_array(NoReloadDo::class, $attributeArray)) {
+						$reloadResponse = false;
+					}
+				}
+
+				if($reloadResponse) {
+					$this->response->reload();
 				}
 			}
 		);
@@ -424,5 +434,22 @@ class RequestHandler implements RequestHandlerInterface {
 				)
 			)
 			->withStatus(307);
+	}
+
+	/** @return array<class-string> */
+	private function getAttributesFromFile(string $file):array {
+		$attrArray = [];
+
+		$firstHash = strpos($file, "#");
+		if($firstHash === false) {
+			return $attrArray;
+		}
+
+		$file = substr($file, $firstHash + 1);
+
+		foreach(explode("#", $file) as $attrString) {
+			array_push($attrArray, strtok($attrString, "("));
+		}
+		return $attrArray;
 	}
 }
