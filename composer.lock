@@ -826,16 +826,16 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.1.7",
+            "version": "v1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "6d32a4cbf3efea655b3204591501fc84721b00ca"
+                "reference": "e3e4cf5eee74b96bc56063a802f9cfa85f96d42f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/6d32a4cbf3efea655b3204591501fc84721b00ca",
-                "reference": "6d32a4cbf3efea655b3204591501fc84721b00ca",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/e3e4cf5eee74b96bc56063a802f9cfa85f96d42f",
+                "reference": "e3e4cf5eee74b96bc56063a802f9cfa85f96d42f",
                 "shasum": ""
             },
             "require": {
@@ -861,7 +861,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/v1.1.7"
+                "source": "https://github.com/PhpGt/Http/tree/v1.1.8"
             },
             "funding": [
                 {
@@ -869,7 +869,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-28T16:04:19+00:00"
+            "time": "2022-12-31T15:04:57+00:00"
         },
         {
             "name": "phpgt/input",
@@ -3892,5 +3892,5 @@
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
