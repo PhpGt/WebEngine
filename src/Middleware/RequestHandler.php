@@ -305,8 +305,6 @@ class RequestHandler implements RequestHandlerInterface {
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
 			function(InputData $data)use($logicExecutor) {
-				$reloadResponse = true;
-
 				$doName = "do_" . str_replace(
 					"-",
 					"_",
@@ -314,14 +312,7 @@ class RequestHandler implements RequestHandlerInterface {
 				);
 
 				foreach($logicExecutor->invoke($doName) as $file) {
-					$attributeArray = $this->getAttributesFromFile($file);
-					if(in_array(NoAutoReloadPost::class, $attributeArray)) {
-						$reloadResponse = false;
-					}
-				}
-
-				if($reloadResponse && $this->response->autoReloadPost) {
-					$this->response->reload();
+					// TODO: Hook up to debug output
 				}
 			}
 		);
