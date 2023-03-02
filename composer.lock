@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b3754f3aafe8ff194e76a9bd6dc08f8",
+    "content-hash": "27064f7612109649d8aec426337445fe",
     "packages": [
         {
             "name": "composer/semver",
@@ -828,7 +828,7 @@
         },
         {
             "name": "phpgt/http",
-            "version": "dev-master",
+            "version": "v1.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
@@ -850,7 +850,6 @@
                 "phpstan/phpstan": "^v1.10",
                 "phpunit/phpunit": "^10.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -864,7 +863,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/master"
+                "source": "https://github.com/PhpGt/Http/tree/v1.1.9"
             },
             "funding": [
                 {
@@ -3884,18 +3883,9 @@
             "time": "2021-07-28T10:34:58+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "phpgt/http",
-            "version": "9999999-dev",
-            "alias": "v1.1.9",
-            "alias_normalized": "1.1.9.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpgt/http": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
