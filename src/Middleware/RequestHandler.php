@@ -15,7 +15,6 @@ use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
 use Gt\Http\StatusCode;
-use Gt\Http\Uri;
 use Gt\Input\Input;
 use Gt\Input\InputData\InputData;
 use Gt\Logger\LogConfig;
@@ -32,6 +31,7 @@ use Gt\ServiceContainer\Injector;
 use Gt\Session\Session;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Logic\AppAutoloader;
+use Gt\WebEngine\Logic\LogicAttribute\NoReloadDo;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\NullView;
@@ -50,7 +50,6 @@ class RequestHandler implements RequestHandlerInterface {
 	protected DynamicPath $dynamicPath;
 	protected HTMLDocument/*|NullViewModel*/ $viewModel;
 	protected BaseView $view;
-	protected Uri $originalUri;
 
 	public function __construct(
 		protected readonly Config $config,
@@ -91,7 +90,6 @@ class RequestHandler implements RequestHandlerInterface {
 	public function handle(
 		ServerRequestInterface $request
 	):ResponseInterface {
-		$this->originalUri = $request->getUri();
 		$this->completeRequestHandling($request);
 		return $this->response;
 	}
@@ -128,8 +126,6 @@ class RequestHandler implements RequestHandlerInterface {
 		$this->handleProtectedGlobals();
 		$this->handleLogicExecution();
 
-		$this->tidyView($this->viewModel);
-
 // TODO: Why is this in the handle function?
 		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
 		$documentBinder->cleanDatasets();
@@ -156,7 +152,7 @@ class RequestHandler implements RequestHandlerInterface {
 		$this->logicAssembly = $router->getLogicAssembly();
 
 		$this->dynamicPath = new DynamicPath(
-			$this->originalUri->getPath(),
+			$request->getUri()->getPath(),
 			$this->viewAssembly,
 			$this->logicAssembly,
 		);
@@ -309,14 +305,23 @@ class RequestHandler implements RequestHandlerInterface {
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
 			function(InputData $data)use($logicExecutor) {
-				foreach($logicExecutor->invoke(
-					"do_" . str_replace(
-						"-",
-						"_",
-						$data->getString("do")
-					)
-				) as $file) {
-					// TODO: Hook up to debug output
+				$reloadResponse = true;
+
+				$doName = "do_" . str_replace(
+					"-",
+					"_",
+					$data->getString("do")
+				);
+
+				foreach($logicExecutor->invoke($doName) as $file) {
+					$attributeArray = $this->getAttributesFromFile($file);
+					if(in_array(NoReloadDo::class, $attributeArray)) {
+						$reloadResponse = false;
+					}
+				}
+
+				if($reloadResponse) {
+					$this->response->reload();
 				}
 			}
 		);
@@ -431,15 +436,20 @@ class RequestHandler implements RequestHandlerInterface {
 			->withStatus(307);
 	}
 
-	// TODO: Handle other types of view.
-	private function tidyView(HTMLDocument $document):void {
-		foreach($document->querySelectorAll("body title, [data-page-title]") as $element) {
-			$existing = $document->querySelector("title");
-			$existing->remove();
+	/** @return array<class-string> */
+	private function getAttributesFromFile(string $file):array {
+		$attrArray = [];
 
-			$title = $document->createElement("title");
-			$title->innerText = $element->innerText;
-			$document->head->appendChild($title);
+		$firstHash = strpos($file, "#");
+		if($firstHash === false) {
+			return $attrArray;
 		}
+
+		$file = substr($file, $firstHash + 1);
+
+		foreach(explode("#", $file) as $attrString) {
+			array_push($attrArray, strtok($attrString, "("));
+		}
+		return $attrArray;
 	}
 }

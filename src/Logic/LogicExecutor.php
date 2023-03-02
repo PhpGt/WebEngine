@@ -6,6 +6,7 @@ use Gt\Routing\Assembly;
 use Gt\Routing\LogicStream\LogicStreamNamespace;
 use Gt\Routing\LogicStream\LogicStreamWrapper;
 use Gt\ServiceContainer\Injector;
+use ReflectionFunction;
 
 class LogicExecutor {
 	public function __construct(
@@ -32,13 +33,15 @@ class LogicExecutor {
 				$instance = new $nsProject;
 			}
 
+			$functionReference = "$file::$name()";
+
 			if($instance) {
 				if(method_exists($instance, $name)) {
 					$this->injector->invoke(
 						$instance,
 						$name
 					);
-					yield "$file::$name()";
+					yield $functionReference;
 				}
 			}
 			else {
@@ -51,11 +54,33 @@ class LogicExecutor {
 
 				foreach($fnReferenceArray as $fnReference) {
 					if(function_exists($fnReference)) {
+						$closure = $fnReference(...);
+						$refFunction = new ReflectionFunction($closure);
+						foreach($refFunction->getAttributes() as $refAttr) {
+							$functionReference .= "#";
+							$functionReference .= $refAttr->getName();
+							$functionReference .= "(";
+							foreach($refAttr->getArguments() as $refArgIndex => $refArg) {
+								if($refArgIndex > 0) {
+									$functionReference .= ",";
+								}
+
+								if(is_string($refArg)) {
+									$functionReference .= "\"";
+								}
+								$functionReference .= "$refArg";
+								if(is_string($refArg)) {
+									$functionReference .= "\"";
+								}
+							}
+							$functionReference .= ")";
+						}
+
 						$this->injector->invoke(
 							null,
 							$fnReference
 						);
-						yield "$file::$name()";
+						yield $functionReference;
 					}
 				}
 			}
