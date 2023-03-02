@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "27064f7612109649d8aec426337445fe",
+    "content-hash": "8b3754f3aafe8ff194e76a9bd6dc08f8",
     "packages": [
         {
             "name": "composer/semver",
@@ -633,16 +633,16 @@
         },
         {
             "name": "phpgt/dom",
-            "version": "v4.1.1",
+            "version": "v4.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Dom.git",
-                "reference": "19ad48319273f725bcbfb9b2784cdf1deb1cf27f"
+                "reference": "3e1afe7b6d38e9968d400900a62cbe54753973a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/19ad48319273f725bcbfb9b2784cdf1deb1cf27f",
-                "reference": "19ad48319273f725bcbfb9b2784cdf1deb1cf27f",
+                "url": "https://api.github.com/repos/PhpGt/Dom/zipball/3e1afe7b6d38e9968d400900a62cbe54753973a1",
+                "reference": "3e1afe7b6d38e9968d400900a62cbe54753973a1",
                 "shasum": ""
             },
             "require": {
@@ -650,13 +650,15 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "php": ">=8.1",
-                "phpgt/cssxpath": "^v1.1",
-                "phpgt/propfunc": "^v1.0",
-                "psr/http-message": "^v1.0"
+                "phpgt/cssxpath": "^1.1",
+                "phpgt/propfunc": "^1.0",
+                "psr/http-message": "^1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "v1.8",
-                "phpunit/phpunit": "v9.5"
+                "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": "^10.0",
+                "squizlabs/php_codesniffer": "^3.7"
             },
             "type": "library",
             "autoload": {
@@ -719,7 +721,7 @@
             "description": "The modern DOM API for PHP projects.",
             "support": {
                 "issues": "https://github.com/PhpGt/Dom/issues",
-                "source": "https://github.com/PhpGt/Dom/tree/v4.1.1"
+                "source": "https://github.com/PhpGt/Dom/tree/v4.1.2"
             },
             "funding": [
                 {
@@ -727,7 +729,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-25T10:57:14+00:00"
+            "time": "2023-03-02T18:40:07+00:00"
         },
         {
             "name": "phpgt/domtemplate",
@@ -826,28 +828,29 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.1.8",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "e3e4cf5eee74b96bc56063a802f9cfa85f96d42f"
+                "reference": "477ce4c83ebdd9b6df7e6fad414e6e23bc7a0dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/e3e4cf5eee74b96bc56063a802f9cfa85f96d42f",
-                "reference": "e3e4cf5eee74b96bc56063a802f9cfa85f96d42f",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/477ce4c83ebdd9b6df7e6fad414e6e23bc7a0dab",
+                "reference": "477ce4c83ebdd9b6df7e6fad414e6e23bc7a0dab",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1",
-                "phpgt/input": "^v1",
-                "psr/http-message": "^v1.0.1",
-                "willdurand/negotiation": "v3.1.0"
+                "phpgt/input": "^1",
+                "psr/http-message": "^1.0.1",
+                "willdurand/negotiation": "3.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^v1.8",
-                "phpunit/phpunit": "^v9.5"
+                "phpstan/phpstan": "^v1.10",
+                "phpunit/phpunit": "^10.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -861,7 +864,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/v1.1.8"
+                "source": "https://github.com/PhpGt/Http/tree/master"
             },
             "funding": [
                 {
@@ -869,7 +872,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-12-31T15:04:57+00:00"
+            "time": "2023-03-02T22:45:54+00:00"
         },
         {
             "name": "phpgt/input",
@@ -3881,9 +3884,18 @@
             "time": "2021-07-28T10:34:58+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "phpgt/http",
+            "version": "9999999-dev",
+            "alias": "v1.1.9",
+            "alias_normalized": "1.1.9.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "phpgt/http": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

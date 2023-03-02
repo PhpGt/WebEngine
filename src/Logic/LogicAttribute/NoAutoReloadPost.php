@@ -3,4 +3,4 @@ namespace Gt\WebEngine\Logic\LogicAttribute;
 
 use Attribute;
 
-class NoReloadDo extends Attribute {}
+class NoAutoReloadPost extends Attribute {}

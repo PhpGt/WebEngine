@@ -18,7 +18,7 @@
 		"phpgt/dom": "^v4.0",
 		"phpgt/domtemplate": "^v3.2",
 		"phpgt/database": "^1.4",
-		"phpgt/http": "^1.1",
+		"phpgt/http": "dev-master as v1.1.9",
 		"phpgt/logger": "^1.0",
 		"phpgt/protectedglobal": "^v1.1",
 		"phpgt/routing": "^1.0",

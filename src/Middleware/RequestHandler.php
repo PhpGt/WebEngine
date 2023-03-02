@@ -31,7 +31,7 @@ use Gt\ServiceContainer\Injector;
 use Gt\Session\Session;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Logic\AppAutoloader;
-use Gt\WebEngine\Logic\LogicAttribute\NoReloadDo;
+use Gt\WebEngine\Logic\LogicAttribute\NoAutoReloadPost;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\NullView;
@@ -44,7 +44,7 @@ class RequestHandler implements RequestHandlerInterface {
 	protected $finishCallback;
 	protected Container $serviceContainer;
 	protected Injector $injector;
-	protected ResponseInterface $response;
+	protected Response $response;
 	protected Assembly $viewAssembly;
 	protected Assembly $logicAssembly;
 	protected DynamicPath $dynamicPath;
@@ -315,12 +315,12 @@ class RequestHandler implements RequestHandlerInterface {
 
 				foreach($logicExecutor->invoke($doName) as $file) {
 					$attributeArray = $this->getAttributesFromFile($file);
-					if(in_array(NoReloadDo::class, $attributeArray)) {
+					if(in_array(NoAutoReloadPost::class, $attributeArray)) {
 						$reloadResponse = false;
 					}
 				}
 
-				if($reloadResponse) {
+				if($reloadResponse && $this->response->autoReloadPost) {
 					$this->response->reload();
 				}
 			}
