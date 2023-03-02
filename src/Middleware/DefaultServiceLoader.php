@@ -11,9 +11,9 @@ use Gt\DomTemplate\ElementBinder;
 use Gt\DomTemplate\HTMLAttributeBinder;
 use Gt\DomTemplate\HTMLAttributeCollection;
 use Gt\DomTemplate\ListBinder;
+use Gt\DomTemplate\ListElementCollection;
 use Gt\DomTemplate\PlaceholderBinder;
 use Gt\DomTemplate\TableBinder;
-use Gt\DomTemplate\TemplateCollection;
 use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Request;
 use Gt\Http\Response;
@@ -78,7 +78,7 @@ class DefaultServiceLoader {
 	#[LazyLoad]
 	public function loadTableBinder():TableBinder {
 		return new TableBinder(
-			$this->container->get(TemplateCollection::class),
+			$this->container->get(ListElementCollection::class),
 			$this->container->get(ElementBinder::class),
 			$this->container->get(HTMLAttributeBinder::class),
 			$this->container->get(HTMLAttributeCollection::class),
@@ -87,15 +87,15 @@ class DefaultServiceLoader {
 	}
 
 	#[LazyLoad]
-	public function loadTemplateCollection():TemplateCollection {
+	public function loadTemplateCollection():ListElementCollection {
 		$document = $this->container->get(Document::class);
-		return new TemplateCollection($document);
+		return new ListElementCollection($document);
 	}
 
 	#[LazyLoad]
 	public function loadListBinder():ListBinder {
 		return new ListBinder(
-			$this->container->get(TemplateCollection::class)
+			$this->container->get(ListElementCollection::class)
 		);
 	}
 
@@ -109,7 +109,7 @@ class DefaultServiceLoader {
 			$this->container->get(PlaceholderBinder::class),
 			$this->container->get(TableBinder::class),
 			$this->container->get(ListBinder::class),
-			$this->container->get(TemplateCollection::class),
+			$this->container->get(ListElementCollection::class),
 		);
 	}
 
