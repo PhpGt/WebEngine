@@ -87,7 +87,7 @@ class DefaultServiceLoader {
 	}
 
 	#[LazyLoad]
-	public function loadTemplateCollection():ListElementCollection {
+	public function loadListElementCollection():ListElementCollection {
 		$document = $this->container->get(Document::class);
 		return new ListElementCollection($document);
 	}
