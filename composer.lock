@@ -828,16 +828,16 @@
         },
         {
             "name": "phpgt/http",
-            "version": "v1.1.8",
+            "version": "v1.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Http.git",
-                "reference": "e3e4cf5eee74b96bc56063a802f9cfa85f96d42f"
+                "reference": "05566d327ba99f8d99ef17700f3b94164de8c3d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Http/zipball/e3e4cf5eee74b96bc56063a802f9cfa85f96d42f",
-                "reference": "e3e4cf5eee74b96bc56063a802f9cfa85f96d42f",
+                "url": "https://api.github.com/repos/PhpGt/Http/zipball/05566d327ba99f8d99ef17700f3b94164de8c3d7",
+                "reference": "05566d327ba99f8d99ef17700f3b94164de8c3d7",
                 "shasum": ""
             },
             "require": {
@@ -847,8 +847,10 @@
                 "willdurand/negotiation": "v3.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^v1.8",
-                "phpunit/phpunit": "^v9.5"
+                "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": "^10.0",
+                "squizlabs/php_codesniffer": "^3.7"
             },
             "type": "library",
             "autoload": {
@@ -863,7 +865,7 @@
             "description": "PSR-7 HTTP message implementation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Http/issues",
-                "source": "https://github.com/PhpGt/Http/tree/v1.1.8"
+                "source": "https://github.com/PhpGt/Http/tree/v1.1.9"
             },
             "funding": [
                 {
@@ -871,7 +873,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-12-31T15:04:57+00:00"
+            "time": "2023-03-10T15:04:04+00:00"
         },
         {
             "name": "phpgt/input",
