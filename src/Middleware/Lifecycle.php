@@ -93,6 +93,11 @@ class Lifecycle implements MiddlewareInterface {
 			$response = $this->process($request, $handler);
 		}
 		catch(Throwable $throwable) {
+			echo "<pre>";
+			echo get_class($throwable), " - ";
+			echo $throwable->getMessage(), " ", $throwable->getFile(), ":", $throwable->getLine(), PHP_EOL;
+			var_dump($throwable);
+			die();
 			$this->throwable = $throwable;
 
 			$errorHandler = new ErrorRequestHandler(
