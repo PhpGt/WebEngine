@@ -220,10 +220,12 @@ class RequestHandler implements RequestHandlerInterface {
 		$sessionHandler = SessionSetup::attachHandler(
 			$sessionConfig->getString("handler")
 		);
+
 		$session = new Session(
 			$sessionHandler,
 			$sessionConfig,
-			$sessionId
+			$sessionId,
+			$this->serviceContainer->get(ServerInfo::class)->getServerPort(),
 		);
 		$this->serviceContainer->set($session);
 	}
