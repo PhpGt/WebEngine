@@ -225,7 +225,6 @@ class RequestHandler implements RequestHandlerInterface {
 			$sessionHandler,
 			$sessionConfig,
 			$sessionId,
-			$this->serviceContainer->get(ServerInfo::class)->getServerPort(),
 		);
 		$this->serviceContainer->set($session);
 	}
