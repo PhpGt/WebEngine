@@ -128,7 +128,7 @@ class RequestHandler implements RequestHandlerInterface {
 
 // TODO: Why is this in the handle function?
 		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
-		$documentBinder->cleanDatasets();
+		$documentBinder->cleanupDocument();
 
 		$this->view->stream($this->viewModel);
 

@@ -15,7 +15,7 @@
 		"phpgt/config": "^1.0",
 		"phpgt/csrf": "^v1.9",
 		"phpgt/dom": "^v4.0",
-		"phpgt/domtemplate": "^v3.2",
+		"phpgt/domtemplate": "^3.2",
 		"phpgt/database": "^1.4",
 		"phpgt/http": "^1.1",
 		"phpgt/logger": "^1.0",
