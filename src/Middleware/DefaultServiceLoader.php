@@ -19,7 +19,6 @@ use Gt\Http\Request;
 use Gt\Http\Response;
 use Gt\Http\Uri;
 use Gt\ServiceContainer\Container;
-use Gt\ServiceContainer\LazyLoad;
 
 class DefaultServiceLoader {
 	public function __construct(
@@ -28,17 +27,24 @@ class DefaultServiceLoader {
 	) {
 	}
 
-	#[LazyLoad]
 	public function loadResponseHeaders():ResponseHeaders {
 		$response = $this->container->get(Response::class);
 		return $response->headers;
 	}
 
-	#[LazyLoad]
 	public function loadDatabase():Database {
+		$driver = $this->config->get("database.driver");
+		$initQueryParts = [];
+		if($initQueryEveryDriver = $this->config->get("database.init_query")) {
+			array_push($initQueryParts, $initQueryEveryDriver);
+		}
+		if($initQuerySpecificDriver = $this->config->get("database.init_query_$driver")) {
+			array_push($initQueryParts, $initQuerySpecificDriver);
+		}
+
 		$dbSettings = new Settings(
 			$this->config->get("database.query_directory"),
-			$this->config->get("database.driver"),
+			$driver,
 			$this->config->get("database.schema"),
 			$this->config->get("database.host"),
 			$this->config->get("database.port"),
@@ -47,26 +53,23 @@ class DefaultServiceLoader {
 			$this->config->get("database.connection_name") ?: DefaultSettings::DEFAULT_NAME,
 			$this->config->get("database.collation") ?: DefaultSettings::DEFAULT_COLLATION,
 			$this->config->get("database.charset") ?: DefaultSettings::DEFAULT_CHARSET,
+			implode(";", $initQueryParts) ?: null,
 		);
 		return new Database($dbSettings);
 	}
 
-	#[LazyLoad]
 	public function loadHTMLAttributeBinder():HTMLAttributeBinder {
 		return new HTMLAttributeBinder();
 	}
 
-	#[LazyLoad]
 	public function loadHTMLAttributeCollection():HTMLAttributeCollection {
 		return new HTMLAttributeCollection();
 	}
 
-	#[LazyLoad]
 	public function loadPlaceholderBinder():PlaceholderBinder {
 		return new PlaceholderBinder();
 	}
 
-	#[LazyLoad]
 	public function loadElementBinder():ElementBinder {
 		return new ElementBinder(
 			$this->container->get(HTMLAttributeBinder::class),
@@ -75,7 +78,6 @@ class DefaultServiceLoader {
 		);
 	}
 
-	#[LazyLoad]
 	public function loadTableBinder():TableBinder {
 		return new TableBinder(
 			$this->container->get(ListElementCollection::class),
@@ -86,20 +88,17 @@ class DefaultServiceLoader {
 		);
 	}
 
-	#[LazyLoad]
 	public function loadListElementCollection():ListElementCollection {
 		$document = $this->container->get(Document::class);
 		return new ListElementCollection($document);
 	}
 
-	#[LazyLoad]
 	public function loadListBinder():ListBinder {
 		return new ListBinder(
 			$this->container->get(ListElementCollection::class)
 		);
 	}
 
-	#[LazyLoad]
 	public function loadDocumentBinder():DocumentBinder {
 		$document = $this->container->get(Document::class);
 		return new DocumentBinder(
@@ -113,7 +112,6 @@ class DefaultServiceLoader {
 		);
 	}
 
-	#[LazyLoad]
 	public function loadRequestUri():Uri {
 		return $this->container->get(Request::class)->getUri();
 	}
