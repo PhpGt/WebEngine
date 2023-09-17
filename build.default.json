@@ -53,11 +53,11 @@
 
 	"asset/**/*": {
 		"require": {
-			"vendor/bin/sync": "*"
+			"vendor/bin/sync": ">=1.3.0"
 		},
 		"execute": {
 			"command": "vendor/bin/sync",
-			"arguments": ["asset/", "www/asset", "--delete"]
+			"arguments": ["./asset", "./www/asset", "--symlink"]
 		}
 	}
 }
