@@ -13,6 +13,8 @@ use Gt\DomTemplate\ComponentBinder;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
 use Gt\DomTemplate\ElementBinder;
+use Gt\DomTemplate\HTMLAttributeBinder;
+use Gt\DomTemplate\HTMLAttributeCollection;
 use Gt\DomTemplate\ListBinder;
 use Gt\DomTemplate\ListElementCollection;
 use Gt\DomTemplate\PartialContent;
@@ -126,12 +128,13 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->handleSession();
 		}
 
+		$this->handleProtectedGlobals();
+
 		if($this->viewModel instanceof HTMLDocument) {
 			$this->handleHTMLDocumentViewModel();
 //			$this->handleCsrf($request);
 		}
 
-		$this->handleProtectedGlobals();
 		$this->handleLogicExecution($this->logicAssembly);
 
 // TODO: Why is this in the handle function?
@@ -181,6 +184,38 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function handleHTMLDocumentViewModel():void {
+		$this->serviceContainer->get(HTMLAttributeBinder::class)->setDependencies(
+			$this->serviceContainer->get(ListBinder::class),
+			$this->serviceContainer->get(TableBinder::class),
+		);
+		$this->serviceContainer->get(ElementBinder::class)->setDependencies(
+			$this->serviceContainer->get(HTMLAttributeBinder::class),
+			$this->serviceContainer->get(HTMLAttributeCollection::class),
+			$this->serviceContainer->get(PlaceholderBinder::class),
+		);
+		$this->serviceContainer->get(TableBinder::class)->setDependencies(
+			$this->serviceContainer->get(ListBinder::class),
+			$this->serviceContainer->get(ListElementCollection::class),
+			$this->serviceContainer->get(ElementBinder::class),
+			$this->serviceContainer->get(HTMLAttributeBinder::class),
+			$this->serviceContainer->get(HTMLAttributeCollection::class),
+			$this->serviceContainer->get(PlaceholderBinder::class),
+		);
+		$this->serviceContainer->get(ListBinder::class)->setDependencies(
+			$this->serviceContainer->get(ElementBinder::class),
+			$this->serviceContainer->get(ListElementCollection::class),
+			$this->serviceContainer->get(BindableCache::class),
+			$this->serviceContainer->get(TableBinder::class),
+		);
+		$this->serviceContainer->get(Binder::class)->setDependencies(
+			$this->serviceContainer->get(ElementBinder::class),
+			$this->serviceContainer->get(PlaceholderBinder::class),
+			$this->serviceContainer->get(TableBinder::class),
+			$this->serviceContainer->get(ListBinder::class),
+			$this->serviceContainer->get(ListElementCollection::class),
+			$this->serviceContainer->get(BindableCache::class),
+		);
+
 		try {
 			$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
 				getcwd(),
@@ -198,9 +233,9 @@ class RequestHandler implements RequestHandlerInterface {
 				$filePath .= ".php";
 
 				if(is_file($filePath)) {
-					$assembly = new Assembly();
-					$assembly->add($filePath);
-					$this->handleLogicExecution($assembly, $componentElement);
+					$componentAssembly = new Assembly();
+					$componentAssembly->add($filePath);
+					$this->handleLogicExecution($componentAssembly, $componentElement);
 				}
 			}
 		}
@@ -313,7 +348,7 @@ class RequestHandler implements RequestHandlerInterface {
 			));
 	}
 
-	protected function handleLogicExecution(Assembly $logicAssembly, ?Element $componentElement = null):void {
+	protected function handleLogicExecution(Assembly $logicAssembly, ?Element $component = null):void {
 		$logicExecutor = new LogicExecutor(
 			$logicAssembly,
 			$this->injector,
@@ -321,7 +356,7 @@ class RequestHandler implements RequestHandlerInterface {
 		);
 		$extraArgs = [];
 
-		if($componentElement) {
+		if($component) {
 			$binder = new ComponentBinder($this->viewModel);
 			$binder->setDependencies(
 				$this->serviceContainer->get(ElementBinder::class),
@@ -331,7 +366,7 @@ class RequestHandler implements RequestHandlerInterface {
 				$this->serviceContainer->get(ListElementCollection::class),
 				$this->serviceContainer->get(BindableCache::class),
 			);
-			$binder->setComponentBinderDependencies($componentElement);
+			$binder->setComponentBinderDependencies($component);
 			$extraArgs[Binder::class] = $binder;
 		}
 
@@ -345,7 +380,7 @@ class RequestHandler implements RequestHandlerInterface {
 				$doName = "do_" . str_replace(
 					"-",
 					"_",
-					$data->getString("do")
+					$data->getString("do"),
 				);
 
 				foreach($logicExecutor->invoke($doName, $extraArgs) as $file) {

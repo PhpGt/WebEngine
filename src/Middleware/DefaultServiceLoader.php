@@ -26,7 +26,7 @@ class DefaultServiceLoader {
 	public function __construct(
 		protected Config $config,
 		protected Container $container
-	) {}
+	) {	}
 
 	public function loadResponseHeaders():ResponseHeaders {
 		$response = $this->container->get(Response::class);
@@ -66,26 +66,11 @@ class DefaultServiceLoader {
 	}
 
 	public function loadElementBinder():ElementBinder {
-		$elementBinder = new ElementBinder();
-		$elementBinder->setDependencies(
-			$this->container->get(HTMLAttributeBinder::class),
-			$this->container->get(HTMLAttributeCollection::class),
-			$this->container->get(PlaceholderBinder::class),
-		);
-		return $elementBinder;
+		return new ElementBinder();
 	}
 
 	public function loadTableBinder():TableBinder {
-		$tableBinder = new TableBinder();
-		$tableBinder->setDependencies(
-			$this->container->get(ListBinder::class),
-			$this->container->get(ListElementCollection::class),
-			$this->container->get(ElementBinder::class),
-			$this->container->get(HTMLAttributeBinder::class),
-			$this->container->get(HTMLAttributeCollection::class),
-			$this->container->get(PlaceholderBinder::class),
-		);
-		return $tableBinder;
+		return new TableBinder();
 	}
 
 	public function loadListElementCollection():ListElementCollection {
@@ -95,34 +80,12 @@ class DefaultServiceLoader {
 	}
 
 	public function loadListBinder():ListBinder {
-		$listBinder = new ListBinder();
-		$listBinder->setDependencies(
-			$this->container->get(ElementBinder::class),
-			$this->container->get(ListElementCollection::class),
-			$this->container->get(BindableCache::class),
-			$this->container->get(TableBinder::class),
-		);
-		return $listBinder;
+		return new ListBinder();
 	}
 
 	public function loadBinder():Binder {
 		$document = $this->container->get(Document::class);
-		$binder = new DocumentBinder($document);
-		$binder->setDependencies(
-			$this->container->get(ElementBinder::class),
-			$this->container->get(PlaceholderBinder::class),
-			$this->container->get(TableBinder::class),
-			$this->container->get(ListBinder::class),
-			$this->container->get(ListElementCollection::class),
-			$this->container->get(BindableCache::class),
-		);
-		return $binder;
-	}
-
-	public function loadDocumentBinder():DocumentBinder {
-		/** @var DocumentBinder $documentBinder */
-		$documentBinder = $this->loadBinder();
-		return $documentBinder;
+		return new DocumentBinder($document);
 	}
 
 	public function loadRequestUri():Uri {

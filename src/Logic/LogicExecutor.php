@@ -20,7 +20,7 @@ class LogicExecutor {
 	}
 
 	/** @return Generator<string> filename::function() */
-	public function invoke(string $name, mixed...$extraArgs):Generator {
+	public function invoke(string $name, array $extraArgs = []):Generator {
 		foreach($this->assembly as $file) {
 			$nsProject = (string)(new LogicProjectNamespace(
 				$file,
