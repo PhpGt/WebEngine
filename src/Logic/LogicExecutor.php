@@ -20,7 +20,7 @@ class LogicExecutor {
 	}
 
 	/** @return Generator<string> filename::function() */
-	public function invoke(string $name):Generator {
+	public function invoke(string $name, mixed...$extraArgs):Generator {
 		foreach($this->assembly as $file) {
 			$nsProject = (string)(new LogicProjectNamespace(
 				$file,
@@ -39,7 +39,8 @@ class LogicExecutor {
 				if(method_exists($instance, $name)) {
 					$this->injector->invoke(
 						$instance,
-						$name
+						$name,
+						$extraArgs,
 					);
 					yield $functionReference;
 				}
@@ -78,7 +79,8 @@ class LogicExecutor {
 
 						$this->injector->invoke(
 							null,
-							$fnReference
+							$fnReference,
+							$extraArgs
 						);
 						yield $functionReference;
 					}

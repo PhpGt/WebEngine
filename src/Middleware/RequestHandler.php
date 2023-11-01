@@ -5,12 +5,21 @@ use Gt\Config\Config;
 use Gt\Config\ConfigSection;
 use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\SessionTokenStore;
+use Gt\Dom\Element;
 use Gt\Dom\HTMLDocument;
+use Gt\DomTemplate\BindableCache;
+use Gt\DomTemplate\Binder;
+use Gt\DomTemplate\ComponentBinder;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
+use Gt\DomTemplate\ElementBinder;
+use Gt\DomTemplate\ListBinder;
+use Gt\DomTemplate\ListElementCollection;
 use Gt\DomTemplate\PartialContent;
 use Gt\DomTemplate\PartialContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
+use Gt\DomTemplate\PlaceholderBinder;
+use Gt\DomTemplate\TableBinder;
 use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
@@ -31,7 +40,6 @@ use Gt\ServiceContainer\Injector;
 use Gt\Session\Session;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Logic\AppAutoloader;
-use Gt\WebEngine\Logic\LogicAttribute\NoAutoReloadPost;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\NullView;
@@ -124,7 +132,7 @@ class RequestHandler implements RequestHandlerInterface {
 		}
 
 		$this->handleProtectedGlobals();
-		$this->handleLogicExecution();
+		$this->handleLogicExecution($this->logicAssembly);
 
 // TODO: Why is this in the handle function?
 		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
@@ -182,7 +190,19 @@ class RequestHandler implements RequestHandlerInterface {
 				$this->viewModel,
 				$partial,
 			);
-			$componentExpander->expand();
+
+			foreach($componentExpander->expand() as $componentElement) {
+				$filePath = $this->config->getString("view.component_directory");
+				$filePath .= "/";
+				$filePath .= $componentElement->tagName;
+				$filePath .= ".php";
+
+				if(is_file($filePath)) {
+					$assembly = new Assembly();
+					$assembly->add($filePath);
+					$this->handleLogicExecution($assembly, $componentElement);
+				}
+			}
 		}
 		catch(PartialContentDirectoryNotFoundException) {}
 
@@ -293,34 +313,50 @@ class RequestHandler implements RequestHandlerInterface {
 			));
 	}
 
-	protected function handleLogicExecution():void {
+	protected function handleLogicExecution(Assembly $logicAssembly, ?Element $componentElement = null):void {
 		$logicExecutor = new LogicExecutor(
-			$this->logicAssembly,
+			$logicAssembly,
 			$this->injector,
 			$this->config->getString("app.namespace")
 		);
-		foreach($logicExecutor->invoke("go_before") as $file) {
+		$extraArgs = [];
+
+		if($componentElement) {
+			$binder = new ComponentBinder($this->viewModel);
+			$binder->setDependencies(
+				$this->serviceContainer->get(ElementBinder::class),
+				$this->serviceContainer->get(PlaceholderBinder::class),
+				$this->serviceContainer->get(TableBinder::class),
+				$this->serviceContainer->get(ListBinder::class),
+				$this->serviceContainer->get(ListElementCollection::class),
+				$this->serviceContainer->get(BindableCache::class),
+			);
+			$binder->setComponentBinderDependencies($componentElement);
+			$extraArgs[Binder::class] = $binder;
+		}
+
+		foreach($logicExecutor->invoke("go_before", $extraArgs) as $file) {
 			// TODO: Hook up to debug output
 		}
 
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
-			function(InputData $data)use($logicExecutor) {
+			function(InputData $data)use($logicExecutor, $extraArgs) {
 				$doName = "do_" . str_replace(
 					"-",
 					"_",
 					$data->getString("do")
 				);
 
-				foreach($logicExecutor->invoke($doName) as $file) {
+				foreach($logicExecutor->invoke($doName, $extraArgs) as $file) {
 					// TODO: Hook up to debug output
 				}
 			}
 		);
-		foreach($logicExecutor->invoke("go") as $file) {
+		foreach($logicExecutor->invoke("go", $extraArgs) as $file) {
 			// TODO: Hook up to debug output
 		}
-		foreach($logicExecutor->invoke("go_after") as $file) {
+		foreach($logicExecutor->invoke("go_after", $extraArgs) as $file) {
 			// TODO: Hook up to debug output
 		}
 	}
