@@ -138,7 +138,7 @@ class RequestHandler implements RequestHandlerInterface {
 		$this->handleLogicExecution($this->logicAssembly);
 
 // TODO: Why is this in the handle function?
-		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
+		$documentBinder = $this->serviceContainer->get(Binder::class);
 		$documentBinder->cleanupDocument();
 
 		$this->view->stream($this->viewModel);
@@ -184,6 +184,62 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function handleHTMLDocumentViewModel():void {
+		$expandedLogicAssemblyList = [];
+		$expandedComponentList = [];
+
+		try {
+			$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
+				getcwd(),
+				$this->config->getString("view.component_directory")
+			]));
+			$componentExpander = new ComponentExpander(
+				$this->viewModel,
+				$partial,
+			);
+
+			foreach($componentExpander->expand() as $componentElement) {
+				$filePath = $this->config->getString("view.component_directory");
+				$filePath .= "/";
+				$filePath .= $componentElement->tagName;
+				$filePath .= ".php";
+
+				if(is_file($filePath)) {
+					$componentAssembly = new Assembly();
+					$componentAssembly->add($filePath);
+					array_push($expandedLogicAssemblyList, $componentAssembly);
+					array_push($expandedComponentList, $componentElement);
+				}
+			}
+		}
+		catch(PartialContentDirectoryNotFoundException) {}
+
+		try {
+			$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
+				getcwd(),
+				$this->config->getString("view.partial_directory")
+			]));
+
+			$partialExpander = new PartialExpander(
+				$this->viewModel,
+				$partial
+			);
+			$partialExpander->expand();
+		}
+		catch(PartialContentDirectoryNotFoundException) {}
+
+		$dynamicUri = $this->dynamicPath->getUrl("page/");
+		$dynamicUri = str_replace("/", "--", $dynamicUri);
+		$dynamicUri = str_replace("@", "_", $dynamicUri);
+		$this->viewModel->body->classList->add("uri" . $dynamicUri);
+		$bodyDirClass = "dir";
+		foreach(explode("--", $dynamicUri) as $i => $pathPart) {
+			if($i === 0) {
+				continue;
+			}
+			$bodyDirClass .= "--$pathPart";
+			$this->viewModel->body->classList->add($bodyDirClass);
+		}
+
 		$this->serviceContainer->get(HTMLAttributeBinder::class)->setDependencies(
 			$this->serviceContainer->get(ListBinder::class),
 			$this->serviceContainer->get(TableBinder::class),
@@ -216,56 +272,15 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->serviceContainer->get(BindableCache::class),
 		);
 
-		try {
-			$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
-				getcwd(),
-				$this->config->getString("view.component_directory")
-			]));
-			$componentExpander = new ComponentExpander(
-				$this->viewModel,
-				$partial,
-			);
+//		$listElementCollection = $this->serviceContainer->get(ListElementCollection::class);
+//		var_dump($listElementCollection);die();
 
-			foreach($componentExpander->expand() as $componentElement) {
-				$filePath = $this->config->getString("view.component_directory");
-				$filePath .= "/";
-				$filePath .= $componentElement->tagName;
-				$filePath .= ".php";
-
-				if(is_file($filePath)) {
-					$componentAssembly = new Assembly();
-					$componentAssembly->add($filePath);
-					$this->handleLogicExecution($componentAssembly, $componentElement);
-				}
+		foreach($expandedLogicAssemblyList as $i => $assembly) {
+			$componentElement = $expandedComponentList[$i];
+			if(!$componentElement) {
+				var_dump($assembly);die();
 			}
-		}
-		catch(PartialContentDirectoryNotFoundException) {}
-
-		try {
-			$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
-				getcwd(),
-				$this->config->getString("view.partial_directory")
-			]));
-
-			$partialExpander = new PartialExpander(
-				$this->viewModel,
-				$partial
-			);
-			$partialExpander->expand();
-		}
-		catch(PartialContentDirectoryNotFoundException) {}
-
-		$dynamicUri = $this->dynamicPath->getUrl("page/");
-		$dynamicUri = str_replace("/", "--", $dynamicUri);
-		$dynamicUri = str_replace("@", "_", $dynamicUri);
-		$this->viewModel->body->classList->add("uri" . $dynamicUri);
-		$bodyDirClass = "dir";
-		foreach(explode("--", $dynamicUri) as $i => $pathPart) {
-			if($i === 0) {
-				continue;
-			}
-			$bodyDirClass .= "--$pathPart";
-			$this->viewModel->body->classList->add($bodyDirClass);
+			$this->handleLogicExecution($assembly, $componentElement);
 		}
 	}
 
@@ -368,6 +383,7 @@ class RequestHandler implements RequestHandlerInterface {
 			);
 			$binder->setComponentBinderDependencies($component);
 			$extraArgs[Binder::class] = $binder;
+			$extraArgs[Element::class] = $component;
 		}
 
 		foreach($logicExecutor->invoke("go_before", $extraArgs) as $file) {
