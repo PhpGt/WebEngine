@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46a969065d7755d62212d02abff8afe8",
+    "content-hash": "4db261f79932acb948182eba101dd56e",
     "packages": [
         {
             "name": "composer/semver",
@@ -738,7 +738,7 @@
         },
         {
             "name": "phpgt/database",
-            "version": "v1.4.1",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Database.git",
@@ -794,7 +794,7 @@
             "description": "Database API organisation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Database/issues",
-                "source": "https://github.com/PhpGt/Database/tree/v1.4.1"
+                "source": "https://github.com/PhpGt/Database/tree/v1.5.0"
             },
             "funding": [
                 {
