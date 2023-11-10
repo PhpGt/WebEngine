@@ -6,6 +6,8 @@ use Gt\Database\Connection\DefaultSettings;
 use Gt\Database\Connection\Settings;
 use Gt\Database\Database;
 use Gt\Dom\Document;
+use Gt\DomTemplate\BindableCache;
+use Gt\DomTemplate\Binder;
 use Gt\DomTemplate\DocumentBinder;
 use Gt\DomTemplate\ElementBinder;
 use Gt\DomTemplate\HTMLAttributeBinder;
@@ -19,22 +21,18 @@ use Gt\Http\Request;
 use Gt\Http\Response;
 use Gt\Http\Uri;
 use Gt\ServiceContainer\Container;
-use Gt\ServiceContainer\LazyLoad;
 
 class DefaultServiceLoader {
 	public function __construct(
 		protected Config $config,
 		protected Container $container
-	) {
-	}
+	) {	}
 
-	#[LazyLoad]
 	public function loadResponseHeaders():ResponseHeaders {
 		$response = $this->container->get(Response::class);
 		return $response->headers;
 	}
 
-	#[LazyLoad]
 	public function loadDatabase():Database {
 		$dbSettings = new Settings(
 			$this->config->get("database.query_directory"),
@@ -51,69 +49,45 @@ class DefaultServiceLoader {
 		return new Database($dbSettings);
 	}
 
-	#[LazyLoad]
+	public function loadBindableCache():BindableCache {
+		return new BindableCache();
+	}
+
 	public function loadHTMLAttributeBinder():HTMLAttributeBinder {
 		return new HTMLAttributeBinder();
 	}
 
-	#[LazyLoad]
 	public function loadHTMLAttributeCollection():HTMLAttributeCollection {
 		return new HTMLAttributeCollection();
 	}
 
-	#[LazyLoad]
 	public function loadPlaceholderBinder():PlaceholderBinder {
 		return new PlaceholderBinder();
 	}
 
-	#[LazyLoad]
 	public function loadElementBinder():ElementBinder {
-		return new ElementBinder(
-			$this->container->get(HTMLAttributeBinder::class),
-			$this->container->get(HTMLAttributeCollection::class),
-			$this->container->get(PlaceholderBinder::class),
-		);
+		return new ElementBinder();
 	}
 
-	#[LazyLoad]
 	public function loadTableBinder():TableBinder {
-		return new TableBinder(
-			$this->container->get(ListElementCollection::class),
-			$this->container->get(ElementBinder::class),
-			$this->container->get(HTMLAttributeBinder::class),
-			$this->container->get(HTMLAttributeCollection::class),
-			$this->container->get(PlaceholderBinder::class),
-		);
+		return new TableBinder();
 	}
 
-	#[LazyLoad]
 	public function loadListElementCollection():ListElementCollection {
-		$document = $this->container->get(Document::class);
-		return new ListElementCollection($document);
+		return new ListElementCollection(
+			$this->container->get(Document::class),
+		);
 	}
 
-	#[LazyLoad]
 	public function loadListBinder():ListBinder {
-		return new ListBinder(
-			$this->container->get(ListElementCollection::class)
-		);
+		return new ListBinder();
 	}
 
-	#[LazyLoad]
-	public function loadDocumentBinder():DocumentBinder {
+	public function loadBinder():Binder {
 		$document = $this->container->get(Document::class);
-		return new DocumentBinder(
-			$document,
-			iterator_to_array($this->config->getSection("view")),
-			$this->container->get(ElementBinder::class),
-			$this->container->get(PlaceholderBinder::class),
-			$this->container->get(TableBinder::class),
-			$this->container->get(ListBinder::class),
-			$this->container->get(ListElementCollection::class),
-		);
+		return new DocumentBinder($document);
 	}
 
-	#[LazyLoad]
 	public function loadRequestUri():Uri {
 		return $this->container->get(Request::class)->getUri();
 	}

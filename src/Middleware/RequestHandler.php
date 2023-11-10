@@ -5,12 +5,23 @@ use Gt\Config\Config;
 use Gt\Config\ConfigSection;
 use Gt\Csrf\HTMLDocumentProtector;
 use Gt\Csrf\SessionTokenStore;
+use Gt\Dom\Element;
 use Gt\Dom\HTMLDocument;
+use Gt\DomTemplate\BindableCache;
+use Gt\DomTemplate\Binder;
+use Gt\DomTemplate\ComponentBinder;
 use Gt\DomTemplate\ComponentExpander;
 use Gt\DomTemplate\DocumentBinder;
+use Gt\DomTemplate\ElementBinder;
+use Gt\DomTemplate\HTMLAttributeBinder;
+use Gt\DomTemplate\HTMLAttributeCollection;
+use Gt\DomTemplate\ListBinder;
+use Gt\DomTemplate\ListElementCollection;
 use Gt\DomTemplate\PartialContent;
 use Gt\DomTemplate\PartialContentDirectoryNotFoundException;
 use Gt\DomTemplate\PartialExpander;
+use Gt\DomTemplate\PlaceholderBinder;
+use Gt\DomTemplate\TableBinder;
 use Gt\Http\Header\ResponseHeaders;
 use Gt\Http\Response;
 use Gt\Http\ServerInfo;
@@ -31,7 +42,6 @@ use Gt\ServiceContainer\Injector;
 use Gt\Session\Session;
 use Gt\Session\SessionSetup;
 use Gt\WebEngine\Logic\AppAutoloader;
-use Gt\WebEngine\Logic\LogicAttribute\NoAutoReloadPost;
 use Gt\WebEngine\Logic\LogicExecutor;
 use Gt\WebEngine\View\BaseView;
 use Gt\WebEngine\View\NullView;
@@ -118,16 +128,17 @@ class RequestHandler implements RequestHandlerInterface {
 			$this->handleSession();
 		}
 
+		$this->handleProtectedGlobals();
+
 		if($this->viewModel instanceof HTMLDocument) {
 			$this->handleHTMLDocumentViewModel();
 //			$this->handleCsrf($request);
 		}
 
-		$this->handleProtectedGlobals();
-		$this->handleLogicExecution();
+		$this->handleLogicExecution($this->logicAssembly);
 
 // TODO: Why is this in the handle function?
-		$documentBinder = $this->serviceContainer->get(DocumentBinder::class);
+		$documentBinder = $this->serviceContainer->get(Binder::class);
 		$documentBinder->cleanupDocument();
 
 		$this->view->stream($this->viewModel);
@@ -173,6 +184,9 @@ class RequestHandler implements RequestHandlerInterface {
 	}
 
 	protected function handleHTMLDocumentViewModel():void {
+		$expandedLogicAssemblyList = [];
+		$expandedComponentList = [];
+
 		try {
 			$partial = new PartialContent(implode(DIRECTORY_SEPARATOR, [
 				getcwd(),
@@ -182,7 +196,20 @@ class RequestHandler implements RequestHandlerInterface {
 				$this->viewModel,
 				$partial,
 			);
-			$componentExpander->expand();
+
+			foreach($componentExpander->expand() as $componentElement) {
+				$filePath = $this->config->getString("view.component_directory");
+				$filePath .= "/";
+				$filePath .= $componentElement->tagName;
+				$filePath .= ".php";
+
+				if(is_file($filePath)) {
+					$componentAssembly = new Assembly();
+					$componentAssembly->add($filePath);
+					array_push($expandedLogicAssemblyList, $componentAssembly);
+					array_push($expandedComponentList, $componentElement);
+				}
+			}
 		}
 		catch(PartialContentDirectoryNotFoundException) {}
 
@@ -211,6 +238,49 @@ class RequestHandler implements RequestHandlerInterface {
 			}
 			$bodyDirClass .= "--$pathPart";
 			$this->viewModel->body->classList->add($bodyDirClass);
+		}
+
+		$this->serviceContainer->get(HTMLAttributeBinder::class)->setDependencies(
+			$this->serviceContainer->get(ListBinder::class),
+			$this->serviceContainer->get(TableBinder::class),
+		);
+		$this->serviceContainer->get(ElementBinder::class)->setDependencies(
+			$this->serviceContainer->get(HTMLAttributeBinder::class),
+			$this->serviceContainer->get(HTMLAttributeCollection::class),
+			$this->serviceContainer->get(PlaceholderBinder::class),
+		);
+		$this->serviceContainer->get(TableBinder::class)->setDependencies(
+			$this->serviceContainer->get(ListBinder::class),
+			$this->serviceContainer->get(ListElementCollection::class),
+			$this->serviceContainer->get(ElementBinder::class),
+			$this->serviceContainer->get(HTMLAttributeBinder::class),
+			$this->serviceContainer->get(HTMLAttributeCollection::class),
+			$this->serviceContainer->get(PlaceholderBinder::class),
+		);
+		$this->serviceContainer->get(ListBinder::class)->setDependencies(
+			$this->serviceContainer->get(ElementBinder::class),
+			$this->serviceContainer->get(ListElementCollection::class),
+			$this->serviceContainer->get(BindableCache::class),
+			$this->serviceContainer->get(TableBinder::class),
+		);
+		$this->serviceContainer->get(Binder::class)->setDependencies(
+			$this->serviceContainer->get(ElementBinder::class),
+			$this->serviceContainer->get(PlaceholderBinder::class),
+			$this->serviceContainer->get(TableBinder::class),
+			$this->serviceContainer->get(ListBinder::class),
+			$this->serviceContainer->get(ListElementCollection::class),
+			$this->serviceContainer->get(BindableCache::class),
+		);
+
+//		$listElementCollection = $this->serviceContainer->get(ListElementCollection::class);
+//		var_dump($listElementCollection);die();
+
+		foreach($expandedLogicAssemblyList as $i => $assembly) {
+			$componentElement = $expandedComponentList[$i];
+			if(!$componentElement) {
+				var_dump($assembly);die();
+			}
+			$this->handleLogicExecution($assembly, $componentElement);
 		}
 	}
 
@@ -293,34 +363,51 @@ class RequestHandler implements RequestHandlerInterface {
 			));
 	}
 
-	protected function handleLogicExecution():void {
+	protected function handleLogicExecution(Assembly $logicAssembly, ?Element $component = null):void {
 		$logicExecutor = new LogicExecutor(
-			$this->logicAssembly,
+			$logicAssembly,
 			$this->injector,
 			$this->config->getString("app.namespace")
 		);
-		foreach($logicExecutor->invoke("go_before") as $file) {
+		$extraArgs = [];
+
+		if($component) {
+			$binder = new ComponentBinder($this->viewModel);
+			$binder->setDependencies(
+				$this->serviceContainer->get(ElementBinder::class),
+				$this->serviceContainer->get(PlaceholderBinder::class),
+				$this->serviceContainer->get(TableBinder::class),
+				$this->serviceContainer->get(ListBinder::class),
+				$this->serviceContainer->get(ListElementCollection::class),
+				$this->serviceContainer->get(BindableCache::class),
+			);
+			$binder->setComponentBinderDependencies($component);
+			$extraArgs[Binder::class] = $binder;
+			$extraArgs[Element::class] = $component;
+		}
+
+		foreach($logicExecutor->invoke("go_before", $extraArgs) as $file) {
 			// TODO: Hook up to debug output
 		}
 
 		$input = $this->serviceContainer->get(Input::class);
 		$input->when("do")->call(
-			function(InputData $data)use($logicExecutor) {
+			function(InputData $data)use($logicExecutor, $extraArgs) {
 				$doName = "do_" . str_replace(
 					"-",
 					"_",
-					$data->getString("do")
+					$data->getString("do"),
 				);
 
-				foreach($logicExecutor->invoke($doName) as $file) {
+				foreach($logicExecutor->invoke($doName, $extraArgs) as $file) {
 					// TODO: Hook up to debug output
 				}
 			}
 		);
-		foreach($logicExecutor->invoke("go") as $file) {
+		foreach($logicExecutor->invoke("go", $extraArgs) as $file) {
 			// TODO: Hook up to debug output
 		}
-		foreach($logicExecutor->invoke("go_after") as $file) {
+		foreach($logicExecutor->invoke("go_after", $extraArgs) as $file) {
 			// TODO: Hook up to debug output
 		}
 	}
