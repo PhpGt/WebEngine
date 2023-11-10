@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac2dac3f8953d26ae40b4755cbd96e98",
+    "content-hash": "46a969065d7755d62212d02abff8afe8",
     "packages": [
         {
             "name": "composer/semver",
@@ -150,6 +150,66 @@
                 }
             ],
             "time": "2020-10-13T00:52:37+00:00"
+        },
+        {
+            "name": "greenlion/php-sql-parser",
+            "version": "v4.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/greenlion/PHP-SQL-Parser.git",
+                "reference": "f0e4645eb1612f0a295e3d35bda4c7740ae8c366"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/greenlion/PHP-SQL-Parser/zipball/f0e4645eb1612f0a295e3d35bda4c7740ae8c366",
+                "reference": "f0e4645eb1612f0a295e3d35bda4c7740ae8c366",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "analog/analog": "^1.0.6",
+                "phpunit/phpunit": "^9.5.13",
+                "squizlabs/php_codesniffer": "^1.5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPSQLParser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Justin Swanhart",
+                    "email": "greenlion@gmail.com",
+                    "homepage": "http://code.google.com/u/greenlion@gmail.com/",
+                    "role": "Owner"
+                },
+                {
+                    "name": "André Rothe",
+                    "email": "phosco@gmx.de",
+                    "homepage": "https://www.phosco.info",
+                    "role": "Committer"
+                }
+            ],
+            "description": "A pure PHP SQL (non validating) parser w/ focus on MySQL dialect of SQL",
+            "homepage": "https://github.com/greenlion/PHP-SQL-Parser",
+            "keywords": [
+                "creator",
+                "mysql",
+                "parser",
+                "sql"
+            ],
+            "support": {
+                "issues": "https://github.com/greenlion/PHP-SQL-Parser/issues",
+                "source": "https://github.com/greenlion/PHP-SQL-Parser"
+            },
+            "time": "2023-03-09T20:54:23+00:00"
         },
         {
             "name": "magicalex/write-ini-file",
@@ -678,28 +738,31 @@
         },
         {
             "name": "phpgt/database",
-            "version": "v1.4.0",
+            "version": "v1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/Database.git",
-                "reference": "db929a74e7e57f8424027c8fe685b37c6459db86"
+                "reference": "388b6f74da1ede9e37daf4748fe78299e268fee1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Database/zipball/db929a74e7e57f8424027c8fe685b37c6459db86",
-                "reference": "db929a74e7e57f8424027c8fe685b37c6459db86",
+                "url": "https://api.github.com/repos/PhpGt/Database/zipball/388b6f74da1ede9e37daf4748fe78299e268fee1",
+                "reference": "388b6f74da1ede9e37daf4748fe78299e268fee1",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
-                "php": ">=7.4",
+                "greenlion/php-sql-parser": "^4.6",
+                "php": ">=8.1",
                 "phpgt/cli": "^1.3",
                 "phpgt/config": "^v1.1.0"
             },
             "require-dev": {
                 "ext-sqlite3": "*",
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "^9.4"
+                "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan": "^v1.10",
+                "phpunit/phpunit": "^10.1",
+                "squizlabs/php_codesniffer": "^3.7"
             },
             "bin": [
                 "bin/migrate"
@@ -731,7 +794,7 @@
             "description": "Database API organisation.",
             "support": {
                 "issues": "https://github.com/PhpGt/Database/issues",
-                "source": "https://github.com/PhpGt/Database/tree/v1.4.0"
+                "source": "https://github.com/PhpGt/Database/tree/v1.4.1"
             },
             "funding": [
                 {
@@ -739,7 +802,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-09-23T09:07:04+00:00"
+            "time": "2023-10-19T11:08:15+00:00"
         },
         {
             "name": "phpgt/dataobject",
@@ -897,16 +960,16 @@
         },
         {
             "name": "phpgt/domtemplate",
-            "version": "dev-470-component-binder",
+            "version": "v3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/DomTemplate.git",
-                "reference": "818de59fce8e408395a2931c003389ee872472de"
+                "reference": "913b654c16a4b4d91f64b37aa434f82b9f274259"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/818de59fce8e408395a2931c003389ee872472de",
-                "reference": "818de59fce8e408395a2931c003389ee872472de",
+                "url": "https://api.github.com/repos/PhpGt/DomTemplate/zipball/913b654c16a4b4d91f64b37aa434f82b9f274259",
+                "reference": "913b654c16a4b4d91f64b37aa434f82b9f274259",
                 "shasum": ""
             },
             "require": {
@@ -931,7 +994,7 @@
             "description": "Bind dynamic data to reusable HTML components.",
             "support": {
                 "issues": "https://github.com/PhpGt/DomTemplate/issues",
-                "source": "https://github.com/PhpGt/DomTemplate/tree/470-component-binder"
+                "source": "https://github.com/PhpGt/DomTemplate/tree/v3.3.0"
             },
             "funding": [
                 {
@@ -939,7 +1002,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-27T11:49:40+00:00"
+            "time": "2023-11-10T11:55:10+00:00"
         },
         {
             "name": "phpgt/gtcommand",
@@ -1470,16 +1533,16 @@
         },
         {
             "name": "phpgt/servicecontainer",
-            "version": "dev-140-extra-args",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/ServiceContainer.git",
-                "reference": "e8d2460887c4717e9b7dee62565cc37964ee670f"
+                "reference": "733778c499d0b3eb5f2c311fc64c109694dd8d22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/e8d2460887c4717e9b7dee62565cc37964ee670f",
-                "reference": "e8d2460887c4717e9b7dee62565cc37964ee670f",
+                "url": "https://api.github.com/repos/PhpGt/ServiceContainer/zipball/733778c499d0b3eb5f2c311fc64c109694dd8d22",
+                "reference": "733778c499d0b3eb5f2c311fc64c109694dd8d22",
                 "shasum": ""
             },
             "require": {
@@ -1508,7 +1571,7 @@
             "description": "Centralised container of a project's core objects.",
             "support": {
                 "issues": "https://github.com/PhpGt/ServiceContainer/issues",
-                "source": "https://github.com/PhpGt/ServiceContainer/tree/140-extra-args"
+                "source": "https://github.com/PhpGt/ServiceContainer/tree/v1.3.2"
             },
             "funding": [
                 {
@@ -1516,7 +1579,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-26T09:07:04+00:00"
+            "time": "2023-11-10T11:20:19+00:00"
         },
         {
             "name": "phpgt/session",
@@ -4286,25 +4349,9 @@
             "time": "2021-07-28T10:34:58+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "phpgt/domtemplate",
-            "version": "dev-470-component-binder",
-            "alias": "v3.3.0",
-            "alias_normalized": "3.3.0.0"
-        },
-        {
-            "package": "phpgt/servicecontainer",
-            "version": "dev-140-extra-args",
-            "alias": "v1.4.0",
-            "alias_normalized": "1.4.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpgt/domtemplate": 20,
-        "phpgt/servicecontainer": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
