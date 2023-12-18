@@ -255,7 +255,6 @@ class Lifecycle implements MiddlewareInterface {
 			Log::debug("Checking redirect file: $fileName");
 			$currentUri = $_SERVER["REQUEST_URI"];
 
-// TODO: Always ensure trailing slash on both matching and redirected uri.
 			$lines = file($fileName);
 			usort($lines, function(string $lineA, string $lineB):int {
 				$lineARegex = str_starts_with($lineA, "~");
