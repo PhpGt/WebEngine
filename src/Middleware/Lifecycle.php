@@ -45,6 +45,10 @@ class Lifecycle implements MiddlewareInterface {
 	private Throwable $throwable;
 
 	public function start():void {
+// Before we start, we check if the current URI should be redirected. If it
+// should, we won't go any further into the lifecycle.
+		$this->handleRedirects();
+
 // The first thing that's done within the WebEngine lifecycle is start a timer.
 // This timer is only used again at the end of the call, when finish() is
 // called - at which point the entire duration of the request is logged out (and
@@ -237,4 +241,65 @@ class Lifecycle implements MiddlewareInterface {
 
 		exit;
 	}
+
+	private function handleRedirects():void {
+		$redirectFiles = [
+			"\t" => "redirects.tsv",
+			"," => "redirects.csv",
+		];
+		foreach($redirectFiles as $separatorCharacter => $fileName) {
+			if(!is_file($fileName)) {
+				continue;
+			}
+
+			Log::debug("Checking redirect file: $fileName");
+			$currentUri = $_SERVER["REQUEST_URI"];
+
+			$lines = file($fileName);
+			usort($lines, function(string $lineA, string $lineB):int {
+				$lineARegex = str_starts_with($lineA, "~");
+				$lineBRegex = str_starts_with($lineB, "~");
+				if($lineARegex && !$lineBRegex) {
+					return -1;
+				}
+
+				if(!$lineARegex && $lineBRegex) {
+					return 1;
+				}
+
+				return 0;
+			});
+
+			foreach($lines as $line) {
+				$row = str_getcsv($line, $separatorCharacter);
+				if(!$row || !$row[0]) {
+					continue;
+				}
+
+				$matchingUri = $row[0];
+				$redirectUri = $row[1];
+				$responseCode = $row[2] ?? 302;
+
+				$match = $currentUri === $matchingUri;
+				if($matchingUri[0] === "~") {
+					$matchingUri = substr($matchingUri, 1);
+					if(preg_match("~$matchingUri~", $currentUri, $matches)) {
+						$match = true;
+						$matchIndex = 1;
+						while(str_contains($redirectUri, '$' . $matchIndex)) {
+							$redirectUri = str_replace('$' . $matchIndex, $matches[$matchIndex], $redirectUri);
+						}
+					}
+				}
+
+				if($match) {
+					Log::notice("Redirecting: $currentUri -> $redirectUri ($responseCode)");
+					header("Location: $redirectUri", true, $responseCode);
+					exit;
+				}
+			}
+			return;
+		}
+	}
+
 }
