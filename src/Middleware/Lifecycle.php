@@ -252,7 +252,6 @@ class Lifecycle implements MiddlewareInterface {
 				continue;
 			}
 
-			Log::debug("Checking redirect file: $fileName");
 			$currentUri = $_SERVER["REQUEST_URI"];
 
 			$lines = file($fileName);
