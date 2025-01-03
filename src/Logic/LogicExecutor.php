@@ -21,7 +21,7 @@ class LogicExecutor {
 
 	/** @return Generator<string> filename::function() */
 	public function invoke(string $name, array $extraArgs = []):Generator {
-		foreach($this->assembly as $file) {
+		foreach(iterator_to_array($this->assembly) as $file) {
 			$nsProject = (string)(new LogicProjectNamespace(
 				$file,
 				$this->appNamespace
